@@ -81,6 +81,7 @@ function validateDate(){
 			if((month.value === "bad" && day.value === "bad" && year.value === "bad") || (month.value != "bad" && day.value != "bad" && year.value != "bad")) {
 				removeAppendImage(elementName+".date.year");
 				document.getElementById('dateMsg').innerHTML = "";
+				return true;
 			}else{
 				appendImage(elementName+".date.year","/images/checkmarkRed.gif");
 				var dmsg = document.getElementById('dateMsg').innerHTML = "* Please enter a valid date. Month, Day and Year are all required fields. ";
@@ -88,6 +89,8 @@ function validateDate(){
 			}
 		}
 	}
+	document.getElementById('dateMsg').innerHTML = "";
+	removeAppendImage(elementName+".date.year");
 	return true;
 }
 

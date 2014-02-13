@@ -55,6 +55,7 @@ public class FileUtils {
      */
     public static String getXNATVersion() throws IOException {
         if (VERSION == null) {
+            // The CHANGESET_PATTERN is just a convenient static object to synchronize on.
             synchronized (MUTEX) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Version information not found, extracted and caching");
@@ -67,23 +68,18 @@ public class FileUtils {
                 }
 
                 // First try to get the tags file at the indicated location.
-                boolean usingTags = true;
-                File file = new File(location + File.separator + "tags");
-                if (!file.exists()) {
-                    usingTags = false;
-                    file = new File(location + File.separator + "VERSION");
-                    if (!file.exists()) {
-                        throw new IOException("Can find neither tags nor VERSION file at the indicated location: " + location);
-                    }
+                File tags = new File(location + File.separator + "tags");
+
+                // If that doesn't exist...
+                if (!tags.exists()) {
+                    // Get the value from the VERSION file
+                    return VERSION = getSimpleVersion();
                 }
 
                 BufferedReader reader = null;
                 try {
-                    reader = new BufferedReader(new FileReader(file));
+                    reader = new BufferedReader(new FileReader(tags));
 
-                    // If we're using the tags file, the process is a bit more
-                    // complicated.
-                    if (usingTags) {
                         // Go through each line until we get to the end (readLine()
                         // returns null).
                         String current, last = null;
@@ -91,11 +87,12 @@ public class FileUtils {
                             // Cache each non-null line.
                             last = current;
                         }
+                    reader.close();
 
                         // If the last non-null line was empty, then we don't know
                         // what's going on.
                         if (StringUtils.isBlank(last)) {
-                            VERSION = "Unknown version";
+                        return VERSION = getSimpleVersion();
                         }
 
                         // Split on the space, the last line should be something like
@@ -105,15 +102,19 @@ public class FileUtils {
 
                         // If it didn't meet that criteria, we don't know what's going on.
                         if (components.length != 2) {
-                            VERSION = "Unknown version";
+                        return VERSION = getSimpleVersion();
                         }
 
-                        // If we got back a two-element array, the second element should
-                        // be the version as indicated by the HG tag.
-                        final String tag = components[1];
+                    // If we got back a two-element array, the second element should be the version as indicated by the
+                    // HG tag. Use that as the default VERSION value. We'll see if there's any reason to override it.
+                    final String tag = VERSION = components[1];
 
-                        reader.close();
-                        reader = new BufferedReader(new FileReader(new File(location + File.separator + "tip.txt")));
+                    // Interpret version containing the '-' character as non-release, e.g. snapshot or RC
+                    if (tag.contains("-")) {
+                        // Then try to get more info from the tip.txt file.
+                        final File tip = new File(location + File.separator + "tip.txt");
+                        if (tip.exists()) {
+                            reader = new BufferedReader(new FileReader(tip));
                         String changeset = "", date = "";
                         while ((current = reader.readLine()) != null) {
                             if (current.contains("changeset:")) {
@@ -122,12 +123,8 @@ public class FileUtils {
                                 date = current.split(":\\s+")[1];
                             }
                         }
-                        VERSION = String.format("%s-%s %s", tag, changeset, new SimpleDateFormat("yyyyymmddHHmmss").format(new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy Z").parse(date)));
+                            VERSION = String.format("%s-%s %s", tag, changeset, new SimpleDateFormat("yyyyMMddHHmmss").format(new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy Z").parse(date)));
                     }
-                    // If we're using the VERSION file...
-                    else {
-                        // It's pretty simple, just read it and spit it back out.
-                        VERSION = (new BufferedReader(reader)).readLine();
                     }
                 } catch (Exception e) {
                     throw new IOException("Error reading file at the indicated location: " + location, e);
@@ -160,6 +157,15 @@ public class FileUtils {
         }
 
         return last;
+    }
+
+    private static String getSimpleVersion() throws IOException {
+        File version = new File(XFT.GetConfDir() + File.separator + "VERSION");
+        if (!version.exists()) {
+            throw new IOException("Can't find the VERSION file at the indicated location: " + XFT.GetConfDir());
+        }
+        // It's pretty simple, just read it and spit it back out.
+        return (new BufferedReader(new FileReader(version))).readLine();
     }
 
     private static final Log logger = LogFactory.getLog(FileUtils.class);

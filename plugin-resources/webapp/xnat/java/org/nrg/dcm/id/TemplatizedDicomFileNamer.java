@@ -124,7 +124,7 @@ public class TemplatizedDicomFileNamer implements DicomFileNamer {
             return false;
         }
         final String lastElement = template.substring(template.lastIndexOf("."));
-        return !StringUtils.isBlank(lastElement) && lastElement.matches("A-z0-9+");
+        return !StringUtils.isBlank(lastElement) && lastElement.matches("^\\.[A-z0-9]+");
     }
 
     /**

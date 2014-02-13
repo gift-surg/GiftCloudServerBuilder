@@ -551,13 +551,6 @@ public class XnatLdapAuthenticator extends Authenticator {
 				}
 
 				u.setProperty("enabled", "true");
-
-				u.setProperty(
-						"xdat:user.assigned_roles.assigned_role[0].role_name",
-						"SiteUser");
-				u.setProperty(
-						"xdat:user.assigned_roles.assigned_role[1].role_name",
-						"DataManager");
 				//we have everything we need to create our user account here, but we haven't actually checked the password against LDAP yet.  The user will be saved, if that succeeds.
 			}
 

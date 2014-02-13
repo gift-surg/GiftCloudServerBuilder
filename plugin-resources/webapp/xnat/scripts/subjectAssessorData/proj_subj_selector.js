@@ -230,7 +230,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
                     }
 
                     if (verifyExptId != undefined && verifyExptId != null) {
-                        verifyExptId();
+                       if(verifyExptId() === false){ valid = false; };
                     }
                 },
                 failure: function (o) {
@@ -401,9 +401,13 @@ function verifyExptId(obj) {
 
                         document.getElementById(elementName + "/ID").value = match.ID;
                         document.getElementById(elementName + "/label").verified = true;
-
-                        XNAT.app.handleMatch();
-                        veid = true;
+                        if(XNAT.app.isUpload != undefined && XNAT.app.isUpload === true){
+                            XNAT.app.handleMatch("* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".");
+                            veid = true;
+                         }else{
+                            XNAT.app.handleMatch("* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase()+".");
+                            veid = false;
+                         }
                     }
                     else {
                         document.getElementById(elementName + "/ID").value = "";
@@ -427,8 +431,8 @@ function verifyExptId(obj) {
 }
 
 
-XNAT.app.handleMatch = function () {
-    document.getElementById("label_msg").innerHTML = "* Matches existing " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ". Continuing could modify that " + XNAT.app.displayNames.singular.imageSession.toLowerCase() + ".";
+XNAT.app.handleMatch = function (msg) {
+    document.getElementById("label_msg").innerHTML = msg;
 //	if (document.getElementById("label_opts").innerHTML == "")
 //      removed when new archive validator was added
 //		document.getElementById("label_opts").innerHTML = "<select name='overwrite' ID='session_overwrite'><option value='append' SELECTED>APPEND</option><option value='delete'>OVERWRITE</option></select>";

@@ -1,6 +1,9 @@
 #set($target=$content.getURI("/REST/services/archive"))
 #set($allowDataDeletion="false")
 #set($isUpload="true")
+<script>
+XNAT.app.isUpload = true;
+</script>
 			#parse($turbineUtils.getTemplateName("edit",$om.getXSIType(),$project,"edit"))
 
 <!-- begin validation warnings dialog -->

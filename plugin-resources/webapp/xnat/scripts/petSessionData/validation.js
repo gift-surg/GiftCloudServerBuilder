@@ -41,7 +41,7 @@ function confirmValues(_focus){
 	     removeAppendImage(elementName+"/label");
 			try{
 				if(eval("window.verifyExptId")!=undefined){
-					verifyExptId();
+					if(verifyExptId() === false){ valid = false; };
 				}
 			}catch(e){
 				if(!e.message.startsWith("verifyExptId is not defined")){

@@ -2,6 +2,7 @@ package org.nrg.xnat.restlet.resources;
 
 import java.util.Date;
 
+import org.apache.axis.utils.StringUtils;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
@@ -45,6 +46,9 @@ public class WorkflowResource extends ItemResource {
 		try{
 			// Create the new workflow item based on information from the user.
 			item=this.loadItem("wrk:workflowData",true);
+			String pipeline_name = item.getStringProperty("pipeline_name");
+			Date launch_time   = item.getDateProperty("launch_time");
+			String id            = item.getStringProperty("id");
 			
 			if(workflowId != null && !workflowId.isEmpty()){
 				// Lookup the workflow by the ID provided by the user.
@@ -59,9 +63,6 @@ public class WorkflowResource extends ItemResource {
 				}
 			} else {
 				// Lookup the workflow by pipeline_name, launch_time, and ID
-				String pipeline_name = item.getStringProperty("pipeline_name");
-				Date launch_time   = item.getDateProperty("launch_time");
-				String id            = item.getStringProperty("id");
 				workflow = (WrkWorkflowdata)WorkflowUtils.getUniqueWorkflow(user, pipeline_name, id, launch_time);
 			}
 			
@@ -69,6 +70,12 @@ public class WorkflowResource extends ItemResource {
 			if(workflow != null && !canUserEditWorkflow(user, workflow)){
 				// If the user is not allow to modify this workflow, 403
 				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You are not allowed to make changes to this workflow.");
+				return;
+			}
+			
+			// Id, launch_time, data_type, and pipeline_name are all required in order to save a new workflow
+			if(workflow == null && (StringUtils.isEmpty(id) || StringUtils.isEmpty(item.getStringProperty("launch_time")) || StringUtils.isEmpty(pipeline_name) || StringUtils.isEmpty(item.getStringProperty("data_type")))){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Id, launch_time, data_type and pipeline_name are all required.");
 				return;
 			}
 			

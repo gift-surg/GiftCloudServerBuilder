@@ -89,10 +89,23 @@ function SearchXMLManager(_xml){
 				scope:this,
 				argument:{"element_name":element_name,"field_id":field_id,"oColumn":oColumn}
 			}
-
-			openModalPanel("load_cv","Loading column values.");
+            var longRunningOp = '';
+            var pagnationText = $('.yui-pg-current').text();
+            if(pagnationText){
+                var beg = pagnationText.indexOf('(')+1;
+                var end = pagnationText.indexOf('R')-1;
+                var numRows = pagnationText.substring(beg, end);
+                numRows = parseInt(numRows);
+                if(numRows > 5000) {
+                    longRunningOp = '<span style="color:red;">Note: This operation may take some time to complete due to the number of records being filtered.</span>';
+                }
+            }
+            openModalPanel("load_cv","Loading column values.");
+            if(longRunningOp){
+                var throbber = $($('#load_cv').children()[1]);
+                throbber.append(longRunningOp);
+            }
 			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/search/' + this.tableName+'/'+oColumn.key +'?XNAT_CSRF=' + window.csrfToken + '&format=json&timestamp=' + (new Date()).getTime(),fieldCallback,null,this);
-
 		}else{
 			this.renderFilterForm2(element_name, field_id, oColumn);
 		}

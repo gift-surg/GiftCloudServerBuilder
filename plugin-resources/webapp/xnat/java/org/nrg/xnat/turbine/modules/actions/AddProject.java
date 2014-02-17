@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
+import org.apache.axis.utils.StringUtils;
 import org.apache.turbine.modules.ScreenLoader;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
@@ -70,15 +71,22 @@ public class AddProject extends SecureAction {
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, XnatProjectdata.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.getAddModifyAction("xnat:projectData", true)));
             EventMetaI c=wrk.buildEvent();
             
+            String id = project.getId();
+            if(StringUtils.isEmpty(id)){
+                displayProjectEditError("Project Id cannot be blank.", data, found);
+               return;
+            }
+            
             // Make sure the project doesn't already exist
             XFTItem existing=project.getItem().getCurrentDBVersion(false);
             if(existing!=null){
-               displayProjectEditError("Project '" + project.getId() + "' already exists.", data, found);
+               displayProjectEditError("Project '" + id + "' already exists.", data, found);
                return;
             }else{
-                Long count=(Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(ID) FROM xnat_projectdata_history WHERE ID='"+project.getId()+"';", "COUNT", null, null);
+                // XNAT-2780: Case insensitive check to see if the current Id has already been used. (checks current project table and project history table)
+                Long count = (Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(CONCAT(p.id, ph.id)) FROM xnat_projectdata p FULL JOIN xnat_projectdata_history ph ON p.id = ph.id WHERE LOWER(p.id) = '" + id.toLowerCase() +"' OR LOWER(ph.id) = '" +  id.toLowerCase() + "';", "COUNT", null, null);
                 if(count>0){
-                   displayProjectEditError("Project '"+project.getId() + "' was used in a previously deleted project and cannot be reused.", data, found);
+                   displayProjectEditError("Invalid Id: '"+ id + "' was previously used as a project ID and cannot be reused.", data, found);
                    return;
                 }
             }

@@ -493,7 +493,7 @@ public class CatalogUtils {
         }
     }
 
-    public static boolean storeCatalogEntry(final FileWriterWrapperI fi, String dest, final XnatResourcecatalog catResource, final XnatProjectdata proj, final boolean extract, final XnatResourceInfo info, final boolean overwrite, final EventMetaI ci) throws Exception {
+    public static List<String> storeCatalogEntry(final FileWriterWrapperI fi, String dest, final XnatResourcecatalog catResource, final XnatProjectdata proj, final boolean extract, final XnatResourceInfo info, final boolean overwrite, final EventMetaI ci) throws Exception {
         final File catFile = catResource.getCatalogFile(proj.getRootArchivePath());
         final String parentPath = catFile.getParent();
         final CatCatalogBean cat = catResource.getCleanCatalog(proj.getRootArchivePath(), false, null, null);
@@ -519,6 +519,8 @@ public class CatalogUtils {
         if (filename.contains(".")) {
             compression_method = filename.substring(filename.lastIndexOf("."));
         }
+
+        List<String> duplicates = new ArrayList<String>();
 
         if (extract && (compression_method.equalsIgnoreCase(".tar") || compression_method.equalsIgnoreCase(".gz") || compression_method.equalsIgnoreCase(".zip") || compression_method.equalsIgnoreCase(".zar"))) {
             File destinationDir = catFile.getParentFile();
@@ -554,17 +556,22 @@ public class CatalogUtils {
                     }
                 }
             }
+            if (!overwrite) {
+                duplicates.addAll(zipper.getDuplicates());
+            }
         } else {
             File parentFolder = new File(parentPath);
             if (!org.apache.commons.lang.StringUtils.isBlank(fi.getNestedPath())) {
                 dest = makePath(fi.getNestedPath(), fi.getName());
             }
 
-            final File saveTo = new File(parentFolder, (dest != null) ? dest : filename);
+            String relative = (dest != null) ? dest : filename;
+            final File saveTo = new File(parentFolder, relative);
 
-            if (saveTo.exists() && !overwrite) {
-                throw new IOException("File already exists" + saveTo.getCanonicalPath());
-            } else if (saveTo.exists()) {
+            if (saveTo.exists()) {
+                if (!overwrite) {
+                    duplicates.add(relative);
+                }
                 final CatEntryBean e = (CatEntryBean) getEntryByURI(cat, dest);
 
                 CatalogUtils.moveToHistory(catFile, saveTo, e, ci);
@@ -596,7 +603,7 @@ public class CatalogUtils {
 
         writeCatalogToFile(cat, catFile);
 
-        return true;
+        return duplicates;
     }
 
     private static String makePath(String nestedPath, String name) {

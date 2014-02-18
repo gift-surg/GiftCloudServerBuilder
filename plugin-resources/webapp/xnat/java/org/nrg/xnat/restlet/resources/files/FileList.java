@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources.files;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -291,7 +292,11 @@ public class FileList extends XNATCatalogTemplate {
                         final List<FileWriterWrapperI> writers = getFileWriters();
 
                         if (writers.size() > 0) {
-                            buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                            List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                            if (!overwrite && duplicates.size() > 0) {
+                                getResponse().setStatus(Status.SUCCESS_OK);
+                                getResponse().setEntity(Joiner.on(", ").join(duplicates), MediaType.TEXT_PLAIN);
+                            }
                         } else {
                             final String method = getRequest().getMethod().toString();
                             final long size = getRequest().getEntity().getAvailableSize();
@@ -302,13 +307,9 @@ public class FileList extends XNATCatalogTemplate {
                             }
                         }
                     } catch (Exception e) {
-                        if (e.getMessage().startsWith("File already exists")) {
-                            logger.info("The POSTed file {} already exists, overwrite set to {}", filepath, overwrite);
-                        } else {
                             logger.error("Error occurred while trying to POST file", e);
                             throw e;
                         }
-                    }
 
                     if (isNew) {
                         WorkflowUtils.complete(wrk, i);

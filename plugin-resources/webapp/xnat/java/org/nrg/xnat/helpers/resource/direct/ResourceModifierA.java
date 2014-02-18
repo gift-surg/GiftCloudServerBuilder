@@ -28,6 +28,7 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.utils.CatalogUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -94,9 +95,11 @@ public abstract class ResourceModifierA {
         return getProject().getRootArchivePath();
     }
 
-    public boolean addFile(final List<? extends FileWriterWrapperI> fws, final Object resourceIdentifier, final String type, final String filepath, final XnatResourceInfo info, final boolean extract) throws Exception {
+    public List<String> addFile(final List<? extends FileWriterWrapperI> fws, final Object resourceIdentifier, final String type, final String filepath, final XnatResourceInfo info, final boolean extract) throws Exception {
+        List<String> duplicates = new ArrayList<String>();
+
         if (fws == null || fws.size() == 0) {
-            return false;
+            return duplicates;
         }
 
         XnatAbstractresource abst = (XnatAbstractresource) getResourceByIdentifier(resourceIdentifier, type);
@@ -107,7 +110,9 @@ public abstract class ResourceModifierA {
             //new resource
             abst = new XnatResourcecatalog((UserI) user);
 
-            if (resourceIdentifier != null) abst.setLabel(resourceIdentifier.toString());
+            if (resourceIdentifier != null) {
+                abst.setLabel(resourceIdentifier.toString());
+            }
             abst.setFileCount(0);
             abst.setFileSize(0);
 
@@ -119,11 +124,8 @@ public abstract class ResourceModifierA {
             }
         }
 
-        boolean _return = true;
         for (final FileWriterWrapperI fw : fws) {
-            if (!CatalogUtils.storeCatalogEntry(fw, filepath, (XnatResourcecatalog) abst, getProject(), extract, info, overwrite, ci)) {
-                _return = false;
-            }
+            duplicates.addAll(CatalogUtils.storeCatalogEntry(fw, filepath, (XnatResourcecatalog) abst, getProject(), extract, info, overwrite, ci));
         }
 
         CatalogUtils.populateStats(abst, null);
@@ -136,33 +138,35 @@ public abstract class ResourceModifierA {
             }
         }
 
-        return _return;
+        return duplicates;
     }
 
     public XnatAbstractresourceI getResourceByIdentifier(final Object resourceIdentifier, final String type) {
-        XnatAbstractresourceI abst = null;
+        if (resourceIdentifier == null) {
+            return null;
+        }
 
-        if (resourceIdentifier == null) return abst;
+        XnatAbstractresourceI resource = null;
 
         if (resourceIdentifier instanceof Integer) {
-            abst = getResourceById((Integer) resourceIdentifier, type);
+            resource = getResourceById((Integer) resourceIdentifier, type);
         }
 
-        if (abst != null) {
-            return abst;
+        if (resource != null) {
+            return resource;
         }
 
-        abst = getResourceByLabel(resourceIdentifier.toString(), type);
+        resource = getResourceByLabel(resourceIdentifier.toString(), type);
 
-        if (abst != null) {
-            return abst;
+        if (resource != null) {
+            return resource;
         }
 
         if (StringUtils.isNumeric(resourceIdentifier.toString())) {
-            abst = getResourceById(Integer.valueOf(resourceIdentifier.toString()), type);
+            resource = getResourceById(Integer.valueOf(resourceIdentifier.toString()), type);
         }
 
-        return abst;
+        return resource;
     }
 
     protected static String getDefaultUID() {

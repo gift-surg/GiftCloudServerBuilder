@@ -84,7 +84,7 @@ public class AddProject extends SecureAction {
                return;
             }else{
                 // XNAT-2780: Case insensitive check to see if the current Id has already been used. (checks current project table and project history table)
-                Long count = (Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(CONCAT(p.id, ph.id)) FROM xnat_projectdata p FULL JOIN xnat_projectdata_history ph ON p.id = ph.id WHERE LOWER(p.id) = '" + id.toLowerCase() +"' OR LOWER(ph.id) = '" +  id.toLowerCase() + "';", "COUNT", null, null);
+                Long count = (Long)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(*) FROM xnat_projectdata p FULL JOIN xnat_projectdata_history ph ON p.id = ph.id WHERE LOWER(p.id) = '" + id.toLowerCase() +"' OR LOWER(ph.id) = '" +  id.toLowerCase() + "';", "COUNT", null, null);
                 if(count>0){
                    displayProjectEditError("Invalid Id: '"+ id + "' was previously used as a project ID and cannot be reused.", data, found);
                    return;

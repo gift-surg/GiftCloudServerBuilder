@@ -906,6 +906,17 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         return (String)this.getFieldByName(name);
     }
 
+	// XNAT-2865 - Function performs case insensitive search for subject
+    public static XnatSubjectdata GetSubjectByProjectIdentifierCaseInsensitive(String project, String identifier, XDATUser user, boolean preLoad){
+        try{
+           String id = (String)PoolDBUtils.ReturnStatisticQuery("SELECT id, label, project FROM xnat_subjectdata WHERE LOWER(project) = '" + project.toLowerCase() + "' AND LOWER(label) = '" + identifier.toLowerCase() + "';", "id", null, null);
+           return XnatSubjectdata.getXnatSubjectdatasById(id, user, preLoad);
+        }catch(Exception e){
+           logger.debug("Unable to find subject.",e);
+           return null;
+        }
+    }
+    
     public static XnatSubjectdata GetSubjectByProjectIdentifier(String project, String identifier,XDATUser user,boolean preLoad){
         CriteriaCollection cc=new CriteriaCollection("OR");
             	

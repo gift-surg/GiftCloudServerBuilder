@@ -227,7 +227,8 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	public static XnatSubjectdata retrieveMatchingSubject(final String id, final String project,final XDATUser user){
 		XnatSubjectdata sub=null;
 		if(StringUtils.isNotEmpty(project)){
-			sub=XnatSubjectdata.GetSubjectByProjectIdentifier(project, id, user, false);
+			// XNAT-2865 - Perform case insensitive search for subject
+			sub=XnatSubjectdata.GetSubjectByProjectIdentifierCaseInsensitive(project, id, user, false);
 		}
 		if(sub==null){
 			sub=XnatSubjectdata.getXnatSubjectdatasById(id, user, false);

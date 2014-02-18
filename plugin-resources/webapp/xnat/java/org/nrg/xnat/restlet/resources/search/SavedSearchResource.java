@@ -111,15 +111,13 @@ public class SavedSearchResource extends ItemResource {
 				xss= XdatStoredSearch.getXdatStoredSearchsById(sID, user, true);
 			}
 		}
-		
-		if(xss!=null) {
-            if(!xss.hasAllowedUser(user.getLogin()) || !user.canQuery(xss.getRootElementName())){
+
+        if(xss != null) {
+            if(!user.canQuery(xss.getRootElementName()) && !xss.hasAllowedUser(user.getLogin())){
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
                 return null;
             }
-		}
-		
-		if(xss==null){
+        } else {
 			//allow loading of saved searches from xml stored on hte file system
 			File search_xml=getFileSystemSearch(sID);
 
@@ -288,20 +286,16 @@ public class SavedSearchResource extends ItemResource {
                     search.setId(result.getFirst().getStringProperty("ID"));
                 }
             }
-			if(search!=null){
-				if(!user.canQuery(search.getRootElementName())){
-					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-					return;
-				}
+			if(search!=null && !user.canQuery(search.getRootElementName())){
+                getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                return;
 			}
 
 			final boolean isPrimary=(search.getTag()!=null && (search.getId().equals(search.getTag() + "_" + search.getRootElementName()))) ||
                     search.getBriefDescription().equals(DisplayManager.GetInstance().getPluralDisplayNameForElement(search.getRootElementName()));
 			
-			if(isNew && isPrimary){
-				if(!user.canAction("xnat:projectData/ID", search.getTag(), SecurityManager.DELETE)){
-					isNew=false;
-				}
+			if(isNew && isPrimary && !user.canAction("xnat:projectData/ID", search.getTag(), SecurityManager.DELETE)){
+				isNew=false;
 			}
 			
 			if(this.isQueryVariableTrue("saveAs")){
@@ -342,17 +336,17 @@ public class SavedSearchResource extends ItemResource {
 					return;
 				}					
 			}if(isNew && !found){
-					XdatStoredSearchAllowedUser au = new XdatStoredSearchAllowedUser((UserI)user);
-					au.setLogin(user.getLogin());
-					search.setAllowedUser(au);
-				}
-				
-				try {
-					SaveItemHelper.unauthorizedSave(search,user, false, true,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, (isNew)?"Creating new stored search":"Modified existing stored search"));
-				} catch (Exception e) {
-					logger.error("",e);
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-				}
+                XdatStoredSearchAllowedUser au = new XdatStoredSearchAllowedUser((UserI)user);
+                au.setLogin(user.getLogin());
+                search.setAllowedUser(au);
+            }
+
+            try {
+                SaveItemHelper.unauthorizedSave(search,user, false, true,this.newEventInstance(EventUtils.CATEGORY.SIDE_ADMIN, (isNew)?"Creating new stored search":"Modified existing stored search"));
+            } catch (Exception e) {
+                logger.error("",e);
+                this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+            }
 					
 			} catch (IOException e) {
 				logger.error("",e);

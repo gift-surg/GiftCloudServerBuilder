@@ -1,16 +1,12 @@
-<!-- BEGIN:  Includes from projects/[project]/project-dependencies/dependencies.xml -->
-<!-- Here we include additional dependency information to be
-     incorporated in the deployed project.xml file 
--->
-<!-- EXAMPLE:
-<dependency>
-   <groupId>org.springframework</groupId>
-   <artifactId>spring-core</artifactId>
-   <version>2.5.6</version>
-  <properties>
-     <war.bundle>true</war.bundle>
-  </properties>
-   <type>jar</type>
-</dependency>
--->
-<!-- END:  Includes from projects/[project]/project-dependencies/dependencies.xml -->
+<!--
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/project-skeletons/xnat/project-dependencies/dependencies.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2014, Washington University School of Medicine
+  ~ All Rights Reserved
+  ~
+  ~ Released under the Simplified BSD.
+  ~
+  ~ Last modified 2/7/14 12:19 PM
+  -->
+
+

@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/prearchive/PrearchiveDetails_delete.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/6/14 3:48 PM
+ */
 XNAT.app.scanDeleter={
 	requestDelete:function(scan_id){
 		this.lastScan=scan_id;

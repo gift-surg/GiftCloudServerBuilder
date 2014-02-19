@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.utils.CatalogUtils
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 8/19/13 1:47 PM
+ * Last modified 2/18/14 8:09 PM
  */
 package org.nrg.xnat.utils;
 

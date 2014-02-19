@@ -1,64 +1,12 @@
 /*
-Copyright (c) 2009, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.net/yui/license.txt
-version: 2.8.0r4
-*/
-/**
- * The YAHOO object is the single global object used by YUI Library.  It
- * contains utility function for setting up namespaces, inheritance, and
- * logging.  YAHOO.util, YAHOO.widget, and YAHOO.example are namespaces
- * created automatically for and used by the library.
- * @module yahoo
- * @title  YAHOO Global
- */
-
-/**
- * YAHOO_config is not included as part of the library.  Instead it is an 
- * object that can be defined by the implementer immediately before 
- * including the YUI library.  The properties included in this object
- * will be used to configure global properties needed as soon as the 
- * library begins to load.
- * @class YAHOO_config
- * @static
- */
-
-/**
- * A reference to a function that will be executed every time a YAHOO module
- * is loaded.  As parameter, this function will receive the version
- * information for the module. See <a href="YAHOO.env.html#getVersion">
- * YAHOO.env.getVersion</a> for the description of the version data structure.
- * @property listener
- * @type Function
- * @static
- * @default undefined
- */
-
-/**
- * Set to true if the library will be dynamically loaded after window.onload.
- * Defaults to false 
- * @property injecting
- * @type boolean
- * @static
- * @default undefined
- */
-
-/**
- * Instructs the yuiloader component to dynamically load yui components and
- * their dependencies.  See the yuiloader documentation for more information
- * about dynamic loading
- * @property load
- * @static
- * @default undefined
- * @see yuiloader
- */
-
-/**
- * Forces the use of the supplied locale where applicable in the library
- * @property locale
- * @type string
- * @static
- * @default undefined
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/yui/build/yahoo/yahoo.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
 
 if (typeof YAHOO == "undefined" || !YAHOO) {

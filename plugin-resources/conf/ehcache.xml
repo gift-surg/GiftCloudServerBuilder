@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ D:/Development/XNAT-1.6/xnat_builder_1_6dev/plugin-resources/conf/ehcache.xml
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/conf/ehcache.xml
   ~ XNAT http://www.xnat.org
-  ~ Copyright (c) 2013, Washington University School of Medicine
+  ~ Copyright (c) 2014, Washington University School of Medicine
   ~ All Rights Reserved
   ~
   ~ Released under the Simplified BSD.
   ~
-  ~ Last modified 8/27/13 10:58 AM
+  ~ Last modified 2/7/14 12:19 PM
   -->
 
-<!-- 
-  README: This cache configuration file is provided as a sample. To use in production
-  servers, you can modify it to suit your needs and copy it into the WEB-INF/classes 
-  folder of the XNAT web application. This requires a restart of the Tomcat server.
-  -->
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" name="xnatCacheManager">
 
     <defaultCache maxElementsInMemory="10000"

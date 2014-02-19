@@ -1,19 +1,19 @@
 /*
- *    Javascript for xMenu
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/xMenu/xMenu.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 9/5/13 2:38 PM
  */
-
 
 /* *********************************
     xMenu Usage - see xMenu.html
    ********************************* */
 
-// reference the xMenu.html file in this folder for examples
-
 // this requires jQuery
-
-// ///////////////////////////// //
-//   xMenu javascript
-// ///////////////////////////// //
 
 // set global var for $html and $body and define it after the DOM loads
 var $html, $body, $xMenu ;

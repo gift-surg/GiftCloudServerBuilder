@@ -1,4 +1,14 @@
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+/*
+ * FilePathUpdater
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
+
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -17,11 +27,6 @@ import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.ItemSearch;
 import org.nrg.xft.utils.FileUtils;
-
-/*
- * Created on Jan 11, 2006
- *
- */
 
 /**
  * @author Tim

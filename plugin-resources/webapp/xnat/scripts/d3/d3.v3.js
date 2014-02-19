@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/d3/d3.v3.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 d3 = function() {
   var π = Math.PI, ε = 1e-6, d3 = {
     version: "3.0.8"

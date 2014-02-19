@@ -1,4 +1,14 @@
 
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/fileManager.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 2/11/14 12:04 PM
+ */
 function fileManager(_resource){
    this.resource=_resource;
    this.collections=new Array();

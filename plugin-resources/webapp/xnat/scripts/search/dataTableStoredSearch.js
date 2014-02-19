@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/search/dataTableStoredSearch.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 11/18/13 9:35 AM
+ */
 dynamicJSLoad("DataTableSearch","search/dataTableSearch.js");
 function DataTableStoredSearch(_div_table_id,_obj,_config,_options){
 	//fired after Search XML has beens successfully loaded.

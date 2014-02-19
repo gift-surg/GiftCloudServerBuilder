@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.turbine.modules.screens.PrearchiveSessionScreen
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/6/14 3:48 PM
+ */
 package org.nrg.xnat.turbine.modules.screens;
 
 import java.io.File;

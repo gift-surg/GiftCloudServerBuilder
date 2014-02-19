@@ -12,11 +12,18 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Replace;
 
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jun 8, 2007
+ * ManageWebXML
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
 
 public class ManageWebXML extends Task {
     private String specDest = null;

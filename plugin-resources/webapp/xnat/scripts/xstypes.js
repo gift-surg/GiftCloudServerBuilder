@@ -1,9 +1,15 @@
-// $Id: xstypes.js,v 1.5 2007/12/17 21:21:06 timo Exp $
-// Copyright (c) 2007 Washington University School of Medicine
-// Author: Kevin A. Archie <karchie@npg.wustl.edu>
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/xstypes.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 
-// Creates a new Date object from the given xs:DateTime String
-Date.from_xsDateTime = function(dt) {
+ate.from_xsDateTime = function(dt) {
   if (null == dt) {
     return null;
   }

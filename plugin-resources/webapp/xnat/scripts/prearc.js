@@ -1,5 +1,13 @@
-// Copyright (c) 2007,2008 Washington University School of Medicine
-// Author: Kevin A. Archie <karchie@npg.wustl.edu>
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/prearc.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 11/18/13 9:35 AM
+ */
 
 function Prearc(servletURL, name) {
   var urlbase = servletURL + '?remote-class=org.nrg.xnat.ajax.Prearchive&remote-method='

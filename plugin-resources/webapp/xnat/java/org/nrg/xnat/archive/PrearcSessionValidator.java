@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.archive.PrearcSessionValidator
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 12/11/13 3:33 PM
  */
 package org.nrg.xnat.archive;
 
@@ -40,34 +40,6 @@ import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
 
-/**
- * @author Timothy R. Olsen <tim@deck5consulting.com>
- *
- * This is a copy of PrearcSessionArchiver to simply validates if the PrearcSessionArchiver would succeed, and records anywhere where it wouldn't.
- *
- * 1- Session already exists
- * 2- Session label modification via archiving process
- * 3- Project modification via archiving process
- * 4- Subject modification via archiving process
- * 5- Study Instance UID mis-match
- * 6- Unable to identify destination project for data
- * 7- Processing exception during metadata population
- * 8- Unable to identify a session label for the data
- * 9- Unable to create new session ID
- * 10- Concurrent processing job (workflow entry)
- * 11- Unable to identify subject label for session data
- * 12- Operation will create a new subject entry
- * 13- Meta-data validation exception
- * 14- File or catalog entry conflict (overwriting data)
- * 15- Processing exception during comparison of new files vs old files
- * 16- Session already contains a scan with the same series UID and ID
- * 17- Session already contains a scan with the same ID, but a different series UID
- * 18- Session already contains a scan with the same series UID, but a different ID
- * 19- Illegal session modality modification
- * 20- Unexpected files or file references
- * 21- Missing referenced files
- * 22- Non-compliant scan based on DICOM whitelist/blacklist
- */
 public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 	
 	protected PrearcSessionValidator(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params) {

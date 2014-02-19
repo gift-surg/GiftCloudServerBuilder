@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.helpers.prearchive.PrearcDatabase
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 2/5/14 3:27 PM
  */
 package org.nrg.xnat.helpers.prearchive;
 

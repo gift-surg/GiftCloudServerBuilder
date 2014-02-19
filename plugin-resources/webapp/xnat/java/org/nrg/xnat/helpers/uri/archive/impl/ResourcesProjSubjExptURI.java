@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.helpers.uri.archive.impl.ResourcesProjSubjExptURI
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 1/21/14 9:53 AM
  */
 package org.nrg.xnat.helpers.uri.archive.impl;
 

@@ -27,13 +27,6 @@ import org.codehaus.cargo.module.webapp.merge.WebXmlMerger;
 import org.codehaus.cargo.util.log.AntLogger;
 import org.jdom.JDOMException;
 
-/**
- * Ant task that can merge the definitions from two web deployment descriptors
- * into one descriptor.
- * 
- * @since Cactus 1.5
- * @version $Id: WebXmlMergeTask.java 394252 2006-04-15 04:20:17Z felipeal $
- */
 public class WebXmlMergeTask extends Task
 {
     

@@ -1,25 +1,12 @@
-<!-- ================================================================================================== -->
-<!--  projects/[project]/src/web-conf/web-projectMerge.xml                                              -->
-<!--                                                                                                    -->
-<!--  Included in this file are project-specific servlet/listener/other definitions that will           -->
-<!--  be merged in with the application-web.xml file found in plugin-resources to build the deployment  -->
-<!--  web.xml file                                                                                      -->
-<!-- ================================================================================================== -->
-<!-- EXAMPLES 
-<listener>
-   <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-</listener>
-<servlet>
-  <servlet-name>dispatch</servlet-name>
-  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  <load-on-startup>1</load-on-startup>
-</servlet>
-<servlet-mapping>
-  <servlet-name>dispatch</servlet-name>
-  <url-pattern>*.do</url-pattern>
-</servlet-mapping>
-<context-param>
-        <param-name>org.restlet.autoWire</param-name>
-        <param-value>false</param-value>
-</context-param>
--->
+<!--
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/project-skeletons/xnat/src/web-conf/web-projectMerge.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2014, Washington University School of Medicine
+  ~ All Rights Reserved
+  ~
+  ~ Released under the Simplified BSD.
+  ~
+  ~ Last modified 2/7/14 12:19 PM
+  -->
+
+

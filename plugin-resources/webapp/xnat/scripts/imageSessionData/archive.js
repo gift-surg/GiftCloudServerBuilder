@@ -1,3 +1,14 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/imageSessionData/archive.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/6/14 3:48 PM
+ */
+
 //validation warning dialog
 XNAT.app.warnings_dialog = new YAHOO.widget.Dialog("val_warning_dialog", { fixedcenter:true, visible:false, width:"800px", height:"250px", modal:true, close:true, draggable:true,resizable:true});
 XNAT.app.warnings_dialog.cfg.queueProperty("buttons", [

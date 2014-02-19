@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:16 PM
+ * Last modified 9/5/13 3:29 PM
  */
 package org.nrg.xnat.security;
 

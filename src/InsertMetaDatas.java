@@ -13,11 +13,18 @@ import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.generators.JavaBeanGenerator;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Jun 28, 2007
+ * InsertMetaDatas
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
 
 public class InsertMetaDatas  extends CommandPromptTool{
 //  java -Xmx256M -classpath .;XFT.jar;commons-collections-2.0.jar;commons-configuration-1.0-dev.jar;commons-dbcp-1.0-dev-20020806.jar;commons-lang-1.0.jar;commons-pool-1.0.jar;jakarta-regexp-1.2.jar;log4j-1.2.6.jar;parser.jar;pg74.214.jdbc2.jar;stratum-1.0-b3.jar;xerces-J_1.4.0.jar XFTApp

@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/search/saveSearch.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/3/14 9:54 AM
+ */
 function SavePopupForm(_search,_div,_config){
 	this._div=_div;
 	this.xml=_search;

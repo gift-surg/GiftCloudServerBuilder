@@ -1,6 +1,13 @@
-// $Id: inbox.js,v 1.5 2007/12/17 21:21:06 timo Exp $
-// Copyright (c) 2007 Washington University School of Medicine
-// Author: Kevin A. Archie <karchie@npg.wustl.edu>
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/inbox.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 11/18/13 9:35 AM
+ */
 
 function Inbox(div, servlet_url, project) {
   if (0 == arguments.length) { return; }   // bail early on prototype creation

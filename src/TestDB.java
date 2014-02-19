@@ -2,11 +2,18 @@ import java.sql.*;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 /*
- * Created on Jul 7, 2006
+ * TestDB
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
 
 /**
  * @author timo

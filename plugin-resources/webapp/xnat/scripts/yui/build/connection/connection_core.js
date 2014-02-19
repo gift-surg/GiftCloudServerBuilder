@@ -1,20 +1,15 @@
 /*
-Copyright (c) 2009, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.net/yui/license.txt
-version: 2.8.0r4
-*/
-/**
- * The Connection Manager provides a simplified interface to the XMLHttpRequest
- * object.  It handles cross-browser instantiantion of XMLHttpRequest, negotiates the
- * interactive states and server response, returning the results to a pre-defined
- * callback you create.
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/yui/build/connection/connection_core.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
- * @namespace YAHOO.util
- * @module connection
- * @requires yahoo
- * @requires event
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
 
 /**
  * The Connection Manager singleton provides methods for creating and managing

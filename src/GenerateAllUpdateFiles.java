@@ -15,11 +15,18 @@ import org.nrg.xft.generators.JavaFileGenerator;
 import org.nrg.xft.generators.JavaScriptGenerator;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on Nov 20, 2007
+ * GenerateAllUpdateFiles
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
 
 public class GenerateAllUpdateFiles extends CommandPromptTool {
     public GenerateAllUpdateFiles(String[] args)

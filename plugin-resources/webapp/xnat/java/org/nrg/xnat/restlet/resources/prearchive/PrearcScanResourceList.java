@@ -1,12 +1,12 @@
 /*
- * org.nrg.xnat.restlet.resources.prearchive.PrearcSessionResourcesList
+ * org.nrg.xnat.restlet.resources.prearchive.PrearcScanResourceList
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 1/3/14 9:54 AM
  */
 
 /**

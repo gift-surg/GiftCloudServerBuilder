@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.turbine.modules.screens.XDATScreen_prearchives
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 9/26/13 11:58 AM
  */
 package org.nrg.xnat.turbine.modules.screens;
 

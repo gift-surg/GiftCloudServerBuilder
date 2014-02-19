@@ -1,7 +1,13 @@
-// Copyright (c) 2012 Radiologics, Inc
-// Author: Timothy R. Olsen <tim@radiologics.com>
-//
-// used to inject justification.  This was built to be easily incorporated into legacy code where dialogs were needed.
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/justification/justification.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 11/18/13 9:35 AM
+ */
 
 
 

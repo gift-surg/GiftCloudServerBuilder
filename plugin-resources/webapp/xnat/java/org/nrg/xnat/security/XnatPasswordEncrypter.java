@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.security.XnatPasswordEncrypter
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 12/11/13 3:33 PM
+ */
 package org.nrg.xnat.security;/*
  * org.nrg.xnat.helpers.prearchive.PrearcDatabase
  * XNAT http://www.xnat.org

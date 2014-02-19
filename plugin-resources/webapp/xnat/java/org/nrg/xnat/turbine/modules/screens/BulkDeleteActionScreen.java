@@ -1,11 +1,12 @@
 /*
- * org.nrg.xnat.turbine.modules.screens.ExampleListingActionScreen
+ * org.nrg.xnat.turbine.modules.screens.BulkDeleteActionScreen
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
- * Last modified 10/29/13
+ *
+ * Last modified 2/3/14 1:16 PM
  */
 package org.nrg.xnat.turbine.modules.screens;
 
@@ -20,7 +21,6 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.XFTTable;
 
-// Entire class is for XNAT-2408
 public class BulkDeleteActionScreen extends SecureScreen {
 
     // Enumeration to determine what type of item is stored in an ItemContainer object. 

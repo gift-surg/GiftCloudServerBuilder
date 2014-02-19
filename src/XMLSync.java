@@ -18,11 +18,18 @@ import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.utils.DateUtils;
 import org.nrg.xft.utils.FileUtils;
 
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 /*
- * Created on May 18, 2006
+ * XMLSync
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 11/18/13 9:35 AM
  */
+
+
 
 /**
  * @author timo

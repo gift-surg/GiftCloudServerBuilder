@@ -1,3 +1,13 @@
+<!--
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/project.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2014, Washington University School of Medicine
+  ~ All Rights Reserved
+  ~
+  ~ Released under the Simplified BSD.
+  ~
+  ~ Last modified 2/3/14 11:12 AM
+  -->
 <project>
 	<pomVersion>3</pomVersion>
 	<artifactId>maven-xdat-plugin</artifactId>

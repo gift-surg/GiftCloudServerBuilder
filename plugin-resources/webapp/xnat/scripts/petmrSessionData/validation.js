@@ -1,5 +1,15 @@
 
-function confirmValues(_focus){  
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/petmrSessionData/validation.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 2/13/14 5:34 PM
+ */
+function confirmValues(_focus){
 	if(_focus==undefined)_focus=true;
   var valid =true;
   

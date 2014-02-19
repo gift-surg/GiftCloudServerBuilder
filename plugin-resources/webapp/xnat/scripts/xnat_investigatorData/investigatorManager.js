@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/xnat_investigatorData/investigatorManager.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 10/14/13 5:42 PM
+ */
 function InvestigatorManager(){
 	this.investigatorsLoaded=new YAHOO.util.CustomEvent("investigators-loaded",this);
 	this.init=function(){

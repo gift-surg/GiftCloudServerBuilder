@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/style/xnat.css
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 2/11/14 12:04 PM
+ */
 #tabbedList { margin: 10px ; }
 #tabbedList li a { height: 20px ; text-decoration: none ; }
 #tabbedList li a:link, #tabbedList li a:visited { color: #000 ; display: block ; padding: 8px 0 0 10px ; }

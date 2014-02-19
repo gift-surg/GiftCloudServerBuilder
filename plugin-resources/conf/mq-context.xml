@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ mq-context.xml
-  ~ Copyright (c) 2013. Washington University School of Medicine
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/conf/mq-context.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2014, Washington University School of Medicine
   ~ All Rights Reserved
   ~
-  ~ Released under the Simplified BSD License
+  ~ Released under the Simplified BSD.
+  ~
+  ~ Last modified 2/7/14 12:19 PM
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"

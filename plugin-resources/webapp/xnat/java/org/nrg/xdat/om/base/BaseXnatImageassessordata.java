@@ -1,12 +1,12 @@
 /*
  * org.nrg.xdat.om.base.BaseXnatImageassessordata
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:47 PM
+ * Last modified 2/11/14 12:04 PM
  */
 package org.nrg.xdat.om.base;
 

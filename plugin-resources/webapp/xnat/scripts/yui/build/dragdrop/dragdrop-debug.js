@@ -1,24 +1,15 @@
 /*
-Copyright (c) 2009, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.net/yui/license.txt
-version: 2.8.0r4
-*/
-/**
- * The drag and drop utility provides a framework for building drag and drop
- * applications.  In addition to enabling drag and drop for specific elements,
- * the drag and drop elements are tracked by the manager class, and the
- * interactions between the various elements are tracked during the drag and
- * the implementing code is notified about these important moments.
- * @module dragdrop
- * @title Drag and Drop
- * @requires yahoo,dom,event
- * @namespace YAHOO.util
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/yui/build/dragdrop/dragdrop-debug.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
 
-// Only load the library once.  Rewriting the manager class would orphan 
-// existing drag and drop instances.
-if (!YAHOO.util.DragDropMgr) {
+f (!YAHOO.util.DragDropMgr) {
 
 /**
  * DragDropMgr is a singleton that tracks the element interaction for 

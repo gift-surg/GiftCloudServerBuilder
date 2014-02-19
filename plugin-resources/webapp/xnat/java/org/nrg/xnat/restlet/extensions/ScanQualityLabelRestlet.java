@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.restlet.extensions.ScanQualityLabelRestlet
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 9/9/13 11:51 AM
+ * Last modified 9/9/13 1:24 PM
  */
 package org.nrg.xnat.restlet.extensions;
 

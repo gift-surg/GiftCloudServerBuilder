@@ -1,3 +1,13 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/restDeleter.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 12/2/13 10:23 AM
+ */
 RestDeleter = function(_array,_config) {
 	RestDeleter.superclass.constructor.call(this,"rest_deleter",_config);
 	this.a=_array;

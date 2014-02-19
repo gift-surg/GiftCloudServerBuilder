@@ -17,11 +17,18 @@ import java.util.Properties;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
 /*
- * Created on May 9, 2007
+ * ManageInstanceSettings
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
 
 public class ManageInstanceSettings extends Task {
     private final static String XSD_REFERENCE = "\t\t<Data_Model File_Name=\"%s\" File_Location=\"%%XDAT_PROJECT%%/schemas/%s\" DB=\"%%DB_NAME%%\"/>";

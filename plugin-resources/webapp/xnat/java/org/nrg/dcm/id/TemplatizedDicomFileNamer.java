@@ -1,13 +1,12 @@
 /*
  * org.nrg.dcm.id.TemplatizedDicomFileNamer
- *
- * Copyright (c) 2013, Washington University School of Medicine
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
- * XNAT is an open-source project of the Neuroinformatics Research Group.
  * Released under the Simplified BSD.
  *
- * Last modified 12/24/13 5:26 PM
+ * Last modified 2/13/14 5:34 PM
  */
 package org.nrg.dcm.id;
 
@@ -29,14 +28,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * The SOP instance UID DICOM file namer generates a collision-safe name for
- * incoming files being received by the XNAT SCP receiver. The name is templatized
- * and injected via the naming template property, which can be set in the
- * Spring configuration file.
- *
- * @author Rick Herrick <rick.herrick@wustl.edu>
- */
 public class TemplatizedDicomFileNamer implements DicomFileNamer {
 
     private static final Pattern VARIABLE_EXTRACTION = Pattern.compile("\\$\\{([A-z0-9]+)\\}");

@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/project-skeletons/xnat/work/field_groups/19.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2014, Washington University School of Medicine
+  ~ All Rights Reserved
+  ~
+  ~ Released under the Simplified BSD.
+  ~
+  ~ Last modified 2/7/14 12:19 PM
+  -->
 <xnat:FieldDefinitionSet ID="Adult Demographics" data-type="xnat:subjectData" description="Adult Demographics" project-specific="0" xmlns:cnda="http://nrg.wustl.edu/cnda" xmlns:arc="http://nrg.wustl.edu/arc" xmlns:ls2="http://nrg.wustl.edu/ls2" xmlns:behavioral="http://nrg.wustl.edu/behavioral" xmlns:fs="http://nrg.wustl.edu/fs" xmlns:wrk="http://nrg.wustl.edu/workflow" xmlns:xdat="http://nrg.wustl.edu/security" xmlns:prov="http://www.nbirn.net/prov" xmlns:xnat="http://nrg.wustl.edu/xnat" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<xnat:fields>
 		<xnat:field name="Education (years)" type="standard" datatype="integer" required="0" xmlPath="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/education"/>

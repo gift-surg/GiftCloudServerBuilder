@@ -14,11 +14,19 @@ import org.nrg.xft.XFT;
 import org.nrg.xft.utils.zip.ZipUtils;
 
 
-//Copyright 2006 Harvard University / Washington University School of Medicine All Rights Reserved
 /*
- * Created on Nov 9, 2006
+ * Test
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
  *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
  */
+
+
+
 
 public class Test {
 

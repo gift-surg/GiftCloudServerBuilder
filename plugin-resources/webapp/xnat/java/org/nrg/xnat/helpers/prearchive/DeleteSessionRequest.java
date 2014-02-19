@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xnat.helpers.prearchive.DeleteSessionRequest
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 12/19/13 3:01 PM
+ */
 package org.nrg.xnat.helpers.prearchive;/*
  * org.nrg.xnat.helpers.prearchive.PrearcDatabase
  * XNAT http://www.xnat.org

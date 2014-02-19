@@ -14,10 +14,6 @@ import java.util.*;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
-/**
- * MergePropertiesTask provides functionality to merge two separate .properties
- * configuration files into one while preserving user comments.
- */
 public class MergePropertiesTask extends Task {
     /**
      * determines source .properties file

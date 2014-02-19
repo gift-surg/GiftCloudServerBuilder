@@ -1,4 +1,14 @@
-//Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
+/*
+ * GenerateJavaFile
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
+
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -12,11 +22,6 @@ import org.nrg.xft.exception.FieldNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.generators.JavaFileGenerator;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
-
-/*
- * Created on Apr 18, 2005
- *
- */
 
 /**
  * @author Tim

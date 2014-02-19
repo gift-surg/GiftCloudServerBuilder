@@ -1,12 +1,12 @@
 /*
  * org.nrg.xnat.turbine.modules.actions.AcceptProjectAccess
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 7/10/13 8:40 PM
+ * Last modified 10/3/13 4:26 PM
  */
 package org.nrg.xnat.turbine.modules.actions;
 

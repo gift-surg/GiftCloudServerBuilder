@@ -1,10 +1,15 @@
-/**
- (hopefully) simpler implementation of YUI calendar for XNAT
- probably not simpler, but maybe more robust?
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/ezCalendar.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/21/14 9:53 AM
  */
 
-// if the XNAT namespace object isn't defined yet, we've got some problems
-if (typeof XNAT == 'undefined') XNAT={};
+f (typeof XNAT == 'undefined') XNAT={};
 // if the XNAT.app namespace object isn't defined yet, we've STILL got some problems
 if (typeof XNAT.app == 'undefined') XNAT.app={};
 if (typeof XNAT.app.defaults == 'undefined') XNAT.app.defaults={};

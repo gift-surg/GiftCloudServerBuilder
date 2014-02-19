@@ -1,12 +1,12 @@
 /*
- * org.nrg.xnat.utils.SeriesFilterUtils
+ * org.nrg.xnat.utils.SeriesImportFilter
  * XNAT http://www.xnat.org
- * Copyright (c) 2013, Washington University School of Medicine
+ * Copyright (c) 2014, Washington University School of Medicine
  * All Rights Reserved
  *
  * Released under the Simplified BSD.
  *
- * Last modified 12/04/13 12:10 PM
+ * Last modified 1/3/14 9:54 AM
  */
 package org.nrg.xnat.utils;
 

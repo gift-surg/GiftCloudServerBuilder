@@ -1,4 +1,14 @@
- XNAT.app.fileCounter={
+ /*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/prearchive/PrearchiveDetails_files.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/3/14 9:54 AM
+ */
+XNAT.app.fileCounter={
  	load:function(){
 		var catCallback={
             success:this.processCatalogs,

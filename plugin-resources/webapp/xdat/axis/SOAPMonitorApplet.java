@@ -27,14 +27,6 @@ import javax.swing.table.*;
 
 import org.apache.axis.monitor.SOAPMonitorConstants;
 
-/**
- * This is a SOAP Mointor Applet class.  This class provides
- * the user interface for displaying data from the SOAP
- * monitor service.
- *
- * @author Brian Price (pricebe@us.ibm.com)
- *
- */
 public class SOAPMonitorApplet extends JApplet {
 
     /**

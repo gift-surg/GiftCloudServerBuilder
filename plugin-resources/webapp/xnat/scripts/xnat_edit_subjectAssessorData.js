@@ -1,6 +1,13 @@
-// Copyright (c) 2007 Washington University School of Medicine
-// Author: Tim Olsen <timo@npg.wustl.edu>
-//overwrites function in xnat_edit_experimentData.js
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/xnat_edit_subjectAssessorData.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 11/18/13 9:35 AM
+ */
 function validateSubjectAssessorForm()
 {
    var matchesDIV = document.getElementById("subject_id");

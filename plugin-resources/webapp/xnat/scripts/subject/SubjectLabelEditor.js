@@ -1,5 +1,16 @@
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/subject/SubjectLabelEditor.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 1/30/14 11:48 AM
+ */
+
 /*jslint white: true, vars: true, browser: true */
-/*global XNAT, YAHOO, alert, openModalPanel, closeModalPanel, confirm */
+
 XNAT.app.SubjectLabelEditor = function(project) {"use strict";
 
 	var that = this;

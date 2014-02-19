@@ -1,13 +1,19 @@
+/*
+ * ManageProjectXML
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 
 import java.io.*;
-//Copyright 2007 Washington University School of Medicine All Rights Reserved
-/*
- * Created on May 8, 2007
- *
- */
+
 public class ManageProjectXML extends Task {
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	private String src = null;

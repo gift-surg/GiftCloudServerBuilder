@@ -1,8 +1,13 @@
-// Copyright (c) 2012 Radiologics, Inc
-// Author: Timothy R. Olsen <tim@radiologics.com>
-//
-// general js included in footer of page to execute javascript after page load.
-// initially, this focused on injecting new form submit handling like required fields, null fields, etc
+/*
+ * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/footer.js
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 2/5/14 3:27 PM
+ */
 
 
 if(XNAT==undefined)XNAT=new Object();

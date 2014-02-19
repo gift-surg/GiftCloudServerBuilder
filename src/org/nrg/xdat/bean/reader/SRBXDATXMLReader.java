@@ -1,3 +1,13 @@
+/*
+ * org.nrg.xdat.bean.reader.SRBXDATXMLReader
+ * XNAT http://www.xnat.org
+ * Copyright (c) 2014, Washington University School of Medicine
+ * All Rights Reserved
+ *
+ * Released under the Simplified BSD.
+ *
+ * Last modified 7/1/13 9:12 AM
+ */
 package org.nrg.xdat.bean.reader;
 
 import java.io.File;
@@ -17,14 +27,6 @@ import edu.sdsc.grid.io.srb.SRBFile;
 import edu.sdsc.grid.io.local.LocalFile;
 import edu.sdsc.grid.io.srb.SRBFileInputStream;
 import edu.sdsc.grid.io.srb.SRBFileSystem;
-
-/* 
- *	Copyright Washington University in St Louis 2006
- *	All rights reserved
- * 	
- * 	@author Mohana Ramaratnam (Email: mramarat@wustl.edu)
-
- */
 
 public class SRBXDATXMLReader extends XDATXMLReader{
 

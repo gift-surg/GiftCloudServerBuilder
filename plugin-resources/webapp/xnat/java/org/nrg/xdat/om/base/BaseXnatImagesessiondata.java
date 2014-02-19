@@ -39,7 +39,10 @@ import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.exception.*;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.TableSearch;
@@ -2745,6 +2748,10 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		    		}
 		    		
 		    		for(XnatImageassessordataI assessor:base.getAssessors_assessor()){
+                        // assessors need to be updated
+                        EventDetails event = EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.TYPE.WEB_SERVICE, "Moved assessor to new project.");
+                        XnatImageassessordata.ChangePrimaryProject(user, (XnatImageassessordata)assessor, newProject, null, event);
+
 		    			for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
 		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user,c);
 		    				m.setResource((XnatAbstractresource)abstRes);

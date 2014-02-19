@@ -568,37 +568,38 @@ public class CatalogUtils {
             String relative = (dest != null) ? dest : filename;
             final File saveTo = new File(parentFolder, relative);
 
-            if (saveTo.exists()) {
-                if (!overwrite) {
-                    duplicates.add(relative);
-                }
-                final CatEntryBean e = (CatEntryBean) getEntryByURI(cat, dest);
-
-                CatalogUtils.moveToHistory(catFile, saveTo, e, ci);
-            }
-
-            if (!saveTo.getParentFile().mkdirs() && !saveTo.getParentFile().exists()) {
-                throw new Exception("Failed to create required directory: " + saveTo.getParentFile().getAbsolutePath());
-            }
-
-            fi.write(saveTo);
-
-            if (saveTo.isDirectory()) {
-                @SuppressWarnings("unchecked")
-                final Iterator<File> iter = org.apache.commons.io.FileUtils.iterateFiles(saveTo, null, true);
-                while (iter.hasNext()) {
-                    final File movedF = iter.next();
-
-                    String relativePath = FileUtils.RelativizePath(saveTo, movedF).replace('\\', '/');
-                    if (dest != null) {
-                        relativePath = dest + "/" + relativePath;
-                    }
-                    updateEntry(cat, relativePath, movedF, info, ci);
-                }
-
+            if (saveTo.exists() && !overwrite) {
+                duplicates.add(relative);
             } else {
-                updateEntry(cat, dest, saveTo, info, ci);
+                if (saveTo.exists()) {
+                    final CatEntryBean e = (CatEntryBean) getEntryByURI(cat, dest);
+                    CatalogUtils.moveToHistory(catFile, saveTo, e, ci);
+                }
+
+                if (!saveTo.getParentFile().mkdirs() && !saveTo.getParentFile().exists()) {
+                    throw new Exception("Failed to create required directory: " + saveTo.getParentFile().getAbsolutePath());
+                }
+
+                fi.write(saveTo);
+
+                if (saveTo.isDirectory()) {
+                    @SuppressWarnings("unchecked")
+                    final Iterator<File> iter = org.apache.commons.io.FileUtils.iterateFiles(saveTo, null, true);
+                    while (iter.hasNext()) {
+                        final File movedF = iter.next();
+
+                        String relativePath = FileUtils.RelativizePath(saveTo, movedF).replace('\\', '/');
+                        if (dest != null) {
+                            relativePath = dest + "/" + relativePath;
+                        }
+                        updateEntry(cat, relativePath, movedF, info, ci);
+                    }
+
+                } else {
+                    updateEntry(cat, dest, saveTo, info, ci);
+                }
             }
+
         }
 
         writeCatalogToFile(cat, catFile);

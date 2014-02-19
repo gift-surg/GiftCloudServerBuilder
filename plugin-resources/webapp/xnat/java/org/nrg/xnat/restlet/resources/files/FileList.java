@@ -14,6 +14,7 @@ import com.google.common.base.Joiner;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.dcm.Dcm2Jpg;
@@ -35,6 +36,7 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.helpers.resource.direct.ResourceModifierA.UpdateMeta;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.BeanRepresentation;
+import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
 import org.nrg.xnat.restlet.representations.ZipRepresentation;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
@@ -295,7 +297,9 @@ public class FileList extends XNATCatalogTemplate {
                             List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
                             if (!overwrite && duplicates.size() > 0) {
                                 getResponse().setStatus(Status.SUCCESS_OK);
-                                getResponse().setEntity(Joiner.on(", ").join(duplicates), MediaType.TEXT_PLAIN);
+                                JSONObject json = new JSONObject();
+                                json.put("duplicates", duplicates);
+                                getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
                             }
                         } else {
                             final String method = getRequest().getMethod().toString();

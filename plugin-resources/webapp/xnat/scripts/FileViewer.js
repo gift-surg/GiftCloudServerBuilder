@@ -1773,19 +1773,25 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	YAHOO.util.Connect.setForm(form,true);
 	
 	var callback={
-		upload:function(obj1){
+		upload:function(response){
             XNAT.app.maintainLogin = false;
             window.viewer.requiresRefresh = true;
 			window.viewer.refreshCatalogs("add_file");
 			this.cancel();
-            // Have to add this check for "<pre></pre>" because that is how IE views an empty response text.
-			if(obj1.responseText && !(obj1.responseText === "<pre></pre>")){
-				var opt = xModal.message;
-				opt.width = 500;
-				opt.height = 500;
-				opt.content = "The following files were not uploaded because they already exist on the server:<br><ul><li>" + obj1.responseText.replace(/, /g,'</li><li>') + "</li></ul>";
-				opt.title = 'File Viewer';
-				xModalMessage('','','',opt);
+			if(response.responseText){
+                var parsedResponse = YAHOO.lang.JSON.parse(response.responseText);
+                if (parsedResponse.duplicates) {
+                    var opt = xModal.message;
+                    opt.width = 500;
+                    opt.height = 500;
+                    opt.content = "The following files were not uploaded because they already exist on the server:<br><ul>";
+                    for (var index = 0; index < parsedResponse.duplicates.length; index++) {
+                        opt.content += "<li>" + parsedResponse.duplicates[index] + "</li>";
+                    }
+                    opt.content += "</ul>";
+                    opt.title = 'File Viewer';
+                    xModalMessage('','','',opt);
+                }
 			}
 		},
         failure: function (obj1) {

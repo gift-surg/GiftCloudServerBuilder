@@ -1778,7 +1778,8 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
             window.viewer.requiresRefresh = true;
 			window.viewer.refreshCatalogs("add_file");
 			this.cancel();
-			if(obj1.responseText){
+            // Have to add this check for "<pre></pre>" because that is how IE views an empty response text.
+			if(obj1.responseText && !(obj1.responseText === "<pre></pre>")){
 				var opt = xModal.message;
 				opt.width = 500;
 				opt.height = 500;

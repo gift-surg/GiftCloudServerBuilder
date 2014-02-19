@@ -177,7 +177,9 @@
         <attainGoal name="xdat:updateCSS"/>
         <attainGoal name="xdat:updateImages"/>
         <attainGoal name="xdat:updateApplet"/>
-        <attainGoal name="xdat:updateFilesFromModules"/>
+        <j:if test="${context.getVariable('skipModules') != 'true'}">
+            <attainGoal name="xdat:updateFilesFromModules"/>
+        </j:if>
         <attainGoal name="xdat:manageProjectXML"/>
         <attainGoal name="xdat:copyProjectRepositoryFiles"/>
         <attainGoal name="xdat:updateFilesFromCustom"/>
@@ -766,7 +768,9 @@
                 <attainGoal name="xdat:updateFilesFromXNAT"/>
             </j:when>
         </j:choose>
-        <attainGoal name="xdat:updateFilesFromModules"/>
+        <j:if test="${context.getVariable('skipModules') != 'true'}">
+            <attainGoal name="xdat:updateFilesFromModules"/>
+        </j:if>
         <attainGoal name="xdat:manageProjectXML"/>
         <attainGoal name="xdat:copyProjectRepositoryFiles"/>
         <attainGoal name="xdat:updateFilesFromCustom"/>
@@ -1496,7 +1500,9 @@
         <attainGoal name="xdat:updateJS"/>
         <attainGoal name="xdat:updateCSS"/>
         <attainGoal name="xdat:updateImages"/>
-        <attainGoal name="xdat:updateFilesFromModules"/>
+        <j:if test="${context.getVariable('skipModules') != 'true'}">
+            <attainGoal name="xdat:updateFilesFromModules"/>
+        </j:if>
         <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.3.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.3.jar"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>

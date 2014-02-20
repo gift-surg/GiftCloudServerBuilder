@@ -9,7 +9,7 @@
  * Last modified 1/21/14 9:53 AM
  */
 
-f (typeof XNAT == 'undefined') XNAT={};
+if (typeof XNAT == 'undefined') XNAT={};
 // if the XNAT.app namespace object isn't defined yet, we've STILL got some problems
 if (typeof XNAT.app == 'undefined') XNAT.app={};
 if (typeof XNAT.app.defaults == 'undefined') XNAT.app.defaults={};

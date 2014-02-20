@@ -11,11 +11,13 @@
 package org.nrg.xnat.turbine.modules.screens;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.BaseXnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
@@ -88,7 +90,17 @@ public final class XDATScreen_uploaded_xnat_imageSessionData extends
 			}else if(session.getDcmpatientid()!=null){
 				session.setLabel(session.getDcmpatientid());
 	        }
-	            }
+		}
+		
+		// XNAT-2916 - Set the subject label for the session if one exists in the system.
+		if(!StringUtils.isEmpty(session.getSubjectId()) && !StringUtils.isEmpty(session.getProject())){
+			BaseXnatSubjectdata subj = BaseXnatSubjectdata.GetSubjectByProjectIdentifierCaseInsensitive(session.getProject(), session.getSubjectId(), null, false);
+			if(null != subj){
+				if(!StringUtils.equals(session.getSubjectId(),subj.getId()) && !StringUtils.equals(session.getSubjectId(),subj.getLabel())){
+					session.setSubjectId(subj.getLabel());
+				}
+			}
+		}
 	            
 		context.put("edit_screen", "XDATScreen_uploaded_xnat_imageSessionData.vm");
     }

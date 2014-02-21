@@ -1034,7 +1034,7 @@ public class FileList extends XNATCatalogTemplate {
         if (assesseds.size() > 0) {
         	// Check if the session containing the assessor has an "ASSESSORS" directory.
         	// This signifies that the directory structure is based on a "modern" version of XNAT.
-        	if (new File(assesseds.get(0).getSessionDir(),"ASSESSORS").isDirectory())
+        	if (new File(assesseds.get(0).getSessionDir(),"ASSESSORS").isDirectory() && expts.size() > 0)
         	{
                 for (XnatExperimentdata session : expts) {
                     session_ids.put(session.getId(), session.getArchiveDirectoryName());

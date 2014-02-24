@@ -9,7 +9,7 @@
  * Last modified 7/1/13 9:12 AM
  */
 
-ate.from_xsDateTime = function(dt) {
+Date.from_xsDateTime = function(dt) {
   if (null == dt) {
     return null;
   }

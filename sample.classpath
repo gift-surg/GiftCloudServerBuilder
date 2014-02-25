@@ -194,7 +194,6 @@
     <classpathentry kind="lib" path="plugin-resources/repository/servletapi/jars/servletapi-2.3.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.5.8.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-jcl-1.5.8.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.7.RELEASE.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.7.RELEASE.jar"/>

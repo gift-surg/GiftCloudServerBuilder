@@ -2020,8 +2020,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	/**
 	 * Function removes excess whitespace from the project id, secondary id,
 	 * name and alias fields.
-	 * @param XnatProjectdata project - The project we are operating on
-	 */
+	*/
 	public void trimProjectFields() throws Exception{
 		String trim; //Temporary variable to store trimmed variables.
 		
@@ -2066,9 +2065,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 * with any existing projects.
 	 * 
 	 * See XNAT-2801
-	 * 
-	 * @param XnatProjectdata project - The project we are validating.
-	 * @param XDATUser u - The user that is performing the validation.
+	 *
 	 * @return List<String> - A list of reasons the project failed to validate.
 	 *                        If the list is empty, the project passed validation.
 	 */
@@ -2090,7 +2087,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		}
 		
 		// Validate the Project Id.
-		if(!validateProjectId(id,userName)){
+		if(!validateProjectId(id, userName)){
 			conflicts.add("Invalid Id: '" + id + "' is already being used by another project.");
 		}
 		
@@ -2103,7 +2100,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		String secondaryId = this.getSecondaryId();
 		if(!StringUtils.IsEmpty(secondaryId)){
 			// Validate the Running Title
-			if(!validateElement(secondaryId, id, userName)){
+			if(!validateElement(secondaryId, id, userName) || !getMatchingAliases(secondaryId,id,userName).isEmpty()){
 				conflicts.add("Invalid Running Title: '" + secondaryId + "' is already being used by another project.");
 			}
 			
@@ -2117,7 +2114,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		String name = this.getName();
 		if(!StringUtils.IsEmpty(name)){
 			// Validate the Title
-			if(!validateElement(name, id, userName)){
+			if(!validateElement(name, id, userName) || !getMatchingAliases(name,id,userName).isEmpty()){
 				conflicts.add("Invalid Title: '" + name + "' is already being used by another project.");
 			}
 			
@@ -2199,7 +2196,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	
 	/**
 	 * Takes a single element and finds all project aliases that match it.
-	 * @param element - the element we are looking for
+	 * @param e - the element we are looking for
 	 * @param projectId - exclude aliases from the project with this Id
 	 * @param userName - the user who is executing the query
 	 * @return XFTTable containing IDs that match
@@ -2219,9 +2216,9 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 */
 	private List<String> getMatchingAliases(List<String> elements, String projectId, String userName) throws Exception{
 		StringBuilder q = new StringBuilder();
-		q.append("SELECT LOWER(alias) as alias FROM xnat_projectdata_alias WHERE LOWER(aliases_alias_xnat_projectdata_id) != '")
+		q.append("SELECT alias FROM xnat_projectdata_alias WHERE LOWER(aliases_alias_xnat_projectdata_id) != '")
 		 .append(projectId.toLowerCase())
-		 .append("' AND alias IN (")
+		 .append("' AND LOWER(alias) IN (")
 		 .append(listToCommaDelimitedString(elements)).append(");");
 
 		return runValidationQuery(q.toString(), userName).convertColumnToArrayList("alias");
@@ -2236,7 +2233,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	 */
 	private List<String> getMatchingIds(List<String> elements, String userName) throws Exception{
 		StringBuilder q = new StringBuilder();
-		q.append("SELECT LOWER(id) as id FROM xnat_projectdata WHERE id IN (")
+		q.append("SELECT id FROM xnat_projectdata WHERE LOWER(id) IN (")
 		 .append(listToCommaDelimitedString(elements)).append(");");
 		
 		return runValidationQuery(q.toString(), userName).convertColumnToArrayList("id");

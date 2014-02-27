@@ -500,14 +500,14 @@ public abstract class SecureResource extends Resource {
     }
 
     public MediaType buildMediaType(MediaType mt, String fName) {
-        if (fName.endsWith(".gif")) {
+        if (fName.endsWith(".txt")) {
+            mt = MediaType.TEXT_PLAIN;
+        } else if (fName.endsWith(".gif")) {
             mt = MediaType.IMAGE_GIF;
-        } else if (fName.endsWith(".jpeg")) {
+        } else if (fName.endsWith(".jpeg") || fName.endsWith(".jpg")) {
             mt = MediaType.IMAGE_JPEG;
         } else if (fName.endsWith(".xml")) {
             mt = MediaType.TEXT_XML;
-        } else if (fName.endsWith(".jpg")) {
-            mt = MediaType.IMAGE_JPEG;
         } else if (fName.endsWith(".png")) {
             mt = MediaType.IMAGE_PNG;
         } else if (fName.endsWith(".bmp")) {

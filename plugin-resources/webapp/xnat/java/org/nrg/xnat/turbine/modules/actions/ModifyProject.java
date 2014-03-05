@@ -37,6 +37,7 @@ import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.utils.WorkflowUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ModifyProject extends SecureAction {
@@ -64,7 +65,7 @@ public class ModifyProject extends SecureAction {
             final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
             EventMetaI c=wrk.buildEvent();
 
-            List<String> conflicts = project.validateProjectFields();
+            Collection<String> conflicts = project.validateProjectFields();
             if(!conflicts.isEmpty()){
                StringBuilder conflictStr = new StringBuilder();
                for(String conflict : conflicts){

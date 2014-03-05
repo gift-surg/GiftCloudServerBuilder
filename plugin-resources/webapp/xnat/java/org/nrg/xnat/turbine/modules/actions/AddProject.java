@@ -35,7 +35,8 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
 import org.nrg.xnat.utils.WorkflowUtils;
-import java.util.List;
+
+import java.util.Collection;
 
 public class AddProject extends SecureAction {
 	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AddProject.class);
@@ -92,7 +93,7 @@ public class AddProject extends SecureAction {
             }
             
             // Validate project fields.  If there are conflicts, build a error message and display it to the user.
-            List<String> conflicts = project.validateProjectFields();
+            Collection<String> conflicts = project.validateProjectFields();
             if(!conflicts.isEmpty()){
                StringBuilder conflictStr = new StringBuilder();
                for(String conflict : conflicts){

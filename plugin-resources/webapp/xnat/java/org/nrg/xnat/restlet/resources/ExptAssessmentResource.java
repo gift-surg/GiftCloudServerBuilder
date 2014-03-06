@@ -40,9 +40,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class ExptAssessmentResource extends ItemResource {
 	XnatProjectdata proj=null;
@@ -163,8 +161,14 @@ public class ExptAssessmentResource extends ItemResource {
 									this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient privileges for experiments in this project.");
 									return;
 								}
-								
-								EventMetaI c=BaseXnatExperimentdata.ChangePrimaryProject(user, assessor, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.MODIFY_PROJECT));
+
+                                List<String> assessorList = null;
+                                if(this.getQueryVariable("moveAssessors")!=null) {
+                                    String moveAssessors = this.getQueryVariable("moveAssessors");
+                                    assessorList = Arrays.asList(moveAssessors.split(","));
+                                }
+
+								EventMetaI c=BaseXnatExperimentdata.ChangePrimaryProject(user, assessor, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.MODIFY_PROJECT), assessorList);
 
 								if(matched!=null){
 									SaveItemHelper.authorizedRemoveChild(assessor.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user,c);

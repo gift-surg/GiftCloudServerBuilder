@@ -304,6 +304,59 @@ function ProjectEditor(_config) {
             this.panel.selector = this;
             var buttons = [
                 {text:"Modify", handler:{fn:function () {
+                    this.checkImageAssessors = function() {
+                        if (this.selector.config.imageAssessors && this.selector.config.imageAssessors.length > 0) {
+                            var popupDIV = document.createElement("DIV");
+                            popupDIV.id="search-column-filter";
+                            var popupHD = document.createElement("DIV");
+                            popupHD.className="hd";
+                            popupHD.innerHTML="Select image assessors to move with session";
+                            popupDIV.appendChild(popupHD);
+                            var popupBD = document.createElement("DIV");
+                            popupBD.className="bd";
+                            popupBD.style.overflow="auto";
+                            popupDIV.appendChild(popupBD);
+                            var popupUL = document.createElement("UL");
+                            popupUL.className="ul";
+                            popupBD.appendChild(popupUL);
+                            for (var i = 0; i < this.selector.config.imageAssessors.length; i++) {
+                                var popupLI = document.createElement("LI");
+                                popupLI.className="li";
+                                popupLI.style.listStyle="none";
+                                popupUL.appendChild(popupLI);
+                                var popupCheckbox = document.createElement("INPUT");
+                                popupCheckbox.id="assessorCheck"+i;
+                                popupCheckbox.name=i;
+                                popupCheckbox.type="checkbox";
+                                popupCheckbox.checked=true;
+                                popupCheckbox.onclick = function() {
+                                    window.projectEditor.config.imageAssessors[this.name].move = this.checked;
+                                }
+                                popupLI.appendChild(popupCheckbox);
+                                var popupLabel = document.createElement("LABEL");
+                                popupLabel.htmlFor="assessorCheck"+i;
+                                popupLabel.innerHTML = this.selector.config.imageAssessors[i].label;
+                                popupLI.appendChild(popupLabel);
+                            }
+                            this.assessorsPopup=new YAHOO.widget.Dialog(popupDIV,{zIndex:999,width:"350px",height:"250px",visible:true,fixedcenter:true,modal:true});
+                            var handleCancel = function() {
+                                this.hide();
+                            };
+                            var handleSubmit = function() {
+                                this.hide();
+                                window.projectEditor.panel.checkIfSessionSubjectIsOwnedByOrSharedIntoTheSessionProject();
+                                return;
+                            };
+                            var myButtons = [ { text:"Submit", handler:handleSubmit, isDefault:true },
+                                { text:"Cancel", handler:handleCancel } ];
+                            this.assessorsPopup.cfg.queueProperty("buttons", myButtons);
+                            this.assessorsPopup.render(document.body);
+                            this.assessorsPopup.show();
+                        }
+                        else {
+                            this.checkIfSessionSubjectIsOwnedByOrSharedIntoTheSessionProject();
+                        }
+                    }
                 	
                 	this.checkIfSessionSubjectIsOwnedByOrSharedIntoTheSessionProject = function () {
                         var callback = {
@@ -380,6 +433,20 @@ function ProjectEditor(_config) {
                  	   	params+="event_reason="+event_reason;
                  	   	params+="&event_type=WEB_FORM";
                  	   	params+="&event_action=Modified project";
+                        if (this.selector.config.imageAssessors && this.selector.config.imageAssessors.length > 0) {
+                            var commaSeparatedAssessorList = "";
+                            for (var i = 0; i < this.selector.config.imageAssessors.length; i++) {
+                                if (this.selector.config.imageAssessors[i].move) {
+                                    if (commaSeparatedAssessorList) {
+                                        commaSeparatedAssessorList += ",";
+                                    }
+                                    commaSeparatedAssessorList += this.selector.config.imageAssessors[i].id;
+                                }
+                            }
+                            if (commaSeparatedAssessorList) {
+                                params += ("&moveAssessors=" + commaSeparatedAssessorList);
+                            }
+                        }
                         var url = this.selector.config.uri + "/projects/" + this.selector.new_project + "?primary=true&format=json&XNAT_CSRF=" + csrfToken+"&"+params;
                         YAHOO.util.Connect.asyncRequest('PUT', url, callback);
                 	}                	
@@ -414,7 +481,7 @@ function ProjectEditor(_config) {
                             this.selector.onModification.fire();
                             this.cancel();
                         } else {
-                        	this.checkIfSessionSubjectIsOwnedByOrSharedIntoTheSessionProject();
+                        	this.checkImageAssessors();
                         }
                     }
                 }}, isDefault:true},

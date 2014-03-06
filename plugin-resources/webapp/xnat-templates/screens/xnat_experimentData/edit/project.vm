@@ -12,13 +12,22 @@
   </td>
  </tr>
 </table>
-<script type="text/javascript">  
+<script type="text/javascript">
+    var imageAssessors = [];
+    #if($!om.getItem().instanceOf("xnat:imageSessionData"))
+        #foreach($assessor in $om.getAssessors_assessor())
+            #if ($assessor.getProject() == $om.getProject())
+    imageAssessors.push({id:"$assessor.getId()",label:"$assessor.getLabel()",move:true});
+            #end
+        #end
+    #end
   function modifyProject(){
     if(window.projectEditor==undefined){
       var config =new Object();
       if(window.currentID!=""){
         config.uri=serverRoot +"/REST/projects/" + window.currentProject +"/subjects/" + window.currentSubject + "/experiments/" + window.currentID;
       }
+      config.imageAssessors = imageAssessors;
       window.projectEditor=new ProjectEditor(config);
       window.projectEditor.onModification.subscribe(function (obj){
          document.getElementById("project_placeholder").innerHTML=this.new_project_name;

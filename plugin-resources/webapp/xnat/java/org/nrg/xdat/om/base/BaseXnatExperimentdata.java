@@ -405,7 +405,7 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
      * @param user          User moving.
      * @throws Exception
      */
-     public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci) throws Exception{
+     public void moveToProject(XnatProjectdata newProject,String newLabel,XDATUser user,EventMetaI ci,List<String> assessors) throws Exception{
 
     	if(!this.getProject().equals(newProject.getId()))
     	{
@@ -876,13 +876,13 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 		}
 	}
 
-	public static EventMetaI ChangePrimaryProject(XDATUser user, XnatExperimentdata assessor, XnatProjectdata newProject, String newLabel, final EventDetails event) throws Exception{
+	public static EventMetaI ChangePrimaryProject(XDATUser user, XnatExperimentdata assessor, XnatProjectdata newProject, String newLabel, final EventDetails event, List<String> imageAssessors) throws Exception{
 		PersistentWorkflowI wrk= WorkflowUtils.buildOpenWorkflow(user, assessor.getXSIType(), assessor.getId(),assessor.getProject(),event);
 		EventMetaI c=wrk.buildEvent();
 		PersistentWorkflowUtils.save(wrk, c);
 
 		try {
-			assessor.moveToProject(newProject,newLabel,user,c);
+			assessor.moveToProject(newProject,newLabel,user,c,imageAssessors);
 
 			PersistentWorkflowUtils.complete(wrk, c);
 		} catch (Exception e) {

@@ -54,9 +54,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.xml.sax.SAXException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class SubjAssessmentResource extends SubjAssessmentAbst {
 	XnatProjectdata proj=null;
@@ -246,7 +244,13 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 									return;
 								}
 
-								EventMetaI c=BaseXnatExperimentdata.ChangePrimaryProject(user, expt, newProject, newLabel,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.MODIFY_PROJECT));
+                                List<String> assessorList = null;
+                                if(this.getQueryVariable("moveAssessors")!=null) {
+                                    String moveAssessors = this.getQueryVariable("moveAssessors");
+                                    assessorList = Arrays.asList(moveAssessors.split(","));
+                                }
+
+								EventMetaI c=BaseXnatExperimentdata.ChangePrimaryProject(user, expt, newProject, newLabel, newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.MODIFY_PROJECT), assessorList);
 
 								if(matched!=null){
 									SaveItemHelper.authorizedRemoveChild(expt.getItem(), "xnat:experimentData/sharing/share", matched.getItem(), user,c);

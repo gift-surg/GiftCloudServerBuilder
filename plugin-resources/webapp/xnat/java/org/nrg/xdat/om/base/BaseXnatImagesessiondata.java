@@ -2711,7 +2711,7 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
         return Maps.newLinkedHashMap(CUSTOM_SCAN_FIELDS);
     }
     
-    public void moveToProject(final XnatProjectdata newProject, final String label , final XDATUser user,final EventMetaI c) throws Exception{
+    public void moveToProject(final XnatProjectdata newProject, final String label , final XDATUser user,final EventMetaI c, final List<String> assessorsToMove) throws Exception{
     	if(!this.getProject().equals(newProject.getId()))
     	{
     		if (!MoverMaker.check(this, user)) {
@@ -2746,19 +2746,21 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		    				m.call();
 		    			}
 		    		}
-		    		
+
 		    		for(XnatImageassessordataI assessor:base.getAssessors_assessor()){
                         // assessors need to be updated
-                        EventDetails event = EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.TYPE.WEB_SERVICE, "Moved assessor to new project.");
-                        XnatImageassessordata.ChangePrimaryProject(user, (XnatImageassessordata)assessor, newProject, null, event);
+                        if (assessorsToMove != null && assessorsToMove.contains(assessor.getId())) {
+                            EventDetails event = EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.TYPE.WEB_SERVICE, "Moved assessor to new project.");
+                            XnatImageassessordata.ChangePrimaryProject(user, (XnatImageassessordata)assessor, newProject, null, event, null);
+                        }
 
-		    			for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
+                        for(XnatAbstractresourceI abstRes: assessor.getOut_file()){
 		    				MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user,c);
 		    				m.setResource((XnatAbstractresource)abstRes);
 		    				m.call();
 		    			}
 		    		}
-		    		BaseXnatImagesessiondata.super.moveToProject(newProject, newLabel, user,c);
+		    		BaseXnatImagesessiondata.super.moveToProject(newProject, newLabel, user,c,assessorsToMove);
 				}
 			}, new File(rootBackup, "src_backup"), fs);
     		

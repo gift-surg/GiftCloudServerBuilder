@@ -369,6 +369,7 @@ function SplitDate(_date, _format) {
 
             this.date_string = this.yyyy + this.mm + this.dd;
             this.date_num = parseInt(this.date_string, 10);
+            this.ms = Date.parse(this.iso);
         }
         catch (e) {
             if (console.log) console.log('Error: ' + e);

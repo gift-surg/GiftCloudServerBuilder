@@ -420,6 +420,8 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
     _$e.addClass('ez_cal_wrapper yui-skin-sam').css({position:'relative',whiteSpace:'nowrap'}).append(the_html);
 
     var $new_cal = _$e.find('input.ez_cal');
+    var $select_date = _$e.find('button.insert-date');
+    var $use_today = _$e.find('a.use-todays-date');
 
     if (_opts && _opts.required && _opts.required === true){
         $new_cal.addClass('required');
@@ -451,6 +453,18 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
             _$e.find('input.ez_cal.month').val(default_date.mm);
             _$e.find('input.ez_cal.day').val(default_date.dd);
         }
+    }
+
+    if (typeof _opts.disabled != 'undefined' && _opts.disabled === true){
+        $new_cal.addClass('disabled').prop('disabled',true);
+        $select_date.addClass('disabled').prop('disabled',true);
+        $use_today.hide();
+    }
+
+    if (typeof _opts.readonly != 'undefined' && _opts.readonly === true){
+        $new_cal.prop('readonly',true);
+        $select_date.hide();
+        $use_today.hide();
     }
 
     var cal_config = {
@@ -506,7 +520,7 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
 
     ezCal.render();
 
-    //_$e.find('table.yui-calendar').css('width','180px'); // not using this because the width will change when changing months
+        //_$e.find('table.yui-calendar').css('width','180px'); // not using this because the width will change when changing months
 
 };
 
@@ -526,7 +540,7 @@ XNAT.app.datePicker.init = function($container,_config){
 
         $this_container.empty();
 
-        var _kind, _layout, _format, _validate, _today, _future ;
+        var _kind, _layout, _format, _validate, _today, _future, _disabled, _readonly ;
 
         // since the class matches the value we want to pass...
         // return the match (_val1 or _val2)
@@ -547,6 +561,10 @@ XNAT.app.datePicker.init = function($container,_config){
 
         if ($this_container.hasClass('future')){ _future = true }
 
+        if ($this_container.hasClass('disabled')){ _disabled = true }
+
+        if ($this_container.hasClass('readonly')){ _readonly = true }
+
         if ($this_container.data('validate') === 'onblur'){ _validate = 'onblur' }
         if ($this_container.data('validate') === 'onsubmit'){ _validate = 'onsubmit' }
 
@@ -557,6 +575,8 @@ XNAT.app.datePicker.init = function($container,_config){
         opts.validate = _validate ; // validate onblur or onsubmit - false if neither
         opts.todayButton = _today ; // show 'today' link/button - true or false
         opts.future = _future ; // if future==true, show future dates
+        opts.disabled = _disabled ;
+        opts.readonly = _readonly ; // copy read_only to readonly
 
         var _opts = $.extend( true, {}, opts, _config ); // values passed via the _config parameter overrides all
 

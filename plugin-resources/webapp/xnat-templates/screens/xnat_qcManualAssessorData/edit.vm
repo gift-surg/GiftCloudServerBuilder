@@ -66,7 +66,7 @@ $page.setVlinkColor($ui.vlink)
                                 <td>
                                     <div id="project_placeholder">$!om.getProjectDisplayID()</div>
                                 </td>
-                                #if($data.getSession().getAttribute("user").canDelete($om.getItem()))
+                                #if($!om.getPass() && $data.getSession().getAttribute("user").canDelete($om.getItem()))
                                     <td>
                                         <a onclick="modifyProject();"><img border="0" src="$content.getURI("images/e.gif")"/></a>
                                         <input type="hidden" id="$om.getXSIType()/project" name="$om.getXSIType()/project" value="$!om.getProject()"/>
@@ -81,6 +81,7 @@ $page.setVlinkColor($ui.vlink)
                                                     window.projectEditor.onModification.subscribe(function (obj){
                                                         document.getElementById("project_placeholder").innerHTML=this.new_project_name;
                                                         document.getElementById("$om.getXSIType()/project").value=this.new_project;
+                                                        XNAT.app.current_uri=serverRoot+"/REST/projects/" + this.new_project + "/subjects/$om.getImageSessionData().getSubjectId()/experiments/$om.getImageSessionData().getId()/assessors/$om.getId()";
                                                         config.uri=XNAT.app.current_uri;
                                                         confirmValues();
                                                     });

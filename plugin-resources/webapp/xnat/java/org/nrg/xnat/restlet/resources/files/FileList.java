@@ -10,8 +10,10 @@
  */
 package org.nrg.xnat.restlet.resources.files;
 
-import com.google.common.base.Joiner;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -33,6 +35,8 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
+import org.nrg.xnat.helpers.file.MoveStoredFileRequest;
+import org.nrg.xnat.helpers.file.StoredFile;
 import org.nrg.xnat.helpers.resource.direct.ResourceModifierA.UpdateMeta;
 import org.nrg.xnat.restlet.files.utils.RestFileUtils;
 import org.nrg.xnat.restlet.representations.BeanRepresentation;
@@ -65,8 +69,11 @@ import java.util.zip.ZipFile;
 public class FileList extends XNATCatalogTemplate {
     private static final Logger logger = LoggerFactory.getLogger(FileList.class);
     private String filepath = null;
+    private String reference = null;
+    private boolean delete;
+    private String[] notifyList = new String[0];
     private XnatAbstractresource resource = null;
-    private final boolean listContents = "true".equalsIgnoreCase(this.getQueryVariable("listContents"));
+    private final boolean listContents = isQueryVariableTrueHelper(this.getQueryVariable("listContents"));
     private static String[] zipExtensions = null;
 
     static {
@@ -83,6 +90,9 @@ public class FileList extends XNATCatalogTemplate {
 
     public FileList(Context context, Request request, Response response) {
         super(context, request, response, isQueryVariableTrue("all", request));
+        reference = getQueryVariable("reference");
+        delete = isQueryVariableTrue("delete", request);
+        notifyList = isQueryVariableTrue("notify", request) ? getQueryVariable("notify").split(",") : new String[0];
         try {
             if (resource_ids != null) {
                 List<Integer> alreadyAdded = new ArrayList<Integer>();
@@ -294,11 +304,23 @@ public class FileList extends XNATCatalogTemplate {
                         final List<FileWriterWrapperI> writers = getFileWriters();
 
                         if (writers.size() > 0) {
-                            List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
-                            if (!overwrite && duplicates.size() > 0) {
+                            if (StringUtils.isEmpty(reference)) {
+                                List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                                if (!overwrite && duplicates.size() > 0) {
+                                    getResponse().setStatus(Status.SUCCESS_OK);
+                                    JSONObject json = new JSONObject();
+                                    json.put("duplicates", duplicates);
+                                    getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
+                                }
+                            } else {
+                                wrk.setStatus(PersistentWorkflowUtils.QUEUED);
+                                WorkflowUtils.save(wrk, wrk.buildEvent());
+                                MoveStoredFileRequest request = new MoveStoredFileRequest(buildResourceModifier(overwrite, um), resourceIdentifier, writers, user, wrk.getWorkflowId(), delete, notifyList, type, filepath, buildResourceInfo(um), extract);
+                                XDAT.sendJmsRequest(request);
+
                                 getResponse().setStatus(Status.SUCCESS_OK);
                                 JSONObject json = new JSONObject();
-                                json.put("duplicates", duplicates);
+                                json.put("workflowId", wrk.getWorkflowId());
                                 getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
                             }
                         } else {
@@ -315,7 +337,7 @@ public class FileList extends XNATCatalogTemplate {
                             throw e;
                         }
 
-                    if (isNew) {
+                    if (StringUtils.isEmpty(reference) && wrk != null && isNew) {
                         WorkflowUtils.complete(wrk, i);
                     }
                 }
@@ -591,6 +613,39 @@ public class FileList extends XNATCatalogTemplate {
         }
 
         return null;
+    }
+
+    public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity, boolean useFileFieldName) throws FileUploadException, ClientException {
+        if (StringUtils.isNotEmpty(reference)) {
+            return getReferenceWrapper(reference);
+        } else {
+            return super.getFileWritersAndLoadParams(entity, useFileFieldName);
+        }
+    }
+
+    private List<FileWriterWrapperI> getReferenceWrapper(String value) throws FileUploadException {
+        File file = new File(value);
+        if (!file.exists()) {
+            throw new FileUploadException("The resource referenced does not exist: " + value);
+        }
+        List<FileWriterWrapperI> files = new ArrayList<FileWriterWrapperI>();
+        if (file.isFile()) {
+            files.add(new StoredFile(file, true, "", true));
+        } else {
+            // TODO: This is a simple recursive find of all files underneath the specified root. It'd be nice to support manifest files containing ant path specifiers or something similar to that.
+            Collection found = org.apache.commons.io.FileUtils.listFiles(file, FileFileFilter.FILE, DirectoryFileFilter.DIRECTORY);
+            for (Object foundObject : found) {
+                if (!(foundObject instanceof File)) {
+
+                    throw new RuntimeException("Something went really wrong");
+                }
+                File foundFile = (File) foundObject;
+                if (foundFile.isFile()) {
+                    files.add(new StoredFile(foundFile, true, file.toURI().relativize(foundFile.getParentFile().toURI()).getPath(), true));
+                }
+            }
+        }
+        return files;
     }
 
     protected Representation handleMultipleCatalogs(MediaType mt) throws ElementNotFoundException {

@@ -31,6 +31,7 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -267,7 +268,8 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
     	return new WorkflowEvent((String)null,d,this.getUser(),this.getEventId(),FileUtils.getTimestamp(d));
     }
     
-    public class WorkflowEvent implements EventMetaI{
+    public class WorkflowEvent implements EventMetaI, Serializable {
+        private static final long serialVersionUID = 42L;
     	final String message;
     	final Date d;
     	final UserI user;

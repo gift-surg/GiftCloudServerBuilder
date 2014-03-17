@@ -28,6 +28,7 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.utils.CatalogUtils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,7 +37,8 @@ import java.util.List;
 /**
  * @author timo
  */
-public abstract class ResourceModifierA {
+public abstract class ResourceModifierA implements Serializable {
+    private static final long serialVersionUID = 42L;
     final boolean overwrite;
     final XDATUser user;
     final EventMetaI ci;
@@ -47,8 +49,8 @@ public abstract class ResourceModifierA {
         this.ci = ci;
     }
 
-    public static class UpdateMeta implements EventMetaI {
-
+    public static class UpdateMeta implements EventMetaI, Serializable {
+        private static final long serialVersionUID = 42L;
         final EventMetaI i;
         final boolean update;
         public UpdateMeta(EventMetaI i, boolean update) {

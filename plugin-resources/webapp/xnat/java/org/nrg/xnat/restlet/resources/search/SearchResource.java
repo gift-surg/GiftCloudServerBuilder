@@ -12,6 +12,7 @@ package org.nrg.xnat.restlet.resources.search;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.nrg.xdat.collections.DisplayFieldCollection.DisplayFieldNotFoundException;
 import org.nrg.xdat.display.DisplayFieldReferenceI;
@@ -125,7 +126,7 @@ public class SearchResource extends SecureResource {
 							}
 					    }
 					}
-				} catch (org.apache.commons.fileupload.FileUploadException e) {
+				} catch (FileUploadException e) {
                     logger.error("", e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}

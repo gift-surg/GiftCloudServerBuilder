@@ -57,6 +57,8 @@
                                   initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#deleteSessionRequest"/>
             <amq:redeliveryPolicy queue="moveSessionRequest" useExponentialBackOff="true" maximumRedeliveries="4"
                                   initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#moveSessionRequest"/>
+            <amq:redeliveryPolicy queue="moveStoredFileRequest" useExponentialBackOff="true" maximumRedeliveries="4"
+                                  initialRedeliveryDelay="300000" backOffMultiplier="3" destination="#moveStoredFileRequest"/>
             <!-- Additional redelivery policies go here; otherwise default is used. The destination attribute is not apparently used, but is required. -->
         </amq:redeliveryPolicyEntries>
     </amq:redeliveryPolicyMap>
@@ -76,12 +78,14 @@
     <amq:queue id="sessionXmlRebuilderRequest" physicalName="sessionXmlRebuilderRequest" />
     <amq:queue id="deleteSessionRequest" physicalName="deleteSessionRequest" />
     <amq:queue id="moveSessionRequest" physicalName="moveSessionRequest" />
+    <amq:queue id="moveStoredFileRequest" physicalName="moveStoredFileRequest" />
     <!-- new request types go here -->
 
     <!-- message consumers -->
     <bean id="sessionXmlRebuilderRequestListener" class="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequestListener" />
     <bean id="deleteSessionRequestListener" class="org.nrg.xnat.helpers.prearchive.DeleteSessionRequestListener" />
     <bean id="moveSessionRequestListener" class="org.nrg.xnat.helpers.prearchive.MoveSessionRequestListener" />
+    <bean id="moveStoredFileRequestListener" class="org.nrg.xnat.helpers.file.MoveStoredFileRequestListener" />
     <!-- listeners for new request types go here -->
     <bean id="dlqMessageListener" class="org.nrg.framework.messaging.DlqListener">
         <property name="messageListenerMapping">
@@ -95,6 +99,7 @@
                 <entry key="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequest" value="org.nrg.xnat.helpers.prearchive.SessionXmlRebuilderRequestListener.onSessionXmlRebuilderRequest"/>
                 <entry key="org.nrg.xnat.helpers.prearchive.DeleteSessionRequest" value="org.nrg.xnat.helpers.prearchive.DeleteSessionRequestListener.onDeleteSessionRequest"/>
                 <entry key="org.nrg.xnat.helpers.prearchive.MoveSessionRequest" value="org.nrg.xnat.helpers.prearchive.MoveSessionRequestListener.onMoveSessionRequest"/>
+                <entry key="org.nrg.xnat.helpers.file.MoveStoredFileRequest" value="org.nrg.xnat.helpers.file.MoveStoredFileRequestListener.onMoveStoredFileRequest"/>
                 <!-- update with new request types and their listener methods -->
             </map>
         </property>
@@ -105,6 +110,7 @@
         <jms:listener destination="sessionXmlRebuilderRequest" ref="sessionXmlRebuilderRequestListener" method="onSessionXmlRebuilderRequest" />
         <jms:listener destination="deleteSessionRequest" ref="deleteSessionRequestListener" method="onDeleteSessionRequest" />
         <jms:listener destination="moveSessionRequest" ref="moveSessionRequestListener" method="onMoveSessionRequest" />
+        <jms:listener destination="moveStoredFileRequest" ref="moveStoredFileRequestListener" method="onMoveStoredFileRequest" />
         <!-- update with requests, their listeners, and methods  -->
         <!-- I tried referencing my own DLQ in the redelivery policy but ActiveMQ ignores it and uses the default system DLQ -->
         <!-- So we'll just listen on that queue instead -->

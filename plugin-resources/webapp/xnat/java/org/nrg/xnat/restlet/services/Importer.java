@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.services;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
@@ -115,7 +116,7 @@ public class Importer extends SecureResource {
 		    
 			Representation entity = request.getEntity();
 
-			fw=this.getFileWritersAndLoadParams(entity);
+			fw=this.getFileWriters();
 
 			//maintain parameters
 			loadQueryVariables();

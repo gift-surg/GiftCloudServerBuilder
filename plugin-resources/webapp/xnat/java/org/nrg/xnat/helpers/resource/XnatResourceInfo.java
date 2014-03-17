@@ -13,9 +13,11 @@ package org.nrg.xnat.helpers.resource;
 import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.StringUtils;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class XnatResourceInfo {
+public class XnatResourceInfo implements Serializable {
+    private static final long serialVersionUID = 42L;
 	private String description,format,content=null;
 	private Number event_id=null;
 	private List<String> tags=new ArrayList<String>();

@@ -13,12 +13,10 @@ package org.nrg.xnat.helpers.file;
 import org.apache.commons.io.FileUtils;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
-public class StoredFile implements FileWriterWrapperI{
+public class StoredFile implements FileWriterWrapperI, Serializable {
+    private static final long serialVersionUID = 42L;
     private final File stored;
     private final boolean overwrite;
     private final String nestedPath;
@@ -43,7 +41,7 @@ public class StoredFile implements FileWriterWrapperI{
 		if(f.isDirectory()||stored.isDirectory()){
 			if (isReference) {
 			org.nrg.xft.utils.FileUtils.MoveDir(stored, f, overwrite);
-		}else{
+		    }else{
                 org.nrg.xft.utils.FileUtils.CopyDir(stored, f, overwrite);
             }
 		} else if (isReference) {

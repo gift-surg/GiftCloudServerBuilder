@@ -14,9 +14,7 @@ import com.google.common.collect.Maps;
 import com.noelios.restlet.http.HttpConstants;
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.turbine.util.TurbineException;
@@ -57,7 +55,6 @@ import org.nrg.xft.schema.Wrappers.XMLWrapper.SAXReader;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
-import org.nrg.xnat.helpers.file.StoredFile;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
 import org.nrg.xnat.restlet.XnatTableRepresentation;
 import org.nrg.xnat.restlet.representations.*;
@@ -86,15 +83,6 @@ import java.util.*;
 @SuppressWarnings("deprecation")
 public abstract class SecureResource extends Resource {
     private static final String COMPRESSION = "compression";
-
-    public static class FileUploadException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        public FileUploadException(String message, Exception e) {
-            super(message, e);
-        }
-
-    }
 
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
@@ -608,7 +596,7 @@ public abstract class SecureResource extends Resource {
                             }
                         }
                     }
-                } catch (org.apache.commons.fileupload.FileUploadException e) {
+                } catch (FileUploadException e) {
                     logger.error("Error during file upload", e);
                     getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "Error during file upload");
                 }
@@ -897,7 +885,7 @@ public abstract class SecureResource extends Resource {
     }
 
     public List<FileWriterWrapperI> getFileWriters() throws FileUploadException, ClientException {
-        return getFileWritersAndLoadParams(getRequest().getEntity());
+        return getFileWritersAndLoadParams(getRequest().getEntity(), false);
     }
 
 
@@ -940,21 +928,6 @@ public abstract class SecureResource extends Resource {
     }
 
     /**
-     * Gets file writers and load parameters from the request entity. By default this uses the filename as the name
-     * of the {@link FileWriterWrapperI} parameter. When form fields are encountered, the {@link #handleParam(String, Object)}
-     * method is called to cache all of the standard form fields.
-     *
-     * @param entity The request entity.
-     * @return A list of any {@link FileWriterWrapperI} objects found in the request.
-     * @throws FileUploadException
-     * @throws ClientException
-     * @see #getFileWritersAndLoadParams(Representation, boolean)
-     */
-    public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity) throws FileUploadException, ClientException {
-        return getFileWritersAndLoadParams(entity, false);
-    }
-
-    /**
      * Gets file writers and load parameters from the request entity. When <b>useFileFieldName</b> is <b>true</b>, this uses the
      * field name in the form as the name in the {@link FileWriterWrapperI} object. Otherwise, it uses the filename as the name
      * of the {@link FileWriterWrapperI} parameter. When form fields are encountered, the {@link #handleParam(String, Object)}
@@ -965,7 +938,6 @@ public abstract class SecureResource extends Resource {
      * @return A list of any {@link FileWriterWrapperI} objects found in the request.
      * @throws FileUploadException
      * @throws ClientException
-     * @see #getFileWritersAndLoadParams(Representation)
      */
     public List<FileWriterWrapperI> getFileWritersAndLoadParams(final Representation entity, boolean useFileFieldName) throws FileUploadException, ClientException {
         final List<FileWriterWrapperI> wrappers = new ArrayList<FileWriterWrapperI>();
@@ -978,11 +950,11 @@ public abstract class SecureResource extends Resource {
                 final String fileName = (filepath == null || filepath.equals("")) ? RequestUtil.deriveFileName("upload", entity, false) : filepath;
 
                 if (fileName == null) {
-                    throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
+                    throw new FileUploadException("In-body File posts must include the file directly as the body of the message.");
                 }
 
                 if (entity == null || entity.getSize() == -1 || entity.getSize() == 0) {
-                    throw new FileUploadException("In-body File posts must include the file directly as the body of the message.", new Exception());
+                    throw new FileUploadException("In-body File posts must include the file directly as the body of the message.");
                 }
 
                 wrappers.add(new FileWriterWrapper(entity, fileName));
@@ -991,68 +963,37 @@ public abstract class SecureResource extends Resource {
             final DefaultFileItemFactory factory = new DefaultFileItemFactory();
             final RestletFileUpload upload = new RestletFileUpload(factory);
 
-            try {
-                List<FileItem> items = upload.parseRequest(getRequest());
+            List<FileItem> items = upload.parseRequest(getRequest());
 
-                for (final FileItem item : items) {
-                    if (item.isFormField()) {
-                        // Load form field to passed parameters map
-                        String fieldName = item.getFieldName();
-                        String value = item.getString();
-                        if (fieldName.equals("reference")) {
-                            wrappers.addAll(getReferenceWrapper(value));
-                        } else {
-                            handleParam(fieldName, TurbineUtils.escapeParam(value));
-                        }
-                        continue;
+            for (final FileItem item : items) {
+                if (item.isFormField()) {
+                    // Load form field to passed parameters map
+                    String fieldName = item.getFieldName();
+                    String value = item.getString();
+                    if (fieldName.equals("reference")) {
+                        throw new FileUploadException("multi-part form posts may not be used to upload files via reference.");
+                    } else {
+                        handleParam(fieldName, TurbineUtils.escapeParam(value));
                     }
-                    if (item.getName() == null) {
-                        throw new FileUploadException("multi-part form posts must contain the file name of the uploaded file.", new Exception());
-                    }
-
-                    String fileName = item.getName();
-                    if (fileName.indexOf('\\') > -1) {
-                        fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
-                    }
-
-                    wrappers.add(new FileWriterWrapper(item, useFileFieldName ? item.getFieldName() : fileName));
+                    continue;
                 }
-            } catch (org.apache.commons.fileupload.FileUploadException e) {
-                throw new FileUploadException(e.getMessage(), e);
+                if (item.getName() == null) {
+                    throw new FileUploadException("multi-part form posts must contain the file name of the uploaded file.");
+                }
+
+                String fileName = item.getName();
+                if (fileName.indexOf('\\') > -1) {
+                    fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
+                }
+
+                wrappers.add(new FileWriterWrapper(item, useFileFieldName ? item.getFieldName() : fileName));
             }
-        } else if (hasQueryVariable("reference")) {
-            final String reference = getQueryVariable("reference");
-            wrappers.addAll(getReferenceWrapper(reference));
         } else {
             String name = entity.getDownloadName();
             logger.debug(name);
         }
 
         return wrappers;
-    }
-
-    private List<FileWriterWrapperI> getReferenceWrapper(String value) throws FileUploadException {
-        File file = new File(value);
-        if (!file.exists()) {
-            throw new FileUploadException("The resource referenced does not exist: " + value, new Exception());
-        }
-        List<FileWriterWrapperI> files = new ArrayList<FileWriterWrapperI>();
-        if (file.isFile()) {
-            files.add(new StoredFile(file, true));
-        } else {
-            // TODO: This is a simple recursive find of all files underneath the specified root. It'd be nice to support manifest files containing ant path specifiers or something similar to that.
-            Collection found = FileUtils.listFiles(file, FileFileFilter.FILE, DirectoryFileFilter.DIRECTORY);
-            for (Object foundObject : found) {
-                if (!(foundObject instanceof File)) {
-                    throw new RuntimeException("Something went really wrong");
-                }
-                File foundFile = (File) foundObject;
-                if (foundFile.isFile()) {
-                    files.add(new StoredFile(foundFile, true, file.toURI().relativize(foundFile.getParentFile().toURI()).getPath(), true));
-                }
-            }
-        }
-        return files;
     }
 
     public HttpSession getHttpSession() {

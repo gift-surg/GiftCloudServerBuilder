@@ -361,7 +361,7 @@ public final class DicomEdit extends SecureResource {
         if(entity == null || entity.getSize() == 0) {
             return "";
         }
-        List<FileWriterWrapperI> fws = DicomEdit.this.getFileWritersAndLoadParams(entity);
+        List<FileWriterWrapperI> fws = DicomEdit.this.getFileWriters();
 
         if (fws.isEmpty()) {
             logger.warn("Unable to unpack script from request {}", rq);

@@ -83,8 +83,8 @@ public class ConfigResource extends SecureResource {
             //handle query variables
             final boolean getHistory = "getHistory".equalsIgnoreCase(getQueryVariable("action"));
             Integer version = null;
-            final boolean meta = "true".equalsIgnoreCase(getQueryVariable("meta"));
-            final boolean contents = "true".equalsIgnoreCase(getQueryVariable("contents"));
+            final boolean meta = isQueryVariableTrueHelper(getQueryVariable("meta"));
+            final boolean contents = isQueryVariableTrueHelper(getQueryVariable("contents"));
 
             try {
                 version = Integer.parseInt(getQueryVariable("version"));
@@ -260,7 +260,7 @@ public class ConfigResource extends SecureResource {
             //if this is a status update, do it and return
             if (getQueryVariable("status") != null) {
                 //   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}
-                final boolean enable = "enabled".equals(getQueryVariable("status")) || "true".equals(getQueryVariable("status"));
+                final boolean enable = "enabled".equals(getQueryVariable("status")) || isQueryVariableTrueHelper(getQueryVariable("status"));
                 if (enable) {
                     configService.enable(user.getUsername(), reason, toolName, path, projectId);
                     handledStatus = true;
@@ -277,7 +277,7 @@ public class ConfigResource extends SecureResource {
                 return;
             }
 
-            List<FileWriterWrapperI> fws = getFileWritersAndLoadParams(entity);
+            List<FileWriterWrapperI> fws = getFileWriters();
             if (fws.size() == 0) {
                 _log.error("Unknown upload format", new Object[]{user.getUsername(), projectName});
                 getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");

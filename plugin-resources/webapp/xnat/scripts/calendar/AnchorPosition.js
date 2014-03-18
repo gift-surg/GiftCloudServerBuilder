@@ -1,15 +1,61 @@
-/*
- * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/calendar/AnchorPosition.js
- * XNAT http://www.xnat.org
- * Copyright (c) 2014, Washington University School of Medicine
- * All Rights Reserved
- *
- * Released under the Simplified BSD.
- *
- * Last modified 7/1/13 9:12 AM
- */
+// ===================================================================
+// Author: Matt Kruse <matt@mattkruse.com>
+// WWW: http://www.mattkruse.com/
+//
+// NOTICE: You may use this code for any purpose, commercial or
+// private, without any further permission from the author. You may
+// remove this notice from your final code if you wish, however it is
+// appreciated by the author if at least my web site address is kept.
+//
+// You may *NOT* re-distribute this code in any way except through its
+// use. That means, you can include it in your product, or your web
+// site, or any other form where the code is actually being used. You
+// may not put the plain javascript up on your site for download or
+// include it in your javascript libraries for download. 
+// If you wish to share this code with others, please just point them
+// to the URL instead.
+// Please DO NOT link directly to my .js files from your site. Copy
+// the files to your server and use them there. Thank you.
+// ===================================================================
 
-nction getAnchorPosition(anchorname) {
+/* 
+AnchorPosition.js
+Author: Matt Kruse
+Last modified: 10/11/02
+
+DESCRIPTION: These functions find the position of an <A> tag in a document,
+so other elements can be positioned relative to it.
+
+COMPATABILITY: Netscape 4.x,6.x,Mozilla, IE 5.x,6.x on Windows. Some small
+positioning errors - usually with Window positioning - occur on the 
+Macintosh platform.
+
+FUNCTIONS:
+getAnchorPosition(anchorname)
+  Returns an Object() having .x and .y properties of the pixel coordinates
+  of the upper-left corner of the anchor. Position is relative to the PAGE.
+
+getAnchorWindowPosition(anchorname)
+  Returns an Object() having .x and .y properties of the pixel coordinates
+  of the upper-left corner of the anchor, relative to the WHOLE SCREEN.
+
+NOTES:
+
+1) For popping up separate browser windows, use getAnchorWindowPosition. 
+   Otherwise, use getAnchorPosition
+
+2) Your anchor tag MUST contain both NAME and ID attributes which are the 
+   same. For example:
+   <A NAME="test" ID="test"> </A>
+
+3) There must be at least a space between <A> </A> for IE5.5 to see the 
+   anchor tag correctly. Do not do <A></A> with no space.
+*/ 
+
+// getAnchorPosition(anchorname)
+//   This function returns an object having .x and .y properties which are the coordinates
+//   of the named anchor, relative to the page.
+function getAnchorPosition(anchorname) {
 	// This function will return an Object with x and y properties
 	var useWindow=false;
 	var coordinates=new Object();

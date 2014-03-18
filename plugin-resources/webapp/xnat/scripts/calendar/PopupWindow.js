@@ -1,15 +1,92 @@
-/*
- * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/calendar/PopupWindow.js
- * XNAT http://www.xnat.org
- * Copyright (c) 2014, Washington University School of Medicine
- * All Rights Reserved
- *
- * Released under the Simplified BSD.
- *
- * Last modified 7/1/13 9:12 AM
- */
+// ===================================================================
+// Author: Matt Kruse <matt@mattkruse.com>
+// WWW: http://www.mattkruse.com/
+//
+// NOTICE: You may use this code for any purpose, commercial or
+// private, without any further permission from the author. You may
+// remove this notice from your final code if you wish, however it is
+// appreciated by the author if at least my web site address is kept.
+//
+// You may *NOT* re-distribute this code in any way except through its
+// use. That means, you can include it in your product, or your web
+// site, or any other form where the code is actually being used. You
+// may not put the plain javascript up on your site for download or
+// include it in your javascript libraries for download. 
+// If you wish to share this code with others, please just point them
+// to the URL instead.
+// Please DO NOT link directly to my .js files from your site. Copy
+// the files to your server and use them there. Thank you.
+// ===================================================================
 
-nction PopupWindow_getXYPosition(anchorname) {
+/* 
+PopupWindow.js
+Author: Matt Kruse
+Last modified: 02/16/04
+
+DESCRIPTION: This object allows you to easily and quickly popup a window
+in a certain place. The window can either be a DIV or a separate browser
+window.
+
+COMPATABILITY: Works with Netscape 4.x, 6.x, IE 5.x on Windows. Some small
+positioning errors - usually with Window positioning - occur on the 
+Macintosh platform. Due to bugs in Netscape 4.x, populating the popup 
+window with <STYLE> tags may cause errors.
+
+USAGE:
+// Create an object for a WINDOW popup
+var win = new PopupWindow(); 
+
+// Create an object for a DIV window using the DIV named 'mydiv'
+var win = new PopupWindow('mydiv'); 
+
+// Set the window to automatically hide itself when the user clicks 
+// anywhere else on the page except the popup
+win.autoHide(); 
+
+// Show the window relative to the anchor name passed in
+win.showPopup(anchorname);
+
+// Hide the popup
+win.hidePopup();
+
+// Set the size of the popup window (only applies to WINDOW popups
+win.setSize(width,height);
+
+// Populate the contents of the popup window that will be shown. If you 
+// change the contents while it is displayed, you will need to refresh()
+win.populate(string);
+
+// set the URL of the window, rather than populating its contents
+// manually
+win.setUrl("http://www.site.com/");
+
+// Refresh the contents of the popup
+win.refresh();
+
+// Specify how many pixels to the right of the anchor the popup will appear
+win.offsetX = 50;
+
+// Specify how many pixels below the anchor the popup will appear
+win.offsetY = 100;
+
+NOTES:
+1) Requires the functions in AnchorPosition.js
+
+2) Your anchor tag MUST contain both NAME and ID attributes which are the 
+   same. For example:
+   <A NAME="test" ID="test"> </A>
+
+3) There must be at least a space between <A> </A> for IE5.5 to see the 
+   anchor tag correctly. Do not do <A></A> with no space.
+
+4) When a PopupWindow object is created, a handler for 'onmouseup' is
+   attached to any event handler you may have already defined. Do NOT define
+   an event handler for 'onmouseup' after you define a PopupWindow object or
+   the autoHide() will not work correctly.
+*/ 
+
+// Set the position of the popup window based on the anchor
+function PopupWindow_getXYPosition(anchorname) {
 	var coordinates;
 	if (this.type == "WINDOW") {
 		coordinates = getAnchorWindowPosition(anchorname);

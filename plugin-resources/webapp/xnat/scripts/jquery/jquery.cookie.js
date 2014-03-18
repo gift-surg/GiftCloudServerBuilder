@@ -1,16 +1,13 @@
-/*
- * D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/webapp/xnat/scripts/jquery/jquery.cookie.js
- * XNAT http://www.xnat.org
- * Copyright (c) 2014, Washington University School of Medicine
- * All Rights Reserved
- *
- * Released under the Simplified BSD.
- *
- * Last modified 7/1/13 9:12 AM
- */
-
 /*jshint eqnull:true */
-
+/*!
+ * jQuery Cookie Plugin v1.1
+ * https://github.com/carhartl/jquery-cookie
+ *
+ * Copyright 2011, Klaus Hartl
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.opensource.org/licenses/GPL-2.0
+ */
 (function($, document) {
 
 	var pluses = /\+/g;

@@ -580,8 +580,8 @@ xModal.Modal = function(xx){
         $this_modal.find('.body').addClass('scroll');
     }
 
-    if (xx.beforeShow){
-        xx.beforeShow();
+    if (typeof xx.beforeShow == 'function'){
+        xx.beforeShow($this_modal);
     }
 
     if (this.isDraggable === 'yes' || this.isDraggable === true){

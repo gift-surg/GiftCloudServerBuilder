@@ -34,8 +34,16 @@
     <classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.0.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.2.1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/commons-httpclient/jars/commons-httpclient-3.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-io/jars/commons-io-1.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-io/jars/commons-io-2.4.jar" sourcepath="plugin-resources/repository/commons-io/jars/commons-io-2.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-io/jars/commons-io-2.4-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-lang/jars/commons-lang-2.6.jar" sourcepath="plugin-resources/repository/commons-lang/jars/commons-lang-2.6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-lang/jars/commons-lang-2.6-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
     <classpathentry kind="lib" path="plugin-resources/repository/commons-logging/jars/commons-logging-1.0.4.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar" sourcepath="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar">
@@ -224,7 +232,6 @@
     <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon_v1.5.0.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/stratum/jars/stratum-1.0-b5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/torque/jars/maven-torque-plugin-3.1.1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/torque/jars/torque-3.1.1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/torque/plugins/maven-torque-plugin-3.1.1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/turbine/jars/turbine-2.3.1.jar"/>
@@ -253,11 +260,10 @@
     <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-storeXAR-1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xerces-J_1.4.0.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xercesImpl-2.4.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xercesImpl/jars/xercesImpl-2.4.0.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar"/>
     <classpathentry kind="lib" path="plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="output" path="ide-bin"/>
 </classpath>

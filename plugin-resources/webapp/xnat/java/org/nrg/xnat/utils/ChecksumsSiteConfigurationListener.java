@@ -17,7 +17,7 @@ public class ChecksumsSiteConfigurationListener implements SiteConfigurationProp
     @Override
     public void siteConfigurationPropertyChanged(final String propertyName, final String newPropertyValue) {
         if (!StringUtils.isBlank(newPropertyValue) && (Boolean.TRUE.toString().equalsIgnoreCase(newPropertyValue) || Boolean.FALSE.toString().equalsIgnoreCase(newPropertyValue))) {
-            CatalogUtils.DEFAULT_CHECKSUM = Boolean.parseBoolean(newPropertyValue);
+            CatalogUtils.setChecksumConfiguration(Boolean.parseBoolean(newPropertyValue));
         }
     }
 }

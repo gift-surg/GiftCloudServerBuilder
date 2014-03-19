@@ -300,7 +300,7 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>xercesImpl</groupId>
+			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
 			<version>2.4.0</version>
 			<properties>

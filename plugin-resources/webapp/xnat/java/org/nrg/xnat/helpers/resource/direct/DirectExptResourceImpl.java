@@ -49,16 +49,28 @@ public class DirectExptResourceImpl extends ResourceModifierA {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
-	 */
-	@Override
-	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
-		expt.setResources_resource(resource);
-		
-		SaveItemHelper.authorizedSave(expt,user, false, false,ci);
-		
-		return true;
-	}
+   * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
+   */
+   @Override
+   public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
+       //create a light copy of the experiment, and save that.
+       XFTItem item = XFTItem.NewItem(expt.getXSIType(), user);
+       XnatExperimentdata new_expt=(XnatExperimentdata) BaseElement.GetGeneratedItem(item);
+
+       new_expt.setId(expt.getId());
+       new_expt.setLabel(expt.getLabel());
+       new_expt.setProject(expt.getProject());
+       if (expt instanceof XnatSubjectassessordata) {
+           ((XnatSubjectassessordata) new_expt).setSubjectId(((XnatSubjectassessordata) expt).getSubjectId());
+       } else if (expt instanceof XnatImageassessordata) {
+           ((XnatImageassessordata) new_expt).setImagesessionId(((XnatImageassessordata) expt).getImagesessionId());            
+       }
+       new_expt.setResources_resource(resource);
+
+       SaveItemHelper.authorizedSave(new_expt,user, false, false,ci);
+
+       return true;
+   }
 
 
 

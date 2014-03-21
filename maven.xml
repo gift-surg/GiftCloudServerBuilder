@@ -902,7 +902,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -945,7 +945,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -981,7 +981,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1022,7 +1022,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1066,7 +1066,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -1108,7 +1108,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1156,7 +1156,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1210,7 +1210,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
                 <pathelement location="./lib/log4j-1.2.15.jar"/>
@@ -1234,7 +1234,7 @@
                 <pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
                 <pathelement location="${basedir}/plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
                 <pathelement location="${basedir}/plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
-                <pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.5.jar"/>
+                <pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.6.jar"/>
             </classpath>
         </javac>
         <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" basedir="${basedir}/classes">
@@ -1609,7 +1609,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
@@ -1727,7 +1727,7 @@
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
-                <pathelement location="./lib/commons-lang-2.5.jar"/>
+                <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>

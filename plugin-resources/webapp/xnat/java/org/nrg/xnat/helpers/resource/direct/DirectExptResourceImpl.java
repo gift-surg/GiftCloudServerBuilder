@@ -11,12 +11,12 @@
 package org.nrg.xnat.helpers.resource.direct;
 
 import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;

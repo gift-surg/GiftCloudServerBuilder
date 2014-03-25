@@ -1390,6 +1390,8 @@ div.ic_spacer{
              #end
             #end
        #if($actionGroup.getGroup()!="")
+		
+			#addCustomScreens("$element" "actionsBox/$actionGroup.getGroup()")
            </ul>
           </div>
          </div>

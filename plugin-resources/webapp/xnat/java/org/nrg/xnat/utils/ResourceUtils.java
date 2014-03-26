@@ -75,7 +75,7 @@ public class ResourceUtils {
 					CatalogUtils.writeCatalogToFile(cat, catFile,checksums);
 				}
 				
-				// popuplate (or repopulate) the file stats --- THIS SHOULD BE DONE AFTER modifications to the catalog xml
+				// populate (or repopulate) the file stats --- THIS SHOULD BE DONE AFTER modifications to the catalog xml
 	            if (populateStats || modified) {
 	                if (CatalogUtils.populateStats(resource, projectPath) || modified) {
                         if(resource.save(user, false, false, now)) {

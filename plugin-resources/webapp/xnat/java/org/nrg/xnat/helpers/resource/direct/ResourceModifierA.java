@@ -126,9 +126,7 @@ public abstract class ResourceModifierA implements Serializable {
             }
         }
 
-        for (final FileWriterWrapperI fw : fws) {
-            duplicates.addAll(CatalogUtils.storeCatalogEntry(fw, filepath, (XnatResourcecatalog) abst, getProject(), extract, info, overwrite, ci));
-        }
+        duplicates.addAll(CatalogUtils.storeCatalogEntry(fws, filepath, (XnatResourcecatalog) abst, getProject(), extract, info, overwrite, ci));
 
         CatalogUtils.populateStats(abst, null);
 

@@ -71,6 +71,7 @@ public class FileList extends XNATCatalogTemplate {
     private String filepath = null;
     private String reference = null;
     private boolean delete;
+    private boolean async;
     private String[] notifyList = new String[0];
     private XnatAbstractresource resource = null;
     private final boolean listContents = isQueryVariableTrueHelper(this.getQueryVariable("listContents"));
@@ -92,6 +93,7 @@ public class FileList extends XNATCatalogTemplate {
         super(context, request, response, isQueryVariableTrue("all", request));
         reference = getQueryVariable("reference");
         delete = isQueryVariableTrue("delete", request);
+        async = isQueryVariableTrue("async", request);
         notifyList = isQueryVariableTrue("notify", request) ? getQueryVariable("notify").split(",") : new String[0];
         try {
             if (resource_ids != null) {
@@ -304,7 +306,7 @@ public class FileList extends XNATCatalogTemplate {
                         final List<FileWriterWrapperI> writers = getFileWriters();
 
                         if (writers.size() > 0) {
-                            if (StringUtils.isEmpty(reference)) {
+                            if (StringUtils.isEmpty(reference) || !async) {
                                 List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
                                 if (!overwrite && duplicates.size() > 0) {
                                     getResponse().setStatus(Status.SUCCESS_OK);
@@ -683,7 +685,7 @@ public class FileList extends XNATCatalogTemplate {
 
         for (final XnatAbstractresource temp : resources) {
             if (temp.getItem().instanceOf("xnat:resourceCatalog")) {
-                final boolean includeRoot = (getQueryVariable("includeRootPath") != null);
+                final boolean includeRoot = isQueryVariableTrue("includeRootPath");
 
                 final XnatResourcecatalog catResource = (XnatResourcecatalog) temp;
 
@@ -874,10 +876,7 @@ public class FileList extends XNATCatalogTemplate {
 
 
         if (resource.getItem().instanceOf("xnat:resourceCatalog")) {
-            boolean includeRoot = false;
-            if (getQueryVariable("includeRootPath") != null) {
-                includeRoot = true;
-            }
+            boolean includeRoot = this.isQueryVariableTrue("includeRootPath");
 
             XnatResourcecatalog catResource = (XnatResourcecatalog) resource;
             CatCatalogBean cat = catResource.getCleanCatalog(proj.getRootArchivePath(), includeRoot, null, null);

@@ -345,10 +345,7 @@ public class CatalogResource extends XNATCatalogTemplate {
 				}
 				
 				if(resource.getItem().instanceOf("xnat:resourceCatalog")){
-					boolean includeRoot=false;
-					if(this.getQueryVariable("includeRootPath")!=null){
-						includeRoot=true;
-					}
+					boolean includeRoot=this.isQueryVariableTrue("includeRootPath");
 					
 					XnatResourcecatalog catResource = (XnatResourcecatalog)resource;
 					CatCatalogBean cat= catResource.getCleanCatalog(proj.getRootArchivePath(),includeRoot,null,null);

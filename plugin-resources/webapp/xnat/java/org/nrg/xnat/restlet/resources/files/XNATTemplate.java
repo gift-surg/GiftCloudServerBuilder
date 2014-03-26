@@ -897,8 +897,7 @@ public class XNATTemplate extends SecureResource {
 					}
 				}
 
-			} else if ((allowAll) && (((this.getQueryVariable("all") != null && this
-							.getQueryVariable("all").equals("true")) || resourceIDs != null))) {
+			} else if ((allowAll) && (this.isQueryVariableTrue("all") || resourceIDs != null)) {
 				xmlPath = "xnat:experimentData/resources/resource";
 				// resources
 

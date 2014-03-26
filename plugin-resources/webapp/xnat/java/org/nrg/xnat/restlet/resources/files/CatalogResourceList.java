@@ -180,9 +180,9 @@ public class CatalogResourceList extends XNATTemplate {
             }
         }
 
-        String fileStats = getQueryVariable("file_stats");
+        boolean fileStats = isQueryVariableTrue("file_stats");
         boolean cacheFileStats = isQueryVariableTrue("cache_file_stats");
-        if(fileStats != null && fileStats.equals("true")) {
+        if(fileStats) {
             try {
                 if(proj==null){
                     if(parent.getItem().instanceOf("xnat:experimentData")){

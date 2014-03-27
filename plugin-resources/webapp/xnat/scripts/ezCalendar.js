@@ -474,6 +474,15 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
 
     cal_config.selected = XNAT.data.todaysDate.US;
 
+    if (typeof _opts.mindate != 'undefined') {
+        var _mindate = new SplitDate(_opts.mindate,'iso');
+        cal_config.mindate = _mindate.us;
+    }
+    if (typeof _opts.maxdate != 'undefined') {
+        var _maxdate = new SplitDate(_opts.maxdate,'iso');
+        cal_config.maxdate = _maxdate.us;
+    }
+
     // if the 'future' option is not specified, stop at today
     if (typeof _opts.future == 'undefined') cal_config.maxdate = XNAT.data.todaysDate.US;
 
@@ -576,7 +585,9 @@ XNAT.app.datePicker.init = function($container,_config){
         opts.todayButton = _today ; // show 'today' link/button - true or false
         opts.future = _future ; // if future==true, show future dates
         opts.disabled = _disabled ;
-        opts.readonly = _readonly ; // copy read_only to readonly
+        opts.readonly = _readonly ;
+        opts.mindate = $this_container.data('mindate');
+        opts.maxdate = $this_container.data('maxdate');
 
         var _opts = $.extend( true, {}, opts, _config ); // values passed via the _config parameter overrides all
 
@@ -595,7 +606,8 @@ $(function(){
         XNAT.app.datePicker.reveal($(this).closest('.ez_cal_wrapper'));
     });
 
-    $body.on('click','.use-todays-date',function(){
+    $body.on('click','.use-todays-date',function(e){
+        e.preventDefault();
         var $wrapper = $(this).closest('.ez_cal_wrapper');
         $wrapper.find('input.date.single').each(function(){
             var $date_input = $(this);
@@ -611,8 +623,11 @@ $(function(){
         $wrapper.find('input.day').val(XNAT.data.todaysDate.dd);
     });
 
+    var do_date_check = true ;
+
     var checkDateOnBlur = function(input){
         if ($('div.xmask.open.top').data('xmodal-x') === xModalMessageCount) return ;
+        if (do_date_check !== true) return ;
         //if (!$('#invalid_date')) return ;
         var $wrapper = $(input).closest('.ez_cal_wrapper');
         var $year = $wrapper.find('input:hidden.year');
@@ -645,6 +660,7 @@ $(function(){
                 $day.val($input.val());
             }
         }
+        do_date_check = false ;
     };
 
     // mask existing input elements
@@ -663,11 +679,13 @@ $(function(){
     // maybe this is redundant with the xmodal check in checkDateOnBlur()?
     $body.on('focus','input.ez_cal.validate.onblur',function(){
         $(this).on('blur',function(){
+            do_date_check = true ;
             checkDateOnBlur(this);
         });
     });
 
     $body.on('blur','input.ez_cal.validate.onblur',function(){
+        do_date_check = true ;
         checkDateOnBlur(this);
         $(this).off('blur');
     });

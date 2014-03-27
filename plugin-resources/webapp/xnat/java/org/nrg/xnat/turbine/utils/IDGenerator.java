@@ -39,44 +39,48 @@ public class IDGenerator implements IDGeneratorI {
 	
 	private static List<String> claimedIDs=new ArrayList<String>();
 	
-	public synchronized String generateIdentifier() throws Exception{
-		String site= IDGenerator.getSiteID();
-		
-		if(code!=null){
-			site +="_"+code;
-		}else if(tableName.equalsIgnoreCase("xnat_subjectData")){
-			site +="_S";
-		}else if(tableName.equalsIgnoreCase("xnat_experimentData")){
-			site +="_E";
-		}else if(tableName.equalsIgnoreCase("xnat_pvisitData")){
-			site +="_V";
+	private static final Object lock=new Object();
+	
+	public String generateIdentifier() throws Exception{
+		synchronized (lock){
+			String site= IDGenerator.getSiteID();
+			
+			if(code!=null){
+				site +="_"+code;
+			}else if(tableName.equalsIgnoreCase("xnat_subjectData")){
+				site +="_S";
+			}else if(tableName.equalsIgnoreCase("xnat_experimentData")){
+				site +="_E";
+			}else if(tableName.equalsIgnoreCase("xnat_pvisitData")){
+				site +="_V";
+			}
+			
+			String temp_id=null;
+			
+			XFTTable table = org.nrg.xft.search.TableSearch.Execute("SELECT DISTINCT " + column + " FROM (SELECT " + column + " FROM " + tableName + " WHERE " + column + " LIKE '" + site + "%' UNION SELECT DISTINCT " + column + " FROM " + tableName + "_history WHERE " + column + " LIKE '" + site + "%') SRCH;", null, null);
+	        ArrayList al =table.convertColumnToArrayList(column.toLowerCase());
+	        
+	        if (al.size()>0 || claimedIDs.size()>0){
+	            int count =al.size()+1;
+	            String full = org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
+	            temp_id = site+ full;
+	
+	            while (al.contains(temp_id) || claimedIDs.contains(temp_id)){
+	                count++;
+	                full =org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
+	                temp_id = site+ full;
+	            }
+	            
+	            claimedIDs.add(temp_id);
+	
+	            return temp_id;
+	        }else{
+	            int count =1;
+	            String full = org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
+	            temp_id = site+ full;
+	            return temp_id;
+	        }
 		}
-		
-		String temp_id=null;
-		
-		XFTTable table = org.nrg.xft.search.TableSearch.Execute("SELECT DISTINCT " + column + " FROM (SELECT " + column + " FROM " + tableName + " WHERE " + column + " LIKE '" + site + "%' UNION SELECT DISTINCT " + column + " FROM " + tableName + "_history WHERE " + column + " LIKE '" + site + "%') SRCH;", null, null);
-        ArrayList al =table.convertColumnToArrayList(column.toLowerCase());
-        
-        if (al.size()>0 || claimedIDs.size()>0){
-            int count =al.size()+1;
-            String full = org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
-            temp_id = site+ full;
-
-            while (al.contains(temp_id) || claimedIDs.contains(temp_id)){
-                count++;
-                full =org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
-                temp_id = site+ full;
-            }
-            
-            claimedIDs.add(temp_id);
-
-            return temp_id;
-        }else{
-            int count =1;
-            String full = org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
-            temp_id = site+ full;
-            return temp_id;
-        }
 	}
 
 	public String getColumn() {

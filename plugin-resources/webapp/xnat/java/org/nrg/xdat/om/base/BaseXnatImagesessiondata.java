@@ -42,7 +42,7 @@ import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
-import org.nrg.xft.event.persist.PersistentWorkflowI;
+
 import org.nrg.xft.exception.*;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.TableSearch;
@@ -2759,6 +2759,11 @@ public abstract class BaseXnatImagesessiondata extends AutoXnatImagesessiondata 
 		    				m.setResource((XnatAbstractresource)abstRes);
 		    				m.call();
 		    			}
+                        for(XnatAbstractresourceI abstRes: assessor.getResources_resource()){
+                            MoverMaker.Mover m = MoverMaker.moveResource(abstRes, current_label, base, newSessionDir, existingRootPath, user,c);
+                            m.setResource((XnatAbstractresource)abstRes);
+                            m.call();
+                        }
 		    		}
 		    		BaseXnatImagesessiondata.super.moveToProject(newProject, newLabel, user,c,assessorsToMove);
 				}

@@ -10,11 +10,9 @@
  */
 package org.nrg.xdat.om.base;
 
+import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.om.XnatAbstractresource;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResource;
-import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
@@ -37,10 +35,17 @@ public class MoverMaker {
 	                                                                                                        FieldNotFoundException, 
 	                                                                                                        InvalidValueException,
 	                                                                                                        Exception{
-		XFTItem current=m.getCurrentDBVersion(false);
-		current.setProperty("project", newProject.getId());
-		current.setProperty("label", newLabel);    		
-		SaveItemHelper.authorizedSave(current, u, false, false, c);
+        XFTItem item = XFTItem.NewItem(m.getXSIType(), u);
+        MoveableI current = (MoveableI)BaseElement.GetGeneratedItem(item);
+        current.setId(m.getId());
+		current.setProject(newProject.getId());
+		current.setLabel(newLabel);
+        if (m instanceof XnatSubjectassessordata) {
+            ((XnatSubjectassessordata) current).setSubjectId(((XnatSubjectassessordata) m).getSubjectId());
+        } else if (m instanceof XnatImageassessordata) {
+            ((XnatImageassessordata) current).setImagesessionId(((XnatImageassessordata) m).getImagesessionId());
+        }
+		SaveItemHelper.authorizedSave(current.getItem(), u, false, false, c);
 	}
 	
 	public static void setLocal (MoveableI m, XnatProjectdata newProject, String newLabel) {

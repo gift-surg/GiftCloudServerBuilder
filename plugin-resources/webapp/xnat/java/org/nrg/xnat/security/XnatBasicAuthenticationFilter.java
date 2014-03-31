@@ -10,6 +10,17 @@
  */
 package org.nrg.xnat.security;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.turbine.utils.AccessLogger;
 import org.nrg.xdat.turbine.utils.AdminUtils;
@@ -29,14 +40,7 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.UUID;
+import com.google.common.collect.Maps;
 
 public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 	private AuthenticationDetailsSource authenticationDetailsSource = new WebAuthenticationDetailsSource();
@@ -133,6 +137,8 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
         chain.doFilter(request, response);
 	}
+	
+	private static final Map<Integer,Object> locks=Maps.newConcurrentMap();
 
     @Override
     // XNAT-2186 requested that REST logins also leave records of last login date
@@ -152,14 +158,22 @@ public class XnatBasicAuthenticationFilter extends BasicAuthenticationFilter {
             }
 
             request.getSession().setAttribute("user", user);
-            java.util.Date today = java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime();
-            XFTItem item = XFTItem.NewItem("xdat:user_login",user);
-            item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
-            item.setProperty("xdat:user_login.login_date",today);
-            item.setProperty("xdat:user_login.ip_address", AccessLogger.GetRequestIp(request));
-            item.setProperty("xdat:user_login.session_id", request.getSession().getId());
-            SaveItemHelper.authorizedSave(item, null, true, false, EventUtils.DEFAULT_EVENT(user, null));
-
+            
+            Object lock=locks.get(user.getID());
+            if(lock==null){
+            	locks.put(user.getID(), new Object());
+            	lock=locks.get(user.getID());
+            }
+            
+            synchronized (lock){
+	            java.util.Date today = java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime();
+	            XFTItem item = XFTItem.NewItem("xdat:user_login",user);
+	            item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
+	            item.setProperty("xdat:user_login.login_date",today);
+	            item.setProperty("xdat:user_login.ip_address", AccessLogger.GetRequestIp(request));
+	            item.setProperty("xdat:user_login.session_id", request.getSession().getId());
+	            SaveItemHelper.authorizedSave(item, null, true, false, EventUtils.DEFAULT_EVENT(user, null));
+            }
             request.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
         }
         catch(Exception e){

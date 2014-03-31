@@ -51,6 +51,12 @@ YAHOO.util.Event.onDOMReady(function(){
                     _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.AlphaNumSTextBox));
                 }
             }
+
+            if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'alphaSP')){
+                if(myforms[iFc][fFc].nodeName=="INPUT"){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.AlphaSTextBox));
+                }
+            }
             
             if(myforms[iFc][fFc].nodeName=="INPUT"){
         		if($(myforms[iFc][fFc]).attr('data-regex')!=undefined){
@@ -172,6 +178,17 @@ XNAT.app.validatorImpls.AlphaNumSTextBox={
 			return true;
 		}
 	}
+};
+
+XNAT.app.validatorImpls.AlphaSTextBox={
+    message:"Value must be alphabetic text (no special characters).",
+    isValid:function(_box){
+        if(_box.value!=""){
+            return _box.value.match('^[A-Za-z \'\-]+$');
+        }else{
+            return true;
+        }
+    }
 };
 
 XNAT.app.validatorImpls.PrereqInput={

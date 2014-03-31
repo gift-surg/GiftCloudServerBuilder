@@ -29,10 +29,10 @@ $page.setVlinkColor($ui.vlink)
 	</tr>
 	#xdatHiddenBox("xdat:user.enabled" $item "false")
 	<tr>
-		<TD align=right>First Name:</TD><TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.firstname" name="xdat:user.firstname" value="$!item.getProperty("firstname")"/></TD>
+		<TD align=right>First Name:</TD><TD><INPUT class="required alphaSP" type="text" id="xdat:user.firstname" name="xdat:user.firstname" value="$!item.getProperty("firstname")"/></TD>
 	</tr>
 	<tr>
-		<TD align=right>Last Name:</TD><TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.lastname" name="xdat:user.lastname" value="$!item.getProperty("lastname")"/></TD>
+		<TD align=right>Last Name:</TD><TD><INPUT class="required alphaSP" type="text" id="xdat:user.lastname" name="xdat:user.lastname" value="$!item.getProperty("lastname")"/></TD>
 	</tr>
 	<tr>
 		<TD align=right>Email:</TD><TD><INPUT class="required" type="text" id="xdat:user.email" name="xdat:user.email" value="$!item.getProperty("email")"/></TD>

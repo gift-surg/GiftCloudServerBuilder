@@ -51,11 +51,11 @@
                   </tr>
                   <tr>
             #formLabelRequired("First Name")
-            <TD><input type="text" class="required alphaNumSP" id="xdat:user.firstname" name="xdat:user.firstname" value="$!firstName"></TD>
+            <TD><input type="text" class="required alphaSP" id="xdat:user.firstname" name="xdat:user.firstname" value="$!firstName"></TD>
     			              </tr>
                   <tr>
             #formLabelRequired("Last Name")
-            <TD><input type="text" class="required alphaNumSP" id="xdat:user.lastname" name="xdat:user.lastname" value="$!lastName"></TD>
+            <TD><input type="text" class="required alphaSP" id="xdat:user.lastname" name="xdat:user.lastname" value="$!lastName"></TD>
         </tr>
         <tr>
             #formLabelRequired("Email")

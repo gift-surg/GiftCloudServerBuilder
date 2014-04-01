@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
@@ -363,8 +364,14 @@ public class XNATApplication extends Application {
         for (String pkg : packages) {
             try {
                 final List<Class<?>> classesForPackage = Reflection.getClassesForPackage(pkg);
+                if (_log.isDebugEnabled()) {
+                    _log.debug("Found " + classesForPackage.size() + " classes for package: " + pkg);
+                }
                 for (Class<?> clazz : classesForPackage) {
-                    if (clazz.isAssignableFrom(Resource.class)) {
+                    if (Resource.class.isAssignableFrom(clazz)) {
+                        if (_log.isDebugEnabled()) {
+                            _log.debug("Found resource class: " + clazz.getName());
+                        }
                         classes.add((Class<? extends Resource>) clazz);
                     }
                 }
@@ -376,19 +383,19 @@ public class XNATApplication extends Application {
         for (Class<? extends Resource> clazz : classes) {
             if (clazz.isAnnotationPresent(XnatRestlet.class)) {
                 XnatRestlet annotation = clazz.getAnnotation(XnatRestlet.class);
-                boolean required = annotation.required();
-                if (!Resource.class.isAssignableFrom(clazz)) {
-                    String message = "You can only apply the XnatRestlet annotation to classes that subclass the org.restlet.resource.Resource class: " + clazz.getName();
-                    if (required) {
-                        throw new NrgServiceRuntimeException(message);
-                    } else {
-                        _log.error(message);
-                    }
+                final String[] urls = annotation.value();
+                if (urls == null || urls.length == 0) {
+                    throw new RuntimeException("The restlet extension class " + clazz.getName() + " has no URLs configured.");
                 }
-
                 if (annotation.secure()) {
+                    if (_log.isDebugEnabled()) {
+                        _log.debug("Found XnatRestlet-annotated secure function class " + clazz.getName() + " for URLs: " + Joiner.on(", ").join(urls));
+                    }
                     attachPath(router, clazz, annotation);
                 } else {
+                    if (_log.isDebugEnabled()) {
+                        _log.debug("Found XnatRestlet-annotated public function class " + clazz.getName() + " for URLs: " + Joiner.on(", ").join(urls));
+                    }
                     publicClasses.add(clazz);
                 }
             }

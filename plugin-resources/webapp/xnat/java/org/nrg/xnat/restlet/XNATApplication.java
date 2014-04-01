@@ -81,7 +81,7 @@ public class XNATApplication extends Application {
     }
 
     private void initializeRouteTable() {
-        _routeBuffer = new StringBuilder("URI\tClass\tMatching Mode").append(System.lineSeparator());
+        _routeBuffer = new StringBuilder("URI\tClass\tMatching Mode").append(System.getProperty("line.separator"));
     }
 
     private boolean isRestMockServiceEnabled() {
@@ -120,7 +120,7 @@ public class XNATApplication extends Application {
         if (matchingMode != null) {
             _routeBuffer.append(getMatchingMode(matchingMode));
         }
-        _routeBuffer.append(System.lineSeparator());
+        _routeBuffer.append(System.getProperty("line.separator"));
     }
 
     private String getMatchingMode(final Integer matchingMode) {

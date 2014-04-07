@@ -6,18 +6,14 @@
  *
  * Released under the Simplified BSD.
  *
- * Last modified 9/5/13 2:38 PM
  */
 package org.nrg.dcm.id;
 
 
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Lists;
+import java.util.SortedSet;
 
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
 
 import org.dcm4che2.data.DicomObject;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -27,13 +23,14 @@ import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.SortedSet;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Lists;
 
 public class DbBackedProjectIdentifier implements DicomProjectIdentifier {
     private final Logger logger = LoggerFactory.getLogger(DbBackedProjectIdentifier.class);
     private final Iterable<DicomDerivedString> extractors;
     private final ImmutableSortedSet<Integer> tags;
-    private Cache projectCache = null;
 
     public DbBackedProjectIdentifier(final Iterable<DicomDerivedString> identifiers) {
         this.extractors = Lists.newArrayList(identifiers);
@@ -43,30 +40,28 @@ public class DbBackedProjectIdentifier implements DicomProjectIdentifier {
         }
         tags = b.build();
     }
-    
+
     public final XnatProjectdata apply(final XDATUser user, final DicomObject o) {
+        final Cache cache = GradualDicomImporter.getUserProjectCache(user);
         for (final DicomDerivedString extractor : extractors) {
-            final Object alias = extractor.apply(o);
-            if (null != alias && ! "".equals(alias)) {
-            	//added caching here to prevent duplicate project queries in every file transaction
-            	//the cache is shared with the one in gradual dicom importer, which does a similar query.
-            	if (null == projectCache) {
-                    projectCache=GradualDicomImporter.getUserProjectCache(user);
-                }
-                if (null != alias) {
-                    final Element pe = projectCache.get(alias);
-                    if (null != pe) {
-                        return (XnatProjectdata)pe.getValue();
+            final String alias = extractor.apply(o);
+            if (!Strings.isNullOrEmpty(alias)) {
+                // added caching here to prevent duplicate project queries in every file transaction
+                // the cache is shared with the one in gradual dicom importer, which does a similar query.
+                final Element pe = cache.get(alias);
+                if (null == pe) {
+                    // no cached value, look in the db
+                    final XnatProjectdata p = XnatProjectdata.getProjectByIDorAlias(alias.toString(), user, false);
+                    if (null != p && canCreateIn(user,p)) {
+                        cache.put(new Element(alias, p));
+                        return p;
                     } else {
-		            	final XnatProjectdata p = XnatProjectdata.getProjectByIDorAlias(alias.toString(), user, false);
-		            	if (null != p && canCreateIn(user,p)) {
-		                    projectCache.put(new Element(alias, p));
-		                    return p;
-		            	}else{
-		            		projectCache.put(new Element(alias, null));
-		            	}
-                    }
-                }
+                        // this alias is either not a project or not one we can write to
+                        GradualDicomImporter.cacheNonWriteableProject(cache, alias);
+                    }                        
+                } else if (!GradualDicomImporter.isCachedNotWriteableProject(pe)) {
+                    return (XnatProjectdata)pe.getObjectValue();
+                } // else cache returned no-such-writeable-project, so continue
             }
         }
         return null;

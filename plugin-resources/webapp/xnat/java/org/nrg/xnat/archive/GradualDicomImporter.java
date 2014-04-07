@@ -31,6 +31,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.PersistenceConfiguration;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.dcm4che2.data.BasicDicomObject;
@@ -78,7 +79,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
 @Service
@@ -86,6 +86,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
     public static final String SENDER_AE_TITLE_PARAM = "Sender-AE-Title";
     public static final String SENDER_ID_PARAM = "Sender-ID";
     public static final String TSUID_PARAM = "Transfer-Syntax-UID";
+    private static final Object NOT_A_WRITABLE_PROJECT = new Object();
     private static final String DEFAULT_TRANSFER_SYNTAX = TransferSyntax.ImplicitVRLittleEndian.uid();
     private static final String RENAME_PARAM = "rename";
     private static final DicomFileNamer DEFAULT_NAMER = new SOPHashDicomFileNamer();
@@ -132,7 +133,28 @@ public class GradualDicomImporter extends ImporterHandlerA {
         }
     }
 
-    private XnatProjectdata getProject(final Object alias, final Callable<XnatProjectdata> defaultProject) {
+    /**
+     * Does e contain the sentinel value indicating that its alias
+     * does not map to a project where user has create perms?
+     * @param e cache element (not null)
+     * @return true if this element indicates no writeable project
+     */
+    public static boolean isCachedNotWriteableProject(final Element e) {
+        assert null != e;
+        return NOT_A_WRITABLE_PROJECT == e.getObjectValue();
+    }
+    
+    /**
+     * Indicate in the provided cache that the provided name does not describe
+     * a writable project.
+     * @param cache
+     * @param name
+     */
+    public static void cacheNonWriteableProject(final Cache cache, final String name) {
+        cache.put(new Element(name, NOT_A_WRITABLE_PROJECT));
+    }
+    
+    private XnatProjectdata getProject(final Object alias, final Callable<XnatProjectdata> lookupProject) {
         if (null == projectCache) {
             projectCache=getUserProjectCache(user);
         }
@@ -140,14 +162,21 @@ public class GradualDicomImporter extends ImporterHandlerA {
             logger.debug("looking for project matching alias {} from query parameters", alias);
             final Element pe = projectCache.get(alias);
             if (null != pe) {
-                return (XnatProjectdata)pe.getValue();
+                if (isCachedNotWriteableProject(pe)) {
+                    // this alias is cached as a non-writable project name, but user is specifying it.
+                    // maybe they know something we don't; clear cache entry so we can try again.
+                    projectCache.remove(alias);
+                    return getProject(alias, lookupProject);
+                } else {
+                    return (XnatProjectdata)pe.getObjectValue();
+                }
             } else {
                 logger.trace("cache miss for project alias {}, trying database", alias);
                 final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(alias, user, false);
                 if (null != p && canCreateIn(p)) {
                     projectCache.put(new Element(alias, p));
                     return p;
-                } else {
+                } else if (null == pe || !isCachedNotWriteableProject(pe)) {
                     for (final XnatProjectdata pa :
                         XnatProjectdata.getXnatProjectdatasByField("xnat:projectData/aliases/alias/alias",
                                 alias, user, false)) {
@@ -158,18 +187,16 @@ public class GradualDicomImporter extends ImporterHandlerA {
                     }
                 }
             }
+            logger.info("storage request specified project {}, which does not exist or user does not have create perms", alias);
         } else {
-            logger.debug("no project alias found in query parameters");
+            logger.trace("no project alias found in query parameters");
         }
-        // Couldn't find a project match. Use the default project.
+        // No alias, or we couldn't match it to a project. Run the identifier to see if that can get a project name/alias.
+        // (Don't cache alias->identifier-derived-project because we didn't use the alias to derive the project.)
         try {
-            final XnatProjectdata dp = null == defaultProject ? null : defaultProject.call();
-            if (null != alias) {
-                projectCache.put(new Element(alias, dp));
-            }
-            return dp;
+            return null == lookupProject ? null : lookupProject.call();
         } catch (Throwable t) {
-            logger.error("error in default project provider", t);
+            logger.error("error in project lookup", t);
             return null;
         }
     }
@@ -525,11 +552,11 @@ public class GradualDicomImporter extends ImporterHandlerA {
     }
 
 	/**
-	 * Adds a cache of project objects on a per-user basis.  This is currently used by the GreadualDicomImporter and the DbBackedProjectIdentifier
+	 * Adds a cache of project objects on a per-user basis.  This is currently used by GradualDicomImporter and DbBackedProjectIdentifier
 	 * @param user
 	 * @return
 	 */
-	public static Cache getUserProjectCache(XDATUser user) {
+	public static Cache getUserProjectCache(final XDATUser user) {
         final String cacheName = user.getLogin() + "-projects";
         final CacheManager cacheManager = CacheManager.getInstance();
         synchronized (cacheManager) {
@@ -537,7 +564,7 @@ public class GradualDicomImporter extends ImporterHandlerA {
                 final CacheConfiguration config = new CacheConfiguration(cacheName, 0)
                 .copyOnRead(false).copyOnWrite(false)
                 .eternal(false)
-                .overflowToDisk(false)
+                .persistence(new PersistenceConfiguration().strategy(PersistenceConfiguration.Strategy.NONE))
                 .timeToLiveSeconds(PROJECT_CACHE_EXPIRY_SECONDS);
                 final Cache cache = new Cache(config);
                 cacheManager.addCache(cache);

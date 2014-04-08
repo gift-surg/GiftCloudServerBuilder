@@ -153,8 +153,8 @@ $page.setVlinkColor($ui.vlink)
             __projTitle.addClass('invalid');
             invalid_count++;
         }
-        if (projTitleVal.length > 199) {
-            xModalMessage('Validation', 'Please enter a ' + Project.toLowerCase() + ' title of 199 characters or less.');
+        if (projTitleVal.length > 255) {
+            xModalMessage('Validation', 'Please enter a ' + Project.toLowerCase() + ' title of 255 characters or less.');
             __projTitle.addClass('invalid');
             invalid_count++;
         }

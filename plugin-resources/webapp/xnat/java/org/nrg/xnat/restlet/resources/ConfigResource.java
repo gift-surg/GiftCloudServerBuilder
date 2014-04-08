@@ -35,6 +35,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ConfigResource extends SecureResource {
 
@@ -258,10 +260,15 @@ public class ConfigResource extends SecureResource {
 
             boolean handledStatus = false;
             //if this is a status update, do it and return
-            if (getQueryVariable("status") != null) {
+            if (hasQueryVariable("status")) {
                 //   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}
-                final boolean enable = "enabled".equals(getQueryVariable("status")) || isQueryVariableTrueHelper(getQueryVariable("status"));
-                if (enable) {
+                final String status = getQueryVariable("status");
+                final Matcher matcher = REGEX_STATUS_VALUES.matcher(status);
+                if (!matcher.matches()) {
+                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only valid values for the status flag are enabled and disabled: " + status);
+                    return;
+                }
+                if ("enabled".equals(status)) {
                     configService.enable(user.getUsername(), reason, toolName, path, projectId);
                     handledStatus = true;
                 } else {
@@ -357,4 +364,6 @@ public class ConfigResource extends SecureResource {
         }
         return path;
     }
+
+    private static final Pattern REGEX_STATUS_VALUES = Pattern.compile("(en|dis)abled");
 }

@@ -1800,6 +1800,8 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
                         if(reasons && reasons[0]){
                             reasons = "<br><br>" + reasons[0].replace(/\<\/?h3\>/g,"").replace(/[\n\r]/g,"<br>");
                             options = {width: 500, height: 400};
+                        }else{
+                            reasons = "";
                         }
                         xModalMessage('Add Folder Error', "Failed to upload files."  + reasons, "OK", options);
                     }
@@ -1849,6 +1851,8 @@ XNAT.app._addFolder = function (arg1, arg2, container) {
                     if(reasons && reasons[0]){
                         reasons = "<br><br>" + reasons[0].replace(/\<\/?h3\>/g,"").replace(/[\n\r]/g,"<br>");
                         options = {width: 500, height: 400};
+                    }else{
+                        reasons = "";
                     }
                     xModalMessage('Add Folder Error', "Failed to add folder."  + reasons, "OK", options);
                 }

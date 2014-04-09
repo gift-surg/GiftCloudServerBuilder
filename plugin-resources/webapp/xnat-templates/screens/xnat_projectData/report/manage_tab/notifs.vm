@@ -34,10 +34,12 @@
                             var message = "Failed to store emails.<br><br>";
                             var reasons = "";
                             if(o.responseText){ ## Fixes XNAT-2989
-                                var reasons = o.responseText.match(/\<h3\>(.*[\n\r])+\<\/h3\>/g);
+                                reasons = o.responseText.match(/\<h3\>(.*[\n\r])+\<\/h3\>/g);
                                 if(reasons && reasons[0]){
                                     reasons = reasons[0].replace(/\<\/?h3\>/g,"").replace(/[\n\r]/g,"<br>");
                                     options = {width: 500, height: 400};
+                                }else{
+                                    reasons = "";
                                 }
                             }
                             xModalMessage('Email Error', message + reasons, "OK", options);

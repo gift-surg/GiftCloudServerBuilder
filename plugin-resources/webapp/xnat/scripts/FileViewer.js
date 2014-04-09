@@ -1779,18 +1779,30 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 			window.viewer.refreshCatalogs("add_file");
 			this.cancel();
 			if(response.responseText){
-                var parsedResponse = YAHOO.lang.JSON.parse(response.responseText);
-                if (parsedResponse.duplicates) {
-                    var opt = xModal.message;
-                    opt.width = 500;
-                    opt.height = 500;
-                    opt.content = "The following files were not uploaded because they already exist on the server:<br><ul>";
-                    for (var index = 0; index < parsedResponse.duplicates.length; index++) {
-                        opt.content += "<li>" + parsedResponse.duplicates[index] + "</li>";
+                try{
+                    var parsedResponse = YAHOO.lang.JSON.parse(response.responseText);
+                    if (parsedResponse.duplicates) {
+                        var opt = xModal.message;
+                        opt.width = 500;
+                        opt.height = 500;
+                        opt.content = "The following files were not uploaded because they already exist on the server:<br><ul>";
+                        for (var index = 0; index < parsedResponse.duplicates.length; index++) {
+                            opt.content += "<li>" + parsedResponse.duplicates[index] + "</li>";
+                        }
+                        opt.content += "</ul>";
+                        opt.title = 'File Viewer';
+                        xModalMessage('','','',opt);
                     }
-                    opt.content += "</ul>";
-                    opt.title = 'File Viewer';
-                    xModalMessage('','','',opt);
+                }catch(err){ // Fixes XNAT-2989
+                    var options = {};
+                    if(response.responseText){
+                        var reasons = response.responseText.match(/\<h3\>(.*[\n\r])+\<\/h3\>/g);
+                        if(reasons && reasons[0]){
+                            reasons = "<br><br>" + reasons[0].replace(/\<\/?h3\>/g,"").replace(/[\n\r]/g,"<br>");
+                            options = {width: 500, height: 400};
+                        }
+                        xModalMessage('Add Folder Error', "Failed to upload files."  + reasons, "OK", options);
+                    }
                 }
 			}
 		},
@@ -1831,7 +1843,15 @@ XNAT.app._addFolder = function (arg1, arg2, container) {
             if (obj1.status == 409) {
                 xModalMessage('Add Folder Error', 'Specified resource already exists.');
             } else {
-                xModalMessage('Add Folder', obj1.toString());
+                var options = {};
+                if(obj1.responseText){ // Fixes XNAT-2989
+                    var reasons = obj1.responseText.match(/\<h3\>(.*[\n\r])+\<\/h3\>/g);
+                    if(reasons && reasons[0]){
+                        reasons = "<br><br>" + reasons[0].replace(/\<\/?h3\>/g,"").replace(/[\n\r]/g,"<br>");
+                        options = {width: 500, height: 400};
+                    }
+                    xModalMessage('Add Folder Error', "Failed to add folder."  + reasons, "OK", options);
+                }
             }
             this.cancel();
         },

@@ -343,6 +343,9 @@ public class FileList extends XNATCatalogTemplate {
                         WorkflowUtils.complete(wrk, i);
                     }
                 }
+            } catch(IllegalArgumentException e){ // XNAT-2989
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+                logger.error("", e);
             } catch (Exception e) {
                 getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
                 logger.error("", e);

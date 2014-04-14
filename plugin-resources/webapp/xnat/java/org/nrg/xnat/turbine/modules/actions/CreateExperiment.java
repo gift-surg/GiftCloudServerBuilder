@@ -33,6 +33,7 @@ public class CreateExperiment extends SecureAction {
         String project= null;
         String parent_expt_id= null;
         String visit= null;
+        String subtype= null;
         String visit_name= null;
         
         if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data))!=null)
@@ -73,6 +74,13 @@ public class CreateExperiment extends SecureAction {
         if (TurbineUtils.HasPassedParameter("visit", data)){
         	visit= (String)TurbineUtils.GetPassedParameter("visit", data);
         	context.put("visit", visit);
+        }
+
+        if (TurbineUtils.HasPassedParameter("subtype", data)){
+            subtype= (String)TurbineUtils.GetPassedParameter("subtype", data);
+            // if coming to this page from certain other pages, 'subtype' may be termed as 'protocol'
+            if (subtype == null) subtype= (String)TurbineUtils.GetPassedParameter("protocol", data);
+            context.put("subtype", subtype);
         }
         
         if (TurbineUtils.HasPassedParameter("visit_name", data)){

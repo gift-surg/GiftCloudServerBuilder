@@ -17,6 +17,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nrg.config.services.ConfigService;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
@@ -24,6 +25,8 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.utils.AppletConfig;
 import org.nrg.xnat.utils.XnatHttpUtils;
+
+import java.util.List;
 
 /**
  * @author timo
@@ -45,8 +48,14 @@ public class LaunchUploadApplet extends SecureScreen {
 		if(StringUtils.trimToEmpty((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)).equals("xnat:subjectData.ID")) {
 		    context.put("subject", StringUtils.trimToEmpty((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
 		}
-		
-		//grab the applet config. Project level if it exists, otherwise, do the site-wide
+
+        try {
+            dynamicContextExpansion(data, context);
+        } catch (Exception e) {
+            _log.error("",e);
+        }
+
+        //grab the applet config. Project level if it exists, otherwise, do the site-wide
 		ConfigService configService = XDAT.getConfigService();
 		Long projectId = null;
 		
@@ -90,4 +99,21 @@ public class LaunchUploadApplet extends SecureScreen {
 	        }
 		}
 	}
+
+    public interface ContextAction {
+        public void execute(RunData data, Context context);
+    }
+
+    private void dynamicContextExpansion(RunData data, Context context) throws Exception {
+        List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.screens.uploadApplet.context");
+
+        if(classes!=null && classes.size()>0){
+            for(Class<?> clazz: classes){
+                if(ContextAction.class.isAssignableFrom(clazz)){
+                    ContextAction action=(ContextAction)clazz.newInstance();
+                    action.execute(data, context);
+                }
+            }
+        }
+    }
 }

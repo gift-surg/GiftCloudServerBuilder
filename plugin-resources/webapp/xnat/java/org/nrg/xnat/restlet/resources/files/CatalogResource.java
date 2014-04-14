@@ -93,13 +93,23 @@ public class CatalogResource extends XNATCatalogTemplate {
 	    }
 	}
 
-	@Override
-	public boolean allowPut() {
-		return true;
-	}
-	
-	@Override
-	public void handlePut() {
+    @Override
+    public boolean allowPut() {
+        return true;
+    }
+
+    @Override
+    public boolean allowPost() {
+        return true;
+    }
+
+    @Override
+    public void handlePut() {
+        handlePost();
+    }
+
+    @Override
+    public void handlePost() {
 	    	if(failFastDueToNonEmptyFilePath()) {
 	    	    return;
 	    	}

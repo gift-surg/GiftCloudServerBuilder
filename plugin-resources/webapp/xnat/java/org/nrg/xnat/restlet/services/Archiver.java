@@ -62,7 +62,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				
 	}
 	
-	final Map<String,Object> additionalValues=new Hashtable<String,Object>();
+	final Map<String,Object> additionalValues= new HashMap<String, Object>();
 	
 	String project_id=null;
 	String overwriteV=null;
@@ -74,7 +74,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 			
 	@Override
 	public void handleParam(final String key,final Object value) throws ClientException {
-			if(value !=null){
+			//if(value !=null){
 				if(key.equals(PROJECT)){
 				additionalValues.put("project",value);
 				}else if(key.equals(PrearcUtils.PREARC_TIMESTAMP)){
@@ -93,7 +93,7 @@ public class Archiver extends BatchPrearchiveActionsA  {
 				redirect=(String)value;
 				}else{
 				additionalValues.put(key,value);
-			}
+			//}
 		}
 	}
 

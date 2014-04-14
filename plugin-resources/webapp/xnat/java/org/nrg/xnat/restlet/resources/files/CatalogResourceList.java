@@ -55,10 +55,19 @@ public class CatalogResourceList extends XNATTemplate {
         }
     }
 
+    @Override
+    public boolean allowPut() {
+        return true;
+    }
 
     @Override
     public boolean allowPost() {
         return true;
+    }
+
+    @Override
+    public void handlePut() {
+        handlePost();
     }
 
     @Override

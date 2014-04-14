@@ -13,15 +13,18 @@ package org.nrg.xnat.turbine.modules.screens;
 
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.XFTItem;
 import org.nrg.xnat.turbine.utils.ScanQualityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 
 public abstract class EditSubjectAssessorScreen extends EditScreenA {
     private final Logger logger = LoggerFactory.getLogger(EditSubjectAssessorScreen.class);
@@ -48,12 +51,31 @@ public abstract class EditSubjectAssessorScreen extends EditScreenA {
                     }
                 }
                 project = assessor.getProject();
+
+                dynamicContextExpansion(data, context, assessor);
             } else {
                 project = (String)context.get("project");
             }
             context.put("qualityLabels", ScanQualityUtils.getQualityLabels(project, TurbineUtils.getUser(data)));
         } catch(Throwable t) {
             logger.warn("error in preparing subject assessor edit screen", t);
+        }
+    }
+
+    public interface ContextAction {
+        public void execute(RunData data, Context context, ItemI item);
+    }
+
+    private void dynamicContextExpansion(RunData data, Context context, ItemI item) throws Exception {
+        List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.screens.sessionEdit.context");
+
+        if(classes!=null && classes.size()>0){
+            for(Class<?> clazz: classes){
+                if(ContextAction.class.isAssignableFrom(clazz)){
+                    ContextAction action=(ContextAction)clazz.newInstance();
+                    action.execute(data, context, item);
+                }
+            }
         }
     }
 }

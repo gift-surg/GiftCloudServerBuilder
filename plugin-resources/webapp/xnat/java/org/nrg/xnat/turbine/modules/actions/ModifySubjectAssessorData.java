@@ -43,7 +43,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class ModifySubjectAssessorData extends ModifyItem{
+public class ModifySubjectAssessorData extends ModifyItem {
     static Logger logger = Logger.getLogger(ModifySubjectAssessorData.class);
 
     /* (non-Javadoc)
@@ -88,6 +88,15 @@ public class ModifySubjectAssessorData extends ModifyItem{
             
             PersistentWorkflowI wrk=null;
             if(dbVersion!=null){
+                try {
+                    dynamicCompare(TurbineUtils.getUser(data), dbVersion, found);
+                }
+                catch (CompareException e) {
+                    data.setMessage(e.getMessage());
+                    handleException(data, found, null);
+                    return;
+                }
+
             	wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), found,newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(found.getXSIType(), dbVersion==null)));
     	    	EventMetaI c=wrk.buildEvent();
                 boolean removedReference = false;
@@ -213,6 +222,29 @@ public class ModifySubjectAssessorData extends ModifyItem{
             logger.error("",e);
             data.setMessage("Error: Item save failed.  See log for details.");
             handleException(data,(XFTItem)found,null);
+        }
+    }
+
+    public interface CompareAction {
+        public void execute(XDATUser user, XFTItem from, XFTItem to) throws Exception ;
+    }
+
+    private void dynamicCompare(XDATUser user, XFTItem from, XFTItem to) throws Exception{
+        List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.sessionEdit.compare");
+
+        if(classes!=null && classes.size()>0){
+            for(Class<?> clazz: classes){
+                if(CompareAction.class.isAssignableFrom(clazz)){
+                    CompareAction action=(CompareAction)clazz.newInstance();
+                    action.execute(user,from,to);
+                }
+            }
+        }
+    }
+
+    public static class CompareException extends Exception {
+        public CompareException(String message) {
+            super(message);
         }
     }
 

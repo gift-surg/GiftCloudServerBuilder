@@ -1771,15 +1771,16 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
 	var event_reason=(container==undefined || container.dialog==undefined)?"":container.dialog.event_reason;
 	var form = document.getElementById("file_upload");
 	YAHOO.util.Connect.setForm(form,true);
-	
-	var callback={
-		upload:function(response){
+
+    var callback = {
+        upload: function (response) {
             XNAT.app.maintainLogin = false;
             window.viewer.requiresRefresh = true;
-			window.viewer.refreshCatalogs("add_file");
-			this.cancel();
-			if(response.responseText){
-                try{
+            window.viewer.refreshCatalogs("add_file");
+            this.cancel();
+            // CNDA-497: Filtered out <pre> text, which is sent on successful completion (i.e. no message)
+            if (response.responseText && !response.responseText.match(/^<pre.*?><\/pre>$/)) {
+                try {
                     var parsedResponse = YAHOO.lang.JSON.parse(response.responseText);
                     if (parsedResponse.duplicates) {
                         var opt = xModal.message;
@@ -1791,31 +1792,29 @@ XNAT.app._uploadFile=function(arg1,arg2,container){
                         }
                         opt.content += "</ul>";
                         opt.title = 'File Viewer';
-                        xModalMessage('','','',opt);
+                        xModalMessage('', '', '', opt);
                     }
-                }catch(err){ // Fixes XNAT-2989
+                } catch (err) { // Fixes XNAT-2989
                     var options = {};
-                    if(response.responseText){
+                    if (response.responseText) {
                         var reasons = response.responseText.match(/\<h3\>(.*[\n\r])+\<\/h3\>/g);
-                        if(reasons && reasons[0]){
-                            reasons = "<br><br>" + reasons[0].replace(/\<\/?h3\>/g,"").replace(/[\n\r]/g,"<br>");
+                        if (reasons && reasons[0]) {
+                            reasons = "<br><br>" + reasons[0].replace(/\<\/?h3\>/g, "").replace(/[\n\r]/g, "<br>");
                             options = {width: 500, height: 400};
-                        }else{
-                            reasons = "";
+                            xModalMessage('Add Folder Error', "Failed to upload files." + reasons, "OK", options);
                         }
-                        xModalMessage('Add Folder Error', "Failed to upload files."  + reasons, "OK", options);
                     }
                 }
-			}
-		},
+            }
+        },
         failure: function (obj1) {
             XNAT.app.maintainLogin = false;
             xModalMessage('Upload File', obj1.toString());
             this.cancel();
         },
-        cache:false, // Turn off caching for IE
-		scope:this
-	};
+        cache: false, // Turn off caching for IE
+        scope: this
+    };
 	openModalPanel("add_file", "Uploading File.");
 	
 	var method = 'POST';

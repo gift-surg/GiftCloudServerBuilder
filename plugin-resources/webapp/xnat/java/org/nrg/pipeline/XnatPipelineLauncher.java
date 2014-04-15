@@ -12,7 +12,6 @@
 package org.nrg.pipeline;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.pipeline.client.XNATPipelineLauncher;
@@ -31,17 +30,23 @@ import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.security.UserI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class XnatPipelineLauncher {
-    static org.apache.log4j.Logger logger = Logger.getLogger(XnatPipelineLauncher.class);
+    private static final Logger logger = LoggerFactory.getLogger(XnatPipelineLauncher.class);
 
     public static final String SCHEDULE = "schedule";
     public static final boolean DEFAULT_RUN_PIPELINE_IN_PROCESS = false;
     public static final boolean DEFAULT_RECORD_WORKFLOW_ENTRIES = true;
+    public static final Pattern DEPASSWORDIFIZER = Pattern.compile("(.*)(-pwd )\\S+(.*)");
+    public static final String NOT_A_PASSWORD = "********";
 
     private String pipelineName;
     private String id, label = null;
@@ -214,10 +219,32 @@ public class XnatPipelineLauncher {
             XNATPipelineLauncher launcher = new XNATPipelineLauncher(parameters);
             success = launcher.run();
         } catch (Exception exception) {
-            logger.error(exception.getMessage() + " for in-process execution of pipeline " + pipelineName + " -pwd ******* ", exception);
+            logger.error(exception.getMessage() + " for in-process execution of pipeline " + pipelineName + " with parameters:\n" + depasswordifize(parameters), exception);
             success = false;
         }
         return success;
+    }
+
+    private String depasswordifize(final Map<String, List<String>> parameters) {
+        StringBuilder buffer = new StringBuilder();
+        for (Map.Entry<String, List<String>> parameter : parameters.entrySet()) {
+            buffer.append(" * ").append(parameter.getKey()).append(": ");
+            if (parameter.getKey().equals("-pwd")) {
+                buffer.append(NOT_A_PASSWORD);
+            } else {
+                boolean isFirst = true;
+                for (String value : parameter.getValue()) {
+                    if (isFirst) {
+                        isFirst = false;
+                    } else {
+                        buffer.append(", ");
+                    }
+                    buffer.append(value);
+                }
+            }
+            buffer.append(System.getProperty("line.separator"));
+        }
+        return buffer.toString();
     }
 
     private boolean launchExternalPipelineExecution(String cmdPrefix) {
@@ -227,7 +254,6 @@ public class XnatPipelineLauncher {
         boolean success = true;
 
         try {
-            logger.debug("Launching command: " + command + " -pwd ****** -parameter pwd=******");
         	Integer workflowPrimaryKey = null;
             if (recordWorkflowEntries) {
             	workflowPrimaryKey=initiateWorkflowEntry();
@@ -236,6 +262,9 @@ public class XnatPipelineLauncher {
             	command += " -workFlowPrimaryKey "+workflowPrimaryKey+" ";
             }
 
+            if (logger.isDebugEnabled()) {
+                logger.debug("Launching pipeline with command: " + depasswordifize(command));
+            }
             ProcessLauncher processLauncher = new ProcessLauncher();
             processLauncher.setCommand(command);
             processLauncher.start();
@@ -245,14 +274,23 @@ public class XnatPipelineLauncher {
                 success = processLauncher.getExitStatus();
             }
             if (!success) {
-                logger.error("Couldn't launch " + command + " -pwd ******");
+                logger.error("Couldn't launch " + depasswordifize(command));
             }
         } catch (Exception e) {
-            logger.error(e.getMessage() + " for command " + command + " -pwd ******* ", e);
+            logger.error(e.getMessage() + " for command " + depasswordifize(command), e);
             success = false;
         }
 
         return success;
+    }
+
+    private String depasswordifize(final String command) {
+        Matcher matcher = DEPASSWORDIFIZER.matcher(command);
+        if (matcher.matches()) {
+            return matcher.group(1) + matcher.group(2) + NOT_A_PASSWORD + matcher.group(3);
+        } else {
+            return command;
+        }
     }
 
     private String buildPipelineLauncherScriptCommand(String cmdPrefix) {

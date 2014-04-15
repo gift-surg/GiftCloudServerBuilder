@@ -6,8 +6,6 @@ GENDER:       $!item.SubjectData.GenderText
 HANDEDNESS:   $!item.SubjectData.HandedText
 ACQ. DATE:    $!item.Date
 SCANNER:      $!item.Scanner
-STABILIZATION:$!item.Stabilization
-REF. MARKER:  $!item.Marker
 INVESTIGATOR: $!item.Investigator.Firstname $!item.Investigator.Lastname
 OPERATOR:     $!item.Operator
 

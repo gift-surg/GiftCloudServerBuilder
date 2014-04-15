@@ -6,8 +6,6 @@ GENDER:       $!item.SubjectData.GenderText
 HANDEDNESS:   $!item.SubjectData.HandedText
 ACQ. DATE:    $!item.Date
 SCANNER:      $!item.Scanner
-STABILIZATION:$!item.Stabilization
-REF. MARKER:  $!item.Marker
 INVESTIGATOR: $!item.Investigator.Firstname $!item.Investigator.Lastname
 OPERATOR:     $!item.Operator
 
@@ -24,15 +22,7 @@ TYPE:        $!scan.Type
 Quality:     $!scan.Quality
 Vox res (mm):$!scan.Parameters_voxelres_x x $!scan.Parameters_voxelres_y x $!scan.Parameters_voxelres_z
 Rect. Fov:   $!scan.Parameters_fov_x/$!scan.Parameters_fov_y
-Matrix:      $!scan.Parameters_matrix_x/$!scan.Parameters_matrix_y
-Partitions:  $!scan.Parameters_partitions
 Orientation: $!scan.Parameters_orientation
-TR (ms):     $!scan.Parameters_tr
-TE (ms):     $!scan.Parameters_te
-TI (ms):     $!scan.Parameters_ti
-Flip:        $!scan.Parameters_flip
-Sequence:    $!scan.Parameters_sequence
-Origin:      $!scan.Parameters_origin
 Time:        $!scan.startTime
 Note:        $!scan.Note
 

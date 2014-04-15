@@ -74,9 +74,6 @@
 		    window.tr_visibility="";
 		  }
 		  document.getElementById("operator.tr").style.display=window.tr_visibility;
-		  document.getElementById("stab.tr").style.display=window.tr_visibility;
-		  document.getElementById("mark.tr").style.display=window.tr_visibility;
-		  document.getElementById("coil.tr").style.display=window.tr_visibility;
 		}
 		</script>	
 <tr>
@@ -104,40 +101,4 @@
 		  </td>
 		  <td></td> <!-- no hints available -->
 		</tr>
-		
-		<tr id="stab.tr" name="additional_fields" style="display:none">
-	<td>Stabilization Method</td>	<!-- align="left" -->
-	<td>
-		#if($stabilizations && $stabilizations.size()==0)
-			#xdatTextBox("xnat:ctSessionData.stabilization" $item "" $vr)
-		#else
-			#xdatSelectBoxWSingleValue("xnat:ctSessionData.stabilization" $item $stabilizations $vr)
-		#end
-	</td>
-	<td></td>	<!-- no hints available -->
-</tr>		
-
-		<tr id="mark.tr" name="additional_fields" style="display:none">
-	<td>Reference Mark</td>	<!-- align="left" -->
-	<td>
-	#if($markers && $markers.size()==0)
-		#xdatTextBox("xnat:ctSessionData.marker" $item "" $vr)
-	#else
-		#xdatSelectBoxWSingleValue("xnat:ctSessionData.marker" $item $markers $vr)
-	#end
-	</td>
-	<td></td> <!-- no hints available -->
-</tr>		
-
-		<tr id="coil.tr" name="additional_fields" style="display:none">
-	<td>Receiver coil</td>	<!-- align="left" -->
-	<td>
-	#if($coils && $coils.size()==0)
-		#xdatSelectBoxWSingleValue("xnat:ctSessionData.coil" $item $coils $vr)
-	#else
-		#xdatTextBox("xnat:ctSessionData.coil" $item "" $vr)
-	#end
-	</td>
-	<td></td> <!-- no hints available -->
-</tr>
 <!-- END /xnat-templates/screens/xnat_ctSessionData/upload/fields.vm -->

@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.om.XnatAbstractprotocol;
 import org.nrg.xdat.om.XnatDatatypeprotocol;
 import org.nrg.xdat.om.XnatProjectdata;
@@ -66,7 +67,7 @@ public class ProtocolResource extends ItemResource {
 		try {
 			XFTItem template=null;
 			if (existing!=null){
-				template=existing.getItem();
+				template=existing.getItem().getCurrentDBVersion();
 			}
 			
 			XFTItem item=this.loadItem("xnat:datatypeProtocol",true,template);
@@ -126,6 +127,9 @@ public class ProtocolResource extends ItemResource {
 		} catch (SAXParseException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
 			logger.error("",e);
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);

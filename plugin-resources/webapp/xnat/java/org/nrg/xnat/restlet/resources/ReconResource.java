@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
@@ -213,6 +214,9 @@ public class ReconResource extends ItemResource {
 			}else{
 				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only reconstruction documents can be PUT to this address.");
 			}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (InvalidValueException e) {
 			logger.error("",e);
 		} catch (Exception e) {

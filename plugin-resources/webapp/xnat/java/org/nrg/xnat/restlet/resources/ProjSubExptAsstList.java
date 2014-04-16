@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.*;
@@ -246,7 +247,6 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 					return;
 	            }
-				
 	            
 	            create(assessor, false, allowDataDeletion, newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.getAddModifyAction(assessor.getXSIType(), (existing==null))));
 
@@ -256,10 +256,13 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");
 				}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			logger.error("",e);
-			} catch (Exception e) {
+		} catch (Exception e) {
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);
 			}

@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -245,7 +246,10 @@ public class ProjectResource extends ItemResource {
                 } else {
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User account doesn't have permission to edit this project.");
                 }
-            } catch (InvalidPermissionException e) {
+            } catch (ActionException e) {
+    			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+    			return;
+    		} catch (InvalidPermissionException e) {
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
             } catch (IllegalArgumentException e) {
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());

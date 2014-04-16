@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.model.XnatProjectdataI;
 import org.nrg.xdat.model.XnatProjectparticipantI;
@@ -93,7 +94,7 @@ public class SubjectResource extends ItemResource {
         try {
             XFTItem template = null;
             if (existing != null) {
-                template = existing.getItem();
+                template = existing.getItem().getCurrentDBVersion();
             }
 
             XFTItem item = this.loadItem("xnat:subjectData", true, (this.isQueryVariableFalse("loadExisting")) ? null : template);
@@ -301,7 +302,21 @@ public class SubjectResource extends ItemResource {
                     try {
                         // If the label was changed, re apply the anonymization script on all the subject's imaging sessions.
                         boolean applyAnonScript = (null != existing && existing.getLabel().equals(sub.getLabel()));
-                        
+ 						
+						
+
+						//check for unexpected modifications of ID and Project
+						if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getId(),sub.getId())){
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"ID cannot be modified");
+							return;
+						}
+						
+						if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getProject(),sub.getProject())){
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Project must be modified through separate URI.");
+							return;
+						}                       
+
+
                         // Save the experiment.
                         if (SaveItemHelper.authorizedSave(sub, user, false, this.isQueryVariableTrue("allowDataDeletion"), c)) {
                             WorkflowUtils.complete(wrk, c);
@@ -337,7 +352,10 @@ public class SubjectResource extends ItemResource {
         } catch (InvalidValueException e) {
             this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             logger.error("", e);
-        } catch (Exception e) {
+        } catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
+		} catch (Exception e) {
             this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
             logger.error("", e);
         }

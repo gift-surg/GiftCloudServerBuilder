@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.om.XdatStoredSearch;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -113,6 +114,9 @@ public class ProjectListResource extends QueryOrganizerResource {
 					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
 				}
 			}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			e.printStackTrace();

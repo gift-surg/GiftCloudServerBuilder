@@ -13,6 +13,7 @@ package org.nrg.xnat.restlet.resources;
 import java.util.Date;
 
 import org.apache.axis.utils.StringUtils;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.om.WrkWorkflowdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
@@ -93,6 +94,9 @@ public class WorkflowResource extends ItemResource {
 			EventMetaI c = EventUtils.DEFAULT_EVENT(user, "Workflow Update");
 			SaveItemHelper.authorizedSave(item, user, false, false, c);
 
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		}catch(Exception e){ 
 			log.error("Unable to save Workflow.", e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.toString());
@@ -118,6 +122,9 @@ public class WorkflowResource extends ItemResource {
 				Date launch_time   = item.getDateProperty("launch_time");
 				String id            = item.getStringProperty("id");
 				workflow = (WrkWorkflowdata)WorkflowUtils.getUniqueWorkflow(user, pipeline_name, id, launch_time);
+			} catch (ActionException e) {
+				this.getResponse().setStatus(e.getStatus(),e.getMessage());
+				return null;
 			}catch(Exception e) { 
 				log.error("Unable to find Workflow.", e);
 			}

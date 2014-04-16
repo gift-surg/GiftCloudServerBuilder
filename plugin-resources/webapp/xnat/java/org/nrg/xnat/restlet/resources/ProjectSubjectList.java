@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.model.XnatProjectparticipantI;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatProjectparticipant;
@@ -171,6 +172,9 @@ public class ProjectSubjectList extends QueryOrganizerResource {
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");
 				}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (SAXParseException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
 		} catch (InvalidValueException e) {

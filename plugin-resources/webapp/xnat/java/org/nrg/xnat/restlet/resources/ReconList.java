@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.*;
 import org.nrg.xft.XFTItem;
@@ -243,10 +244,13 @@ public class ReconList extends QueryOrganizerResource {
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only Scan documents can be PUT to this address.");
 				}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			logger.error("",e);
-			} catch (Exception e) {
+		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 	            logger.error("",e);
 			}

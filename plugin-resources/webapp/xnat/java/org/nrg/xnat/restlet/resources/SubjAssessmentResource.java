@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.transaction.TransactionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
@@ -157,12 +158,12 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 
 	@Override
 	public void handlePut() {
-	        XFTItem item = null;			
+        XFTItem item = null;			
 
-			try {
+		try {
 			XFTItem template=null;
 			if (existing!=null){
-				template=existing.getItem();
+				template=existing.getItem().getCurrentDBVersion();
 			}
 
 			item=this.loadItem(null,true,template);
@@ -437,7 +438,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						if(this.getQueryVariable("label")!=null && !this.getQueryVariable("label").equals("") ){
 							if(!expt.getLabel().equals(existing.getLabel())){
 								expt.setLabel(existing.getLabel());
-						}
+							}
 							String label=this.getQueryVariable("label");
 
 							if(!label.equals(existing.getLabel())){
@@ -520,6 +521,26 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					try {
 						// Preserve the previous version of the experiment before we save it. 
 						XnatSubjectassessordata previous  = getExistingExperiment(expt);
+
+						
+
+						//check for unexpected modifications of ID, Project and label
+						if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getId(),expt.getId())){
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"ID cannot be modified");
+							return;
+						}
+						
+						if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getProject(),expt.getProject())){
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Project must be modified through separate URI.");
+							return;
+						}
+						
+						//MATCHED
+						if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getLabel(),expt.getLabel())){
+							this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Label must be modified through separate URI.");
+							return;
+						}
+			            
 						
 						if(SaveItemHelper.authorizedSave(expt,user,false,allowDataDeletion,c)){
 							WorkflowUtils.complete(wrk, c);
@@ -588,8 +609,11 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			logger.error("",e);
-			} catch (Exception e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);
 		}
 	}

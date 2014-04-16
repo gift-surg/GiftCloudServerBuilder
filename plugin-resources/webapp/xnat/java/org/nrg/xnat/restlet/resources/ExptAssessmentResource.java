@@ -10,6 +10,7 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.model.XnatProjectdataI;
@@ -110,7 +111,7 @@ public class ExptAssessmentResource extends ItemResource {
 		try {
 			XFTItem template=null;
 			if (existing!=null && !this.isQueryVariableTrue("allowDataDeletion")){
-				template=existing.getItem();
+				template=existing.getItem().getCurrentDBVersion();
 			}
 
 			item=this.loadItem(null,true,template);
@@ -327,8 +328,23 @@ public class ExptAssessmentResource extends ItemResource {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
 						return;
 					}
+
+					//check for unexpected modifications of ID, Project and label
+					if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getId(),assessor.getId())){
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"ID cannot be modified");
+						return;
+					}
 					
+					if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getProject(),assessor.getProject())){
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Project must be modified through separate URI.");
+						return;
+					}
 					
+					//MATCHED
+					if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getLabel(),assessor.getLabel())){
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Label must be modified through separate URI.");
+						return;
+					}
 
 					create(assessor, false, allowDataDeletion, newEventInstance(EventUtils.CATEGORY.DATA,(getAction()!=null)?getAction():EventUtils.getAddModifyAction(assessor.getXSIType(), (existing==null))));
 
@@ -341,6 +357,9 @@ public class ExptAssessmentResource extends ItemResource {
 			}
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);

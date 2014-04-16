@@ -11,6 +11,7 @@
 package org.nrg.xnat.restlet.resources;
 
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.XnatExperimentdataShare;
@@ -165,7 +166,7 @@ public class SubjVisitResource extends QueryOrganizerResource {
 		try {
 			XFTItem template=null;
 			if (existing!=null){
-				template=existing.getItem();
+				template=existing.getItem().getCurrentDBVersion();
 			}
 
 			item=this.loadItem(null,true,template);
@@ -306,7 +307,6 @@ public class SubjVisitResource extends QueryOrganizerResource {
 					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project must be modified through separate URI.");
 					return;
 				}
-
 				if(!user.canEdit(visit)){
 					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient edit privileges for visits in this project.");
 					return;
@@ -407,6 +407,22 @@ public class SubjVisitResource extends QueryOrganizerResource {
 				return;
 			}
 
+			//check for unexpected modifications of ID, Project and label
+			if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getId(),visit.getId())){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"ID cannot be modified");
+				return;
+			}
+						
+			if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getProject(),visit.getProject())){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Project must be modified through separate URI.");
+				return;
+			}
+			
+			if(existing !=null && !org.apache.commons.lang.StringUtils.equals(existing.getLabel(),visit.getLabel())){
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Label must be modified through separate URI.");
+				return;
+			}
+
 			if(SaveItemHelper.authorizedSave(visit,user,false,allowDataDeletion,wrk.buildEvent())){
 				user.clearLocalCache();
 				MaterializedView.DeleteByUser(user);
@@ -430,6 +446,14 @@ public class SubjVisitResource extends QueryOrganizerResource {
 					WorkflowUtils.fail(wrk, wrk.buildEvent());
 				} catch (Exception e1) {
 				}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			try {
+				if(wrk!=null)
+				WorkflowUtils.fail(wrk, wrk.buildEvent());
+			} catch (Exception e1) {
+			}
+			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			logger.error("",e);

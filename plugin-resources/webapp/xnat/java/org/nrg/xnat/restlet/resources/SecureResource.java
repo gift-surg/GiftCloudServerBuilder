@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
 import org.nrg.config.services.ConfigService;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.framework.utilities.Reflection;
@@ -67,6 +68,7 @@ import org.restlet.data.*;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.resource.*;
 import org.restlet.util.Series;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -537,11 +539,11 @@ public abstract class SecureResource extends Resource {
 
     protected boolean completeDocument = false;
 
-    public XFTItem loadItem(String dataType, boolean parseFileItems) throws IOException, SAXParseException {
+    public XFTItem loadItem(String dataType, boolean parseFileItems) throws ClientException,ServerException {
         return loadItem(dataType, parseFileItems, null);
     }
 
-    public XFTItem loadItem(String dataType, boolean parseFileItems, XFTItem template) throws IOException, SAXParseException {
+    public XFTItem loadItem(String dataType, boolean parseFileItems, XFTItem template) throws ClientException,ServerException {
         XFTItem item = null;
         if (template != null && populateFromDB()) {
             item = template;
@@ -557,7 +559,7 @@ public abstract class SecureResource extends Resource {
             }
         }
 
-        if (req_format.equals("xml") && parseFileItems && !isQueryVariableTrue("inbody")) {
+        if (parseFileItems && (req_format.equals("xml") || isQueryVariableTrue("inbody"))) {
             if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
                 try {
                     org.apache.commons.fileupload.DefaultFileItemFactory factory = new DefaultFileItemFactory();
@@ -584,26 +586,33 @@ public abstract class SecureResource extends Resource {
                                     completeDocument = true;
                                 }
                             } catch (SAXParseException e) {
-                                e.printStackTrace();
+                                logger.error("",e);
                                 getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
-                                throw e;
+                                throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                logger.error("",e);
                                 getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+                            } catch (SAXException e) {
+                                logger.error("",e);
+                                getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
+                                throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
+							} catch (Exception e) {
+                                logger.error("",e);
                                 getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+                                throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
                             }
                         }
                     }
                 } catch (FileUploadException e) {
                     logger.error("Error during file upload", e);
                     getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "Error during file upload");
+                    throw new ServerException(Status.SERVER_ERROR_INTERNAL,e);
                 }
             } else {
                 if (entity != null) {
-                    Reader sax = entity.getReader();
                     try {
+                        Reader sax = entity.getReader();
 
                         SAXReader reader = new SAXReader(user);
                         if (item != null) {
@@ -622,16 +631,22 @@ public abstract class SecureResource extends Resource {
                             completeDocument = true;
                         }
 
-                    } catch (SAXParseException e) {
-                        e.printStackTrace();
+                    }catch (SAXParseException e) {
+                        logger.error("",e);
                         getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
-                        throw e;
+                        throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error("",e);
                         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+                    } catch (SAXException e) {
+                        logger.error("",e);
+                        getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
+                        throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
+					} catch (Exception e) {
+                        logger.error("",e);
                         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+                        throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
                     }
                 }
             }
@@ -662,11 +677,11 @@ public abstract class SecureResource extends Resource {
                     item = populater.getItem();
                 }
             } catch (XFTInitException e) {
-                e.printStackTrace();
+                throw new ServerException(e);
             } catch (ElementNotFoundException e) {
-                e.printStackTrace();
+                throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e);
             } catch (FieldNotFoundException e) {
-                e.printStackTrace();
+                
             }
         }
 
@@ -707,11 +722,11 @@ public abstract class SecureResource extends Resource {
                 item = populater.getItem();
             }
         } catch (XFTInitException e) {
-            logger.error("", e);
+            throw new ServerException(e);
         } catch (ElementNotFoundException e) {
-            logger.error("", e);
+            throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e);
         } catch (FieldNotFoundException e) {
-            logger.error("", e);
+            
         }
         return item;
     }

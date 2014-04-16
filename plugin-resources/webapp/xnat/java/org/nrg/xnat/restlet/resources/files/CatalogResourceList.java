@@ -11,6 +11,7 @@
 package org.nrg.xnat.restlet.resources.files;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.om.*;
 import org.nrg.xft.XFTItem;
@@ -170,7 +171,10 @@ public class CatalogResourceList extends XNATTemplate {
             }else{
                 getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only ResourceCatalog documents can be PUT to this address.");
             }
-        } catch (Exception e) {
+        } catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			return;
+		} catch (Exception e) {
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
             logger.error("",e);
         }

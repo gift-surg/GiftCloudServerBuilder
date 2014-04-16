@@ -11,6 +11,7 @@
 package org.nrg.xnat.restlet.resources;
 
 import org.apache.log4j.Logger;
+import org.nrg.action.ActionException;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.XnatExperimentdataShare;
@@ -280,6 +281,14 @@ public class ProjSubVisitList extends QueryOrganizerResource {
 				}else{
 					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Pvisitdata documents can be POSTed to this address.");
 				}
+		} catch (ActionException e) {
+			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			try {
+				if(wrk!=null)
+				WorkflowUtils.fail(wrk, wrk.buildEvent());
+			} catch (Exception e1) {
+			}
+			return;
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 			logger.error("",e);

@@ -543,30 +543,43 @@ public abstract class SecureResource extends Resource {
         return loadItem(dataType, parseFileItems, null);
     }
 
+    /**
+     * Attempts to generate a XFTItem based on the contents of the submitted request
+     * If the content-type is multi-part form data, the form entries will be reviewed for xml files that can be parsed.
+     * If the content-type is text/xml OR req_format=xml OR inbody=true, then the body of the message will be parsed as an xml document.
+     * If the req_format=form OR content-type is application_www_form, or multi-part_all, then the individual parameters of the submitted form will be reviewed as individual parameters for the XFTItem.
+     * No matter which format is submitted, the query string parameters will be parsed to add individual parameters to the generated XFTItem.  These will override values from the previous methods.
+     * 
+     * @param dataType - xsi:type of object to be created.
+     * @param parseFileItems - set to false if you are expecting something else to be in the body of the message, and don't want it parsed.
+     * @param template - item to add parameters to.
+     * @return
+     * @throws ClientException - Client Side exception
+     * @throws ServerException - Server Side exception
+     */
     public XFTItem loadItem(String dataType, boolean parseFileItems, XFTItem template) throws ClientException,ServerException {
         XFTItem item = null;
         if (template != null && populateFromDB()) {
             item = template;
         }
+        
+        Representation entity = getRequest().getEntity();
 
         String req_format = getQueryVariable("req_format");
-        Representation entity = getRequest().getEntity();
         if (req_format == null) {
-            if ((entity == null || (entity.getSize() == 0) || (entity.getSize() == -1) || (entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName()) && !(parseFileItems)))) {
-                req_format = "";
-            } else {
-                req_format = "xml";
-            }
+            req_format = "";
         }
 
-        if (parseFileItems && (req_format.equals("xml") || isQueryVariableTrue("inbody"))) {
-            if (entity != null && entity.getMediaType() != null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())) {
+        if (parseFileItems) {
+            if ((RequestUtil.hasContent(entity) && RequestUtil.compareMediaType(entity, MediaType.MULTIPART_FORM_DATA)) && !req_format.equals("form")) {
+            	//handle multi part form data (where xml is being submitted as a field in a multi part form)
+            	//req_format is checked to allow the body parsing to use the form method rather then file fields.
                 try {
                     org.apache.commons.fileupload.DefaultFileItemFactory factory = new DefaultFileItemFactory();
                     org.restlet.ext.fileupload.RestletFileUpload upload = new RestletFileUpload(factory);
 
                     List<FileItem> items = upload.parseRequest(getRequest());
-
+                    
                     for (FileItem fi : items) {
                         if (fi.getName().endsWith(".xml")) {
                             SAXReader reader = new SAXReader(user);
@@ -609,48 +622,47 @@ public abstract class SecureResource extends Resource {
                     getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "Error during file upload");
                     throw new ServerException(Status.SERVER_ERROR_INTERNAL,e);
                 }
-            } else {
-                if (entity != null) {
-                    try {
-                        Reader sax = entity.getReader();
+            } else if(RequestUtil.hasContent(entity) && (RequestUtil.compareMediaType(entity, MediaType.TEXT_XML) || req_format.equals("xml") || isQueryVariableTrue("inbody"))){
+                //handle straight xml data
+                try {
+                    Reader sax = entity.getReader();
 
-                        SAXReader reader = new SAXReader(user);
-                        if (item != null) {
-                            reader.setTemplate(item);
-                        }
-
-                        item = reader.parse(sax);
-
-                        if (!reader.assertValid()) {
-                            throw reader.getErrors().get(0);
-                        }
-                        if (XFT.VERBOSE) {
-                            System.out.println("Loaded XML Item:" + item.getProperName());
-                        }
-                        if (item != null) {
-                            completeDocument = true;
-                        }
-
-                    }catch (SAXParseException e) {
-                        logger.error("",e);
-                        getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
-                        throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
-                    } catch (IOException e) {
-                        logger.error("",e);
-                        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-                        throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
-                    } catch (SAXException e) {
-                        logger.error("",e);
-                        getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
-                        throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
-					} catch (Exception e) {
-                        logger.error("",e);
-                        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-                        throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+                    SAXReader reader = new SAXReader(user);
+                    if (item != null) {
+                        reader.setTemplate(item);
                     }
+
+                    item = reader.parse(sax);
+
+                    if (!reader.assertValid()) {
+                        throw reader.getErrors().get(0);
+                    }
+                    if (XFT.VERBOSE) {
+                        System.out.println("Loaded XML Item:" + item.getProperName());
+                    }
+                    if (item != null) {
+                        completeDocument = true;
+                    }
+
+                }catch (SAXParseException e) {
+                    logger.error("",e);
+                    getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
+                    throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
+                } catch (IOException e) {
+                    logger.error("",e);
+                    getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+                    throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
+                } catch (SAXException e) {
+                    logger.error("",e);
+                    getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage());
+                    throw new ClientException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e);
+				} catch (Exception e) {
+                    logger.error("",e);
+                    getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+                    throw new ServerException(Status.SERVER_ERROR_INTERNAL, e);
                 }
             }
-        } else if (req_format.equals("form")) {
+        } else if (req_format.equals("form") || RequestUtil.isMultiPartFormData(entity)) {
             try {
                 Map<String, String> params = getBodyVariableMap();
 

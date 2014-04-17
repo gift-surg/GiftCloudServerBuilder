@@ -96,6 +96,24 @@ public class RequestUtil {
 			return false;
 		}
 	}
+
+	public static <T extends MediaType> boolean compareMediaType(Representation entity, T... mts){
+		if(entity==null || entity.getMediaType()==null){
+			return false;
+		}
+		
+		for(MediaType mt: mts){
+			if(mt.equals(entity.getMediaType())){
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	public static boolean hasContent(Representation entity){
+		return !(entity == null || (entity.getSize() == 0) || (entity.getSize() == -1));
+	}
 	
 	public  static boolean isMultiPartFormData(Representation entity){
 		if(entity==null || entity.getMediaType()==null){

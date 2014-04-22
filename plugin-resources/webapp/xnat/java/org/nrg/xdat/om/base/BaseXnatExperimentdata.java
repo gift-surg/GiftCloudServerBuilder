@@ -914,4 +914,18 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
 
         return workflows;
     }
+
+    public XnatExperimentdata getLightCopy() throws XFTInitException, ElementNotFoundException {
+        XFTItem item = XFTItem.NewItem(this.getXSIType(), this.getUser());
+        XnatExperimentdata new_expt=(XnatExperimentdata) BaseElement.GetGeneratedItem(item);
+        new_expt.setId(this.getId());
+        new_expt.setLabel(this.getLabel());
+        new_expt.setProject(this.getProject());
+        if (this instanceof XnatSubjectassessordata) {
+            ((XnatSubjectassessordata) new_expt).setSubjectId(((XnatSubjectassessordata) this).getSubjectId());
+        } else if (this instanceof XnatImageassessordata) {
+            ((XnatImageassessordata) new_expt).setImagesessionId(((XnatImageassessordata) this).getImagesessionId());
+        }
+        return new_expt;
+    }
 }

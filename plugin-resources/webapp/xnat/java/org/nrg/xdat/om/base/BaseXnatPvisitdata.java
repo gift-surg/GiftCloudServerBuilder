@@ -15,14 +15,12 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatExperimentdataShare;
-import org.nrg.xdat.om.XnatPvisitdata;
-import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.auto.AutoXnatPvisitdata;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.ItemI;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.db.ViewManager;
@@ -225,8 +223,9 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
 	                        //grab the experiment, clear out visit and save...
 	   	                    XnatExperimentdata frank = XnatExperimentdata.getXnatExperimentdatasById(exptID.toString(), user, true);    
 	   	                    if(org.apache.commons.lang.StringUtils.equalsIgnoreCase(frank.getVisit(), visitId)){
-	   	                    	frank.setProperty("xnat:experimentdata/visit", null);
-	   	                    	SaveItemHelper.authorizedSave(frank, user, true, false, c);
+                                XnatExperimentdata new_expt = frank.getLightCopy();
+                                new_expt.setProperty("xnat:experimentdata/visit", "NULL");
+	   	                    	SaveItemHelper.authorizedSave(frank, user, false, false, c);
 	   	                    } else {
 	   	                    	//the visit must be in the shared project, then. So, we need to clear that out...
 	   	                    	//TODO: implement this.

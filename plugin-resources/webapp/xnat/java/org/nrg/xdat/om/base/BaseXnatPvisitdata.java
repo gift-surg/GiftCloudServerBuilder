@@ -225,7 +225,7 @@ public class BaseXnatPvisitdata extends AutoXnatPvisitdata implements Comparable
 	   	                    if(org.apache.commons.lang.StringUtils.equalsIgnoreCase(frank.getVisit(), visitId)){
                                 XnatExperimentdata new_expt = frank.getLightCopy();
                                 new_expt.setProperty("xnat:experimentdata/visit", "NULL");
-	   	                    	SaveItemHelper.authorizedSave(frank, user, false, false, c);
+	   	                    	SaveItemHelper.authorizedSave(new_expt, user, false, false, c);
 	   	                    } else {
 	   	                    	//the visit must be in the shared project, then. So, we need to clear that out...
 	   	                    	//TODO: implement this.

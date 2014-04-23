@@ -1,39 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="plugin-resources/webapp/xnat/java"/>
-    <classpathentry kind="src" path="projects/xnat/src/java"/>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
-    <classpathentry combineaccessrules="false" kind="src" path="/core"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-2.7.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/aopalliance/jars/aopalliance-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/apa-webcontent/jars/apa-webcontent-1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/avalon-framework/jars/avalon-framework-4.1.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/axis/jars/axis-1_3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/axis/jars/axis.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/axis-ant/jars/axis-ant-1_3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/axis-schema/jars/axis-schema-1_3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/batik/jars/batik-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/cglib/jars/com.springsource.net.sf.cglib-2.2.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/com.h2database/jars/h2-1.2.147.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-collections/jars/commons-collections-3.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.4.jar" sourcepath="plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.4-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.4-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-digester/jars/commons-digester-1.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-discovery/jars/commons-discovery-0.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-email/jars/commons-email-1.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.2.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-httpclient/jars/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="src" path="plugin-resources/webapp/xnat/java"/>
+	<classpathentry kind="src" path="projects/xnat/src/java"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
+	<classpathentry kind="src" path="plugin-resources/conf/groovy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/groovy-all-2.2.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/ezmorph-1.0.6.jar" sourcepath="plugin-resources/repository/groovy/jars/ezmorph-1.0.6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/ezmorph-1.0.6-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/http-builder-0.7.1.jar" sourcepath="plugin-resources/repository/groovy/jars/http-builder-0.7.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/http-builder-0.7.1-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/json-lib-2.3-jdk15.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/nekohtml-1.9.16.jar" sourcepath="plugin-resources/repository/groovy/jars/nekohtml-1.9.16-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/nekohtml-1.9.16-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/xml-resolver-1.2.jar" sourcepath="plugin-resources/repository/groovy/jars/xml-resolver-1.2-sources.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/antlr/jars/antlr-runtime-3.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/aopalliance/jars/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/apa-webcontent/jars/apa-webcontent-1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/avalon-framework/jars/avalon-framework-4.1.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/axis/jars/axis-1_3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/axis/jars/axis.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/axis-ant/jars/axis-ant-1_3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/axis-schema/jars/axis-schema-1_3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/batik/jars/batik-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/cglib/jars/com.springsource.net.sf.cglib-2.2.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/com.h2database/jars/h2-1.2.147.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-collections/jars/commons-collections-3.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.4.jar" sourcepath="plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-dbcp/jars/commons-dbcp-1.4-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-digester/jars/commons-digester-1.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-discovery/jars/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-email/jars/commons-email-1.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-fileupload/jars/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-httpclient/jars/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-io/jars/commons-io-2.4.jar" sourcepath="plugin-resources/repository/commons-io/jars/commons-io-2.4-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-io/jars/commons-io-2.4-javadoc.jar"/>
@@ -44,226 +63,237 @@
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-lang/jars/commons-lang-2.6-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-logging/jars/commons-logging-1.0.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar" sourcepath="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/activemq-core-5.7.0.jar" sourcepath="plugin-resources/repository/activemq/jars/activemq-core-5.7.0-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="http://activemq.apache.org/maven/5.7.0/apidocs"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/geronimo-jms_1.1_spec-1.1.1.jar" sourcepath="plugin-resources/repository/activemq/jars/geronimo-jms_1.1_spec-1.1.1-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-jms-3.0.7.RELEASE.jar" sourcepath="plugin-resources/repository/spring/jars/spring-jms-3.0.7.RELEASE-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="http://static.springsource.org/spring/docs/3.0.x/javadoc-api"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/xbean/jars/xbean-spring-3.13.jar" sourcepath="plugin-resources/repository/xbean/jars/xbean-spring-3.13-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources\repository\xbean\jars\xbean-spring-3.13-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/geronimo-j2ee-management_1.1_spec-1.0.1.jar" sourcepath="plugin-resources/repository/activemq/jars/geronimo-j2ee-management_1.1_spec-1.0.1-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/kahadb-5.7.0.jar" sourcepath="plugin-resources/repository/activemq/jars/kahadb-5.7.0-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\kahadb-5.7.0-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/commons-pool/jars/commons-pool-1.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/cryptix/jars/cryptix-3.2.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-image-2.0.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-2.0.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.4-SNAPSHOT.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-4.0.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-4.0.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.3.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-4.1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai_imageio-1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.3.jar" sourcepath="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.3-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources/repository/dcm/jars/SessionBuilders-1.6.3-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-
-    <classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.6.6.jar" sourcepath="plugin-resources/repository/ehcache/jars/ehcache-core-2.6.6-sources.jar">
-        <attributes>
-            <attribute name="javadoc_location" value="file:plugin-resources/repository/ehcache/jars/ehcache-core-2.6.6-javadoc.jar"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/excalibur-instrument/jars/excalibur-instrument-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/excalibur-logger/jars/excalibur-logger-1.0.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/excalibur-pool/jars/excalibur-pool-1.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/fast-md5/jars/fast-md5-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/fop/jars/fop-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/gnu/jars/java-getopt-1.0.13.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-10.0.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-commons-annotations-3.2.0.Final.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-core-3.6.10.Final.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-validator-4.3.1.Final.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/hsqldb/jars/hsqldb-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/httpclient/jars/httpclient-4.0-beta2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/httpcore/jars/httpcore-4.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/httpcore/jars/httpcore-nio-4.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.43u.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/isorelax/jars/isorelax-20041111.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/iText/jars/itext-2.0.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-mapper-asl-1.8.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jaf/jars/activation-1.0.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jakarta-regexp/jars/jakarta-regexp-1.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/javamail/jars/javamail-1.4.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/javassist/jars/javassist-3.16.1-GA.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/javax/jars/javax.inject-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/javax.persistence/jars/persistence-api-1.0.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/javax.validation/jars/validation-api-1.0.0.GA.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jaxrpc/jars/jaxrpc-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jcs/jars/jcs-20030822.182132.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jdom/jars/jdom-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jndi/jars/jndi-1.2.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/json/jars/json-20090211.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jsr173_1.0_api/jars/jsr173_1.0_api-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jta/jars/jta-1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/junit/jars/junit-4.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/jython/jars/jython-2.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/log4jr/jars/log4jr-server-0.1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/logkit/jars/logkit-1.0.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/milton/jars/milton-api-1.5.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/milton/jars/milton-servlet-1.5.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/mockito/jars/mockito-all-1.8.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/msv-20070407.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.apache.xmlbeans/jars/xmlbeans-2.4.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.jasypt/jars/jasypt-1.7.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/org.ostermiller/jars/utils-1.07.00.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/oro/jars/oro-2.0.7.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_pipeline-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_tools-1.6.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/plexiviewer-1.6.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/com.noelios.restlet-1.1.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/com.noelios.restlet.ext.servlet_2.5-1.1.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/org.restlet-1.1.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/org.restlet.ext.fileupload_1.2-1.1.6.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/saaj/jars/saaj-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/saxon8/jars/saxon8-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/saxon8-dom/jars/saxon8-dom-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/saxon8-xpath/jars/saxon8-xpath-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/servletapi/jars/servletapi-2.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.5.8.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.beans-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context.support-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.core-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.expression-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.jdbc-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.orm-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.oxm-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.7.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-ldap-1.3.1.RELEASE-all.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-acl-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-aspects-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-config-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-core-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-ldap-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-openid-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-web-3.0.8.RELEASE.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/gsi-classes-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon_v1.5.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/stratum/jars/stratum-1.0-b5.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/torque/jars/torque-3.1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/torque/plugins/maven-torque-plugin-3.1.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/turbine/jars/turbine-2.3.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/turbine/plugins/maven-turbine-plugin-1.2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/uuid/jars/java-uuid-generator-3.1.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.3.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.4-dev.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/village/jars/village-2.0-dev-20030825.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/wsdl4j/jars/wsdl4j-1.5.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xalan/jars/xalan-2.5.1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xbean/jars/xbean-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xbean_xpath/jars/xbean_xpath-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcget-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFileCatalog-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-refreshUserSession-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-restClient-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-search-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-store-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-storeXAR-1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xerces-J_1.4.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xercesImpl-2.4.0.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="output" path="ide-bin"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-logging/jars/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-math/jars/commons-math-2.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-net/jars/commons-net-3.1.jar" sourcepath="plugin-resources/repository/commons-net/jars/commons-net-3.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-net/jars/commons-net-3.1-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/activemq-core-5.7.0.jar" sourcepath="plugin-resources/repository/activemq/jars/activemq-core-5.7.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://activemq.apache.org/maven/5.7.0/apidocs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/geronimo-jms_1.1_spec-1.1.1.jar" sourcepath="plugin-resources/repository/activemq/jars/geronimo-jms_1.1_spec-1.1.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\geronimo-jms_1.1_spec-1.1.1-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-jms-3.0.7.RELEASE.jar" sourcepath="plugin-resources/repository/spring/jars/spring-jms-3.0.7.RELEASE-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://static.springsource.org/spring/docs/3.0.x/javadoc-api"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/xbean/jars/xbean-spring-3.13.jar" sourcepath="plugin-resources/repository/xbean/jars/xbean-spring-3.13-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\xbean\jars\xbean-spring-3.13-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/geronimo-j2ee-management_1.1_spec-1.0.1.jar" sourcepath="plugin-resources/repository/activemq/jars/geronimo-j2ee-management_1.1_spec-1.0.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\geronimo-j2ee-management_1.1_spec-1.0.1-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/activemq/jars/kahadb-5.7.0.jar" sourcepath="plugin-resources/repository/activemq/jars/kahadb-5.7.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources\repository\activemq\jars\kahadb-5.7.0-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-pool/jars/commons-pool-1.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/cryptix/jars/cryptix-3.2.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-core-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-image-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-imageio-rle-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-iod-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dcm4che-net-2.0.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.4-SNAPSHOT.jar" sourcepath="plugin-resources/repository/dcm/jars/dicom-xnat-mx-1.6.4-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-sop-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/dicom-xnat-util-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomDB-4.0.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomEdit-4.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomImageUtils-1.0.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/DicomUtils-1.3.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/ExtAttr-4.1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-codec-1.1.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai-core-1.1.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/jai_imageio-1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/PrearcImporter-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.3.jar" sourcepath="plugin-resources/repository/dcm/jars/SessionBuilders-1.6.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/dcm/jars/SessionBuilders-1.6.3-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/dom4j/jars/dom4j-1.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/ecat/jars/ecat4xnat-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/ecs/jars/ecs-1.4.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/ehcache/jars/ehcache-core-2.6.6.jar" sourcepath="plugin-resources/repository/ehcache/jars/ehcache-core-2.6.6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/ehcache/jars/ehcache-core-2.6.6-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/excalibur-component/jars/excalibur-component-1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/excalibur-instrument/jars/excalibur-instrument-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/excalibur-logger/jars/excalibur-logger-1.0.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/excalibur-pool/jars/excalibur-pool-1.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/fast-md5/jars/fast-md5-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/fop/jars/fop-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/gnu/jars/java-getopt-1.0.13.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/guava/jars/guava-10.0.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-commons-annotations-3.2.0.Final.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-core-3.6.10.Final.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/hibernate/jars/hibernate-validator-4.3.1.Final.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/hsqldb/jars/hsqldb-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/httpclient/jars/httpclient-4.3.3.jar" sourcepath="plugin-resources/repository/httpclient/jars/httpclient-4.3.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/httpclient/jars/httpclient-4.3.3-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/httpclient/jars/httpcore-4.3.2.jar" sourcepath="plugin-resources/repository/httpclient/jars/httpcore-4.3.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/httpclient/jars/httpcore-4.3.2-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/httpclient/jars/httpcore-nio-4.3.2.jar" sourcepath="plugin-resources/repository/httpclient/jars/httpcore-nio-4.3.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/httpclient/jars/httpcore-nio-4.3.2-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/ij/jars/ij-1.43u.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/isorelax/jars/isorelax-20041111.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/iText/jars/itext-2.0.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-mapper-asl-1.8.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jaf/jars/activation-1.0.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jakarta-regexp/jars/jakarta-regexp-1.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/javamail/jars/javamail-1.4.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/javassist/jars/javassist-3.16.1-GA.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/javax/jars/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/javax.persistence/jars/persistence-api-1.0.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/javax.validation/jars/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jaxen/jars/jaxen-1.1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jaxrpc/jars/jaxrpc-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jcs/jars/jcs-20030822.182132.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jdom/jars/jdom-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jndi/jars/jndi-1.2.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/json/jars/json-20090211.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jsr173_1.0_api/jars/jsr173_1.0_api-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jta/jars/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/junit/jars/junit-4.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jython/jars/jython-2.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/log4jr/jars/log4jr-server-0.1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/logkit/jars/logkit-1.0.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/milton/jars/milton-api-1.5.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/milton/jars/milton-servlet-1.5.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/mockito/jars/mockito-all-1.8.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/msv/jars/msv-20070407.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/msv/jars/relaxngDatatype-20070407.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/msv/jars/xsdlib-20070407.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nl.bitwalker/jars/UserAgentUtils-1.2.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-anonymize-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-config-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-mail-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-notify-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.apache.xmlbeans/jars/xmlbeans-2.4.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.jasypt/jars/jasypt-1.7.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/org.ostermiller/jars/utils-1.07.00.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/oro/jars/oro-2.0.7.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_pipeline-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineClient-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/PipelineTools-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineWorkFlow-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/pipelineXNAT-1.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipeline/jars/xnat_tools-1.6.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBase-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/pipelineBuild/jars/pipelineBuild-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/PlexiViewer/jars/plexiviewer-1.6.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/quartz/jars/quartz-all-1.8.4.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/com.noelios.restlet-1.1.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/com.noelios.restlet.ext.servlet_2.5-1.1.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/org.restlet-1.1.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/restlet/jars/org.restlet.ext.fileupload_1.2-1.1.6.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/saaj/jars/saaj-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/saxon8/jars/saxon8-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-dom/jars/saxon8-dom-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-xpath/jars/saxon8-xpath-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/servletapi/jars/servletapi-2.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.5.8.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.beans-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.context.support-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.core-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.expression-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.jdbc-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.orm-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.oxm-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.transaction-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.web.servlet-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-ldap-1.3.1.RELEASE-all.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-acl-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-aspects-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-cas-client-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-config-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-core-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-ldap-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-openid-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-taglibs-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/spring-security-web-3.0.8.RELEASE.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/srb/jars/gsi-classes-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon-1.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/srb/jars/jargon_v1.5.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/stratum/jars/stratum-1.0-b5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/torque/jars/torque-3.1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/torque/plugins/maven-torque-plugin-3.1.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/turbine/jars/turbine-2.3.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/turbine/plugins/maven-turbine-plugin-1.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/uuid/jars/java-uuid-generator-3.1.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.3.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/velocity/jars/velocity-1.4-dev.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/village/jars/village-2.0-dev-20030825.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/wsdl4j/jars/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xalan/jars/xalan-2.5.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xbean/jars/xbean-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xbean_xpath/jars/xbean_xpath-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcget-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcput-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcread-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-arcsim-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-beans-1.6.3.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-closeUserSession-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-createUserSession-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFile-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-getFileCatalog-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-refreshUserSession-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-restClient-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-search-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-store-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-storeXAR-1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xerces-J_1.4.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xercesImpl-2.4.0.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="ide-bin"/>
 </classpath>

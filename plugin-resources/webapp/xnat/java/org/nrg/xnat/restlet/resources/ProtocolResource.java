@@ -78,10 +78,10 @@ public class ProtocolResource extends ItemResource {
 					if(this.proj==null && protocol.getProject()!=null){
 						proj = XnatProjectdata.getXnatProjectdatasById(protocol.getProject(), user, false);
 					}
-					
+
 					if(this.proj!=null){
 						if(protocol.getProject()==null || protocol.getProject().equals("")){
-							protocol.setProperty("xnat:projectdata_id", proj.getId());
+							protocol.setProperty("xnat_projectdata_id", proj.getId());
 						}
 					}else{
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Submitted subject record must include the project attribute.");

@@ -180,7 +180,7 @@ function ProtocolManager(_id,_titleID,_bodyID,_opts){
 
         var new_xml=this.protocol.toXML("");
         if(DEBUG){if(!confirm(new_xml)){return;}}
-        YAHOO.util.Connect.asyncRequest('PUT',serverRoot + '/REST/projects/' + this.opts.project +'/protocols/' + this.id + '?format=json&populateFromDB=false&timestamp=' + (new Date()).getTime() + '&XNAT_CSRF=' + csrfToken + '&event_reason=standard',catCallback,new_xml,this);
+        YAHOO.util.Connect.asyncRequest('PUT',serverRoot + '/REST/projects/' + this.opts.project +'/protocols/' + this.id + '?req_format=xml&format=json&populateFromDB=false&timestamp=' + (new Date()).getTime() + '&XNAT_CSRF=' + csrfToken + '&event_reason=standard',catCallback,new_xml,this);
     }
 
     this.prepareCallback=function(o){

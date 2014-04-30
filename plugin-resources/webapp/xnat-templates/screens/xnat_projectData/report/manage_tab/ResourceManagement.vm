@@ -1,0 +1,88 @@
+##Copyright 2014 Washington University
+##Developer: Tim Olsen tim@deck5consulting.com
+##Section of Manage tab that starts the Project Resource Configuration dialog
+<!-- Sequence: 100 -->
+#if($data.getSession().getAttribute("user").canCreate($project))
+
+<table id="project_resource_table">
+  <tr>
+    <td colspan="2" class="highlighted" id="project_resource_container">
+      <DIV style="font-weight:700;">Project Resource Settings</DIV>
+      <DIV style="padding-top:10px;padding-bottom:10px;padding-left:5px;">Allows project owners to determine the kinds of files which can/should be uploaded to the varies structures associated with this project.</DIV>
+	  <input type="button" value="Start" onclick="XNAT.app.pResources.begin();" />
+	</td>
+  </tr>
+</table>
+	<!-- begin upload dialog -->
+		<div id="pResource_settings_dialog" style="visibility:hidden"> 
+    	    <div class="hd">Project Resource Settings</div> 
+    	    <div class="bd" style="">
+				<div class="pResource_a">
+					<div style="margin-top:3px;" id="pResource_types">
+						<span style="margin-bottom:2px">Select level to add a resource configuration.</span><br/>
+						<input type='button' id="pResource_proj" onclick="XNAT.app.pResources.menu('proj');" value="Project"/>
+						<input type='button' id="pResource_subj" onclick="XNAT.app.pResources.menu('subj');" value="Subject"/>
+						<input type='button' id="pResource_sa" onclick="XNAT.app.pResources.menu('sa');" value="Subject Assessor / Image Session"/>
+						<input type='button' id="pResource_scan" onclick="XNAT.app.pResources.menu('scan');" value="Scan"/>
+						<input type='button' id="pResource_ia" onclick="XNAT.app.pResources.menu('ia');" value="Image Assessor"/>
+					</div>
+					<div style="margin-top:3px;border: 1px solid grey;padding: 5px;display:none;" id="pResource_form">
+					</div>
+					<div style="margin-top:20px;" id="pResource_exist_title">Saved configurations</div>
+					<div style="margin-top:3px;overflow: auto;height: 430px;" id="pResource_exist">
+					</div>
+				</div>
+			</div> 
+    	</div> 
+		<script type="text/javascript" src="$content.getURI("scripts/project/projResourceMgmt.js")"></script>
+        <script>
+            XNAT.app.pResources.id='$om.getId()';
+        </script>
+		<style>
+	#pResource_exist .item, #pResource_exist .header {
+	  border-bottom:1px solid #888;
+	  font:11px Arial, Helvetica, sans-serif;
+	  margin-top:0;
+	  margin-bottom:0;
+	  padding: 4px;
+	  overflow:auto;
+	}
+	dl.item, item.item {
+		display:block;
+	}
+	#pResource_exist dl dl 	{ margin:1px 0;	}
+	#pResource_exist .header {
+		background-color: #ccc;
+		font-weight: bold;
+	}
+	#pResource_exist dl dt, #pResource_exist dl dd {
+		display:block;
+		float:left;
+		padding:4px 0;
+	}
+	.item:hover {
+		background-color:#fe9;
+	}
+	#pResource_exist dd 	{ 	margin-left:20px; }
+	#pResource_exist dd.col1 	{	width:60px;padding:0px;margin-left:10px }
+	#pResource_exist dd.colS 	{	width:50px; }
+	#pResource_exist dd.colM 	{	width:90px; }
+	#pResource_exist dd.colL 	{	width:120px; }
+	#pResource_exist dd.colX 	{	width:660px;padding-left: 70px;}
+	#pResource_exist dd.colEx 	{ position:relative;	}
+	#pResource_exist_title {
+		font-weight:700;
+	}
+	div.row3{
+        float: right;
+        margin-top: 8px;
+	}
+	div.row4{
+        clear: both;
+        margin-top: 8px;
+	}
+	##pResource_form button.default 	{display: inline-block ; height: 24px ; margin: 12px 0 0 6px ; padding: 1px 15px !important ; line-height: 24px ; vertical-align: middle ; font-size: 13px ; font-weight: normal ; text-decoration: none !important ; color: #333 ; background: #e0e0e0 url('images/btn2_30px.png') center center repeat-x ; border: 1px solid #808080 ; border-radius: 3px ; outline:none !important;font-weight: bold ; color: #fff ; background: /* #084FAB */ /* #206bc4 */ #07428d url('images/btn1_30px.png') center top repeat-x ; border-color: /* #206bc4 */ /* #243356 */ #293d66 ; 	}
+	##pResource_form button.default:active { background: /* #206bc4 */ /* #4482cd */ #084FAB ; border-color: /* #084FAB */ #243356 ; }
+
+		</style>
+#end

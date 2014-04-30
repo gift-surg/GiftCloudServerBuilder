@@ -114,7 +114,11 @@
             element_name: "$typeObject.getElementName()",
             actions: $typeObject.getElementSecurity().getListingActionsJSON(),
             "lbg": "$!typeObject.getLightColor()",
-            "dbg": "$!typeObject.getDarkColor()"
+            "dbg": "$!typeObject.getDarkColor()",
+			"isSubjectAssessor":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:subjectAssessorData"),
+			"isImageAssessor":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:imageAssessorData"),
+			"isImageSession":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:imageSessionData"),
+			"isImageScan":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:imageScanData")
         });
     #end
 

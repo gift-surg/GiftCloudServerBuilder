@@ -197,7 +197,7 @@ public class XNATCatalogTemplate extends XNATTemplate {
 			
 			if(expt.getItem().instanceOf("xnat:imageAssessorData")){
 				if(assessed==null){
-					throw new Exception("Invalid session id");
+					assessed=((XnatImageassessordata)expt).getImageSessionData();
 				}
 
 				builder.setAssess((XnatImagesessiondata)assessed, (XnatImageassessordata)expt, type);

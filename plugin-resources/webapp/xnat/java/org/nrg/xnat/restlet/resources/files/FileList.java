@@ -313,6 +313,9 @@ public class FileList extends XNATCatalogTemplate {
                                     JSONObject json = new JSONObject();
                                     json.put("duplicates", duplicates);
                                     getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
+                                }else{
+                                    getResponse().setStatus(Status.SUCCESS_OK);
+                                    getResponse().setEntity(new StringRepresentation("", MediaType.TEXT_PLAIN));
                                 }
                             } else {
                                 wrk.setStatus(PersistentWorkflowUtils.QUEUED);

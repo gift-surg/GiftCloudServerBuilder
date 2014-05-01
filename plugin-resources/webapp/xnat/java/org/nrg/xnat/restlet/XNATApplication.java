@@ -95,11 +95,8 @@ public class XNATApplication extends Application {
     }
 
     private void attachArchiveURI(final Router router, final String uri, final Class<? extends Resource> clazz) {
-        if (_log.isInfoEnabled()) {
-            logAttachedRoute(uri.intern(), clazz, null);
-        }
-        router.attach(uri.intern(), clazz);
-        router.attach(("/archive" + uri).intern(), clazz);
+        attachURI(router, uri.intern(), clazz);
+        attachURI(router, ("/archive" + uri).intern(), clazz);
     }
 
     private void attachURI(final Router router, final String uri, final Class<? extends Resource> clazz) {

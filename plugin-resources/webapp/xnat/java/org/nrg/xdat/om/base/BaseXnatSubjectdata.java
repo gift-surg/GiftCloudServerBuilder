@@ -1607,4 +1607,14 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
     	
     }
    
+
+
+    public XnatSubjectdata getLightCopy() throws XFTInitException, ElementNotFoundException {
+        XFTItem item = XFTItem.NewItem(this.getXSIType(), this.getUser());
+        XnatSubjectdata new_expt=(XnatSubjectdata) BaseElement.GetGeneratedItem(item);
+        new_expt.setId(this.getId());
+        new_expt.setLabel(this.getLabel());
+        new_expt.setProject(this.getProject());
+        return new_expt;
+    }
 }

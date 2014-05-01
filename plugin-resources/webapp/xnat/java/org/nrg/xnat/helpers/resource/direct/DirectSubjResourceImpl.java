@@ -52,9 +52,10 @@ public class DirectSubjResourceImpl extends ResourceModifierA {
 	 */
 	@Override
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {		
-		sub.setResources_resource(resource);
+		XnatSubjectdata new_sub=sub.getLightCopy();
+		new_sub.setResources_resource(resource);
 		
-		SaveItemHelper.authorizedSave(sub,user, false, false,ci);
+		SaveItemHelper.authorizedSave(new_sub,user, false, false,ci);
 		return true;
 	}
 

@@ -66,7 +66,7 @@ public class DirectAssessResourceImpl extends ResourceModifierA {
 	 */
 	@Override
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
-		XnatImageassessordata iad = (XnatImageassessordata)expt;
+		XnatImageassessordata iad = (XnatImageassessordata)expt.getLightCopy();
 		if(type!=null){
 			if(type.equals("in")){
 				iad.setIn_file(resource);

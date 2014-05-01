@@ -172,7 +172,7 @@ XNAT.app.crUploader={
 
 		var params="";		
 		params+="&event_type=WEB_FORM";
-		params+="&event_action=Uploaded "+ $(selector).attr('data-name');
+		params+="&event_action=Uploaded "+ $(selector).text();
 		params+="&extract=true";
 		if(showReason && frm.event_reason.value!=""){
 			params+="&event_reason="+frm.event_reason.value;
@@ -216,7 +216,7 @@ XNAT.app.crUploader={
 	handleUpload:function(response,o2,o3){
 		//handles the response form the upload operation
 		//because this is a file upload, both successes and failures will use this method
-		if(response.responseText=="" || response.responseText.indexOf("></pre>")>-1){
+		if(response.responseText==undefined || response.responseText=="" || response.responseText.indexOf("></pre>")>-1){
 			showMessage("page_body","Upload successful.","Your files have been successfully uploaded.");
 			document.getElementById("cru_upload_frm").upload_file.value="";
 			if(window.viewer!=undefined && window.viewer.loading>0){

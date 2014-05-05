@@ -21,45 +21,57 @@ XNAT.app.pResources={
 	},
 	menu:function(level){
 		$("#pResource_form").html("");
-		var temp_html="";
-		temp_html="<div class='row1'><span><label for='pResource.name'>Title: </label> <input class='pResourceField' required='true' data-prop-name='name' type='text' id='pResource.name' value='' placeholder='Name user sees'/></span>";
+		var temp_html="<div class='colA'><div class='info simple'>What resource are you requiring?</div>" +
+				"<div class='row'><div class='rowTitle' for='pResource.name'>Title</div> <input class='pResourceField' required='true' data-prop-name='name' type='text' id='pResource.name' value='' placeholder='Natural Language Title'/></div>" +
+				"<div class='row'><div class='rowTitle' for='pResource.desc'>Description (optional)</div> <textarea class='pResourceField' data-prop-name='description' id='pResource.desc' placeholder='' /></div>" +
+				"</div>";
+		temp_html+="<div class='colB'><div class='info simple'>Where will it be stored?</div>";
 		if(level=="proj"){
 			temp_html+="<input class='pResourceField' data-prop-name='type' type='hidden' id='pResource.type' value='xnat:projectData'/>";
 		}else if(level=="subj"){
 			temp_html+="<input class='pResourceField' data-prop-name='type' type='hidden' id='pResource.type' value='xnat:subjectData'/>";
 		}else if(level=="sa"){
-			temp_html+=" <span><label for='pResource.type'>Select data-type: </label> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
+			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type: </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
 					"<option value='xnat:subjectAssessorData'>All</option>" +
-					"<option value='xnat:imageSessionData'>Image Sessions</option>";
 			$.each(window.available_elements,function( index, value ) {
-				if(value.isSubjectAssessor){
+				if(value.isSubjectAssessor && !value.isImageSession){
 					temp_html+="<option value='" + value.element_name + "'>"+ value.singular+"</option>";
 				}
 			});
-			temp_html+="</select></span>";
+			temp_html+="</select></div>";
+		}else if(level=="is"){
+			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type: </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
+			"<option value='xnat:imageSessionData'>All</option>";
+			$.each(window.available_elements,function( index, value ) {
+				if(value.isImageSession){
+					temp_html+="<option value='" + value.element_name + "'>"+ value.singular+"</option>";
+				}
+			});
+			temp_html+="</select></div>";
 		}else if(level=="scan"){
 			temp_html+="<input class='pResourceField' data-prop-name='type' type='hidden' id='pResource.type' value='xnat:imageScanData'/>";
 		}else if(level=="ia"){
-			temp_html+=" <span><label for='pResource.type'>Select data-type: </label> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
+			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type: </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
 					"<option value='xnat:imageAssessorData'>All</option>";
 			$.each(window.available_elements,function( index, value ) {
 				if(value.isImageAssessor){
 					temp_html+="<option value='" + value.element_name + "'>"+ value.singular+"</option>";
 				}
 			});
-			temp_html+="</select></span>";
-			temp_html+="<span><label for='pResource.level'>Level: </label> <select id='pResource.level' class='pResourceField' data-prop-name='level'>";
+			temp_html+="</select></div>";
+			temp_html+="<div class='row'><div class='rowTitle' for='pResource.level'>Level: </div> <select id='pResource.level' class='pResourceField' data-prop-name='level'>";
 			temp_html+="<option value='default'>DEFAULT (resources)</option>";
 			temp_html+="<option value='out'>outputs dir (out)</option>";
 			temp_html+="<option value='in'>inputs dir (in)</option>";
-			temp_html+="</select></span>";
+			temp_html+="</select></div>";
 		}
-		temp_html+=" <span><label for='pResource.label'>Label: </label> <input class='pResourceField' required='true' data-prop-name='label' size='10' type='text' id='pResource.label' required=true placeholder='ex. DICOM' data-regex='^[a-zA-Z0-9_-]+$' /></span>";
-		temp_html+=" <span><label for='pResource.subdir'>Sub-directory: </label> <input class='pResourceField' data-prop-name='subdir' type='text' id='pResource.subdir' placeholder='(optional) ex. data/sub/dir' size='24' data-regex='^[a-zA-Z0-9_\\-\\/]+$'/></span>";
-		temp_html+=" <span><label for='pResource.overwrite'>Allow overwrite</label><input class='pResourceField' data-prop-name='overwrite' type='checkbox' id='pResource.overwrite'/></div>";
-		temp_html+=" <div class='row2'><label for='pResource.desc'>Description: </label> <textarea class='pResourceField' style='width:500px' data-prop-name='description' id='pResource.desc' placeholder='(optional) Descriptive text explaining details to the user about this resource.' /></div>";
+		temp_html+=" <div class='row'><div class='rowTitle' for='pResource.label'>Resource Folder</div> <input class='pResourceField' required='true' data-prop-name='label' size='10' type='text' id='pResource.label' required=true placeholder='ex. DICOM' data-regex='^[a-zA-Z0-9_-]+$' /></div>";
+		temp_html+=" <div class='row'><div class='rowTitle' for='pResource.subdir'>Sub-folder (optional)</div> <input class='pResourceField' data-prop-name='subdir' type='text' id='pResource.subdir' placeholder='(optional) ex. data/sub/dir' size='24' data-regex='^[a-zA-Z0-9_\\-\\/]+$'/></div>";
+		temp_html+=" <div class='row'><div class='rowTitle'>&nbsp;</div><input class='pResourceField' style='width:10px;' data-prop-name='overwrite' type='checkbox' id='pResource.overwrite'/> <label for='pResource.overwrite'>Allow overwrite</label></div>";
+		temp_html+=" </div>";
+		temp_html+=" <div style='clear:both;'></div>";
 		temp_html+=" <div class='row3'><button id='cruCancelBut' onclick='$(\"#pResource_form\").html(\"\");$(\"#pResource_form\").hide();$(\"#pResource_exist\").height(430)'>Cancel</button><button class='default' id='cruAddBut' onclick='XNAT.app.pResources.add();'>Add</button></div>";
-		temp_html+=" <div class='row4'></div>";
+		temp_html+=" <div class='row4' style=''></div>";
 		$("#pResource_form").html(temp_html);
 		$("#pResource_form").show();
 		$("#pResource_exist").height(430-$("#pResource_form").height());
@@ -128,7 +140,7 @@ XNAT.app.pResources={
 	load:function(){
 		this.reset();
 		
-		YAHOO.util.Connect.asyncRequest('GET', serverRoot+'/data/projects/' + this.id +'/config/resource_config/script?format=json', {success : this.handleLoad, failure : function(){}, cache : false, scope : this});
+		YAHOO.util.Connect.asyncRequest('GET', serverRoot+'/data/projects/' + this.id +'/config/resource_config/script?format=json', {success : this.handleLoad, failure : this.render, cache : false, scope : this});
 	},
 	handleLoad:function(obj){
 		var parsedResponse = YAHOO.lang.JSON.parse(obj.responseText);
@@ -146,15 +158,25 @@ XNAT.app.pResources={
 	},
 	render:function(){
 		//identify columns
-		var tmpHtml="<dl class='header'><dl><dd class='col1'>&nbsp;</dd><dd class='colL'>Type</dd><dd class='colM'>Name</dd><dd class='colM'>Label</dd><dd class='colL'>Sub-directory</dd><dd class='colM'>Overwrite?</dd><dd class='colS'>Level</dd></dl></dl>	";
-		jq.each(this.configs,function(i1,v1){
-			tmpHtml+="<dl class='item'><dd class='col1'><button onclick='XNAT.app.pResources.remove(\"" + i1 +"\");'>Remove</button></dd><dd class='colL'>"+v1.type +"</dd><dd class='colM'>"+v1.name +"</dd><dd class='colM'>"+v1.label +"</dd><dd class='colL'>"+v1.subdir +"&nbsp;</dd><dd class='colM'>"+((v1.overwrite)?v1.overwrite:"") +"</dd><dd class='colS'>"+((v1.level)?v1.level:"") +"</dd>";
-			if(v1.description){
-				tmpHtml+="<dd class='colX'><b>Description:</b> "+v1.description +"</dd></dl>";
-			}else{
-				tmpHtml+="</dl>";
-			}
-		});
+		if(this.configs!=undefined && this.configs.length>0){
+			var tmpHtml="<dl class='header'><dl><dd class='col1'>&nbsp;</dd><dd class='colL'>Type</dd><dd class='colM'>Name</dd><dd class='colM'>Label</dd><dd class='colL'>Sub-directory</dd><dd class='colM'>Overwrite?</dd><dd class='colS'>Level</dd></dl></dl>	";
+			jq.each(this.configs,function(i1,v1){
+				var elementName=window.available_elements.getByName(v1.type);
+				if(elementName!=undefined && elementName.singular!=undefined){
+					elementName=elementName.singular;
+				}else{
+					elementName=v1.type;
+				}
+				tmpHtml+="<dl class='item'><dd class='col1'><button onclick='XNAT.app.pResources.remove(\"" + i1 +"\");'>Remove</button></dd><dd class='colL col2'>"+ elementName +"</dd><dd class='colM col3'>"+v1.name +"</dd><dd class='colM col4'>"+v1.label +"</dd><dd class='colL col5'>"+v1.subdir +"&nbsp;</dd><dd class='colM col6'>"+((v1.overwrite)?v1.overwrite:"") +"</dd><dd class='colS col7'>"+((v1.level)?v1.level:"") +"</dd>";
+				if(v1.description){
+					tmpHtml+="<dd class='colX'><b>Description:</b> "+v1.description +"</dd></dl>";
+				}else{
+					tmpHtml+="</dl>";
+				}
+			});
+		}else{
+			var tmpHtml="<div style='color:grey;font-style:italic;'>None</div>";
+		}
 		$("#pResource_exist").html(tmpHtml);
 	},
 	remove:function(index){

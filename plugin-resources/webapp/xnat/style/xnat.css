@@ -110,6 +110,7 @@ table.ruled tr:nth-child(2n+1) { background: #fff ; }
 .underscore { border-bottom: 2px solid #f93 ; padding-bottom: 1px ; padding-right: 20px ; padding-left: 5px ; }
 
 div.alert { background-color: #ccc; border-width:1px; border-style:solid; color:#900; font-size:14px; line-height:16px; /* font-weight:700; */ overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
+div.info { background: url(/images/i.png) 10px center no-repeat #fff; border: 1px solid #ccc; padding: 6px 12px 6px 36px; color: #06f; font-size: 12px; line-height: 1.2; margin-bottom: 1em;}
 
 /*
 div.warning { background-color:#CCCCCC; border-width:1px; border-style:solid; color:#084FAB; font-size:14px; line-height:16px; overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }

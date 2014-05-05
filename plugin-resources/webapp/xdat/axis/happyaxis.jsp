@@ -361,7 +361,7 @@
             "http://jakarta.apache.org/commons/logging/");
 
     needed+=needClass(out, "org.apache.log4j.Layout",
-            "log4j-1.2.15.jar",
+            "log4j-1.2.17.jar",
             "Log4j",
             getMessage("uncertainErrorMessage"),
             "http://jakarta.apache.org/log4j");

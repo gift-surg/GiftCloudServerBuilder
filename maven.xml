@@ -906,7 +906,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -949,7 +951,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -985,7 +989,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1026,7 +1032,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1069,7 +1077,9 @@
                 <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1112,7 +1122,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1160,7 +1172,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1213,7 +1227,9 @@
                 <pathelement location="./lib/commons-lang-2.6.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1231,7 +1247,9 @@
         <javac srcdir="${basedir}/src" destdir="${basedir}/classes" source="1.5" target="1.5" debug="true">
             <include name="org/**"/>
             <classpath>
-                <pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
+                <pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.17.jar"/>
+                <pathelement location="${basedir}/plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7.jar"/>
+                <pathelement location="${basedir}/plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="${basedir}/plugin-resources/repository/srb/jars/jargon-1.4.25.jar"/>
                 <pathelement location="${basedir}/plugin-resources/repository/srb/jars/xnatsrb-1.jar"/>
                 <pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.6.jar"/>
@@ -1613,7 +1631,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
@@ -1731,7 +1751,9 @@
                 <pathelement location="./lib/commons-logging-1.0.4.jar"/>
                 <pathelement location="./lib/commons-pool-1.2.jar"/>
                 <pathelement location="./lib/jakarta-regexp-1.2.jar"/>
-                <pathelement location="./lib/log4j-1.2.15.jar"/>
+                <pathelement location="./lib/log4j-1.2.17.jar"/>
+                <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
+                <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
                 <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-config-1.6.3.jar"/>
                 <pathelement location="./lib/nrg-notify-1.6.3.jar"/>

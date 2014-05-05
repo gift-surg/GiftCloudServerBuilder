@@ -90,9 +90,9 @@ if [ ! -f $REPO_DIR/forehead/jars/forehead-1.0-beta-5.jar ]; then
   mkdir -p $REPO_DIR/forehead/jars
   cp $MAVEN_HOME/lib/forehead-1.0-beta-5.jar $REPO_DIR/forehead/jars
 fi
-if [ ! -f $REPO_DIR/log4j/jars/log4j-1.2.15.jar ]; then 
+if [ ! -f $REPO_DIR/log4j/jars/log4j-1.2.17.jar ]; then 
   mkdir -p $REPO_DIR/log4j/jars
-  cp $MAVEN_HOME/lib/log4j-1.2.15.jar $REPO_DIR/log4j/jars
+  cp $MAVEN_HOME/lib/log4j-1.2.17.jar $REPO_DIR/log4j/jars
 fi
 if [ ! -f $REPO_DIR/which/jars/which-1.0.jar ]; then 
   mkdir -p $REPO_DIR/which/jars

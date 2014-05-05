@@ -184,7 +184,11 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/jta/jars/jta-1.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/junit/jars/junit-4.3.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/jython/jars/jython-2.1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/log4j/jars/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/log4j/jars/log4j-1.2.17.jar" sourcepath="plugin-resources/repository/log4j/jars/log4j-1.2.17-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/log4j/jars/log4j-1.2-17-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="plugin-resources/repository/log4jr/jars/log4jr-server-0.1.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/logkit/jars/logkit-1.0.1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/milton/jars/milton-api-1.5.1.jar"/>
@@ -202,8 +206,6 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-status-2.0.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-transaction-1.6.3.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrgutil-1.0.1.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.installers/jars/apacheds-noarch-installer-1.5.7.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/org.apache.directory.server/jars/apacheds-all-1.5.5.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.apache.xmlbeans/jars/xmlbeans-2.4.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-module-1.0.5.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/org.codehaus.cargo/jars/cargo-core-api-util-1.0.5.jar"/>
@@ -230,9 +232,21 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-dom/jars/saxon8-dom-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-xpath/jars/saxon8-xpath-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/servletapi/jars/servletapi-2.3.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.5.8.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.5.8.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.5.8.jar"/>
+    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.aop-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.asm-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/spring/jars/org.springframework.beans-3.0.7.RELEASE.jar"/>

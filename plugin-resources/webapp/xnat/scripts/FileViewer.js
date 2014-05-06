@@ -985,9 +985,11 @@ YAHOO.extend(YAHOO.widget.CatalogNode, YAHOO.widget.TaskNode, {
                     fileNode.labelStyle = "icon-f";
 
                 } else {
+                    var folderArrayKey = '';
 
-                    var folderArrayKey = splitPath[sp]+'__'+sp;
-
+                    for(var pathparts = 0; pathparts <= sp; pathparts++) {
+                        folderArrayKey += splitPath[pathparts] + '/';
+                    }
 
                     if(   typeof folderArray[folderArrayKey] !== 'undefined' && typeof folderArray[folderArrayKey] !== null ){
 

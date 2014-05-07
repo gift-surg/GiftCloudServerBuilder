@@ -11,10 +11,15 @@
 package org.nrg.xnat.helpers.resource.direct;
 
 import org.apache.commons.lang.StringUtils;
+import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatImageassessordata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
@@ -49,9 +54,14 @@ public class DirectProjResourceImpl extends ResourceModifierA {
 	 */
 	@Override
 	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
-		proj.setResources_resource(resource);
+		XFTItem item = XFTItem.NewItem(proj.getXSIType(), user);
+		XnatProjectdata new_proj=(XnatProjectdata) BaseElement.GetGeneratedItem(item);
+		new_proj.setId(proj.getId());
 		
-		SaveItemHelper.authorizedSave(proj,user, false, false,ci);
+		
+		new_proj.setResources_resource(resource);
+		
+		SaveItemHelper.authorizedSave(new_proj,user, false, false,ci);
 		return true;
 	}
 

@@ -31,8 +31,8 @@ XNAT.app.pResources={
 		}else if(level=="subj"){
 			temp_html+="<input class='pResourceField' data-prop-name='type' type='hidden' id='pResource.type' value='xnat:subjectData'/>";
 		}else if(level=="sa"){
-			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type: </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
-					"<option value='xnat:subjectAssessorData'>All</option>" +
+			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
+					"<option value='xnat:subjectAssessorData'>All</option>";
 			$.each(window.available_elements,function( index, value ) {
 				if(value.isSubjectAssessor && !value.isImageSession){
 					temp_html+="<option value='" + value.element_name + "'>"+ value.singular+"</option>";
@@ -40,7 +40,7 @@ XNAT.app.pResources={
 			});
 			temp_html+="</select></div>";
 		}else if(level=="is"){
-			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type: </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
+			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
 			"<option value='xnat:imageSessionData'>All</option>";
 			$.each(window.available_elements,function( index, value ) {
 				if(value.isImageSession){
@@ -50,8 +50,10 @@ XNAT.app.pResources={
 			temp_html+="</select></div>";
 		}else if(level=="scan"){
 			temp_html+="<input class='pResourceField' data-prop-name='type' type='hidden' id='pResource.type' value='xnat:imageScanData'/>";
+			temp_html+="<div class='row'><div class='rowTitle' for='pResource.filter'>Types (optional)</div> <input type='text' id='pResource.filter' class='pResourceField' data-prop-name='filter' placeholder='TYPE1,TYPE3,TYPE4'>";
+			temp_html+="</div>";
 		}else if(level=="ia"){
-			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type: </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
+			temp_html+=" <div class='row'><div class='rowTitle' for='pResource.type'>Select data-type </div> <select id='pResource.type' class='pResourceField' data-prop-name='type'>" +
 					"<option value='xnat:imageAssessorData'>All</option>";
 			$.each(window.available_elements,function( index, value ) {
 				if(value.isImageAssessor){
@@ -112,6 +114,11 @@ XNAT.app.pResources={
 				valid=false;
 			}
 			
+			if(tmpValue!="" && (tmpValue.length>255)){
+				xModalMessage("Invalid value",$(this).attr('data-prop-name') + " exceeds size limits.");
+				valid=false;
+			}
+			
 			if($(this).attr('type')=="checkbox"){
 				props[$(this).attr('data-prop-name')]=$(this).is(':checked');
 			}else{
@@ -165,7 +172,7 @@ XNAT.app.pResources={
 	render:function(){
 		//identify columns
 		if(this.configs!=undefined && this.configs.length>0){
-			var tmpHtml="<dl class='header'><dl><dd class='col1'>&nbsp;</dd><dd class='colL'>Type</dd><dd class='colM'>Name</dd><dd class='colM'>Label</dd><dd class='colL'>Sub-directory</dd><dd class='colM'>Overwrite?</dd><dd class='colS'>Level</dd></dl></dl>	";
+			var tmpHtml="<dl class='header'><dl><dd class='col1'>&nbsp;</dd><dd class='colL col2'>Type</dd><dd class='colM col3'>Name</dd><dd class='colM col4'>Label</dd><dd class='colL col5'>Sub-directory</dd><dd class='colM col6'>Overwrite?</dd><dd class='colS col7'>Options</dd></dl></dl>	";
 			jq.each(this.configs,function(i1,v1){
 				var elementName=window.available_elements.getByName(v1.type);
 				if(elementName!=undefined && elementName.singular!=undefined){
@@ -173,7 +180,14 @@ XNAT.app.pResources={
 				}else{
 					elementName=v1.type;
 				}
-				tmpHtml+="<dl class='item'><dd class='col1'><button onclick='XNAT.app.pResources.remove(\"" + i1 +"\");'>Remove</button></dd><dd class='colL col2'>"+ elementName +"</dd><dd class='colM col3'>"+v1.name +"</dd><dd class='colM col4'>"+v1.label +"</dd><dd class='colL col5'>"+v1.subdir +"&nbsp;</dd><dd class='colM col6'>"+((v1.overwrite)?v1.overwrite:"") +"</dd><dd class='colS col7'>"+((v1.level)?v1.level:"") +"</dd>";
+				tmpHtml+="<dl class='item'><dd class='col1'><button onclick='XNAT.app.pResources.remove(\"" + i1 +"\");'>Remove</button></dd><dd class='colL col2'>"+ elementName +"</dd><dd class='colM col3'>"+v1.name +"</dd><dd class='colM col4'>"+v1.label +"</dd><dd class='colL col5'>"+v1.subdir +"&nbsp;</dd><dd class='colM col6'>"+((v1.overwrite)?v1.overwrite:"false") +"</dd><dd class='colS col7'>";
+				if(v1.level){
+					tmpHtml+="Level:"+v1.level;
+				}
+				if(v1.filter){
+					tmpHtml+=v1.filter;
+				}
+				tmpHtml+="</dd>";
 				if(v1.description){
 					tmpHtml+="<dd class='colX'><b>Description:</b> "+v1.description +"</dd></dl>";
 				}else{

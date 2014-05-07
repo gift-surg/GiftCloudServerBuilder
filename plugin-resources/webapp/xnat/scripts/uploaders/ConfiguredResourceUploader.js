@@ -7,14 +7,6 @@
 if(XNAT.app.crConfigs==undefined){
 XNAT.app.crConfigs={
 	load:function(){
-//		$("a.uploadLink").each(function(value){
-//			value.defaultColor=$(value).color();
-//			value.dontHide=$(value).is(":visible");
-//			if(value.dontHide){
-//				$(value).color('grey');
-//				$(value).css('cursor:text');
-//			} 
-//		});
 		
 		YAHOO.util.Connect.asyncRequest('GET', serverRoot+'/data/projects/' + XNAT.app.crConfigs.project +'/config/resource_config/script?format=json', {success : XNAT.app.crConfigs.handleLoad, failure : function(){}, cache : false, scope : XNAT.app.crConfigs});
 	},
@@ -36,22 +28,13 @@ XNAT.app.crConfigs={
 	showLinks:function(){
 		$("a.uploadLink").each(function(value){
 			var type=$(this).attr('data-type');
-			var needsLink=false;
-			var that=XNAT.app.crConfigs;
-			var typeInfo=window.available_elements.getByName(type);
-			if(that.getConfigsByType(type).length>0){
-				needsLink=true;
-			}else if(typeInfo!=undefined && typeInfo.isSubjectAssessor && that.getConfigsByType("xnat:subjectAssessorData").length>0){
-				needsLink=true;
-			}else if(typeInfo!=undefined && typeInfo.isImageAssessor && that.getConfigsByType("xnat:imageAssessorData").length>0){
-				needsLink=true;
-			}else if(typeInfo!=undefined && typeInfo.isImageSession && that.getConfigsByType("xnat:imageSessionData").length>0){
-				needsLink=true;
-			}else if(typeInfo!=undefined && typeInfo.isImageScan && that.getConfigsByType("xnat:imageScanData").length>0){
-				needsLink=true;
-			}
+			var tempConfigs=new Array();
+
+			var props=$(this).attr('data-props');
 			
-			if(needsLink){
+			var tempConfigs=XNAT.app.crConfigs.getAllConfigsByType(type,props)			
+			
+			if(tempConfigs.length>0){
 				if(value.dontHide){
 					$(value).color(value.defaultColor);
 					$(value).css('cursor:pointer');
@@ -77,6 +60,49 @@ XNAT.app.crConfigs={
 			}
 		});
 		return temp;
+	},
+	getAllConfigsByType:function(type, props){
+		var tmpConfigs=this.getConfigsByType(type);
+		
+		var typeInfo=window.available_elements.getByName(type);
+		if(typeInfo!=undefined){
+			if(typeInfo.isSubjectAssessor){
+				tmpConfigs=tmpConfigs.concat(this.getConfigsByType("xnat:subjectAssessorData"));
+			}
+			if(typeInfo.isImageAssessor){
+				tmpConfigs=tmpConfigs.concat(this.getConfigsByType("xnat:imageAssessorData"));
+			}
+			if(typeInfo.isImageSession){
+				tmpConfigs=tmpConfigs.concat(this.getConfigsByType("xnat:imageSessionData"));
+			}
+			if(typeInfo.isImageScan){
+				tmpConfigs=tmpConfigs.concat(this.getConfigsByType("xnat:imageScanData"));
+			}
+		}
+		
+		var tempConfigs2=new Array();
+		
+		//allow filtering of links
+		jq.each(tmpConfigs,function(i1,v1){
+			if(props!=undefined && props!=null && v1.filter){
+				var filters=v1.filter.split(",");
+				var matched=false;
+				jq.each(filters,function (i2,v2){
+					if(!matched){
+						if((v2.trim()==props.trim())){
+							matched=true;
+						}
+					}
+				});
+				if(matched){
+					tempConfigs2.push(v1);
+				}
+			}else{
+				tempConfigs2.push(v1);
+			}
+		});
+		
+		return tempConfigs2;
 	}
 }
 
@@ -89,6 +115,7 @@ XNAT.app.crUploader={
 		this.project=XNAT.app.crConfigs.project;
 		this.type=$(config).attr('data-type');
 		this.uri=$(config).attr('data-uri');
+		this.props=$(config).attr('data-props');
 		
 		this.updateForm();
 		
@@ -96,24 +123,8 @@ XNAT.app.crUploader={
 		XNAT.app.crUploader.dialog.show();
 	},
 	updateForm:function(obj){
-		var that=XNAT.app.crConfigs;
-		var configs=that.getConfigsByType(this.type);
+		var configs=XNAT.app.crConfigs.getAllConfigsByType(this.type,this.props);
 		
-		var typeInfo=window.available_elements.getByName(this.type);
-		if(typeInfo!=undefined){
-			if(typeInfo.isSubjectAssessor){
-				configs=configs.concat(that.getConfigsByType("xnat:subjectAssessorData"));
-			}
-			if(typeInfo.isImageAssessor){
-				configs=configs.concat(that.getConfigsByType("xnat:imageAssessorData"));
-			}
-			if(typeInfo.isImageSession){
-				configs=configs.concat(that.getConfigsByType("xnat:imageSessionData"));
-			}
-			if(typeInfo.isImageScan){
-				configs=configs.concat(that.getConfigsByType("xnat:imageScanData"));
-			}
-		}
 		$('#cruSel').html("");
 		
 		$('#cruSel').append($("<option value=''>SELECT</option>"));

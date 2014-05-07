@@ -8,7 +8,7 @@
   <tr>
     <td colspan="2" class="highlighted" id="project_resource_container">
       <DIV style="font-weight:700;">Project Resource Settings</DIV>
-      <DIV style="padding-top:10px;padding-bottom:10px;padding-left:5px;">Allows project owners to determine the kinds of files which can/should be uploaded to the varies structures associated with this project.</DIV>
+      <DIV style="padding-top:10px;padding-bottom:10px;padding-left:5px;">Allows project owners to determine the kinds of files which can/should be uploaded to the various structures associated with this project.</DIV>
 	  <input type="button" value="Start" onclick="XNAT.app.pResources.begin();" />
 	</td>
   </tr>
@@ -67,9 +67,12 @@
 	}
 	#pResource_exist dd 	{ 	margin-left:20px; }
 	#pResource_exist dd.col1 	{	width:60px;padding:0px;margin-left:10px }
-	#pResource_exist dd.colS 	{	width:50px; }
-	#pResource_exist dd.colM 	{	width:90px; }
-	#pResource_exist dd.colL 	{	width:120px; }
+	#pResource_exist dd.col2 	{	width:120px; }
+	#pResource_exist dd.col3 	{	width:70px; }
+	#pResource_exist dd.col4 	{	width:70px; }
+	#pResource_exist dd.col5 	{	width:90px; }
+	#pResource_exist dd.col6 	{	width:50px; }
+	#pResource_exist dd.col7 	{	width:130px; }
 	#pResource_exist dd.colX 	{	width:660px;padding-left: 70px;}
 	#pResource_exist dd.colEx 	{ position:relative;	}
 	#pResource_exist_title {

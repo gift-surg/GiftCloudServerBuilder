@@ -11,7 +11,8 @@
 /***
 
  * Interface for Creating/Modifying Field Definition Groups.
-
+ * 
+ * I strongly suspect this class is littered with problems (like memory leaks).  Its in desperate need of a rewrite.
  */
 
 	var special_characters =[".","$","(",")","[","]",",",";",":","*","/",">","<","{","}","-","=","+","!","@","#","%","^","&","|","~","`","?"];
@@ -190,7 +191,7 @@ this.save=function(){
 			 var postData = "remote-class=org.nrg.xdat.ajax.StoreXML";
 		     postData = postData + "&remote-method=execute";
 		     postData = postData + "&xml="+this.group.toXML("");
-		     postData = postData + "&allowDataDeletion=false";
+		     postData = postData + "&allowDataDeletion=true";
 		     postData = postData + "&XNAT_CSRF=" + csrfToken;
 		     postData = postData + "&event_reason=standard";
 			  
@@ -524,15 +525,15 @@ this.draw=function(){
 
 	fieldTD2.innerHTML="Type";
 
-	//var fieldTD3 = document.createElement("TH");
+	var fieldTD3 = document.createElement("TH");
 
-	//fieldTD3.innerHTML="Required";
+	fieldTD3.innerHTML="Required";
 
 	fieldTR.appendChild(fieldTD1);
 
 	fieldTR.appendChild(fieldTD2);
 
-	//fieldTR.appendChild(fieldTD3);
+	fieldTR.appendChild(fieldTD3);
 
 	fieldBody.appendChild(fieldTR);
 
@@ -600,26 +601,26 @@ this.draw=function(){
 		}
 
 		input.options[1]=new Option("integer","integer");
-
 		if (f.getDatatype()=="integer"){
-
 			input.options[1].selected=true;
 			input.selectedIndex=1;
 		}
 
 		input.options[2]=new Option("float","float");
-
 		if (f.getDatatype()=="float"){
-
 			input.options[2].selected=true;
 			input.selectedIndex=2;
 		}
 
 		input.options[3]=new Option("boolean","boolean");
-
 		if (f.getDatatype()=="boolean"){
-
 			input.options[3].selected=true;
+			input.selectedIndex=3;
+		}
+
+		input.options[4]=new Option("date","date");
+		if (f.getDatatype()=="date"){
+			input.options[4].selected=true;
 			input.selectedIndex=3;
 		}
 
@@ -642,8 +643,6 @@ this.draw=function(){
 		fieldTR.appendChild(fieldTD2);
 
 		//required
-
-		/*
 
 		var fieldTD3 = document.createElement("TD");
 
@@ -675,105 +674,79 @@ this.draw=function(){
 
 		fieldTR.appendChild(fieldTD3);
 
-		//required
+		//possible values
 
 		var fieldTD4 = document.createElement("TD");
+		var fieldTD4Div = document.createElement("DIV");
+		fieldTD4.appendChild(fieldTD4Div);
 
-		fieldTD4.appendChild(document.createTextNode("Possible Values:"));
+		fieldTD4Div.appendChild(document.createTextNode("Possible Values:"));
 
 		if(f.getPossiblevalues_possiblevalue().length==0){
-
 			var input = document.createElement("INPUT");
-
 			input.type="button";
-
 			input.value="+";
-
 			input.fieldDefinition=f;
 
 			input.onclick=function(){
-
 				var pv = new xnat_fieldDefinitionGroup_field_possibleValue();
 
 				this.fieldDefinition.addPossiblevalues_possiblevalue(pv);
 
-				var input2 = document.createElement("INPUT");
-
 				input2.type="text";
-
+				input2.value=pv.getPossiblevalue();
 				input2.pv=pv;
 
 				input2.onchange=function(){
-
 					this.pv.setPossiblevalue(this.value);
-
 				}
 
 				this.parentNode.insertBefore(input2,this);
 
 			}
 
-			fieldTD4.appendChild(input);	
-
+			fieldTD4Div.appendChild(input);	
 		}else{
 
 			for(var pvCount=0;pvCount<f.getPossiblevalues_possiblevalue().length;pvCount++){
-
 				var pv = f.getPossiblevalues_possiblevalue()[pvCount];
 
 				var input2 = document.createElement("INPUT");
 
 				input2.type="text";
-
+				input2.value=pv.getPossiblevalue();
 				input2.pv=pv;
 
 				input2.onchange=function(){
-
 					this.pv.setPossiblevalue(this.value);
-
 				}
 
-				fieldTD4.appendChild(input2);
+				fieldTD4Div.appendChild(input2);
 
 			}
 
 			var input = document.createElement("INPUT");
-
 			input.type="button";
-
 			input.value="+";
-
 			input.fieldDefinition=f;
-
 			input.onclick=function(){
-
 				var pv = new xnat_fieldDefinitionGroup_field_possibleValue();
-
 				this.fieldDefinition.addPossiblevalues_possiblevalue(pv);
-
 				var input2 = document.createElement("INPUT");
-
 				input2.type="text";
-
 				input2.pv=pv;
-
 				input2.onchange=function(){
-
 					this.pv.setPossiblevalue(this.value);
-
 				}
 
 				this.parentNode.insertBefore(input2,this);
-
 			}
 
-			fieldTD4.appendChild(input);	
-
+			fieldTD4Div.appendChild(input);	
 		}	
 
 		fieldTR.appendChild(fieldTD4);
 
-		* */
 
 		fieldBody.appendChild(fieldTR);
 

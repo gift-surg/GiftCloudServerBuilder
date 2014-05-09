@@ -114,27 +114,30 @@ public class XMLUpload extends SecureAction {
 						logger.info("Item Successfully Stored.");
 
 					}
-					// Here is where my change was
-					//XFTItem item = populater.getItem();
-		            XnatProjectdata  project = new XnatProjectdata(item);
-		        	XDATUser user = TurbineUtils.getUser(data);
-		        	final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
-			    	EventMetaI c=wrk2.buildEvent();
-		        	SaveItemHelper.authorizedSave(item,user, false, false,c);
-		        	XnatProjectdata postSave = new XnatProjectdata(item);
-		            postSave.getItem().setUser(user);
-		            
-		            postSave.initGroups();
-		            PopulateItem populater = PopulateItem.Populate(data,"arc:project",true);
-		            XFTItem item2 = populater.getItem();
-		            item2.setProperty("arc:project.current_arc", "arc001");
-		            ArcProject arcP = new ArcProject(item2);
-		            postSave.initArcProject(arcP, user, c);
-		            
-		            user.initGroups();
-		        	
-		    		user.clearLocalCache();
-		    		//end change here
+					
+					if(item.instanceOf("xnat:projectData")){
+						// Here is where my change was
+						//XFTItem item = populater.getItem();
+			            XnatProjectdata  project = new XnatProjectdata(item);
+			        	XDATUser user = TurbineUtils.getUser(data);
+			        	final PersistentWorkflowI wrk2=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.SCHEMA_ELEMENT_NAME,project.getId(),project.getId(),newEventInstance(data,EventUtils.CATEGORY.PROJECT_ADMIN));
+				    	EventMetaI c=wrk2.buildEvent();
+			        	SaveItemHelper.authorizedSave(item,user, false, false,c);
+			        	XnatProjectdata postSave = new XnatProjectdata(item);
+			            postSave.getItem().setUser(user);
+			            
+			            postSave.initGroups();
+			            PopulateItem populater = PopulateItem.Populate(data,"arc:project",true);
+			            XFTItem item2 = populater.getItem();
+			            item2.setProperty("arc:project.current_arc", "arc001");
+			            ArcProject arcP = new ArcProject(item2);
+			            postSave.initArcProject(arcP, user, c);
+			            
+			            user.initGroups();
+			        	
+			    		user.clearLocalCache();
+			    		//end change here
+					}
 		    		
 					DisplayItemAction dia = new DisplayItemAction();
 					data = TurbineUtils.SetSearchProperties(data, item);

@@ -115,6 +115,7 @@
             actions: $typeObject.getElementSecurity().getListingActionsJSON(),
             "lbg": "$!typeObject.getLightColor()",
             "dbg": "$!typeObject.getDarkColor()",
+			"isExperiment":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:experimentData"),
 			"isSubjectAssessor":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:subjectAssessorData"),
 			"isImageAssessor":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:imageAssessorData"),
 			"isImageSession":$typeObject.getSchemaElement().getGenericXFTElement().getExtendedXSITypes().contains("xnat:imageSessionData"),

@@ -74,7 +74,7 @@
     			#end
     		</select>
 		#else
-			<input #if($isDisabled)disabled#end type="text" size="10" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="$!om.getProperty($!f.getXmlpath())" #if($f.getRequired()==1 || $f.getRequired()) class="required" #end/>
+			<input #if($f.getRequired()==1 || $f.getRequired()) class="required $!f.getDatatype()" #else class="nullable $!f.getDatatype()" #end #if($isDisabled)disabled#end type="text" size="10" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="$!om.getProperty($!f.getXmlpath())" />
 		#end
     #end
 		  </td>

@@ -46,6 +46,12 @@ YAHOO.util.Event.onDOMReady(function(){
                 }
             }
 
+            if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'integer')){
+                if(myforms[iFc][fFc].nodeName=="INPUT"){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.IntegerTextBox));
+                }
+            }
+
             if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'alphaNumSP')){
                 if(myforms[iFc][fFc].nodeName=="INPUT"){
                     _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.AlphaNumSTextBox));
@@ -159,6 +165,25 @@ XNAT.app.validatorImpls.FloatTextBox={
 				return false;
 			}
 			if(!isNaN(parseFloat(temp)) && isFinite(temp)){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return true;
+		}
+	}
+};
+
+XNAT.app.validatorImpls.IntegerTextBox={
+	message:"Value must be an integer.",
+	isValid:function(_box){
+		if(_box.value!=""){
+			var temp=_box.value.trim().replace(/\s+/g,"");
+			if(temp!=_box.value){
+				return false;
+			}
+			if(!isNaN(parseInt(temp)) && isFinite(temp)){
 				return true;
 			}else{
 				return false;

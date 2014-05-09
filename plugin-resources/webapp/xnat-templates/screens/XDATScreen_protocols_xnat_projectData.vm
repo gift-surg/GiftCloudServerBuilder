@@ -59,12 +59,14 @@ protocols.push( new ProtocolManager("$protocol.getId()",null,bDIV,{project:"$om.
 #end
 for(var aeC=0;aeC<window.available_elements.length;aeC++){
  if(!createdProtocols.contains(window.available_elements[aeC].element_name)){
-  protocols_sel.options[protocols_sel.options.length]=new Option(window.available_elements[aeC].plural,"${om.getId()}_" + window.available_elements[aeC].element_name);
-  var bDIV = document.createElement("DIV");
-  bDIV.style.display="none"; 
-  bDIV.className="mainContainerSubBody";
-  div_bodys.appendChild(bDIV);
-  protocols.push( new ProtocolManager("${om.getId()}_" + window.available_elements[aeC].element_name,null,bDIV,{dataType:window.available_elements[aeC].element_name,project:"${om.getId()}"}));
+    if(window.available_elements[aeC].element_name=="xnat:projectData" || window.available_elements[aeC].element_name=="xnat:subjectData" || window.available_elements[aeC].isExperiment){
+      protocols_sel.options[protocols_sel.options.length]=new Option(window.available_elements[aeC].plural,"${om.getId()}_" + window.available_elements[aeC].element_name);
+      var bDIV = document.createElement("DIV");
+      bDIV.style.display="none"; 
+      bDIV.className="mainContainerSubBody";
+      div_bodys.appendChild(bDIV);
+      protocols.push( new ProtocolManager("${om.getId()}_" + window.available_elements[aeC].element_name,null,bDIV,{dataType:window.available_elements[aeC].element_name,project:"${om.getId()}"}));
+  	}
  }
 			  
 		}

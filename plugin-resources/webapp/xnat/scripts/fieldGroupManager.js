@@ -621,7 +621,7 @@ this.draw=function(){
 		input.options[4]=new Option("date","date");
 		if (f.getDatatype()=="date"){
 			input.options[4].selected=true;
-			input.selectedIndex=3;
+			input.selectedIndex=4;
 		}
 
 		input.fieldDefinition=f;

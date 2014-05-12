@@ -693,6 +693,7 @@ this.draw=function(){
 
 				this.fieldDefinition.addPossiblevalues_possiblevalue(pv);
 
+				var input2 = document.createElement("INPUT");
 				input2.type="text";
 				input2.value=pv.getPossiblevalue();
 				input2.pv=pv;

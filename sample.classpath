@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="projects/xnat/src/java"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
-	<classpathentry kind="src" path="plugin-resources/conf/groovy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/groovy-all-2.2.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/ezmorph-1.0.6.jar" sourcepath="plugin-resources/repository/groovy/jars/ezmorph-1.0.6-sources.jar">

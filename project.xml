@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>xdat</groupId>
 			<artifactId>xdat</artifactId>
-			<version>1.6.3</version>
+			<version>${xdat.project.version}</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-framework</artifactId>
-			<version>1.6.3</version>
+			<version>${xdat.project.version}</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-config</artifactId>
-			<version>1.6.3</version>
+			<version>${xdat.project.version}</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-mail</artifactId>
-			<version>1.6.3</version>
+			<version>${xdat.project.version}</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>nrg</groupId>
 			<artifactId>nrg-notify</artifactId>
-			<version>1.6.3</version>
+			<version>${xdat.project.version}</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -503,7 +503,7 @@
 		<dependency>
 			<groupId>xdat</groupId>
 			<artifactId>xnat-data-client</artifactId>
-			<version>1.6.3-jar-with-dependencies</version>
+			<version>${xdat.project.version}-jar-with-dependencies</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -564,6 +564,12 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

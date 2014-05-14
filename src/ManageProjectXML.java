@@ -18,6 +18,7 @@ public class ManageProjectXML extends Task {
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	private String src = null;
 	private String dest = null;
+    private String version = null;
     private String basedir = null;
 	private String projdepsrc = null;
 	private String projectName = null;
@@ -33,18 +34,18 @@ public class ManageProjectXML extends Task {
 		addProjectSpecificResources(sbSRC);
 		handleOutput("Creating/Replacing " + dest + " with merged version.");
 		try {
-			outputToFile(sbSRC.toString().replaceAll("%PROJECT%",projectName), dest);
+			outputToFile(sbSRC.toString().replaceAll("%PROJECT%", getProjectName()).replaceAll("%VERSION%", getVersion()), dest);
 		} catch (IOException ioe) {
 			throw new BuildException(ioe);
 		}
 	}
-		
-	private void addProjectSpecificResources(StringBuilder sbDEST) {
+
+    private void addProjectSpecificResources(StringBuilder sbDEST) {
 		// Add project-specific resources if defined
 		if (projdepsrc == null) {
 			return;
 		}
-        if (projdepsrc == null || projdepsrc.trim().isEmpty()) {
+        if (projdepsrc.trim().isEmpty()) {
             handleOutput("No value set for projdepsrc attribute, exiting without merging.");
 			return;
 		}
@@ -88,7 +89,7 @@ public class ManageProjectXML extends Task {
 			}
 		}
 
-	/**
+    /**
 	 * 
 	 * @return the dest
 	 * 
@@ -104,6 +105,23 @@ public class ManageProjectXML extends Task {
 	 */
 	public void setDest(String dest) {
 		this.dest = dest;
+	}
+    /**
+	 * 
+	 * @return the version
+	 * 
+	 */
+	public String getVersion() {
+		return version;
+	}
+	/**
+	 * 
+	 * @param version
+	 *            the version to set
+	 * 
+	 */
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	/**
 	 * 

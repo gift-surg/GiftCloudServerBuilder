@@ -20,8 +20,21 @@
     <!-- ================================================================ -->
     <!-- Generates a new deployment (and project if undefined)                                       -->
     <!-- ================================================================ -->
+    <goal name="xdat:version" description="Initializes the XNAT version">
+        <ant:echo>Setting the project version</ant:echo>
+        <j:if test="${context.getVariable('xdat.project.version') == null}">
+            <j:set var="xdat.project.version" value="1.6.4-SNAPSHOT"/>
+        </j:if>
+        <!-- Test to see if we've checked the version already in this build. -->
+        <j:if test="${context.getVariable('xdat.project.version.checked') == null}">
+            <!-- If not, then note that we have and echo the message as to the version we're building. -->
+            <j:set var="xdat.project.version.checked" value="true"/>
+            <ant:echo>Setting project version to: ${xdat.project.version}</ant:echo>
+        </j:if>
+    </goal>        
     <goal name="xdat:setup" description="Setup XDAT Structure">
         <ant:echo>HOME: ${basedir}</ant:echo>
+        <attainGoal name="xdat:version"/>
         <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
         <u:available file="${basedir}/deployments/${xdat.project.name}">
             <fail>
@@ -189,6 +202,9 @@
     <!-- Updates an existing deployment                               -->
     <!-- ================================================================ -->
     <goal name="xdat:update" description="Setup XDAT Structure">
+        <ant:echo>Going to try to get the version</ant:echo>
+        <attainGoal name="xdat:version"/>
+        <ant:echo>I should now have the version: ${xdat.project.version}</ant:echo>
         <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
             <j:set var="xdat.project.includeXNAT" value="true"/>
         </j:if>
@@ -881,6 +897,7 @@
     <!-- Generates Java Files for use in XNAT                                      -->
     <!-- ================================================================ -->
     <goal name="xdat:generateAllFiles" description="Generates xdat Java Files and Velocity Templates">
+        <attainGoal name="xdat:version"/>
         <java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
             <arg value="${basedir}"/>
@@ -898,7 +915,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -909,9 +926,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -924,6 +941,7 @@
         </java>
     </goal>
     <goal name="xdat:generateXDATFiles" description="Generates xdat Java Files and Velocity Templates">
+        <attainGoal name="xdat:version"/>
         <ant:mkdir dir="${basedir}/work/java"/>
         <ant:mkdir dir="${basedir}/work/templates/screens"/>
         <java classname="GenerateJavaFile" maxmemory="1024m" fork="true" failonerror="true">
@@ -943,7 +961,7 @@
             <arg value="false"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -954,9 +972,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -972,6 +990,7 @@
     <!-- Generates Update SQL                                      -->
     <!-- ================================================================ -->
     <goal name="xdat:generateUpdateSQL" description="Generates sql for your schema">
+        <attainGoal name="xdat:version"/>
         <java classname="UpdateSQL" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
             <arg value="${basedir}"/>
@@ -981,7 +1000,7 @@
             <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}-update.sql"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -992,9 +1011,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1015,6 +1034,7 @@
     <!-- Generates CREATE SQL                                     -->
     <!-- ================================================================ -->
     <goal name="xdat:generateSQL" description="Generates sql for your schema">
+        <attainGoal name="xdat:version"/>
         <java classname="CreateSQL" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
             <arg value="${basedir}"/>
@@ -1024,7 +1044,7 @@
             <arg value="${basedir}/projects/${xdat.project.name}/sql/${xdat.project.name}.sql"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1035,9 +1055,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1057,6 +1077,7 @@
     <!-- Generates javascript Objects                                    -->
     <!-- ================================================================ -->
     <goal name="xdat:generateJSFiles" description="Generates javascript objects for your schema">
+        <attainGoal name="xdat:version"/>
         <java classname="GenerateJSFiles" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
             <arg value="${basedir}"/>
@@ -1070,7 +1091,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1080,9 +1101,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1095,6 +1116,7 @@
         </java>
     </goal>
     <goal name="xdat:createGeneratedFiles" description="Generates files for your schema">
+        <attainGoal name="xdat:version"/>
         <ant:mkdir dir="${basedir}/work/java"/>
         <ant:mkdir dir="${basedir}/work/templates/screens"/>
         <java classname="GenerateAllCreateFiles" maxmemory="1024m" fork="true" failonerror="true">
@@ -1114,7 +1136,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1125,9 +1147,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1145,6 +1167,7 @@
         </copy>
     </goal>
     <goal name="xdat:updateGeneratedFiles" description="Generates files for your schema">
+        <attainGoal name="xdat:version"/>
         <ant:mkdir dir="${basedir}/work/java"/>
         <ant:mkdir dir="${basedir}/work/templates/screens"/>
         <java classname="GenerateAllUpdateFiles" maxmemory="1024m" fork="true" failonerror="true">
@@ -1164,7 +1187,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1175,9 +1198,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1197,11 +1220,9 @@
     <!-- Generates Bean Objects                                    -->
     <!-- ================================================================ -->
     <goal name="xdat:generateBeans" description="Generates java bean objects for your schema">
+        <attainGoal name="xdat:version"/>
         <j:if test="${context.getVariable('beans.jar.name') ==null}">
             <j:set var="beans.jar.name" value="beans"/>
-        </j:if>
-        <j:if test="${context.getVariable('beans.jar.version') ==null}">
-            <j:set var="beans.jar.version" value="1.6.3"/>
         </j:if>
         <java classname="GenerateJavaBeans" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
@@ -1220,7 +1241,7 @@
             <arg value="true"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1230,9 +1251,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1255,7 +1276,7 @@
                 <pathelement location="${basedir}/plugin-resources/repository/commons-lang/jars/commons-lang-2.6.jar"/>
             </classpath>
         </javac>
-        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" basedir="${basedir}/classes">
+        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}.jar" basedir="${basedir}/classes">
             <include name="org/**"/>
             <manifest file="MANIFEST.MF">
                 <attribute name="Application-Name" value="XNAT"/>
@@ -1263,23 +1284,24 @@
                 <attribute name="Codebase" value="*"/>
             </manifest>
         </jar>
-        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}-source.jar" basedir="${basedir}/src">
+        <jar destfile="plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}-source.jar" basedir="${basedir}/src">
             <include name="org/**"/>
         </jar>
         <!-- NOTE: The applet xdat-beans archive is signed and should only be replaced when one of the applets needs to access a modified or new class. -->
-        <!-- copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-${beans.jar.version}.jar"/ -->
-        <!-- copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-${beans.jar.version}.jar"/ -->
+        <!-- copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}.jar" tofile="${basedir}/projects/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-${xdat.project.version}.jar"/ -->
+        <!-- copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}.jar" tofile="${basedir}/deployments/${xdat.project.name}/src/applet/xdat-${beans.jar.name}-${xdat.project.version}.jar"/ -->
         <j:if test="${context.getVariable('xdat.pipeline.location') != null}">
-            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${xdat.pipeline.location}/lib/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
+            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}.jar" tofile="${xdat.pipeline.location}/lib/xdat-${beans.jar.name}-${xdat.project.version}.jar"/>
         </j:if>
         <j:if test="${context.getVariable('xdat.pipeline.location') == null}">
-            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
+            <copy file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}.jar" tofile="${basedir}/pipeline/lib/xdat-${beans.jar.name}-${xdat.project.version}.jar"/>
         </j:if>
     </goal>
     <!-- ================================================================ -->
     <!-- Populates the root level lib directory                                      -->
     <!-- ================================================================ -->
     <goal name="xdat:setupLib" description="Setup the Lib directory">
+        <attainGoal name="xdat:version"/>
         <j:forEach var="dep" items="${pom.dependencies}">
             <copy todir="${basedir}/lib" file="${basedir}/plugin-resources/repository/${dep.getArtifactDirectory()}/jars/${dep.getArtifact()}"/>
         </j:forEach>
@@ -1395,6 +1417,7 @@
         <ant:replace file="${basedir}/bin/${ClassName}_${xdat.project.name}.bat" token="%CLASS_NAME%" value="${ClassName}"/>
     </goal>
     <goal name="xdat:buildJarExecutables" description="Builds exe wrappers for the executable jars">
+        <attainGoal name="xdat:version"/>
         <!-- BUILD SEARCH EXECUTABLES -->
         <copy tofile="${basedir}/bin/SearchWS" file="${basedir}/plugin-resources/misc/template3.sh"/>
         <ant:replace file="${basedir}/bin/SearchWS" token="%XNAT_HOME%" value="${basedir}"/>
@@ -1439,10 +1462,10 @@
         <ant:replace file="${basedir}/bin/XNATRestClient.bat" token="%JAR_NAME%" value="xdat-restClient-1.jar"/>
         <copy tofile="${basedir}/bin/XnatDataClient" file="${basedir}/plugin-resources/misc/template3.sh"/>
         <ant:replace file="${basedir}/bin/XnatDataClient" token="%XNAT_HOME%" value="${basedir}"/>
-        <ant:replace file="${basedir}/bin/XnatDataClient" token="%JAR_NAME%" value="xnat-data-client-1.6.3-jar-with-dependencies.jar"/>
+        <ant:replace file="${basedir}/bin/XnatDataClient" token="%JAR_NAME%" value="xnat-data-client-${xdat.project.version}-jar-with-dependencies.jar"/>
         <copy tofile="${basedir}/bin/XnatDataClient.bat" file="${basedir}/plugin-resources/misc/template3.bat"/>
         <ant:replace file="${basedir}/bin/XnatDataClient.bat" token="%XNAT_HOME%" value="${basedir}"/>
-        <ant:replace file="${basedir}/bin/XnatDataClient.bat" token="%JAR_NAME%" value="xnat-data-client-1.6.3-jar-with-dependencies.jar"/>
+        <ant:replace file="${basedir}/bin/XnatDataClient.bat" token="%JAR_NAME%" value="xnat-data-client-${xdat.project.version}-jar-with-dependencies.jar"/>
     </goal>
     <goal name="xdat:testDB" description="Tests for PostgreSQL access, existence of db, tests for language pgplgsql">
         <ant:taskdef name="TestDB" classname="TestDB" classpath="classes;plugin-resources/repository/postgresql/jars/postgresql-9.0-801.jdbc4.jar"/>
@@ -1511,17 +1534,19 @@
     <!-- Quick deploy of key files for debugging                                     -->
     <!-- ================================================================ -->
     <goal name="xdat:quick-deploy">
+        <attainGoal name="xdat:version"/>
         <attainGoal name="xdat:quick-deploy-templates"/>
         <attainGoal name="xdat:quick-deploy-classes"/>
     </goal>
     <goal name="xdat:quick-deploy-templates">
+        <attainGoal name="xdat:version"/>
         <attainGoal name="xdat:updateJS"/>
         <attainGoal name="xdat:updateCSS"/>
         <attainGoal name="xdat:updateImages"/>
         <j:if test="${context.getVariable('skipModules') != 'true'}">
             <attainGoal name="xdat:updateFilesFromModules"/>
         </j:if>
-        <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-1.6.3.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-1.6.3.jar"/>
+        <copy tofile="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/xdat-${xdat.project.version}.jar" file="${basedir}/plugin-resources/repository/xdat/jars/xdat-${xdat.project.version}.jar"/>
         <copy todir="${maven.appserver.home}/webapps/${xdat.project.name}/WEB-INF/lib/" preservelastmodified="true">
             <fileset dir="${basedir}/plugin-resources/repository/srb/jars/"/>
         </copy>
@@ -1575,7 +1600,7 @@
     </goal>
     <goal name="xdat:manageProjectXML" description="Updates Project xml with more recent dependencies">
         <ant:taskdef name="ManageProjectXML" classname="ManageProjectXML" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
-        <ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml" basedir="${basedir}/projects/${xdat.project.name}/project-dependencies" projdepsrc="dependencies.xml, *-dependencies.xml, *-dependency.xml"/>
+        <ant:ManageProjectXML projectName="${xdat.project.name}" src="${basedir}/plugin-resources/originals/project.xml" dest="${basedir}/deployments/${xdat.project.name}/project.xml" version="${xdat.project.version}" basedir="${basedir}/projects/${xdat.project.name}/project-dependencies" projdepsrc="dependencies.xml, *-dependencies.xml, *-dependency.xml"/>
     </goal>
     <goal name="xdat:manageInstanceSettings" description="Updates Project instance settings with new attributes">
         <ant:taskdef name="ManageInstanceSettings" classname="ManageInstanceSettings" classpath="classes;plugin-resources/repository/ant/jars/ant-1.6.1.jar"/>
@@ -1616,6 +1641,7 @@
     <!-- Insert Meta Data entries                                    -->
     <!-- ================================================================ -->
     <goal name="xdat:insertMetaDatas" description="Generates java bean objects for your schema">
+        <attainGoal name="xdat:version"/>
         <java classname="InsertMetaDatas" maxmemory="1024m" fork="true" failonerror="true">
             <arg value="-xdir"/>
             <arg value="${basedir}"/>
@@ -1623,7 +1649,7 @@
             <arg value="${xdat.project.name}"/>
             <classpath>
                 <pathelement location="./classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1634,9 +1660,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
@@ -1652,6 +1678,7 @@
     <!-- Launch pipeline build from default path                          -->
     <!-- ================================================================ -->
     <goal name="pipeline:init" description="Invoke Pipeline Setup">
+        <attainGoal name="xdat:version"/>
         <j:if test="${context.getVariable('xdat.pipeline.location') != null}">
             <j:set var="pipeline.dir" value="${xdat.pipeline.location}"/>
         </j:if>
@@ -1685,10 +1712,7 @@
                 <j:if test="${context.getVariable('beans.jar.name') == null}">
                     <j:set var="beans.jar.name" value="beans"/>
                 </j:if>
-                <j:if test="${context.getVariable('beans.jar.version') ==null}">
-                    <j:set var="beans.jar.version" value="1.6.3"/>
-                </j:if>
-                <j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
+                <j:set var="beans.jar" value="${basedir}/plugin-resources/repository/xdat/jars/xdat-${beans.jar.name}-${xdat.project.version}.jar"/>
                 <j:set var="beans.jar.exists" value="false"/>
                 <u:available file="${beans.jar}">
                     <j:set var="beans.jar.exists" value="true"/>
@@ -1697,7 +1721,7 @@
                     <ant:echo>Couldn't locate the beans jar ${beans.jar}. This is required for pipeline initialization.</ant:echo>
                 </j:if>
                 <j:if test="${context.getVariable('beans.jar.exists') == 'true'}">
-                    <copy file="${beans.jar}" tofile="${pipeline.dir}/lib/xdat-${beans.jar.name}-${beans.jar.version}.jar"/>
+                    <copy file="${beans.jar}" tofile="${pipeline.dir}/lib/xdat-${beans.jar.name}-${xdat.project.version}.jar"/>
                     <j:if test="${context.getVariable('os.name').startsWith('Windows')}">
                         <ant:echo>Launching ${pipeline.dir}/setup.bat script</ant:echo>
                         <ant:exec executable="cmd" failonerror="true">
@@ -1729,6 +1753,7 @@
     <!-- Generates Bean Objects                                    -->
     <!-- ================================================================ -->
     <goal name="xdat:ManageProjectAccessories" description="Generates java bean objects for your schema">
+        <attainGoal name="xdat:version"/>
         <maven:param-check value="${xdat.user.login}" fail="true" message="'xdat.user.login' must be specified"/>
         <maven:param-check value="${xdat.user.password}" fail="true" message="'xdat.user.password' must be specified"/>
         <java classname="ManageProjectAccessories" maxmemory="1024m" fork="true" failonerror="true">
@@ -1743,7 +1768,7 @@
             <classpath>
                 <pathelement location="./classes"/>
                 <pathelement location="./deployments/${xdat.project.name}/target/classes"/>
-                <pathelement location="./lib/xdat-1.6.3.jar"/>
+                <pathelement location="./lib/xdat-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/commons-collections-3.0.jar"/>
                 <pathelement location="./lib/commons-configuration-1.0.jar"/>
                 <pathelement location="./lib/commons-dbcp-1.4.jar"/>
@@ -1754,9 +1779,9 @@
                 <pathelement location="./lib/log4j-1.2.17.jar"/>
                 <pathelement location="./lib/slf4j-api-1.7.7.jar"/>
                 <pathelement location="./lib/slf4j-log4j12-1.7.7.jar"/>
-                <pathelement location="./lib/nrg-framework-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-config-1.6.3.jar"/>
-                <pathelement location="./lib/nrg-notify-1.6.3.jar"/>
+                <pathelement location="./lib/nrg-framework-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-config-${xdat.project.version}.jar"/>
+                <pathelement location="./lib/nrg-notify-${xdat.project.version}.jar"/>
                 <pathelement location="./lib/parser-1.jar"/>
                 <pathelement location="./lib/postgresql-9.0-801.jdbc4.jar"/>
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>

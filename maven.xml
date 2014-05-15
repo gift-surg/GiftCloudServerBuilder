@@ -1265,7 +1265,7 @@
                 <pathelement location="./lib/spring-security-core-3.0.8.RELEASE.jar"/>
             </classpath>
         </java>
-        <javac srcdir="${basedir}/src" destdir="${basedir}/classes" source="1.5" target="1.5" debug="true">
+        <javac srcdir="${basedir}/src" destdir="${basedir}/classes" source="1.6" target="1.6" debug="true">
             <include name="org/**"/>
             <classpath>
                 <pathelement location="${basedir}/plugin-resources/repository/log4j/jars/log4j-1.2.17.jar"/>
@@ -1515,11 +1515,14 @@
         <ant:echo>java.version: ${java.version}</ant:echo>
         <ant:echo>user.home: ${user.home}</ant:echo>
         <ant:echo>java.io.tmpdir: ${java.io.tmpdir}</ant:echo>
+        <j:if test="${context.getVariable('java.version').startsWith('1.6')}">
+            <ant:echo>JAVA: 1.6</ant:echo>
+        </j:if>
         <j:if test="${context.getVariable('java.version').startsWith('1.5')}">
-            <ant:echo>JAVA: 1.5</ant:echo>
+            <ant:echo>JAVA: 1.5 FOUND, USE OF JAVA 1.6 OR HIGHER IS STRONGLY RECOMMENDED.</ant:echo>
         </j:if>
         <j:if test="${context.getVariable('java.version').startsWith('1.4')}">
-            <ant:echo>JAVA: 1.4</ant:echo>
+            <ant:echo>JAVA: 1.4 FOUND, USE OF JAVA 1.6 OR HIGHER IS STRONGLY RECOMMENDED.</ant:echo>
         </j:if>
     </goal>
     <!-- ================================================================ -->

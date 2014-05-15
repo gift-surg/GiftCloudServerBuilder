@@ -12,6 +12,7 @@ package org.nrg.xnat.restlet;
 
 import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.exceptions.NrgServiceRuntimeException;
 import org.nrg.framework.logging.Analytics;
@@ -46,6 +47,7 @@ public class XNATApplication extends Application {
     public static final String PREARC_PROJECT_URI = "/prearchive/projects/{PROJECT_ID}";
     public static final String PREARC_SESSION_URI = PREARC_PROJECT_URI + "/{SESSION_TIMESTAMP}/{SESSION_LABEL}";
 
+    @JsonIgnore
     public XNATApplication(Context parentContext) {
         super(parentContext);
 

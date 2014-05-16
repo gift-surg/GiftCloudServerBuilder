@@ -12,6 +12,7 @@ package org.nrg.xnat.utils;
 
 import com.google.common.collect.Lists;
 import com.twmacinta.util.MD5;
+
 import org.apache.commons.lang.StringUtils;
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
@@ -41,6 +42,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipOutputStream;
@@ -1235,10 +1237,7 @@ public class CatalogUtils {
     	//fail if more then one is present -- otherwise they will be merged.
     	for(final File f: files){
     		if(!f.equals(catFile)){
-    			if(f.getName().endsWith(".xml")){
-    				//this is a bit heavy handed.  
-    				//we could parse the xml and confirm it is a catalog
-                    //but storing XML is really rare, so I'm not sure we need to be that specific.
+    			if(f.getName().endsWith(".xml") && isCatalogFile(f)){
     				return false;
     			}
     		}
@@ -1283,7 +1282,21 @@ public class CatalogUtils {
     	return modified;
     }
     
-    /**
+    private static boolean isCatalogFile(File f) {
+    	if (f.getName().endsWith("_catalog.xml")) {
+    		return true;
+    	}
+    	try {
+			if (org.apache.commons.io.FileUtils.readFileToString(f,Charset.defaultCharset()).indexOf("<cat:Catalog")>=0) {
+				return true;
+			}
+		} catch (IOException e) {
+			// Do nothing for now
+		}
+    	return false;
+	}
+
+	/**
      * Reviews the catalog directory and returns any files that aren't already referenced in the catalogs in that folder.
      *
      * @param catFolder path to catalog xml folder
@@ -1299,7 +1312,7 @@ public class CatalogUtils {
         //identify the catalog XMLs in this folder
     	final List<CatCatalogI> catalogs=Lists.newArrayList();
     	for(final File f: files){
-			if(f.getName().endsWith(".xml")){
+			if(f.getName().endsWith(".xml") && isCatalogFile(f)){
 				CatCatalogI cat=CatalogUtils.getCatalog(f);
 				if(cat!=null){
 					catalogs.add(cat);
@@ -1311,7 +1324,7 @@ public class CatalogUtils {
     	final URI catFolderURI=catFolder.toURI();
     	
     	for(final File f: files){
-    		if(!f.getName().endsWith(".xml")){//ignore catalog files
+    		if(!(f.getName().endsWith(".xml") && isCatalogFile(f))){//ignore catalog files
 	    		//relative path is used to compare to existing catalog entries, and add it if its missing.  entry paths are relative to the location of the catalog file.
 	    		final String relative = catFolderURI.relativize(f.toURI()).getPath();
 	

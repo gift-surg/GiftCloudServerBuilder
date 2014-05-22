@@ -26,6 +26,5 @@ public class XDATScreen_edit_xnat_pVisitData extends EditSubjectAssessorScreen {
      */
     public void finalProcessing(RunData data, Context context) {
     	super.finalProcessing(data,context);
-    	logger.error("HI THERE");
     }
 }

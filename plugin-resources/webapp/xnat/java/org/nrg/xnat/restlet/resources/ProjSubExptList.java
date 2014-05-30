@@ -15,6 +15,7 @@ import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.model.XnatExperimentdataShareI;
 import org.nrg.xdat.om.*;
 import org.nrg.xdat.schema.SchemaElement;
+import org.nrg.xdat.security.ElementSecurity;
 import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -22,6 +23,7 @@ import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.exception.DBPoolException;
 import org.nrg.xft.exception.InvalidValueException;
+import org.nrg.xft.schema.design.SchemaElementI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.security.UserI;
@@ -39,7 +41,9 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class ProjSubExptList extends SubjAssessmentAbst {
 	XnatProjectdata proj=null;
@@ -331,6 +335,52 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 			table=XFTTable.Execute(query, user.getDBName(), userName);
 
 			if(table.size()>0){
+				 if(!ElementSecurity.IsSecureElement(rootElementName)){
+	                    List<Object[]> remove=new ArrayList<Object[]>();
+	                    Hashtable<String, Boolean> checked = new Hashtable<String,Boolean>();
+
+	                    String enS=qo.getFieldAlias("xnat:experimentData/extension_item/element_name");
+	                    if(enS==null) {
+	                        logger.warn("Couldn't find property xnat:experimentData/extension_item/element_name for search");
+	                        this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+	                        return null;
+	                    }
+
+	                    Integer en=table.getColumnIndex(enS.toLowerCase());
+	                    
+	                    for(Object[] row : table.rows()) {
+	                        String element_name=(String)row[en];
+	                        try{
+	                            if(element_name==null){
+	                                remove.add(row);
+	                            }else{
+
+	                                if(!checked.containsKey(element_name)){
+	                                    SchemaElementI secureElement = SchemaElement.GetElement(element_name);
+
+	                                    SecurityValues values = new SecurityValues();
+	                                    values.put(element_name + "/project",proj.getId());
+
+	                                    if (user.canReadByXMLPath(secureElement,values)) {
+	                                        checked.put(element_name, Boolean.TRUE);
+	                                    }else{
+	                                        checked.put(element_name, Boolean.FALSE);
+	                                    }
+	                                }
+
+	                                if(!checked.get(element_name)){
+	                                    remove.add(row);
+	                                }
+	                            }
+	                        } catch (Throwable e) {
+	                            logger.debug("Problem occurred iterating secure elements", e);
+	                            remove.add(row);
+	                        }
+	                    }
+
+	                    table.rows().removeAll(remove);
+	                }
+				
 				table=formatHeaders(table,qo,rootElementName+"/ID","/data/experiments/");
 
 				final Integer labelI=table.getColumnIndex("label");

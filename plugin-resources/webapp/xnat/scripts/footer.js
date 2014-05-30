@@ -75,6 +75,19 @@ YAHOO.util.Event.onDOMReady(function(){
                     _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],XNAT.app.validatorImpls.PrereqInput,$(myforms[iFc][fFc]).attr('data-required-if-message')));
                 }
     		}
+
+            if(YAHOO.util.Dom.hasClass(myforms[iFc][fFc],'max256')){
+                if(myforms[iFc][fFc].nodeName=="INPUT"){
+                    _addValidation(myforms[iFc][fFc],new TextboxValidator(myforms[iFc][fFc],{isValid:function(_box){
+                    	if(_box.value.length>256){
+                			return false;
+                		}else{
+                			return true;
+                		}
+                    }}));
+                }
+            }
+            
         }
     }
 

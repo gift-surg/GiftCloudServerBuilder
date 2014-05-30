@@ -154,6 +154,8 @@ public class XNATApplication extends Application {
         attachArchiveURI(router, "/projects/{PROJECT_ID}/users/{GROUP_ID}/{USER_ID}", ProjectMemberResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/users/{GROUP_ID}/{USER_ID}/{DISPLAY_HIDDEN_USERS}", ProjectMemberResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/searches/{SEARCH_ID}", ProjectSearchResource.class);
+        attachArchiveURI(router, "/projects/{PROJECT_ID}/groups", ProjectGroupResource.class);
+        attachArchiveURI(router, "/projects/{PROJECT_ID}/groups/{GROUP_ID}", ProjectGroupResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/subjects", ProjectSubjectList.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}", SubjectResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments", ProjSubExptList.class);

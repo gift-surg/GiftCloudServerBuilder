@@ -59,12 +59,12 @@ public class ProjectMemberResource extends SecureResource {
 			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			
-			String pID= (String)getParameter(request,"PROJECT_ID");
+			String pID= (String)getUrlEncodedParameter(request,"PROJECT_ID");
 			if(pID!=null){
 				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 			}
 		
-			gID =(String)getParameter(request,"GROUP_ID");
+			gID =(String)getUrlEncodedParameter(request,"GROUP_ID");
 			CriteriaCollection cc = new CriteriaCollection("OR");
 			cc.addClause("xdat:userGroup/ID", gID);
 			cc.addClause("xdat:userGroup/ID", pID + "_" +gID);

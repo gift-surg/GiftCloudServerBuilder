@@ -364,16 +364,6 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
         final XFTTable table2 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_userGroup ug ON ea.xdat_usergroup_xdat_usergroup_id=ug.xdat_usergroup_id LEFT JOIN xdat_user_groupid map ON ug.id=map.groupid LEFT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE read_element=1 AND delete_element=1 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
         return table2.convertColumnToArrayList("email");
     }
-
-    public ArrayList<String> getMembers() throws Exception{
-    	final XFTTable table1 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_userGroup ug ON ea.xdat_usergroup_xdat_usergroup_id=ug.xdat_usergroup_id LEFT JOIN xdat_user_groupid map ON ug.id=map.groupid LEFT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE edit_element=1 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
-        return table1.convertColumnToArrayList("email");
-    }
-
-    public ArrayList<String> getCollaborators() throws Exception{
-    	final XFTTable table2 = XFTTable.Execute("SELECT DISTINCT email FROM xdat_element_access ea LEFT JOIN xdat_field_mapping_set fms ON ea.xdat_element_access_id=fms.permissions_allow_set_xdat_elem_xdat_element_access_id LEFT JOIN xdat_field_mapping fm ON fms.xdat_field_mapping_set_id=fm.xdat_field_mapping_set_xdat_field_mapping_set_id LEFT JOIN xdat_userGroup ug ON ea.xdat_usergroup_xdat_usergroup_id=ug.xdat_usergroup_id LEFT JOIN xdat_user_groupid map ON ug.id=map.groupid LEFT JOIN xdat_user u ON map.groups_groupid_xdat_user_xdat_user_id=u.xdat_user_id  WHERE read_element=1 AND edit_element=0 AND login !='guest' AND element_name='xnat:subjectData' AND field_value='" + getId() +  "' ORDER BY email;", getDBName(), null);
-        return table2.convertColumnToArrayList("email");
-    }
 //
 //    public ArrayList<XnatProjectparticipant> getParticipants(String field, Object value){
 //    	final ArrayList<XnatProjectparticipant> matches = new ArrayList<XnatProjectparticipant>();
@@ -1723,27 +1713,30 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 	            SaveItemHelper.authorizedDelete(item, user,ci);
 	        }
 
-	        //DELETE user.groupId
-	        CriteriaCollection col = new CriteriaCollection("AND");
-	        col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," SIMILAR TO ", getId() + "\\_(owner|member|collaborator)");
-	        Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
-
-	        while(groups.hasNext()){
-	            XdatUserGroupid g = (XdatUserGroupid)groups.next();
-	            try {
-	            	SaveItemHelper.authorizedDelete(g.getItem(), user,ci);
-	            } catch (Throwable e) {
-	                logger.error("",e);
-	            }
-	        }
+	        
 
 	        //DELETE user groups
-	        col = new CriteriaCollection("AND");
-	        col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," SIMILAR TO ", getId() + "\\_(owner|member|collaborator)");
-	        groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
+	        CriteriaCollection col = new CriteriaCollection("AND");
+	        col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".tag"," = ", getId());
+	        Iterator groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
 
 	        while(groups.hasNext()){
 	            XdatUsergroup g = (XdatUsergroup)groups.next();
+	            
+	          //DELETE user.groupId
+		        col = new CriteriaCollection("AND");
+		        col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," = ", g.getId());
+		        Iterator groupIds = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
+
+		        while(groupIds.hasNext()){
+		            XdatUserGroupid gId = (XdatUserGroupid)groupIds.next();
+		            try {
+		            	SaveItemHelper.authorizedDelete(gId.getItem(), user,ci);
+		            } catch (Throwable e) {
+		                logger.error("",e);
+		            }
+		        }
+		        
 	            try {
 	            	SaveItemHelper.authorizedDelete(g.getItem(), user,ci);
 	            } catch (Throwable e) {

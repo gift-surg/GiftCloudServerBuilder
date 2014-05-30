@@ -9,7 +9,14 @@ $page.setVlinkColor($ui.vlink)
 <font color="red" size="3">$data.message</font>
 #end
 <p>
+#if($om.getTag())
+	## linked from the access tab on the project page
+<form name="form1" method="post" action="$content.getURI("/data/projects/$om.getTag()/groups?XNAT_CSRF=$!XNAT_CSRF")">
+#else
+	## linked from the admin groups page
 <form name="form1" method="post" action="$link.setAction("ModifyGroupPrivileges")">
+#end
+
 #if($vr)
 	<font color="red">Invalid parameters:<BR>$vr.toHTML()</font>
 <HR>
@@ -21,7 +28,7 @@ $page.setVlinkColor($ui.vlink)
 			<table width="100%">
 				<TR>
 					<TD align="left" valign="middle">
-						<font face="$ui.sansSerifFonts" size="3"><b>UserGroup Details</b></font>
+						<font face="$ui.sansSerifFonts" size="3"><b>User Group Configuration</b></font>
 					</TD>
 				</TR>
 			</TABLE>
@@ -33,9 +40,29 @@ $page.setVlinkColor($ui.vlink)
 				<TR>
 					<TD valign="top">
 						<TABLE>
-							<TR><TD>ID</TD><TD>#xdatStringBox("xdat:userGroup/ID" $item "" $vr)</TD></TR>
-							<TR><TD>Display Name</TD><TD>#xdatStringBox("xdat:userGroup/displayName" $item "" $vr)</TD></TR>
-													#xdatHiddenBox("xdat:userGroup/xdat_userGroup_id" $item "")
+							#xdatHiddenBox("xdat:userGroup/xdat_userGroup_id" $item "")
+							
+							#if($om.getTag())
+    							#xdatHiddenBox("xdat:userGroup/ID" $item "")
+    							<TR>
+									<TD width="200px">Display Name</TD>
+									<TD>
+										#if($ug.getId() && $item.getStringProperty("xdat:userGroup/displayName"))
+											##display name is used in the generation of the ID, so it can't be changed once created
+											$!item.getStringProperty("xdat:userGroup/displayName") <input id="xdat:userGroup/displayName" type="hidden" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
+										#else
+											<input id="xdat:userGroup/displayName" class="required max256" data-regex="^[A-Za-z0-9 _]+$" type="text" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
+										#end
+									</TD>
+								</TR>
+    							<TR><TD colspan='2'><div class='info'>Display Name is required.  It is the value that will be displayed to users on the Project Access tab.</div></TD></TR>
+    							#xdatHiddenBox("xdat:userGroup/tag" $item "")
+							#else
+    							<TR><TD>ID</TD><TD>#xdatStringBox("xdat:userGroup/ID" $item "" $vr)</TD></TR>
+    							<TR><TD>Display Name</TD><TD>#xdatStringBox("xdat:userGroup/displayName" $item "" $vr)</TD></TR>
+    							<TR><TD>Tag</TD><TD>#xdatStringBox("xdat:userGroup/tag" $item "" $vr)</TD></TR>
+							#end
+							
 						</TABLE>
 					</TD>
 				</TR>
@@ -44,77 +71,178 @@ $page.setVlinkColor($ui.vlink)
 	</TR>
 	<TR>	
 		<TD>
+			<style>
+	#groupPerm .item, #groupPerm .header {
+	  border-bottom:1px solid #888;
+	  font:11px Arial, Helvetica, sans-serif;
+	  margin-top:0;
+	  margin-bottom:0;
+	  padding: 4px;
+	  overflow:auto;
+	}
+	dl.item, item.item {
+		display:block;
+	}
+	#groupPerm dl dl 	{ margin:1px 0;	}
+	#groupPerm .header {
+		background-color: #ccc;
+		font-weight: bold;
+	}
+	#groupPerm dl dt, #groupPerm dl dd {
+		display:block;
+		float:left;
+		padding:4px 0;
+	}
+	.item:hover {
+		background-color:#fe9;
+	}
+	#groupPerm dd 	{ 	margin-left:20px; }
+	#groupPerm dd.col1 	{	width:120px;padding:0px;margin-left:10px }
+	#groupPerm dd.col2 	{	width:70px; }
+	#groupPerm dd.col3 	{	width:70px; }
+	#groupPerm dd.col4 	{	width:70px; }
+	#groupPerm dd.col5 	{	width:70px; }
+	#groupPerm dd.col6 	{	width:70px; }
+	#groupPerm dd.col7 	{	width:100px; }
+	#groupPerm_title {
+		font-weight:700;
+	}
+	#groupPerm dl.header dd.col1 	{	margin-left:2px }
+	#groupPerm dl.header dd.col2 	{	margin-left:28px }
+
+		</style>
 <!-- BEGIN xdat:userGroup -->
-<Table border="0">
-							#set($permissionCount = 0)
-							<TR><TH align="left">User Permissions<BR><BR></TH></TR>
-							#foreach ($elementManager in $allElements)
-							#set($elementName = $elementManager.get(0))
-							#set($permissionCount = $permissionCount + 1)
-							#set($elementSQLName = $elementManager.get(2))
-							<script language="JavaScript1.3">
-								function ${elementSQLName}CheckAll(checkAll,type)
-								{
-									var change=null;
-									var node=null;
-									#foreach ($perimissionItem in $elementManager.get(1))
-										change = "${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_" + type;
-										node = document.getElementById(change);
-										node.checked=checkAll.checked;
-									#end
-								}
-							</script>
-							<TR><TD align="left"><A NAME="LINK${permissionCount}" HREF="#LINK${permissionCount}" onClick=" return blocking($permissionCount);"><img ID="IMG$permissionCount" src="$content.getURI("images/plus.jpg")" border=0>&nbsp;&nbsp;$elementName</A></TD></TR>
-							<TR>
-								<TD>
-									<span ID="span$!permissionCount" style="position:relative; display:none;">
-										<TABLE border="0">
-											<TR><TH width="200">&nbsp;</TH><TH align="left">All<BR><INPUT type="checkbox" ONCLICK="${elementSQLName}CheckAll(this,'C');"/></TH><TH align="left">All<BR><INPUT type="checkbox" ONCLICK="${elementSQLName}CheckAll(this,'R');"/></TH><TH align="left">All<BR><INPUT type="checkbox" ONCLICK="${elementSQLName}CheckAll(this,'E');"/></TH><TH align="left">All<BR><INPUT type="checkbox" ONCLICK="${elementSQLName}CheckAll(this,'D');"/></TH><TH align="left">All<BR><INPUT type="checkbox" ONCLICK="${elementSQLName}CheckAll(this,'A');"/></TH></TR>
-											<TR><TH width="200">&nbsp;</TH><TH>Create</TH><TH>Read</TH><TH>Edit</TH><TH>Delete</TH><TH>Activate</TH></TR>
-											#foreach ($perimissionItem in $elementManager.get(1))
-											<TR>
-												<TD width="200">$perimissionItem.getDisplayName()
-												#if($perimissionItem.getFullFieldName().endsWith("sharing/share/project"))
-												(SHARED)
-												#elseif($perimissionItem.getFullFieldName().endsWith("/project"))
-												(OWNED)
-												#end
-												<INPUT type="hidden" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_wasSet" value="${perimissionItem.wasSet()}"/>
-																								<INPUT type="hidden" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_type" value="equals"/></TD>
-												<!--<TD><select name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_type">
-													<option value="equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("equals"))SELECTED #end>=</option>
-													<option value="greater than" #if($perimissionItem.getComparison_type().equalsIgnoreCase("greater than"))SELECTED #end>></option>
-													<option value="less than" #if($perimissionItem.getComparison_type().equalsIgnoreCase("less than"))SELECTED #end><</option>
-													<option value="greater than or equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("greater than or equals"))SELECTED #end>>=</option>
-													<option value="less than or equals" #if($perimissionItem.getComparison_type().equalsIgnoreCase("less than or equals"))SELECTED #end><=</option>
-													<option value="like" #if($perimissionItem.getComparison_type().equalsIgnoreCase("like"))SELECTED #end>LIKE</option>
-													</select>
-												</TD>-->
-												<TD><INPUT id="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_C" type="checkbox" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_C" #if($perimissionItem.canCreate())CHECKED #end /></TD>
-												<TD><INPUT id="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_R" type="checkbox" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_R" #if($perimissionItem.canRead())CHECKED #end /></TD>
-												<TD><INPUT id="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_E" type="checkbox" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_E" #if($perimissionItem.canEdit())CHECKED #end /></TD>
-												<TD><INPUT id="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_D" type="checkbox" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_D" #if($perimissionItem.canDelete())CHECKED #end /></TD>
-												<TD><INPUT id="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_A" type="checkbox" name="${elementName}_${perimissionItem.getFullFieldName()}_${perimissionItem.getValue()}_A" #if($perimissionItem.canActivate())CHECKED #end /></TD>
-											</TR>
-											#end
-										</TABLE>
-									</span>
-								</TD>
-							</TR>
-							#end
-						</TABLE>
+<div id='groupPerm'>
+	<div style="margin-top:20px;" id="groupPerm_title">Group Permissions</div>
+	<dl class='header'>
+		<dl>
+			<dd class='col1'>&nbsp;</dd>
+			<dd class='col2'><INPUT type="checkbox" onclick="$('.create').prop('checked', this.checked);"/> Create</dd>
+			<dd class='col3'><INPUT type="checkbox" onclick="$('.read').prop('checked', this.checked);" /> Read</dd>
+			<dd class='col4'><INPUT type="checkbox" onclick="$('.edit').prop('checked', this.checked);" /> Edit</dd>
+			<dd class='col5'><INPUT type="checkbox" onclick="$('.delete').prop('checked', this.checked);" /> Delete</dd>
+		</dl>
+	</dl>	
+	#set($pValue=$ug.getTag())
+	
+	##project permissions
+	#set($pi="")
+    #set($pi=$ug.getRootPermissionObject("xnat:projectData","xnat:projectData/ID","$ug.getTag()"))
+	<dl class='item'>
+		<dd class='col1'>Project</dd>
+		<dd class='col2'><INPUT class='create' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_C" value="1" #if($pi.getCreate())CHECKED #end /></dd>
+		<dd class='col3'><INPUT class='' type="checkbox" value="1" CHECKED DISABLED /><INPUT class='' type="hidden" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_R" value="1"  /></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_E" value="1" #if($pi.getEdit())CHECKED #end /></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_D" value="1" #if($pi.getDelete())CHECKED #end /></dd>
+	</dl>
+	
+	##subject permissions
+	#set($pi="")
+    #set($pi=$ug.getRootPermissionObject("xnat:subjectData","xnat:subjectData/project","$ug.getTag()"))
+	<dl class='item'>
+		<dd class='col1'>Subjects</dd>
+		<dd class='col2'><INPUT class='create' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
+		<dd class='col3'><INPUT class='' type="checkbox" value="1"  CHECKED DISABLED /><INPUT class='' type="hidden" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_R" /></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+	</dl>
+	#set($permissionCount = 0)
+	## render image sessions first
+	<dl class='item header'>
+		<dd class='col1'>Imaging Sessions</dd>
+		<dd class='col2'><INPUT class='create' type="checkbox" onclick="$('.create.imageSession').prop('checked', this.checked);"/></dd>
+		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.imageSession').prop('checked', this.checked);"/></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageSession').prop('checked', this.checked);"/></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageSession').prop('checked', this.checked);"/></dd>
+	</dl>
+	#foreach ($elementManager in $allElements)
+		#set($elementName = $elementManager.get(0))
+		#set($permissionCount = $permissionCount + 1)
+		#set($elementSQLName = $elementManager.get(2))
+		#if($elementManager.get(5).getSchemaElement().instanceOf("xnat:imageSessionData"))
+    		#set($pi="")
+    		#set($pi=$ug.getRootPermissionObject("${elementName}","${elementName}/project","$ug.getTag()"))		
+			#if($pi!="" && ($pi.getRead() || $pi.getCreate() || $pi.getEdit() || $pi.getDelete()))
+				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
+			#end
+			<dl class='item'>
+    			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
+    			<dd class='col2'><INPUT class='create imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
+    			<dd class='col3'><INPUT class='read imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
+    			<dd class='col4'><INPUT class='edit imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
+    			<dd class='col5'><INPUT class='delete imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+    		</dl>
+		#end
+	#end
+	
+	## render image assessors
+	<dl class='item header'>
+		<dd class='col1'>Image Assessments</dd>
+		<dd class='col2'><INPUT class='create' type="checkbox" onclick="$('.create.imageAssessor').prop('checked', this.checked);"/></dd>
+		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.imageAssessor').prop('checked', this.checked);"/></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageAssessor').prop('checked', this.checked);"/></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageAssessor').prop('checked', this.checked);"/></dd>
+	</dl>
+	#foreach ($elementManager in $allElements)
+		#set($elementName = $elementManager.get(0))
+		#set($permissionCount = $permissionCount + 1)
+		#set($elementSQLName = $elementManager.get(2))
+		#if($elementManager.get(5).getSchemaElement().instanceOf("xnat:imageAssessorData"))
+			#set($pi="")
+    		#set($pi=$ug.getRootPermissionObject("${elementName}","${elementName}/project","$ug.getTag()"))		
+			#if($pi!="" && ($pi.getRead() || $pi.getCreate() || $pi.getEdit() || $pi.getDelete()))
+				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
+			#end
+			<dl class='item'>
+    			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
+    			<dd class='col2'><INPUT class='create imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
+    			<dd class='col3'><INPUT class='read imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
+				<dd class='col4'><INPUT class='edit imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
+    			<dd class='col5'><INPUT class='delete imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+    		</dl>
+		#end
+	#end
+	
+	## render other subject Assessors
+	<dl class='item header'>
+		<dd class='col1'>Other Assessments</dd>
+		<dd class='col2'><INPUT class='create' type="checkbox" onclick="$('.create.other').prop('checked', this.checked);"/></dd>
+		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.other').prop('checked', this.checked);"/></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.other').prop('checked', this.checked);"/></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.other').prop('checked', this.checked);"/></dd>
+	</dl>
+	#foreach ($elementManager in $allElements)
+		#set($elementName = $elementManager.get(0))
+		#set($permissionCount = $permissionCount + 1)
+		#set($elementSQLName = $elementManager.get(2))
+		#if( !$elementManager.get(5).getSchemaElement().instanceOf("xnat:imageSessionData") && $elementManager.get(5).getSchemaElement().instanceOf("xnat:subjectAssessorData"))
+    		#set($pi="")
+    		#set($pi=$ug.getRootPermissionObject("${elementName}","${elementName}/project","$ug.getTag()"))		
+			#if($pi!="" && ($pi.getRead() || $pi.getCreate() || $pi.getEdit() || $pi.getDelete()))
+				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
+			#end
+			<dl class='item'>
+    			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
+    			<dd class='col2'><INPUT class='create other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
+    			<dd class='col3'><INPUT class='read other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
+				<dd class='col4'><INPUT class='edit other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
+    			<dd class='col5'><INPUT class='delete other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+    			
+    		</dl>
+		#end
+	#end
+</div>
 <!-- END xdat:userGroup -->
 		</TD>
 	</TR>
 	<TR>
 		<TD>
+				<input type="hidden" value="project" name="src"/>
 		#xdatEditProps($item $edit_screen)
 		<TR>
-		   <TD COLSPAN=2 ALIGN=left>
+		   <TD COLSPAN=2 ALIGN=right>
+			  <input type="button" name="btnBack" value="Cancel" onClick="history.go(-1)"/>
 		      <input type="submit" name="eventSubmit_doPerform" value="Submit"/>
-				#if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
-				<input type="button" name="btnBack" value="Back" onClick="history.go(-1)"/>
-				#end
 		   </TD>
 		</TR>
 		</TD>

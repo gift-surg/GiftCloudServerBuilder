@@ -25,16 +25,20 @@
                         	<tr>
                         		<th align="left">$!pv.getHeader()</th>
                         		<td>
-                        			#set ( $pvUrl = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!pv.getXSIType()).addPathInfo('search_field',$pvField).addPathInfo('search_value',$pvID).addPathInfo('popup',$popup).addPathInfo('project',$project)" )  
-                        			<a href="$pvUrl">
-                        				#if ($!pv.getCheck_status().equals("1")||$!pv.getCheck_status().equalsIgnoreCase("pass")||$!pv.getCheck_status().equalsIgnoreCase("passed"))
-                        					Passed
-                        				#elseif($!pv.getCheck_status().equals("0")||$!pv.getCheck_status().equalsIgnoreCase("fail")||$!pv.getCheck_status().equalsIgnoreCase("failed"))
-                        					Failed
-                        				#else
-                        					Unknown
-                        				#end
-                        			</a>
+									#if($user.canRead($pv))
+										#set ( $pvUrl = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!pv.getXSIType()).addPathInfo('search_field',$pvField).addPathInfo('search_value',$pvID).addPathInfo('popup',$popup).addPathInfo('project',$project)" )  
+                            			<a href="$pvUrl">
+                            				#if ($!pv.getCheck_status().equals("1")||$!pv.getCheck_status().equalsIgnoreCase("pass")||$!pv.getCheck_status().equalsIgnoreCase("passed"))
+                            					Passed
+                            				#elseif($!pv.getCheck_status().equals("0")||$!pv.getCheck_status().equalsIgnoreCase("fail")||$!pv.getCheck_status().equalsIgnoreCase("failed"))
+                            					Failed
+                            				#else
+                            					Unknown
+                            				#end
+                            			</a>
+									#else
+                    					Unknown
+                    				#end
                         		</td>
                         		<td>
                         		</td>
@@ -51,15 +55,19 @@
                         		<th align="left">$!scr.getHeader()</th>
                         		<td>
                         			#set ( $scrUrl = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!scr.getXSIType()).addPathInfo('search_field',$scrField).addPathInfo('search_value',$scrID).addPathInfo('popup',$popup).addPathInfo('project',$project)" )  
-                        			<a href="$scrUrl">
-                        				#if ($!scr.getStringProperty("pass").equals("1")||$!scr.getStringProperty("pass").equalsIgnoreCase("pass")||$!scr.getStringProperty("pass").equalsIgnoreCase("passed"))
-                        					Passed
-                        				#elseif($!scr.getStringProperty("pass").equals("0")||$!scr.getStringProperty("pass").equalsIgnoreCase("fail")||$!scr.getStringProperty("pass").equalsIgnoreCase("failed"))
-                        					Failed
-                        				#else
-                        					Unknown
-                        				#end
-                        			</a>
+                        			#if($user.canRead($scr))
+										<a href="$scrUrl">
+                            				#if ($!scr.getStringProperty("pass").equals("1")||$!scr.getStringProperty("pass").equalsIgnoreCase("pass")||$!scr.getStringProperty("pass").equalsIgnoreCase("passed"))
+                            					Passed
+                            				#elseif($!scr.getStringProperty("pass").equals("0")||$!scr.getStringProperty("pass").equalsIgnoreCase("fail")||$!scr.getStringProperty("pass").equalsIgnoreCase("failed"))
+                            					Failed
+                            				#else
+                            					Unknown
+                            				#end
+                            			</a>
+									#else
+										Unknown
+									#end
                         		</td>
                         		<td>
                         			$!scr.getStringProperty("rater")
@@ -76,16 +84,20 @@
                         	<tr>
                         		<th align="left">$!qc.getHeader()</th>
                         		<td>
-                        			#set ( $qcUrl = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!qc.getXSIType()).addPathInfo('search_field',$qcField).addPathInfo('search_value',$qcID).addPathInfo('popup',$popup).addPathInfo('project',$project)" )  
-                        			<a href="$qcUrl">
-                        				#if ($!qc.getStringProperty("pass").equals("1")||$!qc.getStringProperty("pass").equalsIgnoreCase("pass")||$!qc.getStringProperty("pass").equalsIgnoreCase("passed"))
-                        					Passed
-                        				#elseif($!qc.getStringProperty("pass").equals("0")||$!qc.getStringProperty("pass").equalsIgnoreCase("fail")||$!qc.getStringProperty("pass").equalsIgnoreCase("failed"))
-                        					Failed
-                        				#else
-                        					Unknown
-                        				#end
-                        			</a>
+									#if($user.canRead($qc))
+                            			#set ( $qcUrl = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$!qc.getXSIType()).addPathInfo('search_field',$qcField).addPathInfo('search_value',$qcID).addPathInfo('popup',$popup).addPathInfo('project',$project)" )  
+                            			<a href="$qcUrl">
+                            				#if ($!qc.getStringProperty("pass").equals("1")||$!qc.getStringProperty("pass").equalsIgnoreCase("pass")||$!qc.getStringProperty("pass").equalsIgnoreCase("passed"))
+                            					Passed
+                            				#elseif($!qc.getStringProperty("pass").equals("0")||$!qc.getStringProperty("pass").equalsIgnoreCase("fail")||$!qc.getStringProperty("pass").equalsIgnoreCase("failed"))
+                            					Failed
+                            				#else
+                            					Unknown
+                            				#end
+                            			</a>
+									#else
+                    					Unknown
+                    				#end
                         		</td>
                         		<td>
                         			$!qc.getStringProperty("rater")

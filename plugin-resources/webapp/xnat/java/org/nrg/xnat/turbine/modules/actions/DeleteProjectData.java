@@ -175,33 +175,34 @@ public class DeleteProjectData extends SecureAction {
                     SaveItemHelper.authorizedDelete(item, user,ci);
 				    }
 				    
-				    //DELETE user.groupId
-				    CriteriaCollection col = new CriteriaCollection("AND");
-				    col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," SIMILAR TO ", project.getId() + "\\_(owner|member|collaborator)");
-				    Iterator groups = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
-				    
-				    while(groups.hasNext()){
-				        XdatUserGroupid g = (XdatUserGroupid)groups.next();
-				        try {
-                    	SaveItemHelper.authorizedDelete(g.getItem(), user,ci);
-				        } catch (Throwable e) {
-				            logger.error("",e);
+				  //DELETE user groups
+			        CriteriaCollection col = new CriteriaCollection("AND");
+			        col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".tag"," = ", project.getId());
+			        Iterator groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
+
+			        while(groups.hasNext()){
+			            XdatUsergroup g = (XdatUsergroup)groups.next();
+			            
+			          //DELETE user.groupId
+				        col = new CriteriaCollection("AND");
+				        col.addClause(XdatUserGroupid.SCHEMA_ELEMENT_NAME +".groupid"," = ", g.getId());
+				        Iterator groupIds = XdatUserGroupid.getXdatUserGroupidsByField(col, user, false).iterator();
+
+				        while(groupIds.hasNext()){
+				            XdatUserGroupid gId = (XdatUserGroupid)groupIds.next();
+				            try {
+				            	SaveItemHelper.authorizedDelete(gId.getItem(), user,ci);
+				            } catch (Throwable e) {
+				                logger.error("",e);
+				            }
 				        }
-				    }
-				    
-				    //DELETE user groups
-				    col = new CriteriaCollection("AND");
-				    col.addClause(XdatUsergroup.SCHEMA_ELEMENT_NAME +".ID"," SIMILAR TO ", project.getId() + "\\_(owner|member|collaborator)");
-				    groups = XdatUsergroup.getXdatUsergroupsByField(col, user, false).iterator();
-				    
-				    while(groups.hasNext()){
-				        XdatUsergroup g = (XdatUsergroup)groups.next();
-				        try {
-                    	SaveItemHelper.authorizedDelete(g.getItem(), user,ci);
-				        } catch (Throwable e) {
-				            logger.error("",e);
-				        }
-				    }
+				        
+			            try {
+			            	SaveItemHelper.authorizedDelete(g.getItem(), user,ci);
+			            } catch (Throwable e) {
+			                logger.error("",e);
+			            }
+			        }
 				    
 				    //DELETE storedSearches
 				    Iterator bundles=project.getBundles().iterator();

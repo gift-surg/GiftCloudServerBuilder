@@ -21,9 +21,9 @@ var groupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
     var user_access = oRecord.getData("displayname");
     var user_login = oRecord.getData("login");
     var access_select = "<select onchange=\"window.userManager.inviteUser('" + user_login + "',this.value)\">";
-    access_select += "<option value=\"owner\"" + ((user_access === "Owners")? " selected" : "") + ">Owners</option>";
-    access_select += "<option value=\"member\"" + ((user_access === "Members")? " selected" : "") + ">Members</option>";
-    access_select += "<option value=\"collaborator\"" + ((user_access === "Collaborators")? " selected" : "") + ">Collaborators</option>";
+    $(window.userManager.groups).each(function (i1,v1){
+        access_select += "<option value=\"" + v1.id + "\"" + ((user_access === v1.displayname)? " selected" : "") + ">" + v1.displayname + "</option>";
+    });
     access_select += "</select>";
     elCell.innerHTML=access_select;
 };
@@ -33,9 +33,9 @@ var allUsersGroupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
     var user_login = oRecord.getData("login");
     var access_select = "<select onchange=\"window.userManager.adjustInviteLists('" + user_login + "',this.value)\">";
     access_select += "<option value=\"\" selected></option>";
-    access_select += "<option value=\"owner\">Owners</option>";
-    access_select += "<option value=\"member\">Members</option>";
-    access_select += "<option value=\"collaborator\">Collaborators</option>";
+    $(window.userManager.groups).each(function (i1,v1){
+        access_select += "<option value=\"" + v1.id + "\">" + v1.displayname + "</option>";
+    });;
     access_select += "</select>";
     elCell.innerHTML=access_select;
 };
@@ -101,7 +101,18 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	this.init=function(){
 		this.initLoader=prependLoader(this.project_table_div,"Loading " + XNAT.app.displayNames.singular.project.toLowerCase() + " users");
 		this.initLoader.render();
-		//load from search xml from server
+		
+		if(this.groups==undefined){
+			YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/'+ pID + '/groups?format=json&stamp='+ (new Date()).getTime(),{
+				success:this.handleGroupLoad,
+				failure:this.handleGroupFailure,
+				cache:false, // Turn off caching for IE
+				scope:this
+			},null,this);
+		}
+	};
+	
+	this.loadUsers=function(){
 		this.initCallback={
 				success:this.completeInit,
 				failure:this.initFailure,
@@ -110,6 +121,72 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		};
         var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
 		YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/'+ pID + '/users'+showDeactivatedUsers+'?format=json&stamp='+ (new Date()).getTime(),this.initCallback,null,this);
+		
+	};
+	
+	this.handleGroupLoad=function(response){
+		this.groups= eval("(" + response.responseText +")").ResultSet.Result;
+		
+		var tmpUploadFrm='<div id="grp_dialog" style="visibility:hidden">';
+		tmpUploadFrm+='	   <div class="hd">Manage Groups</div>';
+		tmpUploadFrm+='    <div class="bd" style="">';
+		tmpUploadFrm+='		<div class="grp_a" style="overflow:auto;height:410px;">';
+		tmpUploadFrm+='				<div>Current Groups: <button id="create_group" onclick="window.location.href=\'' + serverRoot + '/app/template/XDATScreen_edit_xdat_userGroup.vm/tag/' + this.pID + '/src/project\'">Create Custom User Group</button></div>';
+		tmpUploadFrm+='				<div style="margin-top:5px;" id="groups_div"></div>';
+		tmpUploadFrm+='		</div>';
+		tmpUploadFrm+='	</div> ';
+		tmpUploadFrm+='</div> ';
+		$("body").append(tmpUploadFrm);
+
+		//initialize modal upload dialog
+		XNAT.app.grp_dialog=new YAHOO.widget.Dialog("grp_dialog", { fixedcenter:true, visible:false, width:"340px", height:"500px", modal:true, close:true, draggable:true } ),
+		XNAT.app.grp_dialog.cfg.queueProperty("buttons", [{ text:"Close", handler:{fn:function(){XNAT.app.grp_dialog.hide();}},isDefault:true}]);
+
+		$("<button style='margin-top:10px;' id='' onclick='window.userManager.showGroups();return false;'>Manage Groups</button>").insertAfter("#user_invite_div");
+		
+		this.loadUsers();
+		
+		
+		$(window.userManager.groups).each(function (i1,v1){
+	        $("#access_level").append("<option value=\"" + v1.id + "\">" + v1.displayname + "</option>");
+	    });;
+	};
+	
+	this.modifyGroup=function(gID){
+		window.location.href=serverRoot + '/app/template/XDATScreen_edit_xdat_userGroup.vm/tag/' + this.pID + '/src/project/search_element/xdat:userGroup/search_field/xdat:userGroup.ID/search_value/'+gID;
+	};
+	
+	this.showGroups=function(){
+		if(this.renderedGroups==undefined){
+			if(this.groups!=undefined && this.groups.length>0){
+				var tmpHtml="<dl class='header'><dl><dd class='col1'>&nbsp;</dd><dd class='col2'>Group</dd><dd class='col3'>Users</dd></dl></dl>	";
+				jq.each(this.groups,function(i1,v1){
+					tmpHtml+="<dl class='item'><dd class='col1'>";
+					if(v1.displayname=="Owners" || v1.displayname=="Members" || v1.displayname=="Collaborators"){
+						tmpHtml+="&nbsp;";
+					}else{
+						tmpHtml+="<button onclick='window.userManager.modifyGroup(\"" + v1.id + "\")'>EDIT</button>";
+					}
+					tmpHtml+="</dd><dd class='col2'>"+ v1.displayname +"</dd><dd class='col3'>"+v1.users +"</dd></dl>";
+				});
+			}else{
+				var tmpHtml="<div style='color:grey;font-style:italic;'>None</div>";
+			}
+			$("#groups_div").html(tmpHtml);
+			
+			this.renderedGroups=true;
+			XNAT.app.grp_dialog.render(document.body);
+		}
+		XNAT.app.grp_dialog.show();
+		
+	}
+	
+	this.handleGroupFailure=function(response){
+		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " group list.");
+        if(o.status==401){
+            xModalMessage('Session Expired', sessExpMsg);
+            window.location=serverRoot+"/app/template/Login.vm";
+        }
 	};
 
 	this.initFailure=function(o){
@@ -350,38 +427,23 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		data_table.innerHTML=errorMsg;
 	};
 
-    var selected_owners=new Array();
-    var selected_members=new Array();
-    var selected_collaborators=new Array();
+	var selections =new Object();
 
     this.adjustInviteLists=function(user_name,access_level){
         if (user_name!=undefined && access_level!=undefined){
             // remove the user_name from any array it's currently part of
-            if (selected_owners.contains(user_name)) {
-                var index = selected_owners.indexOf(user_name);
-                selected_owners.splice(index, 1);
-            }
-            if (selected_members.contains(user_name)) {
-                var index = selected_members.indexOf(user_name);
-                selected_members.splice(index, 1);
-            }
-            if (selected_collaborators.contains(user_name)) {
-                var index = selected_collaborators.indexOf(user_name);
-                selected_collaborators.splice(index, 1);
-            }
+        	$(selections).each(function (i2,v2){
+        		if(v2.contains!=undefined && v2.contains(user_name)){
+                    var index = v2.indexOf(user_name);
+                    v2.splice(index, 1);
+        		}
+        	});
 
             // add it to the array it should be in
-            switch (access_level) {
-                case "owner":
-                    selected_owners.push(user_name);
-                    break;
-                case "member":
-                    selected_members.push(user_name);
-                    break;
-                case "collaborator":
-                    selected_collaborators.push(user_name);
-                    break;
+            if(selections[access_level]==undefined){
+            	selections[access_level]=new Array();
             }
+            selections[access_level].push(user_name);
         }
     };
 
@@ -415,15 +477,15 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		};
 
         var handleSubmit = function() {
-            if (selected_owners.length > 0 && window.userManager.inviteUser(selected_owners.toString(),"owner")) {
-                selected_owners=new Array();
-            }
-            if (selected_members.length > 0 && window.userManager.inviteUser(selected_members.toString(),"member")) {
-                selected_members=new Array();
-            }
-            if (selected_collaborators.length > 0 && window.userManager.inviteUser(selected_collaborators.toString(),"collaborator")) {
-                selected_collaborators=new Array();
-            }
+        	$.each(selections, function(i3,v3){
+        		if(v3.length>0){
+        			//if there are entries to submit, do the invitation
+        			if(window.userManager.inviteUser(v3.toString(),i3)){
+        				//clear the todo list
+            			selections[i3]=new Array();
+        			}
+        		}
+        	});
             this.hide();
             var popup = window.userManager.allUsersPopup;
             popup.allUsersDataTable = new YAHOO.widget.DataTable("all_users_table", allUserColumnDefs,popup.alluserDataSource,{scrollable:true,height:"300px",width:"500px"});

@@ -10,8 +10,25 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import com.google.common.collect.Maps;
-import com.noelios.restlet.http.HttpConstants;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -58,29 +75,41 @@ import org.nrg.xft.utils.zip.ZipUtils;
 import org.nrg.xnat.helpers.FileWriterWrapper;
 import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder;
 import org.nrg.xnat.restlet.XnatTableRepresentation;
-import org.nrg.xnat.restlet.representations.*;
+import org.nrg.xnat.restlet.representations.CSVTableRepresentation;
+import org.nrg.xnat.restlet.representations.HTMLTableRepresentation;
+import org.nrg.xnat.restlet.representations.ItemHTMLRepresentation;
+import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
+import org.nrg.xnat.restlet.representations.JSONObjectRepresentation;
+import org.nrg.xnat.restlet.representations.JSONTableRepresentation;
+import org.nrg.xnat.restlet.representations.StandardTurbineScreen;
+import org.nrg.xnat.restlet.representations.XMLTableRepresentation;
+import org.nrg.xnat.restlet.representations.XMLXFTItemRepresentation;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.nrg.xnat.restlet.util.RequestUtil;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.*;
+import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.OutputRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
-import java.net.URLDecoder;
-import java.util.*;
+import com.google.common.collect.Maps;
+import com.noelios.restlet.http.HttpConstants;
 
 @SuppressWarnings("deprecation")
 public abstract class SecureResource extends Resource {
@@ -119,9 +148,9 @@ public abstract class SecureResource extends Resource {
 
 
     protected List<String> actions = null;
-    protected String userName = null;
-    protected XDATUser user = null;
-    protected String requested_format = null;
+    public String userName = null;
+    public XDATUser user = null;
+    public String requested_format = null;
     public String filepath = null;
 
     protected String csrfToken = null;

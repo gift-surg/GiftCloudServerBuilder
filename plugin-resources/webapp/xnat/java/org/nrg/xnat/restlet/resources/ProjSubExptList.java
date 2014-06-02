@@ -328,6 +328,11 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 				where.addClause(cc2);
 			}
 
+            if(!ElementSecurity.IsSecureElement(rootElementName)){
+                qo.addField("xnat:experimentData/extension_item/element_name");
+                qo.addField("xnat:experimentData/project");
+            }
+
 			qo.setWhere(where);
 
 			String query=qo.buildQuery();
@@ -341,7 +346,7 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 
 	                    String enS=qo.getFieldAlias("xnat:experimentData/extension_item/element_name");
 	                    if(enS==null) {
-	                        logger.warn("Couldn't find property xnat:experimentData/extension_item/element_name for search");
+	                        logger.error("Couldn't find property xnat:experimentData/extension_item/element_name for search",new Exception());
 	                        this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 	                        return null;
 	                    }
@@ -400,11 +405,11 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 				}
 			}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error("",e);
 			} catch (DBPoolException e) {
-				e.printStackTrace();
+				logger.error("",e);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("",e);
 			}
 
 		Hashtable<String,Object> params=new Hashtable<String,Object>();

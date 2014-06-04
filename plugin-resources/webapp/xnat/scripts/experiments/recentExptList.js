@@ -117,22 +117,27 @@ function MinExptList(_div, _options){
 			
 			tr.appendChild(td);
 			
+			td = document.createElement("TD");
+			if(e.workflow_date !="" && e.pipeline_name!=""){
+        		if(e.workflow_status=="Complete"){
+        			td.innerHTML="";
+        		}else if(e.workflow_status=="Failed"){
+        			td.innerHTML="<img src='"+ serverRoot +"/images/icon-alert-9px.png' title='Failed'/>";
+        		}else if(e.workflow_status=="Queued"){
+        			td.innerHTML="<img src='"+ serverRoot +"/images/icon-queued-9px.png' title='Queued'/>";
+        		}else{
+        			td.innerHTML="<img src='"+ serverRoot +"/images/icon-waiting-9px.gif' title='" + e.workflow_status + "'/>";
+        		}
+			}else{
+    			td.innerHTML="";
+			}
+            tr.appendChild(td);
 			
 			td = document.createElement("td");
 			td.align="right";
 			
         	if(e.workflow_date !="" && e.pipeline_name!=""){
-        		var tdTmp="<A class='recentDataActivity' ";
-        		if(e.workflow_status=="Complete"){
-        			tdTmp+="";
-        		}else if(e.workflow_status=="Failed"){
-        			tdTmp+=" style='color:red;' ";
-        		}else if(e.workflow_status=="Queued"){
-        			tdTmp+=" style='color:grey;' ";
-        		}else{
-        			tdTmp+=" style='color:green;' ";
-        		}
-        		tdTmp+=" title='" + e.pipeline_name;
+        		var tdTmp="<A class='recentDataActivity' title='" + e.pipeline_name;
         		if(e.workflow_status!="Complete"){
         			tdTmp+=" \"" + e.workflow_status + "\"";
         		}

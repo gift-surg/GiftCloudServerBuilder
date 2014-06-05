@@ -141,7 +141,7 @@ function MinExptList(_div, _options){
         		if(e.workflow_status!="Complete"){
         			tdTmp+=" \"" + e.workflow_status + "\"";
         		}
-        		tdTmp+=" at " + e.workflow_date + "'>" +e.pipeline_name+ "<a>";
+        		tdTmp+=" at " + e.workflow_date + "'>" +e.pipeline_name.replace('_',' ')+ "<a>";
         		td.innerHTML=tdTmp;
         	}else if(e.last_modified!=""){
                 td.innerHTML="<A class='recentDataActivity' title='Modified at " + e.last_modified + "'>Modified<a>";

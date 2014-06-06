@@ -214,7 +214,8 @@ function TabManager(_id){
             //this.tabView.set('activeTab',tempTab,true);
             //this.tabView.addTab(tempTab);
 
-            YAHOO.util.Event.on(tempTab.getElementsByClassName('close')[0], 'click', function (e, tab) {
+            YAHOO.util.Event.on(tempTab.getElementsByClassName('close')[0], 'click', function(e, tab) {
+
                 var $this_tab = $(this).closest('li');
                 var $this_navset = $this_tab.closest('.yui-navset');
                 $this_navset.find('li').removeClass('dont_move');
@@ -224,9 +225,20 @@ function TabManager(_id){
                 YAHOO.util.Event.preventDefault(e);
                 tab.tab_manager.tabView.removeTab(tab);
                 tab.tab_manager.close(tab.search_id);
-                //wrangleTabs($this_navset.attr('id'));
-                $this_navset.find('li[title="active"]').addClass('dont_move').trigger('click');
+
+                var $target_tab = $this_navset.find('li[title="active"]');
+
+                var navset_position = $this_navset.offset();
+                var target_tab_position = $target_tab.offset();
+
+                if (navset_position.left < target_tab_position.left){
+                    $target_tab.addClass('dont_move');
+                }
+
+                $target_tab.trigger('click');
+
             }, tempTab);
+
 
             var options = new Array();
             var config = new Object();

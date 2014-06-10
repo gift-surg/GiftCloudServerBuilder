@@ -201,7 +201,7 @@ public class SearchResource extends SecureResource {
 					mv = MaterializedView.GetMaterializedViewBySearchID(search.getId(), user);
 				}
 				
-			if(mv!=null && (search.getId().startsWith("@") || this.isQueryVariableTrue("refresh"))){
+				if(mv!=null && (search.getId().startsWith("@") || this.isQueryVariableTrue("refresh"))){
 					mv.delete();
 					mv=null;
 				}
@@ -231,6 +231,7 @@ public class SearchResource extends SecureResource {
 						rows=mv.getSize();
 					}else{
 						ds.setPagingOn(false);
+						ds.addKeyColumn(true);
 						
 						String query = ds.getSQLQuery(null);
 						query = StringUtils.ReplaceStr(query,"'","*'*");

@@ -48,6 +48,7 @@
     </util:list>
 
     <!-- Root Context: defines shared resources visible to all other web components -->
+    <context:component-scan base-package="org.nrg.framework.datacache.impl.hibernate" />
     <context:component-scan base-package="org.nrg.framework.services" />
     <context:component-scan base-package="org.nrg.xdat.services" />
     <context:component-scan base-package="org.nrg.xdat.daos" />
@@ -79,4 +80,6 @@
 	<bean name="receivedFileUserProvider" class="org.nrg.xnat.utils.XnatUserProvider">
         <constructor-arg value="${services.dicom.scp.receivedfileuser}"/>
 	</bean>
+    <bean name="serializerRegistry" class="org.nrg.framework.datacache.SerializerRegistry"/>
+     
 </beans>

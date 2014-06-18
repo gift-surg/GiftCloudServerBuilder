@@ -182,6 +182,21 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/iTextXML/jars/iTextXML-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-asl-1.8.5.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-mapper-asl-1.8.5.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-core-2.1.0.jar" sourcepath="plugin-resources/repository/jackson/jars/jackson-core-2.1.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/jackson/jars/jackson-core-2.1.0-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-annotations-2.1.0.jar" sourcepath="plugin-resources/repository/jackson/jars/jackson-annotations-2.1.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/jackson/jars/jackson-annotations-2.1.0-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/jackson/jars/jackson-databind-2.1.0.jar" sourcepath="plugin-resources/repository/jackson/jars/jackson-databind-2.1.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/jackson/jars/jackson-databind-2.1.0-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="plugin-resources/repository/jaf/jars/activation-1.0.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/jakarta-regexp/jars/jakarta-regexp-1.2.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/javamail/jars/javamail-1.4.3.jar"/>

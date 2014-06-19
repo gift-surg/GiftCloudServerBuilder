@@ -40,9 +40,9 @@ public class ClassicDicomObjectIdentifier extends CompositeDicomObjectIdentifier
         subjectExtractors = subjb.build();
     }
 
-    public static final List<Extractor> getAAExtractors() { return aaExtractors; }
-    public static final List<Extractor> getSessionExtractors() { return sessionExtractors; }
-    public static final List<Extractor> getSubjectExtractors() { return subjectExtractors; }
+    public static List<Extractor> getAAExtractors() { return aaExtractors; }
+    public static List<Extractor> getSessionExtractors() { return sessionExtractors; }
+    public static List<Extractor> getSubjectExtractors() { return subjectExtractors; }
 
     public ClassicDicomObjectIdentifier() {
         super(new Xnat15DicomProjectIdentifier(), subjectExtractors, sessionExtractors, aaExtractors);

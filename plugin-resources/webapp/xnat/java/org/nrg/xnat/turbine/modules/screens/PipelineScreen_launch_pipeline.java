@@ -33,7 +33,7 @@ public class PipelineScreen_launch_pipeline extends SecureReport {
         	String schema_element_name = null;
         	try { //Is this an experiment belonging to the project
         		XnatExperimentdata experiment = new XnatExperimentdata(item);
-        		projectId = experiment.getProject();
+        		projectId = (String)context.get("project");
         		schema_element_name = experiment.getXSIType();
         		context.put("isQueuedOrRunning", isQueuedOrRunning(experiment.getId(), data));
         	}catch(ClassCastException cce) {

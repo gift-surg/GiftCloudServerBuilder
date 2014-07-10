@@ -229,4 +229,40 @@ public class PipelineRepositoryManager {
 			 removePipeline(pipelinePath,  aProject,  user,c);
 		 }
 	 }
-			 }
+
+    // Reinstated this method that was removed (possibly because it was thought to be unused??)
+    // ...because without it CNDA builds breaks due to their reference to it in:
+    // src.org.apache.turbine.app.cnda_xnat.modules.screens.PipelineScreen_BoldSeedBasedAnalysis.java (line #42)
+    public static String GetPathToPipeline(String partialPipelinePath, ArcProject aProject) {
+        String rtn = null;
+        List<ArcProjectPipelineI> projectPipelines = aProject.getPipelines_pipeline();
+        for (int j = 0; j < projectPipelines.size(); j++) {
+            ArcProjectPipeline projectPipeline = (ArcProjectPipeline)projectPipelines.get(j);
+            ArcPipelinedata pipeline = (ArcPipelinedata) projectPipeline.getPipelinedata();
+            String path = pipeline.getLocation() ;
+            if (path.endsWith(partialPipelinePath)) {
+                rtn = path;
+                break;
+            }
+        }
+        if (rtn == null) {
+            List<ArcProjectDescendantI> projectDescs = aProject.getPipelines_descendants_descendant();
+            for (int j = 0; j < projectDescs.size(); j++) {
+                ArcProjectDescendant projectDesc = (ArcProjectDescendant) projectDescs.get(j);
+                List<ArcProjectDescendantPipelineI> pipelines = projectDesc.getPipeline();
+                for (int k = 0; k < pipelines.size(); k++) {
+                    ArcProjectDescendantPipeline descPipeline = (ArcProjectDescendantPipeline) pipelines.get(k);
+                    ArcPipelinedata pipeline = (ArcPipelinedata) descPipeline.getPipelinedata();
+                    String path = pipeline.getLocation() ;
+                    if (path.endsWith(partialPipelinePath)) {
+                        rtn = path;
+                        break;
+                    }
+                }
+                if (rtn != null) break;
+            }
+        }
+        return rtn;
+    }
+
+}

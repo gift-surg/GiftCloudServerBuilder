@@ -328,7 +328,7 @@ this.draw=function(){
 
 				}
 
-				confirmString+=".  Would you like to use the pre-exising group in this " + XNAT.app.displayNames.singular.project.toLowerCase() + "?";
+				confirmString+=".  Would you like to use the pre-existing group in this " + XNAT.app.displayNames.singular.project.toLowerCase() + "?";
 
 				if(confirm(confirmString))
 

@@ -582,7 +582,7 @@ public abstract class SecureResource extends Resource {
      * @param dataType - xsi:type of object to be created.
      * @param parseFileItems - set to false if you are expecting something else to be in the body of the message, and don't want it parsed.
      * @param template - item to add parameters to.
-     * @return
+     * @return The {@link XFTItem} found in the request body, if any.
      * @throws ClientException - Client Side exception
      * @throws ServerException - Server Side exception
      */
@@ -651,7 +651,7 @@ public abstract class SecureResource extends Resource {
                     getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "Error during file upload");
                     throw new ServerException(Status.SERVER_ERROR_INTERNAL,e);
                 }
-            } else if(RequestUtil.hasContent(entity) && (RequestUtil.compareMediaType(entity, MediaType.TEXT_XML) || req_format.equals("xml") || isQueryVariableTrue("inbody"))){
+            } else if(RequestUtil.hasContent(entity) && (RequestUtil.compareMediaType(entity, MediaType.TEXT_XML, MediaType.APPLICATION_XML) || req_format.equals("xml") || isQueryVariableTrue("inbody"))){
                 //handle straight xml data
                 try {
                     Reader sax = entity.getReader();
@@ -721,8 +721,8 @@ public abstract class SecureResource extends Resource {
                 throw new ServerException(e);
             } catch (ElementNotFoundException e) {
                 throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e);
-            } catch (FieldNotFoundException e) {
-                
+            } catch (FieldNotFoundException ignored) {
+                logger.debug("Didn't find fields for populating item from form data.");
             }
         }
 
@@ -766,8 +766,8 @@ public abstract class SecureResource extends Resource {
             throw new ServerException(e);
         } catch (ElementNotFoundException e) {
             throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,e);
-        } catch (FieldNotFoundException e) {
-            
+        } catch (FieldNotFoundException ignored) {
+            logger.debug("Didn't find fields for populating item from form data.");
         }
         return item;
     }

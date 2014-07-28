@@ -307,17 +307,19 @@ public class ProjSubExptAsstList extends QueryOrganizerResource {
 				
 				CriteriaCollection where=new CriteriaCollection("AND");
 					
-					CriteriaCollection cc= new CriteriaCollection("OR");
-					cc.addClause("xnat:imageAssessorData/imagesession_id", assessed.getId());
-					where.addClause(cc);
-					
-				CriteriaCollection projects=new CriteriaCollection("OR");
-				List<Object> ps=user.getAllowedValues("xnat:subjectData", "xnat:subjectData/project", org.nrg.xdat.security.SecurityManager.READ);
-				for(Object p:ps){					
-					projects.addClause(rootElementName+"/project", p);
-					projects.addClause(rootElementName+"/sharing/share/project", p);
-				}
-				where.addClause(projects);
+                CriteriaCollection cc= new CriteriaCollection("OR");
+                cc.addClause("xnat:imageAssessorData/imagesession_id", assessed.getId());
+                where.addClause(cc);
+
+                if (user.getGroup("ALL_DATA_ADMIN") == null) {
+                    CriteriaCollection projects=new CriteriaCollection("OR");
+                    List<Object> ps=user.getAllowedValues("xnat:subjectData", "xnat:subjectData/project", org.nrg.xdat.security.SecurityManager.READ);
+                    for(Object p:ps){
+                        projects.addClause(rootElementName+"/project", p);
+                        projects.addClause(rootElementName+"/sharing/share/project", p);
+                    }
+                    where.addClause(projects);
+                }
 				
 				qo.setWhere(where);
 				

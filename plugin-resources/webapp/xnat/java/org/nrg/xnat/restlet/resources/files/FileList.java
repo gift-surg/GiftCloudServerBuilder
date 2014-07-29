@@ -305,36 +305,38 @@ public class FileList extends XNATCatalogTemplate {
                     try {
                         final List<FileWriterWrapperI> writers = getFileWriters();
 
-                        if (writers.size() > 0) {
-                            if (StringUtils.isEmpty(reference) || !async) {
-                                List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
-                                if (!overwrite && duplicates.size() > 0) {
+                        if (writers != null) {
+                            if (writers.size() > 0) {
+                                if (StringUtils.isEmpty(reference) || !async) {
+                                    List<String> duplicates = buildResourceModifier(overwrite, um).addFile(writers, resourceIdentifier, type, filepath, buildResourceInfo(um), extract);
+                                    if (!overwrite && duplicates.size() > 0) {
+                                        getResponse().setStatus(Status.SUCCESS_OK);
+                                        JSONObject json = new JSONObject();
+                                        json.put("duplicates", duplicates);
+                                        getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
+                                    }else{
+                                        getResponse().setStatus(Status.SUCCESS_OK);
+                                        getResponse().setEntity(new StringRepresentation("", MediaType.TEXT_PLAIN));
+                                    }
+                                } else {
+                                    wrk.setStatus(PersistentWorkflowUtils.QUEUED);
+                                    WorkflowUtils.save(wrk, wrk.buildEvent());
+                                    MoveStoredFileRequest request = new MoveStoredFileRequest(buildResourceModifier(overwrite, um), resourceIdentifier, writers, user, wrk.getWorkflowId(), delete, notifyList, type, filepath, buildResourceInfo(um), extract);
+                                    XDAT.sendJmsRequest(request);
+
                                     getResponse().setStatus(Status.SUCCESS_OK);
                                     JSONObject json = new JSONObject();
-                                    json.put("duplicates", duplicates);
+                                    json.put("workflowId", wrk.getWorkflowId());
                                     getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
-                                }else{
-                                    getResponse().setStatus(Status.SUCCESS_OK);
-                                    getResponse().setEntity(new StringRepresentation("", MediaType.TEXT_PLAIN));
                                 }
                             } else {
-                                wrk.setStatus(PersistentWorkflowUtils.QUEUED);
-                                WorkflowUtils.save(wrk, wrk.buildEvent());
-                                MoveStoredFileRequest request = new MoveStoredFileRequest(buildResourceModifier(overwrite, um), resourceIdentifier, writers, user, wrk.getWorkflowId(), delete, notifyList, type, filepath, buildResourceInfo(um), extract);
-                                XDAT.sendJmsRequest(request);
-
-                                getResponse().setStatus(Status.SUCCESS_OK);
-                                JSONObject json = new JSONObject();
-                                json.put("workflowId", wrk.getWorkflowId());
-                                getResponse().setEntity(new JSONObjectRepresentation(MediaType.TEXT_HTML, json));
-                            }
-                        } else {
-                            final String method = getRequest().getMethod().toString();
-                            final long size = getRequest().getEntity().getAvailableSize();
-                            if (size == 0) {
-                                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You tried to " + method + " to this service, but didn't provide any data (found request entity size of 0). Please check the format of your service request.");
-                            } else {
-                                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You tried to " + method + " a payload of " + CatalogUtils.formatSize(size) + " to this service, but didn't provide any data. If you think you sent data to upload, you can try to " + method + " with the query-string parameter inbody=true or use multipart/form-data encoding.");
+                                final String method = getRequest().getMethod().toString();
+                                final long size = getRequest().getEntity().getAvailableSize();
+                                if (size == 0) {
+                                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You tried to " + method + " to this service, but didn't provide any data (found request entity size of 0). Please check the format of your service request.");
+                                } else {
+                                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "You tried to " + method + " a payload of " + CatalogUtils.formatSize(size) + " to this service, but didn't provide any data. If you think you sent data to upload, you can try to " + method + " with the query-string parameter inbody=true or use multipart/form-data encoding.");
+                                }
                             }
                         }
                     } catch (Exception e) {

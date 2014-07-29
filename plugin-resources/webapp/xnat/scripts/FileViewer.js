@@ -544,7 +544,9 @@ function FileViewer(_obj){
 	  		    	var dType=document.getElementById("download_type_select");
 	  		    	var resources="";
 	  		    	for(var ccC=0;ccC<this.catalogClickers.length;ccC++){
-	  		    		if(this.catalogClickers[ccC].checked){
+                        // slightly ridiculous, but the only place to check to see if there are subfiles or not is the label,
+                        // which will fail to have the number of files listed
+	  		    		if(this.catalogClickers[ccC].checked && this.catalogClickers[ccC].label.indexOf('&nbsp;&nbsp; files') == -1){
 	  		    			if(resources!="")resources+=",";
 	  		    			resources+=this.catalogClickers[ccC].xnat_abstractresource_id;
 	  		    		}

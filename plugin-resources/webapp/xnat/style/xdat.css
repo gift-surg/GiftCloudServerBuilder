@@ -14,7 +14,7 @@
 body { margin: 0 ; padding: 0 ; font-size: 12px ; line-height: 15px ; font-family: Arial, Helvetica, sans-serif ; background-color: white ; }
 th { margin: 0 ; border-top: none ; border-right: none ; border-left: none ; border-collapse: collapse ; padding: 0 4px ; }
 h2 { line-height: 24px ; }
-h3 { line-height: 20px ; margin: 0 !important ; }
+h3 { line-height: 20px ; margin: 0 ; }
 h4 { line-height: 18px ; }
 p { font-size: 12px ; line-height: 15px ; margin: 0 ; }
 td {  }

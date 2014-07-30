@@ -31,7 +31,7 @@ div.containerBody a { font-weight: bold ; }
 div.containerBody > div > div { padding: 5px 10px 9px ; font-size: 12px ; }
 div.containerBody #min_expt_list {  }
 div.containerBody #min_expt_list td { padding: 3px 6px ; }
-div.containerBody h3 { font-size: 13px ; }
+div.containerBody h3 { margin: 2px 0 5px ; font-size: 13px ; line-height: 15px ; }
 div.mainContainerBody { overflow: auto ; font-size: 11px ; line-height: 13px ; padding: 3px ; }
 div.containerItem { /* font-size: 11px ; line-height: 13px ; */ padding: /* 3px 0 0 3px */ 8px 12px 0 12px ; }
 div.projectIndex { font-size: 11px ; line-height: 13px ; padding: 3px ; border-top: 1px solid #aaa ; }

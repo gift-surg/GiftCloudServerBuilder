@@ -546,7 +546,10 @@ function FileViewer(_obj){
 	  		    	for(var ccC=0;ccC<this.catalogClickers.length;ccC++){
                         // slightly ridiculous, but the only place to check to see if there are subfiles or not is the label,
                         // which will fail to have the number of files listed
-	  		    		if(this.catalogClickers[ccC].checked && this.catalogClickers[ccC].label.indexOf('&nbsp;&nbsp; files') == -1){
+	  		    		if(this.catalogClickers[ccC].checked &&
+                            this.catalogClickers[ccC].label.indexOf('&nbsp;&nbsp; files') == -1 &&
+                            this.catalogClickers[ccC].label.indexOf('&nbsp;&nbsp;0 files') == -1) {
+
 	  		    			if(resources!="")resources+=",";
 	  		    			resources+=this.catalogClickers[ccC].xnat_abstractresource_id;
 	  		    		}

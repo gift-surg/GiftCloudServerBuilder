@@ -630,7 +630,7 @@ addGroup("$!groupid.getGroupid()");
 																#end
 																<TR>
 																	<TD colspan="3">&nbsp;</TD>
-								<TD align=center><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
                                                 <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                     #else
@@ -644,7 +644,50 @@ addGroup("$!groupid.getGroupid()");
 				</TABLE>
 					</TD>
 				</TR>
-				<tr>
+    <TR>
+        <TD align=left colspan=2 valign=top>&nbsp;
+        </td>
+    </tr>
+    <TR>
+        <TD align=left colspan=2 valign=top>
+            <TABLE border="1" width="80%">
+                <TR>
+                    <TD VALIGN="top">
+                        <Table border="0" width="100%">
+                            <TR><TH align=left colspan="4">STEP 4: Determine if the account needs to be non-expiring</TH>
+                            </TR>
+                            <TR>
+                                <TD align=center style="width: 50px"><img src="$content.getURI("images/rc.gif")" border=0></td>
+                                <TH align=left colspan="3"><div style="width: 500px">WARNING: Granting a user account a
+                                    non-expiring password is a security
+                                    risk, and should be limited to accounts
+                                    that perform automated system tasks.
+                                    In addition, if any users are designated
+                                    as non-expiring, access to the user list
+                                    should be restricted to administrators.</div></TH>
+                            </TR>
+                            <TR><TD align=left colspan="4">
+                                <INPUT TYPE="checkbox" id="non_expiring" name="xdat:user.assigned_roles.assigned_role[1].role_name" value="Non-expiring" #if($userObject.checkRole("Non-expiring"))CHECKED#end/> <label for="non_expiring">Non-expiring</label>
+                                : This prevents this accounts password from expiring.
+                            </TD></TR>
+
+
+                            <TR>
+                                <TD colspan="3">&nbsp;</TD>
+                                <TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
+                                        <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
+                                    #else
+                                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+                                    #end</TD>
+                            </TR>
+                        </TABLE>
+                    </TD>
+                </TR>
+            </TABLE>
+        </TD>
+    </TR>
+    <tr>
 					<td>
 						#addCustomScreens($om.getXSIType() "report/postContent") 
 					</td>

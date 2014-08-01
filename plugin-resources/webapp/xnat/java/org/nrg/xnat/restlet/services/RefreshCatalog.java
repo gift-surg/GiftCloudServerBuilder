@@ -25,6 +25,7 @@ import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
 import org.nrg.xnat.helpers.uri.UriParserUtils;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.RequestUtil;
+import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.ResourceUtils;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -111,8 +112,11 @@ public class RefreshCatalog extends SecureResource {
 
                 ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
 
-				//call refresh operation
-				ResourceUtils.refreshResourceCatalog(resourceURI, user, this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"), populateStats, checksum, delete, append);
+                ArchivableItem existenceCheck = resourceURI.getSecurityItem();
+                if (existenceCheck != null) {
+                    //call refresh operation
+                    ResourceUtils.refreshResourceCatalog(resourceURI, user, this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"), populateStats, checksum, delete, append);
+                }
 			}
 
 			this.getResponse().setStatus(Status.SUCCESS_OK);

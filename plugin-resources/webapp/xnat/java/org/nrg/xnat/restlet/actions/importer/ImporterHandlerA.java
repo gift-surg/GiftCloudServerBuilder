@@ -26,7 +26,7 @@ import org.nrg.xnat.restlet.actions.PrearcBlankSession;
 import org.nrg.xnat.restlet.actions.SessionImporter;
 import org.nrg.xnat.restlet.actions.XarImporter;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.nrg.xdat.turbine.utils.PropertiesHelper;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import java.lang.reflect.Constructor;

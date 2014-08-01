@@ -1,5 +1,5 @@
 <!-- BEGIN xnat-templates/screens/xnat_projectData/actionsBox/ManageFiles.vm -->
-#if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-project-manage-files","true")))
+#if($user.checkFeature($om,"manage_files") && $turbineUtils.toBoolean($siteConfig.getProperty("UI.show-project-manage-files","true")))
      <li class="yuimenuitem">
 			<A href="" ONCLICK="window.viewer.render();return false;">
 				<div class="ic">

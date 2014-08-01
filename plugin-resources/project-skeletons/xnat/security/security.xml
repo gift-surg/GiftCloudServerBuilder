@@ -733,8 +733,8 @@
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
 				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_xnat_imageSessionData" display_name="Tagged Upload" sequence="5" grouping="Upload" image="Up.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_xnat_imageSessionData" display_name="Tagged Upload" sequence="5" grouping="Upload" image="Up.gif" popup="never" secureAccess="edit" secureFeature="tagged_upload"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
@@ -762,11 +762,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:usSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="Ultrasound" plural="Ultrasounds" accessible="1" code="ULT">
@@ -777,11 +777,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:crSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="CR Session" plural="CR Sessions" accessible="1" code="CR">
@@ -792,11 +792,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:epsSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="EPS Session" plural="EPS Sessions" accessible="1" code="EP">
@@ -807,11 +807,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:hdSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="HD Session" plural="HD Sessions" accessible="1" code="HD">
@@ -822,11 +822,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:ecgSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="ECG Session" plural="ECG Sessions" accessible="1" code="ECG">
@@ -837,11 +837,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:ioSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="IO Session" plural="IO Sessions" accessible="1" code="IO">
@@ -852,11 +852,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:mgSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="MG Session" plural="MG Sessions" accessible="1" code="MG">
@@ -867,11 +867,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:dxSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="DX Session" plural="DX Sessions" accessible="1" code="DX">
@@ -882,11 +882,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:nmSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="NM Session" plural="NM Sessions" accessible="1" code="NM">
@@ -897,11 +897,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:srSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="SR Session" plural="SR Sessions" accessible="1" code="SR">
@@ -912,11 +912,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:gmvSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="GMV Session" plural="GMV Sessions" accessible="1" code="GMV">
@@ -927,11 +927,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:gmSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="GM Session" plural="GM Sessions" accessible="1" code="GM">
@@ -942,11 +942,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:esvSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="ESV Session" plural="ESV Sessions" accessible="1" code="ESV">
@@ -957,11 +957,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:esSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="ES Session" plural="ES Sessions" accessible="1" code="ES">
@@ -972,11 +972,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:dx3DCraniofacialSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="DX3DCRANIOFACIAL Session" plural="DX3DCRANIOFACIAL Sessions" accessible="1" code="DX3DCRANIOFACIAL">
@@ -987,11 +987,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:xa3DSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XA3D Session" plural="XA3D Sessions" accessible="1" code="XA3D">
@@ -1002,11 +1002,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:rfSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="RF Session" plural="RF Sessions" accessible="1" code="RF">
@@ -1017,11 +1017,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:xaSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XA Session" plural="XA Sessions" accessible="1" code="XA">
@@ -1032,11 +1032,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:smSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="SM Session" plural="SM Sessions" accessible="1" code="SM">
@@ -1047,11 +1047,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:xcSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XC Session" plural="XC Sessions" accessible="1" code="XC">
@@ -1062,11 +1062,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:xcvSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="XCV Session" plural="XCV Sessions" accessible="1" code="XCV">
@@ -1077,11 +1077,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:opSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="OP Session" plural="OP Sessions" accessible="1" code="OP">
@@ -1092,11 +1092,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:optSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="OPT Session" plural="OPT Sessions" accessible="1" code="OPT">
@@ -1107,11 +1107,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:rtSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="RT Session" plural="RT Sessions" accessible="1" code="RT">
@@ -1122,11 +1122,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:megSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="MEG Session" plural="MEG Sessions" accessible="1" code="MEG">
@@ -1137,11 +1137,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:eegSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="EEG Session" plural="EEG Sessions" accessible="1" code="EEG">
@@ -1152,11 +1152,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:otherDicomSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="Other DICOM Session" plural="Other DICOM Sessions" accessible="1" code="OT">
@@ -1167,11 +1167,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
 		<xdat:element_security element_name="xnat:petSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="PET Session" plural="PET Sessions" accessible="1" code="PET">
@@ -1182,11 +1182,11 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
 				<xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
 				<xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
-				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit"/>
+				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit" secureFeature="upload_scans"/>
 			</xdat:element_actions>
 		</xdat:element_security>
         <xdat:element_security element_name="xnat:petmrSessionData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="2" quarantine="0" pre_load="0" singular="PET-MR Session" plural="PET-MR Sessions" accessible="1" code="PETMR">
@@ -1197,11 +1197,11 @@
             <xdat:element_actions>
                 <xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
                 <xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-                <xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+                <xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" secureFeature="classic_viewer" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
                 <xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>
                 <xdat:element_action element_action_name="XDATScreen_download_sessions" grouping="Download" display_name="Download Images" sequence="10" image="download.gif" popup="never"/>
                 <xdat:element_action element_action_name="email_report" display_name="Email" sequence="8" image="right2.gif" popup="never"/>
-                <xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit"/>
+                <xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="never" secureAccess="edit" secureFeature="upload_scans"/>
             </xdat:element_actions>
         </xdat:element_security>
 		<xdat:element_security element_name="xnat:qcAssessmentData" secondary_password="0" secure_ip="0" secure="1" browse="1" searchable="1" sequence="3" quarantine="0" pre_load="0" singular="Auto QC" plural="Auto QCs" accessible="1" code="QC">

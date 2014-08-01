@@ -332,6 +332,7 @@ public class XNATApplication extends Application {
         attachURI(router, "/services/tokens/{OPERATION}/{TOKEN}/{SECRET}", AliasTokenRestlet.class);
         attachURI(router, "/services/audit", AuditRestlet.class);
         attachURI(router, "/services/refresh/catalog", RefreshCatalog.class);
+        attachURI(router, "/services/features", FeatureDefinitionRestlet.class);
 
         attachURI(router, "/status/{TRANSACTION_ID}", SQListenerRepresentation.class);
 

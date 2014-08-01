@@ -1,0 +1,145 @@
+<!-- Title: Features -->
+<div class="mgmt_container" >
+    	<div id="features">
+            <dl class="header">
+              <dl>
+                  <dd class="featureGroup">Group</dd>
+				  #foreach($feature in $features)
+                  <dd class="featureEnabled">$feature.getName()</dd>
+				  #end
+              </dl>
+            </dl>
+			<div id='featureBody'></div>
+		</div> 
+</div>
+	
+<script>
+XNAT.app.featureMgr={
+	features:[],
+	groupSuccess:function(resp){
+		var parsedResponse = YAHOO.lang.JSON.parse(resp.responseText);
+		var _html="";
+		$(parsedResponse).each(function(i1,v1){
+			var proj=parsedResponse[i1];
+			$(proj.groups).each(function(i2,v2){
+    			var group=proj.groups[i2];
+    			_html+='<dl class="featureItem" id="">';
+    			_html+='<dd class="featureGroup">' + group.display +'</dd>';
+    			$(XNAT.app.featureMgr.features).each(function(i3,v3){
+    				var feature=XNAT.app.featureMgr.features[i3];
+    				_html+='<dd class="featureEnabled"><input type="checkbox"';
+					_html+=' data-feature="' + feature.key + '" data-group="' + group.id + '" ';
+    				
+					if(proj.banned!=undefined && proj.banned.contains(feature.key)){
+						_html+=' DISABLED ';
+					}else if(proj.onByDefault!=undefined && proj.onByDefault.contains(feature.key)){
+						if((group.blocked!=undefined && group.blocked.contains(feature.key))) {
+        					_html+=' onchange="return manageBanned(this);" class="blocked featureToggle"'; 
+        				}else{
+							_html+=' onchange="return manageBanned(this);" class="blocked featureToggle" CHECKED';
+						}
+					}else if((group.features!=undefined && group.features.contains(feature.key))) {
+    					_html+=' onchange="return manageEnable(this);" class="featureToggle" CHECKED '; 
+    				}else{
+						_html+=' onchange="return manageEnable(this);" class="featureToggle"';
+					};
+    				_html+='/></dd>';
+    			});
+    			_html+='</dl>';
+			});
+		});
+		$("#featureBody").html(_html);
+		$("input.blocked:checked").each(function(i1,v1){
+			$(v1).prop('indeterminate',true);
+		});
+		
+	},
+	groupFailure:function(resp){
+		alert(resp);
+	},
+	init:function(){
+    	YAHOO.util.Connect.asyncRequest('GET',serverRoot+"/REST/services/features?type=admin" ,{success : XNAT.app.featureMgr.groupSuccess, failure : XNAT.app.featureMgr.groupFailure, cache : false, scope : this}, null, this);
+    }
+};
+
+#foreach($feature in $features)
+XNAT.app.featureMgr.features.push({"key":"$!feature.getKey()","name":"$!feature.getName()","desc":"$!feature.getDescription()","banned":"$!feature.getBanned().replace("\""," ")"});
+#end
+
+
+XNAT.app.featureMgr.init();
+
+function manageEnable(check){
+	var key=$(check).attr("data-feature");
+	var tag=$(check).attr("data-group");
+	
+	YAHOO.util.Connect.asyncRequest('POST',serverRoot+"/REST/services/features?type=" + tag + "&XNAT_CSRF=" + csrfToken,
+		{success : featureSuccess, failure : featureFailure, cache : false, scope : check},
+		"{'key':'" + key + "','enabled':" + check.checked + "}",
+		check);
+		
+	$("input.featureToggle").attr("disabled", true);
+}
+function manageBanned(check){
+	var key=$(check).attr("data-feature");
+	var tag=$(check).attr("data-group");
+	
+	YAHOO.util.Connect.asyncRequest('POST',serverRoot+"/REST/services/features?type=" + tag + "&XNAT_CSRF=" + csrfToken,
+		{success : featureSuccess, failure : featureFailure, cache : false, scope : check},
+		"{'key':'" + key + "','banned':" + !(check.checked) + "}",
+		check);
+		
+	$("input.featureToggle").attr("disabled", true);
+}
+function featureSuccess(res){
+	$("input.featureToggle").removeAttr("disabled");
+	if($(this).hasClass("blocked")){
+		if(this.checked){
+			$(this).prop('indeterminate',true);
+		}else{
+			$(this).prop('indeterminate',false);
+		}
+	}
+}
+function featureFailure(res){
+	if(this.checked){
+		this.checked=false;
+	}else{
+		this.checked=true;
+	}
+
+	$("input.featureToggle").removeAttr("disabled");
+}
+</script>
+
+<style type="text/css">
+	#features .featureItem, #features .header {
+	  border-bottom:1px solid #888;
+	  font:11px Arial, Helvetica, sans-serif;
+	  margin-top:0;
+	  margin-bottom:0;
+	  padding: 4px;
+	  overflow:auto;
+	}
+	dl.featureItem, item.featureItem {
+		display:block;
+	}
+	#features dl dl 	{ margin:1px 0;	}
+	#features .header {
+		background-color: #ccc;
+		font-weight: bold;
+	}
+	#features dl dt, #features dl dd {
+		display:block;
+		float:left;
+		padding:4px 0;
+	}
+	.featureItem:hover {
+		background-color:#fe9;
+	}
+	#features dd 	{ 	margin-left:20px; }
+	dd.featureProject 	{	width:90px; }
+	dd.featureGroup 	{	width:90px; }
+	dd.featureEnabled 	{	width:80px;	}
+	dd.featureBanned 	{	width:80px;	}
+</style>

@@ -13,7 +13,17 @@ package org.nrg.xdat.om.base;
 import java.io.File;
 import java.sql.SQLException;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
@@ -60,11 +70,14 @@ import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.search.CriteriaCollection;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.ElementSecurity;
+import org.nrg.xdat.security.SecurityValues;
 import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.UserGroupManager;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.security.XDATUser.UserNotFoundException;
 import org.nrg.xdat.security.XdatStoredSearch;
+import org.nrg.xdat.security.helpers.Features;
+import org.nrg.xdat.services.GroupFeatureService;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
@@ -100,6 +113,8 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author XDAT
@@ -1737,6 +1752,12 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		            }
 		        }
 		        
+		        UserGroup ug=UserGroupManager.GetGroup(g.getId());
+		        
+		        if(ug!=null){
+		        	Features.deleteAllFeaturesFromGroup(ug, user);
+		        }
+		        
 	            try {
 	            	SaveItemHelper.authorizedDelete(g.getItem(), user,ci);
 	            } catch (Throwable e) {
@@ -2171,5 +2192,12 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 			}
 		}
 		return q.append("'").toString();
+	}
+
+	@Override
+	public SecurityValues getSecurityTags() {
+		SecurityValues projects=new SecurityValues();
+		projects.getHash().put("xnat:projectData/ID", this.getId());
+		return projects;
 	}
 }

@@ -43,6 +43,8 @@ import org.nrg.xnat.turbine.utils.XNATUtils;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 
+import com.google.common.collect.Lists;
+
 import java.io.File;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -1617,4 +1619,15 @@ public class BaseXnatSubjectdata extends AutoXnatSubjectdata implements Archivab
         new_expt.setProject(this.getProject());
         return new_expt;
     }
+
+	@Override
+	public SecurityValues getSecurityTags() {
+		SecurityValues projects=new SecurityValues();
+		projects.getHash().put(this.getXSIType() +"/project", this.getProject());
+	    for (final XnatProjectparticipantI pp:this.getSharing_share())
+        {
+			projects.getHash().put(this.getXSIType() +"/sharing/share/project", pp.getProject());
+        }
+		return projects;
+	}
 }

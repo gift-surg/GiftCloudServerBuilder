@@ -143,6 +143,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		XNAT.app.grp_dialog.cfg.queueProperty("buttons", [{ text:"Close", handler:{fn:function(){XNAT.app.grp_dialog.hide();}},isDefault:true}]);
 
 		$("<button style='margin-top:10px;' id='' onclick='window.userManager.showGroups();return false;'>Manage Groups</button>").insertAfter("#user_invite_div");
+		$("<button style='margin-top:10px;' id='' onclick='window.location=\""+ serverRoot +"/app/template/ManageProjectFeatures.vm/project/" + pID + "\"'>Manage Features</button>").insertAfter("#user_invite_div");
 		
 		this.loadUsers();
 		

@@ -315,17 +315,8 @@
 								<xs:attribute name="sequence" type="xs:integer" use="optional" default="0"/>
 								<xs:attribute name="image" type="xs:string" use="optional"/>
                                 <xs:attribute name="popup" type="xs:string" use="optional"/>
-								<xs:attribute name="secureAccess" use="optional">
-									<xs:simpleType>
-										<xs:restriction base="xs:string">
-											<xs:enumeration value="read"/>
-											<xs:enumeration value="create"/>
-											<xs:enumeration value="edit"/>
-											<xs:enumeration value="delete"/>
-											<xs:enumeration value="activate"/>
-										</xs:restriction>
-									</xs:simpleType>
-								</xs:attribute>
+								<xs:attribute name="secureAccess" use="optional" type="xs:string"/>
+								<xs:attribute name="secureFeature" use="optional" type="xs:string"/>
 								<xs:attribute name="parameterString" type="xs:string"/>
 							</xs:complexType>
 						</xs:element>
@@ -378,17 +369,8 @@
 		<xs:attribute name="sequence" type="xs:integer" use="optional" default="0"/>
 		<xs:attribute name="image" type="xs:string" use="optional"/>
         <xs:attribute name="popup" type="xs:string" use="optional"/>
-		<xs:attribute name="secureAccess" use="optional">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="read"/>
-					<xs:enumeration value="create"/>
-					<xs:enumeration value="edit"/>
-					<xs:enumeration value="delete"/>
-					<xs:enumeration value="activate"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
+        <xs:attribute name="secureAccess" use="optional" type="xs:string"/>
+		<xs:attribute name="secureFeature" use="optional" type="xs:string"/>
 		<xs:attribute name="parameterString" type="xs:string" use="optional"/>
 		<xs:attribute name="grouping" type="xs:string" use="optional"/>
 	</xs:complexType>

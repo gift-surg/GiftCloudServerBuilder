@@ -1314,7 +1314,7 @@ div.ic_spacer{
 #set($previousLink=$link.getLink())
         #foreach ($actionGroup in $actions)
          #if($actionGroup.getGroup()!="")
-           <li class="yuimenuitem #if($actionGroup.group=="Upload") lockable #end" style="margin-bottom:2px">
+           <li class="yuimenuitem #if($actionGroup.group=="Upload") lockable #end " style="margin-bottom:2px">
      <a class="yuimenuitemlabel" href="#${actionGroup.group}box"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>$actionGroup.group</a>
             <div id="${actionGroup.group}box" class="yuimenu">
              <div class="bd">
@@ -1355,8 +1355,16 @@ div.ic_spacer{
                     #set($canAccess = "true")
                 #else
                     #set($canAccess = "false")
+				#end
+			#end
+			<!-- $actionObject.getSecureFeature() -->
+			#if($canAccess.equals("true") && $actionObject.getSecureFeature() && !$actionObject.getSecureFeature().equals(""))
+				#if ($user.checkFeature($om,$actionObject.getSecureFeature()))
+                    #set($canAccess = "true")
+                #else
+                    #set($canAccess = "false")
                 #end
-            #end
+			#end
 
             #if($actionObject.getParameterString())
                 #set($additionalParameters=$actionObject.getParameterString())

@@ -5,6 +5,8 @@ $page.setVlinkColor($ui.vlink)
 #if ($data.message)
 <DIV class="error">$data.message</DIV><br>
 #end
+
+#set($secureAccess=["edit","delete"])
 <p>
 <form name="form1" method="post" action="$link.setAction("ModifyItem")">
 #if($vr)
@@ -131,7 +133,7 @@ $page.setVlinkColor($ui.vlink)
 				<TH colspan=4>Available Report Actions</TH>
 			</TR>
 			<TR>
-				<TD>Remove</TD><TD>Name</TD><TD>Display Name</TD><TD>Grouping</TD><TD>Image</TD><TD>Popup</TD><TD>Secure Access</TD><TD>Additional Parameters</TD><TD>Sequence</TD>
+				<TD>Remove</TD><TD>Name</TD><TD>Display Name</TD><TD>Grouping</TD><TD>Image</TD><TD>Popup</TD><TD>Secure Access</TD><TD>Feature</TD><TD>Additional Parameters</TD><TD>Sequence</TD>
 			</TR>
 			#foreach($c in [0..15] )
 			<TR>
@@ -146,7 +148,8 @@ $page.setVlinkColor($ui.vlink)
 				<TD>#xdatTextBox("xdat:element_security.element_actions.element_action__${c}.grouping" $item "" $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.element_actions.element_action__${c}.image" $item "" $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.element_actions.element_action__${c}.popup" $item "" $vr)</TD>
-				<TD>#xdatTextBox("xdat:element_security.element_actions.element_action__${c}.secureAccess" $item "" $vr)</TD>
+				<TD>#xdatSelectBoxWSingleValueLbl("" "xdat:element_security.element_actions.element_action__${c}.secureAccess" $item $secureAccess $vr)</TD>
+				<TD>#xdatSelectBox("xdat:element_security.element_actions.element_action__${c}.secureFeature" $item $features $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.element_actions.element_action__${c}.parameterString" $item "" $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.element_actions.element_action__${c}.sequence" $item "" $vr)</TD>
 			</TR>
@@ -162,7 +165,7 @@ $page.setVlinkColor($ui.vlink)
 				<TH colspan=4>Available Listing Actions</TH>
 			</TR>
 			<TR>
-				<TD>Remove</TD><TD>Name</TD><TD>Display Name</TD><TD>Image</TD><TD>Popup</TD><TD>Secure Access</TD><TD>Additional Parameters</TD><TD>Sequence</TD>
+				<TD>Remove</TD><TD>Name</TD><TD>Display Name</TD><TD>Image</TD><TD>Popup</TD><TD>Secure Access</TD><TD>Feature</TD><TD>Additional Parameters</TD><TD>Sequence</TD>
 			</TR>
 			#foreach($c in [0..10] )
 			<TR>
@@ -176,7 +179,8 @@ $page.setVlinkColor($ui.vlink)
 				#xdatHiddenBox("xdat:element_security.listing_actions.listing_action__${c}.xdat_element_security_listing_action_id" $item "")</TD>
 				<TD>#xdatTextBox("xdat:element_security.listing_actions.listing_action__${c}.image" $item "" $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.listing_actions.listing_action__${c}.popup" $item "" $vr)</TD>
-				<TD>#xdatTextBox("xdat:element_security.listing_actions.listing_action__${c}.secureAccess" $item "" $vr)</TD>
+				<TD>#xdatSelectBoxWSingleValueLbl("" "xdat:element_security.listing_actions.listing_action__${c}.secureAccess" $item $secureAccess $vr)</TD>
+				<TD>#xdatSelectBox("xdat:element_security.listing_actions.listing_action__${c}.secureFeature" $item $features $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.listing_actions.listing_action__${c}.parameterString" $item "" $vr)</TD>
 				<TD>#xdatTextBox("xdat:element_security.listing_actions.listing_action__${c}.sequence" $item "" $vr)</TD>
 			</TR>

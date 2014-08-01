@@ -10,11 +10,15 @@
  */
 package org.nrg.xnat.turbine.modules.screens;
 
+import java.util.List;
+
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.nrg.xdat.om.ArcArchivespecification;
+import org.nrg.xdat.security.helpers.Features;
 import org.nrg.xdat.turbine.modules.screens.AdminScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
+import org.nrg.xft.XFTTable;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class Configuration extends AdminScreen {
@@ -32,5 +36,8 @@ public class Configuration extends AdminScreen {
         context.put("arc", arcSpec);
         setDefaultTabs("siteInfo", "fileSystem", "registration", "notifications", "anonymization", "applet", "dicomReceiver");
         cacheTabs(context, "configuration");
+        
+        
+        context.put("features", Features.getAllFeatures());
     }
 }

@@ -24,7 +24,7 @@ import org.nrg.xnat.helpers.prearchive.*;
 import org.nrg.xnat.helpers.uri.URIManager;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
-import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.nrg.xdat.turbine.utils.PropertiesHelper;
 
 import java.io.File;
 import java.lang.reflect.Constructor;

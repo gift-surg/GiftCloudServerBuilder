@@ -14,7 +14,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.nrg.xft.XFT;
-import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.nrg.xdat.turbine.utils.PropertiesHelper;
 import org.restlet.Application;
 import org.restlet.VirtualHost;
 

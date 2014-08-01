@@ -37,7 +37,7 @@ import org.nrg.ecat.xnat.PETSessionBuilder;
 import org.nrg.framework.services.ContextService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xft.XFT;
-import org.nrg.xnat.turbine.utils.PropertiesHelper;
+import org.nrg.xdat.turbine.utils.PropertiesHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

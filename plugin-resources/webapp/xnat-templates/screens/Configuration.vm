@@ -43,6 +43,7 @@
                         <li class="selected"><a href="#siteInfo"><em>Site Information<span class="spacer"></span></em></a></li>
                         <li><a href="#security"><em>Security<span class="spacer"></span></em></a> </li>
                         <li><a href="#fileSystem"><em>File System<span class="spacer"></span></em></a></li>
+                        <li><a href="#features"><em>Features<span class="spacer"></span></em></a></li>
                         <li><a href="#registration"><em>Registration<span class="spacer"></span></em></a></li>
                         <li><a href="#notifications"><em>Notifications<span class="spacer"></span></em></a></li>
                         <li><a href="#anonymization"><em>Anonymization<span class="spacer"></span></em></a></li>
@@ -67,6 +68,9 @@
                         </div>
                         <div id="fileSystem">
                             #parse('screens/configuration/fileSystem.vm')
+                        </div>
+                        <div id="features">
+                            #parse('screens/configuration/features.vm')
                         </div>
                         <div id="registration">
                             #parse('screens/configuration/registration.vm')

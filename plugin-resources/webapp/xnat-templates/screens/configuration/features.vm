@@ -1,0 +1,111 @@
+<!-- Title: Features -->
+<div class="mgmt_container" >
+    <div id="features_mgmt_div" class="row">
+        These features are currently supported by your XNAT Server.  As a site administrator, you can 'ban' any of these features
+		so that the features they represent will be concealed on the site.  Or, you can mark features as 'on by default' so that the features will be enabled for all users 
+		unless blocked for specific groups.  Features membership is also configurable on a per project/group level.
+	</div>
+	<div id="features_grp_config_div" class="row">
+        <a href='$content.getURI("/app/template/ManageGroupTypeFeatures.vm")'>Advanced</a>
+	</div>
+		<div id="features">
+            <dl class="header">
+              <dl>
+                  <dd class="featureName">Name</dd>
+                  <dd class="featureDesc">Description</dd>
+                  <dd class="featureEnabled">On By Default</dd>
+                  <dd class="featureBanned">Banned</dd>
+              </dl>
+            </dl>
+		</div> 
+	   #foreach($feature in $features)
+		  <dl class="featureItem" id="">
+              <dd class="featureName">$feature.getName()</dd>
+              <dd class="featureDesc">$feature.getDescription()</dd>
+              <dd class="featureEnabled"><input type="checkbox" class='featureToggle' id="$feature.getKey()_enabled" onchange='return manageEnable(this);' data-feature="$feature.getKey()" #if($feature.isOnByDefault()) CHECKED #end  #if($feature.isBanned()) DISABLED #end /></dd>
+              <dd class="featureBanned"><input type="checkbox" class='featureToggle' id="$feature.getKey()_banned" onchange='return manageBanned(this);' data-feature="$feature.getKey()" #if($feature.isBanned()) CHECKED #end /></dd>
+		  </dl>
+	   #end
+</div>
+	
+<script>
+function manageEnable(check){
+	var key=$(check).attr("data-feature");
+	
+	YAHOO.util.Connect.asyncRequest('POST',serverRoot+"/REST/services/features?XNAT_CSRF=" + csrfToken,
+		{success : featureSuccess, failure : featureFailure, cache : false, scope : check},
+		"{'key':'" + key + "','enabled':" + check.checked + "}",
+		check);
+		
+	$("input.featureToggle").attr("disabled", true);
+}
+function manageBanned(check){
+	var key=$(check).attr("data-feature");
+	
+	YAHOO.util.Connect.asyncRequest('POST',serverRoot+"/REST/services/features?XNAT_CSRF=" + csrfToken,
+		{success : featureSuccess, failure : featureFailure, cache : false, scope : check},
+		"{'key':'" + key + "','banned':" + check.checked + "}",
+		check);
+		
+	$("input.featureToggle").attr("disabled", true);
+	
+	if(check.checked){
+		$("#"+key+"_enabled").removeClass("featureToggle");
+	}else{
+		$("#"+key+"_enabled").addClass("featureToggle");
+	}
+}
+function featureSuccess(res){
+	if(this.id.endsWith("_banned")){
+		var key=$(this).attr("data-feature");
+		if(this.checked){
+    		$("#"+key+"_enabled").removeClass("featureToggle");
+    	}else{
+    		$("#"+key+"_enabled").addClass("featureToggle");
+    	}
+	}
+
+	$("input.featureToggle").removeAttr("disabled");
+}
+function featureFailure(res){
+	if(this.checked){
+		this.checked=false;
+	}else{
+		this.checked=true;
+	}
+
+	$("input.featureToggle").removeAttr("disabled");
+}
+</script>
+
+<style type="text/css">
+	#features .featureItem, #features .header {
+	  border-bottom:1px solid #888;
+	  font:11px Arial, Helvetica, sans-serif;
+	  margin-top:0;
+	  margin-bottom:0;
+	  padding: 4px;
+	  overflow:auto;
+	}
+	dl.featureItem, item.featureItem {
+		display:block;
+	}
+	#features dl dl 	{ margin:1px 0;	}
+	#features .header {
+		background-color: #ccc;
+		font-weight: bold;
+	}
+	#features dl dt, #features dl dd {
+		display:block;
+		float:left;
+		padding:4px 0;
+	}
+	.featureItem:hover {
+		background-color:#fe9;
+	}
+	#features dd 	{ 	margin-left:20px; }
+	dd.featureName 	{	width:160px; }
+	dd.featureDesc 	{	width:286px;  position:relative;	}
+	dd.featureEnabled 	{	width:80px;	}
+	dd.featureBanned 	{	width:80px;	}
+</style>

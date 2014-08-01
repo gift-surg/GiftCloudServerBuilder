@@ -10,13 +10,46 @@
  */
 package org.nrg.xdat.om.base;
 
+import java.io.File;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
-import com.google.common.collect.Lists;
 import org.nrg.action.ClientException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.model.*;
-import org.nrg.xdat.om.*;
+import org.nrg.xdat.model.WrkWorkflowdataI;
+import org.nrg.xdat.model.XnatAbstractresourceI;
+import org.nrg.xdat.model.XnatExperimentdataFieldI;
+import org.nrg.xdat.model.XnatExperimentdataShareI;
+import org.nrg.xdat.model.XnatFielddefinitiongroupI;
+import org.nrg.xdat.model.XnatImageassessordataI;
+import org.nrg.xdat.model.XnatProjectdataI;
+import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.xdat.om.WrkWorkflowdata;
+import org.nrg.xdat.om.XnatAbstractprotocol;
+import org.nrg.xdat.om.XnatAbstractresource;
+import org.nrg.xdat.om.XnatDatatypeprotocol;
+import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatExperimentdataShare;
+import org.nrg.xdat.om.XnatFielddefinitiongroup;
+import org.nrg.xdat.om.XnatImageassessordata;
+import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatResource;
+import org.nrg.xdat.om.XnatResourcecatalog;
+import org.nrg.xdat.om.XnatResourceseries;
+import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.base.auto.AutoXnatExperimentdata;
 import org.nrg.xdat.schema.SchemaElement;
 import org.nrg.xdat.security.SecurityValues;
@@ -30,7 +63,10 @@ import org.nrg.xft.event.EventDetails;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
-import org.nrg.xft.exception.*;
+import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.identifier.IDGeneratorFactory;
 import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.search.CriteriaCollection;
@@ -44,12 +80,7 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.data.Status;
 
-import java.io.File;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.google.common.collect.Lists;
 
 /**
  * @author XDAT
@@ -928,4 +959,16 @@ public class BaseXnatExperimentdata extends AutoXnatExperimentdata implements Ar
         }
         return new_expt;
     }
+
+	@Override
+	public SecurityValues getSecurityTags(){
+		SecurityValues projects=new SecurityValues();
+		projects.getHash().put(this.getXSIType() +"/project", this.getProject());
+	    for (final XnatExperimentdataShareI pp:this.getSharing_share())
+        {
+			projects.getHash().put(this.getXSIType() +"/sharing/share/project", pp.getProject());
+        }
+		return projects;
+		
+	}
 }

@@ -185,7 +185,7 @@ $page.setVlinkColor($ui.vlink)
 				<TH colspan=6>Report Actions</TH>
 			</TR>
 			<TR>
-				<TH NOWRAP>Name</TH><TH NOWRAP>Display Name</TH><TH NOWRAP>Grouping</TH><TH NOWRAP>Image</TH><TH NOWRAP>Popup</TH><TH NOWRAP>Secure Access</TH><TH NOWRAP>Additional Parameters</TH><TH NOWRAP>Sequence</TH>
+				<TH NOWRAP>Name</TH><TH NOWRAP>Display Name</TH><TH NOWRAP>Grouping</TH><TH NOWRAP>Image</TH><TH NOWRAP>Popup</TH><TH NOWRAP>Secure Access</TH><TH NOWRAP>Feature</TH><TH NOWRAP>Additional Parameters</TH><TH NOWRAP>Sequence</TH>
 			</TR>
 			#foreach($action in $item.getChildItems("xdat:element_security.element_actions.element_action") )
 			<TR>
@@ -195,6 +195,7 @@ $page.setVlinkColor($ui.vlink)
 				<TD>$!action.getProperty("xdat:element_action_type.image")</TD>
 				<TD>$!action.getProperty("xdat:element_action_type.popup")</TD>
 				<TD>$!action.getProperty("xdat:element_action_type.secureAccess")</TD>
+				<TD>$!action.getProperty("xdat:element_action_type.secureFeature")</TD>
 				<TD>$!action.getProperty("xdat:element_action_type.parameterString")</TD>
 				<TD>$!action.getProperty("xdat:element_action_type.sequence")</TD>
 			</TR>
@@ -209,7 +210,7 @@ $page.setVlinkColor($ui.vlink)
 				<TH colspan=6>Listing Actions</TH>
 			</TR>
 			<TR>
-				<TH NOWRAP>Name</TH><TH NOWRAP>Display Name</TH><TH NOWRAP>Image</TH><TH NOWRAP>Popup</TH><TH NOWRAP>Secure Access</TH><TH NOWRAP>Additional Parameters</TH><TH NOWRAP>Sequence</TH>
+				<TH NOWRAP>Name</TH><TH NOWRAP>Display Name</TH><TH NOWRAP>Image</TH><TH NOWRAP>Popup</TH><TH NOWRAP>Secure Access</TH><TH NOWRAP>Feature</TH><TH NOWRAP>Additional Parameters</TH><TH NOWRAP>Sequence</TH>
 			</TR>
 			#foreach($action in $item.getChildItems("xdat:element_security.listing_actions.listing_action") )
 			<TR>
@@ -218,6 +219,7 @@ $page.setVlinkColor($ui.vlink)
 				<TD>$!action.getProperty("xdat:element_security_listing_action.image")</TD>
 				<TD>$!action.getProperty("xdat:element_security_listing_action.popup")</TD>
 				<TD>$!action.getProperty("xdat:element_security_listing_action.secureAccess")</TD>
+				<TD>$!action.getProperty("xdat:element_security_listing_action.secureFeature")</TD>
 				<TD>$!action.getProperty("xdat:element_security_listing_action.parameterString")</TD>
 				<TD>$!action.getProperty("xdat:element_security_listing_action.sequence")</TD>
 			</TR>

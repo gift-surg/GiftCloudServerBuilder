@@ -209,7 +209,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     logger.error(e.getMessage(), e);
                 }
 
-                if(isExpired || (XDAT.getBoolSiteConfigurationProperty("requireSaltedPasswords", true) && user.getSalt() == null)){
+                if((!isUserNonExpiring(user) && isExpired) || (XDAT.getBoolSiteConfigurationProperty("requireSaltedPasswords", true) && user.getSalt() == null)){
                     request.getSession().setAttribute("expired", isExpired);
                     response.sendRedirect(TurbineUtils.GetFullServerPath() + changePasswordPath);
                 }
@@ -220,6 +220,14 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
             else {
                 response.sendRedirect(TurbineUtils.GetFullServerPath() + inactiveAccountPath);
             }
+        }
+    }
+
+    private boolean isUserNonExpiring(XDATUser user) {
+        try {
+            return user.checkRole("Non-expiring");
+        } catch (Exception e) {
+            return false;
         }
     }
 

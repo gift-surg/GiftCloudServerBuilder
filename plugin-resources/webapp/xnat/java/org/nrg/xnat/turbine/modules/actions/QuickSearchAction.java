@@ -260,6 +260,7 @@ public class QuickSearchAction extends SecureAction {
                                 displayCount += ((ArrayList)items).size();
                             }
                         }
+                        context.put("searchTerm", s);
                         context.put("matchCount", displayCount);
                         context.put("typeProjectMapping", typeProjectMapping);
                         context.put("pMappings", pMappings);

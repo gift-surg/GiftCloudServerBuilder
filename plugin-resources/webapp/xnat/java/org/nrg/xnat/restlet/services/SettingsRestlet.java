@@ -43,10 +43,7 @@ import org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.SeriesImportFilter;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -106,7 +103,10 @@ public class SettingsRestlet extends SecureResource {
                         new StringRepresentation("{\"ResultSet\":{\"Result\":" + new ObjectMapper().writeValueAsString(getArcSpecAsMap()) + ", \"title\": \"Settings\"}}");
             }
             else {
-            	Object propertyValue = checkForExistenceOfProperty(_property);
+                if(!getArcSpecAsMap().containsKey(_property)) {
+                    throw new PropertyNotFoundException(String.format("Setting '%s' was not found in the system.", _property));
+                }
+                Object propertyValue = getArcSpecAsMap().get(_property);
             	
                 if (mediaType == MediaType.TEXT_XML) {
                     String xml = "<" + _property + ">" + propertyValue.toString() + "</" + _property + ">";
@@ -711,8 +711,16 @@ public class SettingsRestlet extends SecureResource {
     }
 
     private void setDiscreteProperty() throws Exception, ConfigServiceException {
+    	if (getRequest().getMethod() != Method.POST) {
+            if (_log.isDebugEnabled()) {
         _log.debug("Setting arc spec property: [" + _property + "] = " + _value);
-    	checkForExistenceOfProperty(_property);
+            }
+            if (!getArcSpecAsMap().containsKey(_property)) {
+                throw new PropertyNotFoundException(String.format("Setting '%s' was not found in the system.", _property));
+            }
+        } else if (_log.isInfoEnabled()) {
+            _log.info("Requested POST to property: [" + _property + "] = " + _value);
+        }
         if(null == _value) {
             throw new NullPointerException(String.format("Setting '%s' cannot be set to NULL.", _property));
         }
@@ -859,14 +867,6 @@ public class SettingsRestlet extends SecureResource {
         return users.get(0).getLogin();
     }
     
-    private Object checkForExistenceOfProperty(String propertyName) throws PropertyNotFoundException, ConfigServiceException, IOException {
-        Object property = getArcSpecAsMap().get(propertyName);
-        if(null == property) {
-            throw new PropertyNotFoundException(String.format("Setting '%s' was not found in the system.", _property));
-        }
-        return property;
-    }
-
     private static final String EXPRESSION_USERNAME = "[a-zA-Z][a-zA-Z0-9_-]{3,15}";
     private static final String EXPRESSION_EMAIL = "[_A-Za-z0-9-]+(?:\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(?:\\.[A-Za-z0-9]+)*(?:\\.[A-Za-z]{2,})";
     private static final String EXPRESSION_COMBINED = "(" + EXPRESSION_USERNAME + ")[\\s]*<(" + EXPRESSION_EMAIL + ")>";

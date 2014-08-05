@@ -10,7 +10,7 @@ $page.setVlinkColor($ui.vlink)
 <DIV class="error">$data.message</DIV><br>
 #end
 #parse("/screens/LoadProjectsJS.vm")
-									<form name="form1" method="post" action="$link.setAction("ModifyUserGroups")">
+									<form id="userform" name="form1" method="post" action="$link.setAction("ModifyUserGroups")">
 <TABLE width=100% align="left" border="0">
 	<TR>
 		<TD align="left">
@@ -600,22 +600,38 @@ addGroup("$!groupid.getGroupid()");
 					<TR>
 						<TD VALIGN="top">
 							<Table border="0" width="100%">
-								<TR><TH align=left colspan="4">STEP 3: Assign administrative privileges for this account</TH>
-                                                                </TR>
-                                                                <TR>
-                                                                    <TD align=center><img src="$content.getURI("images/rc.gif")" border=0></td>
-                                                                    <TH align=left colspan="3">WARNING: Granting administrative privileges allows<br>this user great power over the entire site</TH>
-								</TR>
-																<TR><TD align=left colspan="4">
-<INPUT TYPE="checkbox" id="site_admin" name="xdat:user.assigned_roles.assigned_role[0].role_name" value="Administrator" #if($userObject.checkRole("Administrator"))CHECKED#end/> <label for="site_admin">Site Manager</label>
-								: This allows users to access the Administrative pages of the web interface.
+								<TR><TH align=left colspan="4">STEP 3: Define security settings</TH>
+                                </TR>
+								<TR>
+									<TH align=left colspan="4"><br>System Roles</TH>
+								</tr>
+								#foreach($role in $allRoles)
+								<TR><TD align=left colspan="4">
+<INPUT TYPE="checkbox" id="role_$role.getKey()" name="custom_role" value="$role.getKey()" #if($userObject.checkRole($role.getKey()))CHECKED#end/> <label for="role_">$role.getName()</label>
+								: $!role.getDescription()
 								</TD></TR>
+									#if($role.getWarning())
+                                    <TR>
+                                        <TD align="center"><img src="$content.getURI("images/rc.gif")" border="0"></td>
+                                        <TD align="left" colspan="3">$role.getWarning()</TD>
+    								</TR>
+                                    <TR>
+                                        <TD colspan="2">&nbsp;</TD>
+    								</TR>
+    								 #end
+								#end
+								
+								
 							  #set($groupCounter=0)
 							  
 																#if($turbineUtils.toBoolean($siteConfig.getProperty("security.allow-data-admins","true")))
 																<TR>
-																	<TD align=left colspan="4">Allow All Data Access: </TD>
+																	<TH align=left colspan="4"><br>Allow All Data Access: </TH>
 																</tr>
+                                    <TR>
+                                        <TD align="center"><img src="$content.getURI("images/rc.gif")" border="0"></td>
+                                        <TD align="left" colspan="3">WARNING: Allowing 'All Data Access' will allow this user to see ALL data stored in this system.  It supersedes project membership.  Most accounts on your server should NOT have All Data Access allowed.</TD>
+    								</TR>
 																<TR>
 																	<TD align=left nowrap>
 <INPUT TYPE="radio" id="data_none" name="xdat:user.groups.groupID[$groupCounter].groupID" value="" CHECKED/> <label for="data_none">No</label>
@@ -630,7 +646,7 @@ addGroup("$!groupid.getGroupid()");
 																#end
 																<TR>
 																	<TD colspan="3">&nbsp;</TD>
-								<TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<TD align=center><input type="button" onclick="XNAT.app.userRoles.update();" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
                                                 <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                     #else
@@ -644,49 +660,39 @@ addGroup("$!groupid.getGroupid()");
 				</TABLE>
 					</TD>
 				</TR>
-    <TR>
-        <TD align=left colspan=2 valign=top>&nbsp;
-        </td>
-    </tr>
-    <TR>
-        <TD align=left colspan=2 valign=top>
-            <TABLE border="1" width="80%">
-                <TR>
-                    <TD VALIGN="top">
-                        <Table border="0" width="100%">
-                            <TR><TH align=left colspan="4">STEP 4: Determine if the account needs to be non-expiring</TH>
-                            </TR>
-                            <TR>
-                                <TD align=center style="width: 50px"><img src="$content.getURI("images/rc.gif")" border=0></td>
-                                <TH align=left colspan="3"><div style="width: 500px">WARNING: Granting a user account a
-                                    non-expiring password is a security
-                                    risk, and should be limited to accounts
-                                    that perform automated system tasks.
-                                    In addition, if any users are designated
-                                    as non-expiring, access to the user list
-                                    should be restricted to administrators.</div></TH>
-                            </TR>
-                            <TR><TD align=left colspan="4">
-                                <INPUT TYPE="checkbox" id="non_expiring" name="xdat:user.assigned_roles.assigned_role[1].role_name" value="Non-expiring" #if($userObject.checkRole("Non-expiring"))CHECKED#end/> <label for="non_expiring">Non-expiring</label>
-                                : This prevents this accounts password from expiring.
-                            </TD></TR>
-
-
-                            <TR>
-                                <TD colspan="3">&nbsp;</TD>
-                                <TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
-                                        <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
-                                    #else
-                                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
-                                    #end</TD>
-                            </TR>
-                        </TABLE>
-                    </TD>
-                </TR>
-            </TABLE>
-        </TD>
     </TR>
+<script>
+	XNAT.app.userRoles=new Object();
+	XNAT.app.userRoles.update=function(){
+		var urString="";
+		var urBoxs=document.getElementsByName("custom_role");
+		for(var urC=0;urC<urBoxs.length;urC++){
+			if(urBoxs[urC].checked){
+    			if(urC>0){
+    				urString+=",";
+    			}
+    			
+    			urString+=urBoxs[urC].value;
+			}
+		}
+		
+		openModalPanel("role_mod","Modifying Roles");
+		
+		YAHOO.util.Connect.asyncRequest('POST',serverRoot+"/REST/user/$userObject.getLogin()/roles$?XNAT_CSRF=" + csrfToken + "&roles="+urString,{	
+													success : function()
+													{
+														document.getElementById("userform").submit();
+														closeModalPanel('role_mod');
+													},
+        	  										 failure: function(){
+														closeModalPanel('role_mod');
+    												 	alert("Failed to store roles.");
+    												 },
+                                                     cache:false, // Turn off caching for IE
+        	  										 scope: this
+												});
+	}
+</script>
     <tr>
 					<td>
 						#addCustomScreens($om.getXSIType() "report/postContent") 

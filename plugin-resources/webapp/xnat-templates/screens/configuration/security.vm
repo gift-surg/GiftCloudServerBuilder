@@ -116,7 +116,7 @@
                             <small>The maximum duration (in days) that a user's password will function before it is considered to have expired and must be changed. Set as 0 to disable password expiration.</small>
                         </span>
                         <span id="passwordExpirationDateSpan" style="display: none;">
-                            <span class="datepicker single us today" #*data-validate="onblur"*# data-input-id="passwordExpirationDate" data-input-name="passwordExpirationDate"></span>
+                            <span class="datepicker single us today" data-value="" data-validate="onblur" data-input-id="passwordExpirationDate" data-input-name="passwordExpirationDate"></span>
                             <script type="text/javascript">
                                 jq(function(){
                                     var __datepicker = jq('#passwordExpirationDateSpan').find('.datepicker');

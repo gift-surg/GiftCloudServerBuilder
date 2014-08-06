@@ -359,8 +359,8 @@ function SplitDate(_date, _format) {
             this.d = this.arr[dd_pos];
             this.dd = zeroPad(this.d);
             if (this.d === '' || parseInt(this.d, 10) > 31) this.dd = '32';
-            this.yyyy = this.year = this.arr[yyyy_pos];
-            if (this.yyyy !== '') this.yyyy = parseInt(this.year, 10);
+            this.yyyy = this.arr[yyyy_pos];
+            this.year = (this.yyyy === '0000') ? 0 : this.yyyy ;
             this.example = example;
 
             this.ISO = this.iso = this.yyyy + '-' + this.mm + '-' + this.dd;
@@ -370,6 +370,9 @@ function SplitDate(_date, _format) {
             this.date_string = this.yyyy + this.mm + this.dd;
             this.date_num = parseInt(this.date_string, 10);
             this.ms = Date.parse(this.iso);
+
+            this.val = this[this.format] || null;
+
         }
         catch (e) {
             if (console.log) console.log('Error: ' + e);

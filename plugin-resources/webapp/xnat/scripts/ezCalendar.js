@@ -683,12 +683,12 @@ $(function(){
 
     // this now checks both generated inputs as well as
     // existing inputs with "check_date" class
-    $body.on('focus','input.ez_cal.validate.onblur, input.check_date',function(){
-        $(this).off('blur');
-        $(this).on('blur', function(){
+    $body.on('blur','input.ez_cal.validate.onblur, input.check_date',function(){
+        //$(this).off('blur');
+        //$(this).on('blur', function(){
             do_date_check = true ;
             checkDateOnBlur(this);
-        });
+        //});
     });
 
 

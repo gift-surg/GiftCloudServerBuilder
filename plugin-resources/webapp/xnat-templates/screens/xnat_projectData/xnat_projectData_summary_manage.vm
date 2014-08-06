@@ -53,9 +53,11 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
     <td colspan="2" class="highlighted" id="script_container">
       <DIV style="font-weight:700;">Anonymization Script</DIV>
       <TABLE>
-	<TR><TD><input id="enable_anon_script" type="radio" name="anon_script" value="true"/></TD><TD>Enable</TD></TR>
-	<TR><TD><input id="disable_anon_script" type="radio" name="anon_script" value="false"/></TD><TD>Disable</TD></TR>
-	<TR><TD></TD><TD><textarea id="script_text_area" rows="20" cols="80"></textarea></TD></TR>
+	<TR>
+    <TD><label for="enable_anon_script">Enable Script</label></TD>
+    <TD><input id="enable_anon_script" type="checkbox" name="enable_anon_script" value="true"/></TD>
+  </TR>
+	<TR><TD></TD><TD><textarea id="script_text_area" rows="20" cols="80" disabled="disabled"></textarea></TD></TR>
 	<TR><TD COLSPAN="2"><input type="button" id="anon_script_save" value="Save" disabled="true"/></TD></TR>
       </TABLE>      
     </td>
@@ -69,12 +71,52 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
 	       'getScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script?format=json',
 	       'putScript' : serverRoot + '/data/config/edit/projects/$project.getId()/image/dicom/script?inbody=true',
 	       'project' : '$project.getId()',
-	       'enable_radio' : 'enable_anon_script',
-	       'disable_radio' : 'disable_anon_script',
+	       'enable_checkbox' : 'enable_anon_script',
 	       'script_text_area' : 'script_text_area',
 	       'save_button' : 'anon_script_save'
 	    });
-  sg.get();	    
+  sg.get();
+
+  var enableAnonScript = jq('#enable_anon_script');
+  var anonScript = jq('#script_text_area');
+  function toggleControlsOnAnonEnabled() {
+    var enabled = enableAnonScript.is(':checked');
+    anonScript.prop('disabled', !enabled);
+  }
+
+  function dirty() {
+    // Add check for class manager, since setting the initial value of the radio button
+    // will cause the dirty() function to be called, at which point the manager is null.
+    if (window.anonymizationManager && !window.anonymizationManager.wasDirty()) {
+      window.anonymizationManager.dirtyForm();
+    }
+    toggleControlsOnAnonEnabled();
+  }
+
+  anonScript.bind('input propertychange', dirty);
+  enableAnonScript.change(dirty);
+
+  function configurationAnonymizationTabChange(obj) {
+    if(obj.newValue.get("href")=="#anonymization") {
+      if(window.anonymizationManager==undefined) {
+        window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
+      }
+      toggleControlsOnAnonEnabled();
+    }
+  }
+
+  function addAnonymizationMgmtMonitor(){
+    if(window.configurationTabView.get("activeTab").get("href")=="#anonymization") {
+      if(window.anonymizationManager==undefined) {
+        window.anonymizationManager = new SettingsTabManager('anonymization_mgmt_div', 'anonymization');
+      }
+    } else {
+      window.configurationTabView.subscribe("activeTabChange", configurationAnonymizationTabChange);
+    }
+  }
+
+  YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
+//  putConfigurationControls('anonymization', ['anonScript', 'enableAnonScript']);
 </script>
 <table id="series_import_filter_table">
     <tr>

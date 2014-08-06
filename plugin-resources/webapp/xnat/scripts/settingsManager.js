@@ -164,6 +164,11 @@ function scriptGet (_dom,_obj) {
   };
   this.addListeners=function() {
     var that = this;
+    document.getElementById(that.obj.enable_checkbox).onclick=function() {
+      that.current.status=this.checked;
+      that.determineDifference();
+    };
+/*
     document.getElementById(that.obj.enable_radio).onclick=function() {
       that.current.status=true;
       that.determineDifference();
@@ -172,6 +177,7 @@ function scriptGet (_dom,_obj) {
       that.current.status=false;
       that.determineDifference();
     };
+*/
     document.getElementById(that.obj.script_text_area).onkeyup=function() {
       that.current.script = document.getElementById(that.obj.script_text_area).value;
       that.determineDifference();
@@ -229,13 +235,21 @@ function scriptGet (_dom,_obj) {
     	  if( parsedResponse.ResultSet.Result[0].edit == undefined){ //sort of a hack to get this code to work with generic nrg_config return values
     		  status = parsedResponse.ResultSet.Result[0].status === "enabled" ? true : false;
     	  } else {
-	status = parsedResponse.ResultSet.Result[0].edit === "true" ? true : false;
+          status = parsedResponse.ResultSet.Result[0].edit === "true" ? true : false;
     	  }
       }
       this.initial.status=status;
       this.current.status=status;
+      document.getElementById(this.obj.enable_checkbox).checked=status;
+      if(status){
+        document.getElementById(this.obj.script_text_area).disabled=false;
+      } else {
+        document.getElementById(this.obj.script_text_area).disabled=true;
+      }
+      /*
       document.getElementById(this.obj.enable_radio).checked=status;
       document.getElementById(this.obj.disable_radio).checked=!status;
+      */
     };
     var scriptGet = function (o) {
       var parsedResponse = parseResponse(o);

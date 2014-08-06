@@ -100,7 +100,7 @@ $page.setVlinkColor($ui.vlink)
 	#groupPerm dd.col1 	{	width:120px;padding:0px;margin-left:10px }
 	#groupPerm dd.col2 	{	width:70px; }
 	#groupPerm dd.col3 	{	width:70px; }
-	#groupPerm dd.col4 	{	width:70px; }
+	#groupPerm dd.col4 	{	width:90px; }
 	#groupPerm dd.col5 	{	width:70px; }
 	#groupPerm dd.col6 	{	width:70px; }
 	#groupPerm dd.col7 	{	width:100px; }
@@ -108,7 +108,7 @@ $page.setVlinkColor($ui.vlink)
 		font-weight:700;
 	}
 	#groupPerm dl.header dd.col1 	{	margin-left:2px }
-	#groupPerm dl.header dd.col2 	{	margin-left:28px }
+	#groupPerm dl.header dd.col3 	{	margin-left:28px }
 
 		</style>
 <!-- BEGIN xdat:userGroup -->
@@ -117,10 +117,9 @@ $page.setVlinkColor($ui.vlink)
 	<dl class='header'>
 		<dl>
 			<dd class='col1'>&nbsp;</dd>
-			<dd class='col2'><INPUT type="checkbox" onclick="$('.create').prop('checked', this.checked);"/> Create</dd>
 			<dd class='col3'><INPUT type="checkbox" onclick="$('.read').prop('checked', this.checked);" /> Read</dd>
-			<dd class='col4'><INPUT type="checkbox" onclick="$('.edit').prop('checked', this.checked);" /> Edit</dd>
-			<dd class='col5'><INPUT type="checkbox" onclick="$('.delete').prop('checked', this.checked);" /> Delete</dd>
+			<dd class='col4'><INPUT type="checkbox" onclick="$('.edit').prop('checked', this.checked);if(this.checked){$('.read').prop('checked', this.checked);}" /> Create/Edit</dd>
+			<dd class='col5'><INPUT type="checkbox" onclick="$('.delete').prop('checked', this.checked);if(this.checked){$('.read').prop('checked', this.checked);}" /> Delete</dd>
 		</dl>
 	</dl>	
 	#set($pValue=$ug.getTag())
@@ -130,10 +129,8 @@ $page.setVlinkColor($ui.vlink)
     #set($pi=$ug.getRootPermissionObject("xnat:projectData","xnat:projectData/ID","$ug.getTag()"))
 	<dl class='item'>
 		<dd class='col1'>Project</dd>
-		<dd class='col2'><INPUT class='create' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_C" value="1" #if($pi.getCreate())CHECKED #end /></dd>
 		<dd class='col3'><INPUT class='' type="checkbox" value="1" CHECKED DISABLED /><INPUT class='' type="hidden" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_R" value="1"  /></dd>
 		<dd class='col4'><INPUT class='edit' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_E" value="1" #if($pi.getEdit())CHECKED #end /></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_D" value="1" #if($pi.getDelete())CHECKED #end /></dd>
 	</dl>
 	
 	##subject permissions
@@ -141,7 +138,6 @@ $page.setVlinkColor($ui.vlink)
     #set($pi=$ug.getRootPermissionObject("xnat:subjectData","xnat:subjectData/project","$ug.getTag()"))
 	<dl class='item'>
 		<dd class='col1'>Subjects</dd>
-		<dd class='col2'><INPUT class='create' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
 		<dd class='col3'><INPUT class='' type="checkbox" value="1"  CHECKED DISABLED /><INPUT class='' type="hidden" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_R" /></dd>
 		<dd class='col4'><INPUT class='edit' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
 		<dd class='col5'><INPUT class='delete' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
@@ -150,10 +146,9 @@ $page.setVlinkColor($ui.vlink)
 	## render image sessions first
 	<dl class='item header'>
 		<dd class='col1'>Imaging Sessions</dd>
-		<dd class='col2'><INPUT class='create' type="checkbox" onclick="$('.create.imageSession').prop('checked', this.checked);"/></dd>
 		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.imageSession').prop('checked', this.checked);"/></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageSession').prop('checked', this.checked);"/></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageSession').prop('checked', this.checked);"/></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageSession').prop('checked', this.checked);if(this.checked){$('.read.imageSession').prop('checked', this.checked);}"/></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageSession').prop('checked', this.checked);if(this.checked){$('.read.imageSession').prop('checked', this.checked);}"/></dd>
 	</dl>
 	#foreach ($elementManager in $allElements)
 		#set($elementName = $elementManager.get(0))
@@ -166,11 +161,11 @@ $page.setVlinkColor($ui.vlink)
 				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
 			#end
 			<dl class='item'>
+				#set($fieldId="${elementSQLName}_R")
     			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
-    			<dd class='col2'><INPUT class='create imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
-    			<dd class='col3'><INPUT class='read imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
-    			<dd class='col4'><INPUT class='edit imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
-    			<dd class='col5'><INPUT class='delete imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+    			<dd class='col3'><INPUT class='read imageSession' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
+    			<dd class='col4'><INPUT class='edit imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
+    			<dd class='col5'><INPUT class='delete imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
     		</dl>
 		#end
 	#end
@@ -178,10 +173,9 @@ $page.setVlinkColor($ui.vlink)
 	## render image assessors
 	<dl class='item header'>
 		<dd class='col1'>Image Assessments</dd>
-		<dd class='col2'><INPUT class='create' type="checkbox" onclick="$('.create.imageAssessor').prop('checked', this.checked);"/></dd>
 		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.imageAssessor').prop('checked', this.checked);"/></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageAssessor').prop('checked', this.checked);"/></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageAssessor').prop('checked', this.checked);"/></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageAssessor').prop('checked', this.checked);if(this.checked){$('.read.imageAssessor').prop('checked', this.checked);}"/></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageAssessor').prop('checked', this.checked);if(this.checked){$('.read.imageAssessor').prop('checked', this.checked);}"/></dd>
 	</dl>
 	#foreach ($elementManager in $allElements)
 		#set($elementName = $elementManager.get(0))
@@ -195,10 +189,10 @@ $page.setVlinkColor($ui.vlink)
 			#end
 			<dl class='item'>
     			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
-    			<dd class='col2'><INPUT class='create imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
-    			<dd class='col3'><INPUT class='read imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
-				<dd class='col4'><INPUT class='edit imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
-    			<dd class='col5'><INPUT class='delete imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+				#set($fieldId="${elementSQLName}_R")
+    			<dd class='col3'><INPUT class='read imageAssessor' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
+				<dd class='col4'><INPUT class='edit imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
+    			<dd class='col5'><INPUT class='delete imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
     		</dl>
 		#end
 	#end
@@ -206,10 +200,9 @@ $page.setVlinkColor($ui.vlink)
 	## render other subject Assessors
 	<dl class='item header'>
 		<dd class='col1'>Other Assessments</dd>
-		<dd class='col2'><INPUT class='create' type="checkbox" onclick="$('.create.other').prop('checked', this.checked);"/></dd>
 		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.other').prop('checked', this.checked);"/></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.other').prop('checked', this.checked);"/></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.other').prop('checked', this.checked);"/></dd>
+		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.other').prop('checked', this.checked);if(this.checked){$('.read.other').prop('checked', this.checked);}"/></dd>
+		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.other').prop('checked', this.checked);if(this.checked){$('.read.other').prop('checked', this.checked);}"/></dd>
 	</dl>
 	#foreach ($elementManager in $allElements)
 		#set($elementName = $elementManager.get(0))
@@ -222,11 +215,11 @@ $page.setVlinkColor($ui.vlink)
 				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
 			#end
 			<dl class='item'>
+				#set($fieldId="${elementSQLName}_R")
     			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
-    			<dd class='col2'><INPUT class='create other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_C" #if($pi.getCreate())CHECKED #end /></dd>
-    			<dd class='col3'><INPUT class='read other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
-				<dd class='col4'><INPUT class='edit other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
-    			<dd class='col5'><INPUT class='delete other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
+    			<dd class='col3'><INPUT class='read other' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
+				<dd class='col4'><INPUT class='edit other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
+    			<dd class='col5'><INPUT class='delete other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
     			
     		</dl>
 		#end

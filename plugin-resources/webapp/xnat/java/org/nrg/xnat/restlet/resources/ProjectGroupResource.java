@@ -31,6 +31,7 @@ import org.nrg.xdat.security.UserGroup;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xdat.turbine.modules.actions.ModifyGroupPrivileges;
 import org.nrg.xdat.turbine.utils.PopulateItem;
+import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.collections.ItemCollection;
@@ -211,29 +212,23 @@ public class ProjectGroupResource extends SecureResource {
 							} else {
 								pc.setRead(false);
 							}
-							if (props.get(s + "_C") != null)
-							{
-								pc.setCreate(true);
-							} else {
-								pc.setCreate(false);
-							}
 							if (props.get(s + "_E") != null)
 							{
+								pc.setRead(true);
 								pc.setEdit(true);
+								pc.setCreate(true);
+								pc.setActivate(true);
 							} else {
+								pc.setCreate(false);
 								pc.setEdit(false);
+								pc.setActivate(false);
 							}
 							if (props.get(s + "_D") != null)
 							{
+								pc.setRead(true);
 								pc.setDelete(true);
 							} else {
 								pc.setDelete(false);
-							}
-							if (props.get(s + "_E") != null)
-							{
-								pc.setActivate(true);
-							} else {
-								pc.setActivate(false);
 							}
 							
 							pc.setComparisonType("equals");
@@ -295,7 +290,7 @@ public class ProjectGroupResource extends SecureResource {
 
 				if(props.containsKey("src")){
 					this.getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-					this.getResponse().redirectSeeOther("/data/projects/"+group.getTag() + "?format=html");
+					this.getResponse().redirectSeeOther(XFT.GetSiteURL()+"/data/projects/"+group.getTag() + "?format=html");
 				}else{
 					returnDefaultRepresentation();
 				}

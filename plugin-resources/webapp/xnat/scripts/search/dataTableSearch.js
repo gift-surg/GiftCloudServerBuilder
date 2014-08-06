@@ -680,7 +680,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 				    submenuitems.push({text:'Spreadsheet',onclick:{fn:this.search.spreadsheetClick,scope:this.search}});
 
 				    var spec=window.available_elements.getByName(this.en);
-				    if(spec!=null) {
+				    if(spec!=null || this.en === "wrk:workflowData") {
 				      submenuitems.push({text:'Email',onclick:{fn:this.search.emailClick,scope:this.search}});
 
 				      submenuitems.push({text:'Save Search',onclick:{fn:this.search.saveClick,scope:this.search}});
@@ -704,7 +704,7 @@ function DataTableSearch(_div_table_id,obj,_config,_options){
 					submenuitems=Array.concat(submenuitems,this.search.options);
 				      }
 
-				      if(spec.actions!=undefined && spec.actions.length>0){
+				      if(spec!=null && spec.actions!=undefined && spec.actions.length>0){
 					for(var sC=0;sC<spec.actions.length;sC++){
 					  submenuitems.push({value:spec.actions[sC].action,text:spec.actions[sC].display,onclick:{fn:this.search.menuSend,scope:this.search}});
 					}

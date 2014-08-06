@@ -12,6 +12,11 @@
     #launchUploadAppletForm tr { height: 25px ; line-height: 25px ; vertical-align: middle ; }
     #cal_session_date { margin-left: 4px ; padding: 2px 4px ; }
 </style>
+## if requireDate's not set, we'll default to optional: you can specify it but don't have to.
+#if ("$!requireDate" == "")
+    #set ($requireDate = "optional")
+#end
+
 <form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")' method="post" target='_self' >
             <h3>Upload Image $displayManager.getPluralDisplayNameForImageSession()</h3>
                 <p style="width:500px;margin-top:10px;margin-bottom:20px;">
@@ -38,10 +43,10 @@
 
         </table>
  <div id="hideIfProtocol" >
- #if ($requireDate == "false")
-   <input type="hidden" id="no_session_date" name="no_session_date" value="true"/>
-   <input type="hidden" id="session_date" name="session_date"/>
- #else
+        #if ("$!requireDate" == "true" || "$!requireDate" == "optional")
+            #if ("$requireDate" == "true")
+                <input type="hidden" id="no_session_date" name="no_session_date" value="false"/>
+            #end
       <table border="0">       
         <tr>
             <th align="left"><label for="session_date" class="select_label">$displayManager.getSingularDisplayNameForImageSession() Date</label></th>
@@ -49,7 +54,7 @@
                 <input type="text" id="session_date" name="session_date"/>
                 <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "$displayManager.getSingularDisplayNameForImageSession() Date");</script>
 		</tr>
-#if ($requireTime == "true")
+                #if ("$!requireTime" == "true")
 		<tr>
 			<th align="left"><label for="session_time" class="select_label">$displayManager.getSingularDisplayNameForImageSession() Time</label></th>
 			<td>
@@ -76,13 +81,18 @@
             </td>
         </tr>
 #end
+                #if ("$requireDate" == "optional")
         <tr>
             <td>&nbsp;</td>
             <td>
                 <input type="checkbox" id="no_session_date" name="no_session_date" value="false"/> <label for="no_session_date">I don't know the date or my $displayManager.getSingularDisplayNameForImageSession().toLowerCase() doesn't have a date</label>
             </td>
         </tr>
+                #end
           </table>
+        #else
+            <input type="hidden" id="no_session_date" name="no_session_date" value="true"/>
+            <input type="hidden" id="session_date" name="session_date"/>
 #end        
         <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_visit_selector.js')"></SCRIPT>
         <script type="text/javascript">

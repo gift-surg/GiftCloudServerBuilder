@@ -10,7 +10,9 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
+import org.nrg.action.ClientException;
 import org.nrg.config.entities.Configuration;
 import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.config.services.ConfigService;
@@ -30,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -154,7 +157,7 @@ public class ConfigResource extends SecureResource {
                     if (contents && !meta) {
                         Configuration c = configurations.get(0);
                         if (c == null) {
-                            _log.warn("Config not found for user {} and project {} on tool [{}] path [{}]", new Object[]{user.getUsername(), projectName, toolName, path});
+                            _log.warn("Config not found for user {} and project {} on tool [{}] path [{}]", user.getUsername(), projectName, toolName, path);
                             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                             return null;
                         } else {
@@ -219,12 +222,12 @@ public class ConfigResource extends SecureResource {
                 return representTable(table, mt, new Hashtable<String, Object>());
             } else {
                 //if we fell through to here, nothing existed at the supplied URI
-                _log.warn("Couldn't find config for user {} and project {} on tool [{}] path [{}]", new Object[]{user.getUsername(), projectName, toolName, path});
+                _log.warn("Couldn't find config for user {} and project {} on tool [{}] path [{}]", user.getUsername(), projectName, toolName, path);
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 return null;
             }
         } catch (Exception e) {
-            _log.error("Couldn't find config for user {} and project {} on tool [{}] path [{}]", new Object[]{user.getUsername(), projectName, toolName, path});
+            _log.error("Couldn't find config for user {} and project {} on tool [{}] path [{}]", user.getUsername(), projectName, toolName, path);
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
             return null;
         }
@@ -257,18 +260,17 @@ public class ConfigResource extends SecureResource {
 
             fixAnonPath();
 
-
             boolean handledStatus = false;
             //if this is a status update, do it and return
             if (hasQueryVariable("status")) {
-                //   /REST/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}    or      /REST/projects/{PROJECT_ID}/config/{TOOL_NAME}/{PATH_TO_FILE}?status={enabled, disabled}
                 final String status = getQueryVariable("status");
-                final Matcher matcher = REGEX_STATUS_VALUES.matcher(status);
-                if (!matcher.matches()) {
-                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only valid values for the status flag are enabled and disabled: " + status);
+                final Matcher matcher = REGEX_ENABLED_VALUES.matcher(status);
+                // Add support for true or false to make compatible with generic controls in settingsManager.js.
+                if (!matcher.matches() && !status.equals("true") && !status.equals("false")) {
+                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only valid values for the status flag are enabled or true and disabled or false: " + status);
                     return;
                 }
-                if ("enabled".equals(status)) {
+                if ("enabled".equals(status) || "true".equals(status)) {
                     configService.enable(user.getUsername(), reason, toolName, path, projectId);
                     handledStatus = true;
                 } else {
@@ -279,36 +281,13 @@ public class ConfigResource extends SecureResource {
             }
 
             Representation entity = getRequest().getEntity();
-            if (handledStatus && entity.getAvailableSize() == 0) {
+            boolean hasBodyContent = entity.getAvailableSize() > 0;
+            if (handledStatus && hasBodyContent) {
                 getResponse().setStatus(Status.SUCCESS_OK);
                 return;
             }
 
-            List<FileWriterWrapperI> fws = getFileWriters();
-            if (fws.size() == 0) {
-                _log.error("Unknown upload format", new Object[]{user.getUsername(), projectName});
-                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
-                return;
-            }
-
-            if (fws.size() > 1) {
-                _log.error("Importer is limited to one uploaded resource at a time.", new Object[]{user.getUsername(), projectName});
-                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Importer is limited to one uploaded resource at a time.");
-                return;
-            }
-
-            FileWriterWrapperI fw = fws.get(0);
-
-            //read the input stream into a string buffer.
-            final InputStream is = fw.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            is.close();
-            final String contents = sb.toString();
+            final String contents = hasBodyContent ? getBodyContents() : "";
 
             final String isUnversionedParam = getQueryVariable("unversioned");
 
@@ -328,12 +307,40 @@ public class ConfigResource extends SecureResource {
                 getResponse().setStatus(Status.SUCCESS_CREATED);
             }
         } catch (ConfigServiceException e) {
-            _log.error("Error replacing config for user {} and project {} on tool [{}] path [{}]", new Object[]{user.getUsername(), projectName, toolName, path});
+            _log.error("Configuration service error replacing config for user {} and project {} on tool [{}] path [{}]", user.getUsername(), projectName, toolName, path);
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
         } catch (Exception e) {
-            _log.error("Error replacing config for user {} and project {} on tool [{}] path [{}]", new Object[]{user.getUsername(), projectName, toolName, path});
+            _log.error("Unknown error replacing config for user {} and project {} on tool [{}] path [{}]", user.getUsername(), projectName, toolName, path);
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
         }
+    }
+
+    private String getBodyContents() throws FileUploadException, ClientException, IOException {
+        List<FileWriterWrapperI> fws = getFileWriters();
+        if (fws.size() == 0) {
+            _log.error("Unknown upload format", new Object[]{user.getUsername(), projectName});
+            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to identify upload format.");
+            return null;
+        }
+
+        if (fws.size() > 1) {
+            _log.error("Importer is limited to one uploaded resource at a time.", new Object[]{user.getUsername(), projectName});
+            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Importer is limited to one uploaded resource at a time.");
+            return null;
+        }
+
+        FileWriterWrapperI fw = fws.get(0);
+
+        //read the input stream into a string buffer.
+        final InputStream is = fw.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        is.close();
+        return sb.toString();
     }
 
     private void fixAnonPath() {
@@ -365,5 +372,5 @@ public class ConfigResource extends SecureResource {
         return path;
     }
 
-    private static final Pattern REGEX_STATUS_VALUES = Pattern.compile("(en|dis)abled");
+    private static final Pattern REGEX_ENABLED_VALUES = Pattern.compile("(en|dis)abled");
 }

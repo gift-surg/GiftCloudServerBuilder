@@ -7,8 +7,10 @@
 					<TR align="left"><TH ALIGN="left">Cohort: </TH><TD>$!mr.getSubjectData().getCohort()</TD></TR>
 					<TR><TH align="left">$displayManager.getSingularDisplayNameForImageSession() Id: </TH>
 					#set($mr_id=$item.getProperty("${search_element}.imageSession_ID"))
+               #set($xsi_type=$mr.getXSIType())
+               #set($xsi_type_idstr="${xsi_type}.ID")
 				#if ($mr)
-					  #set ( $click = "$link.setAction('DisplayItemAction').addPathInfo('search_element','xnat:mrSessionData').addPathInfo('search_field','xnat:mrSessionData.ID').addPathInfo('search_value',$mr_id).addPathInfo('popup',$!popup).addPathInfo('project',$project)" )
+					  #set ( $click = "$link.setAction('DisplayItemAction').addPathInfo('search_element',$xsi_type).addPathInfo('search_field',$xsi_type_idstr).addPathInfo('search_value',$mr_id).addPathInfo('popup',$!popup).addPathInfo('project',$project)" )
 				  <TD><A CLASS=b href="$click">$!mr.getIdentifier($project,false)</A></TD>
 					#else
 						<TD>$!item.getProperty("${search_element}.imageSession_ID")</TD>

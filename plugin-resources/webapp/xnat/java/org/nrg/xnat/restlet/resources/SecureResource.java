@@ -122,6 +122,9 @@ public abstract class SecureResource extends Resource {
     public static final String USER_ATTRIBUTE = "user";
 
     public static Logger logger = Logger.getLogger(SecureResource.class);
+
+    public static List<Variant> STANDARD_VARIANTS = Arrays.asList(new Variant(MediaType.APPLICATION_JSON), new Variant(MediaType.TEXT_HTML), new Variant(MediaType.TEXT_XML));
+
     public Hashtable<String, String> fieldMapping = new Hashtable<String, String>();
 
     // TODO: these should be proper extension types: application/x-xList, application/x-xcat+xml, application/x-xar

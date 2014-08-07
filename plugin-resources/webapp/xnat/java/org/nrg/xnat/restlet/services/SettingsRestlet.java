@@ -87,7 +87,9 @@ public class SettingsRestlet extends SecureResource {
                 throw new RuntimeException("You haven't yet initialized the system, so I can't return any values!");
             }
         }
-        if (request.isEntityAvailable()) {
+        if (!user.isSiteAdmin()) {
+            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only site admins can retrieve the system settings.");
+        } else if (request.isEntityAvailable()) {
             convertFormDataToMap(request.getEntity().getText());
         }
     }

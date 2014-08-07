@@ -30,21 +30,19 @@ public class UserListResource extends SecureResource {
 	public UserListResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		
-				this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-				this.getVariants().add(new Variant(MediaType.TEXT_XML));
+        getVariants().addAll(STANDARD_VARIANTS);
 
-        if (restrictUserListAccessToAdmins() && !(user.isSiteAdmin() || isWhitelisted())) {
+        if (user.isGuest() || restrictUserListAccessToAdmins() && !(user.isSiteAdmin() || isWhitelisted())) {
                 logger.error("Unauthorized Access to site-level user resources. User: " + userName);
                 this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Access Denied: Only site managers can access site-level user resources.");
             }
+        String query = "SELECT xdat_user_id,login,firstname,lastname,email FROM xdat_user WHERE enabled=1 ORDER BY lastname;";
 			try {
-				String query = "SELECT xdat_user_id,login,firstname,lastname,email FROM xdat_user WHERE enabled=1 ORDER BY lastname;";
 				table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
 			} catch (SQLException e) {
-			logger.error("", e);
+            logger.error("Error running SQL " + query, e);
 			} catch (DBPoolException e) {
-			logger.error("", e);
+            logger.error("Connection pooling error occurred", e);
 		}
 	}
 
@@ -60,13 +58,13 @@ public class UserListResource extends SecureResource {
 
 		MediaType mt = overrideVariant(variant);
 
+        String query = "SELECT xdat_user_id,login,firstname,lastname,email FROM xdat_user WHERE enabled=1 ORDER BY lastname;";
             try {
-                String query = "SELECT xdat_user_id,login,firstname,lastname,email FROM xdat_user WHERE enabled=1 ORDER BY lastname;";
                 table = XFTTable.Execute(query, user.getDBName(), user.getLogin());
             } catch (SQLException e) {
-                logger.error("", e);
+            logger.error("Error running SQL " + query, e);
             } catch (DBPoolException e) {
-                logger.error("", e);
+            logger.error("Connection pooling error occurred", e);
             }
 
 		if(table!=null)params.put("totalRecords", table.size());
@@ -78,6 +76,7 @@ public class UserListResource extends SecureResource {
      * restricted to site administrators. This method defaults to true, which provides the highest level of security.
      * Note that this does <i>not</i> mean that the site settings default to <b>true</b>, just that if the site setting
      * can not be accessed, this method will default to the most restrictive level of access.
+     *
      * @return <b>true</b> if only site administrators can access the list of users, <b>false</b> otherwise.
      */
     private boolean restrictUserListAccessToAdmins() {

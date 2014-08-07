@@ -51,12 +51,12 @@ public class WorkflowResource extends ItemResource {
 	@Override
 	public void handlePut() {
 		
-		XFTItem item             = null;
-		WrkWorkflowdata workflow = null;
+		XFTItem item;
+		WrkWorkflowdata workflow;
 		
 		try{
 			// Create the new workflow item based on information from the user.
-			item=this.loadItem("wrk:workflowData",true);
+			item=loadItem("wrk:workflowData", true);
 			String pipeline_name = item.getStringProperty("pipeline_name");
 			Date launch_time   = item.getDateProperty("launch_time");
 			String id            = item.getStringProperty("id");
@@ -69,7 +69,7 @@ public class WorkflowResource extends ItemResource {
 					item.setProperty("wrk_workflowData_id", workflowId);
 				}else{
 					// If we couldn't find the workflow, 404
-					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find the specified workflow.");
+					getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find the specified workflow.");
 					return;
 				}
 			} else {
@@ -80,13 +80,13 @@ public class WorkflowResource extends ItemResource {
 			// If the workflow exists, Make sure the user has permission to edit an existing workflow. 
 			if(workflow != null && !canUserEditWorkflow(user, workflow)){
 				// If the user is not allow to modify this workflow, 403
-				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You are not allowed to make changes to this workflow.");
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You are not allowed to make changes to this workflow.");
 				return;
 			}
 			
 			// Id, launch_time, data_type, and pipeline_name are all required in order to save a new workflow
 			if(workflow == null && (StringUtils.isEmpty(id) || StringUtils.isEmpty(item.getStringProperty("launch_time")) || StringUtils.isEmpty(pipeline_name) || StringUtils.isEmpty(item.getStringProperty("data_type")))){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Id, launch_time, data_type and pipeline_name are all required.");
+				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Id, launch_time, data_type and pipeline_name are all required.");
 				return;
 			}
 			
@@ -95,12 +95,10 @@ public class WorkflowResource extends ItemResource {
 			SaveItemHelper.authorizedSave(item, user, false, false, c);
 
 		} catch (ActionException e) {
-			this.getResponse().setStatus(e.getStatus(),e.getMessage());
-			return;
+			getResponse().setStatus(e.getStatus(),e.getMessage());
 		}catch(Exception e){ 
 			log.error("Unable to save Workflow.", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.toString());
-			return;
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.toString());
 		}
 	}
 	
@@ -109,7 +107,7 @@ public class WorkflowResource extends ItemResource {
 	}
 	
 	@Override 
-	public Representation getRepresentation(Variant variant) { 
+	public Representation represent(Variant variant) {
 		WrkWorkflowdata workflow = null;
 		if(workflowId != null && !workflowId.isEmpty()){
 			// Lookup the workflow by the ID provided by the user.

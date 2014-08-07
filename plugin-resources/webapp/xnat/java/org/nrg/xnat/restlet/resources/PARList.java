@@ -15,6 +15,7 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
@@ -27,13 +28,14 @@ import java.util.Hashtable;
 public class PARList extends SecureResource {
 	public PARList(Context context, Request request, Response response) {
 		super(context, request, response);
-		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-		this.getVariants().add(new Variant(MediaType.TEXT_XML));
+		getVariants().addAll(STANDARD_VARIANTS);
+        if (!user.isSiteAdmin()) {
+            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only administrators can access the list of project access requests.");
+        }
 	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {
+	public Representation represent(Variant variant) {
 		XFTTable table = new XFTTable();
 		Hashtable<String, Object> params = new Hashtable<String, Object>();
 		try {
@@ -52,6 +54,6 @@ public class PARList extends SecureResource {
 
 		if (table != null)
 			params.put("totalRecords", table.size());
-		return this.representTable(table, mt, params);
+		return representTable(table, mt, params);
 	}
 }

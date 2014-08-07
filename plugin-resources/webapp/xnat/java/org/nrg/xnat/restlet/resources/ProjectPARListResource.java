@@ -30,8 +30,8 @@ import java.util.Hashtable;
 public class ProjectPARListResource extends SecureResource {
 	XnatProjectdata proj=null;
 
-	public ProjectPARListResource(Context context, Request request,
-			Response response) {
+	public ProjectPARListResource(Context context, Request request, Response response) throws Exception {
+
 		super(context, request, response);
 		String pID = (String) getParameter(request,"PROJECT_ID");
 		if (pID != null) {
@@ -39,12 +39,13 @@ public class ProjectPARListResource extends SecureResource {
 		}
 
 		if (proj != null) {
-			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
+			getVariants().addAll(STANDARD_VARIANTS);
+
+            if (!proj.canEdit(user)) {
+                getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "The user " + user.getLogin() + " is not allowed to access this information for the project: " + pID);
+            }
 		} else {
-			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-					"Unknown project: " + pID);
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unknown project: " + pID);
 		}
 	}
 
@@ -74,6 +75,6 @@ public class ProjectPARListResource extends SecureResource {
 
 		MediaType mt = overrideVariant(variant);
 
-		return this.representTable(table, mt, params);
+		return representTable(table, mt, params);
 	}
 }

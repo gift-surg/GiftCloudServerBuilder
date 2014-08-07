@@ -33,8 +33,7 @@ public final class PrearcSessionListResource extends SecureResource {
 	private static final String PROJECT_ATTR = "PROJECT_ID";
 	private final Logger logger = LoggerFactory.getLogger(PrearcSessionListResource.class);
 
-	private String requestedProject=null;
-
+	private final String requestedProject;
 	private final Reference prearcRef;
 
 	/**
@@ -42,8 +41,7 @@ public final class PrearcSessionListResource extends SecureResource {
 	 * @param request
 	 * @param response
 	 */
-	public PrearcSessionListResource(final Context context, final Request request,
-			final Response response) {
+	public PrearcSessionListResource(final Context context, final Request request, final Response response) {
 		super(context, request, response);
 
 		// Project is explicit in the request
@@ -55,6 +53,9 @@ public final class PrearcSessionListResource extends SecureResource {
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
 		
+        if (request.getMethod() == Method.PUT && !user.isSiteAdmin()) {
+            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only administrators can request a rebuild of the prearchive.");
+        }
 	}
 	
 	/**
@@ -84,7 +85,7 @@ public final class PrearcSessionListResource extends SecureResource {
 	public Representation represent(final Variant variant) throws ResourceException {
 		final MediaType mt = overrideVariant(variant);
 
-		XFTTable table = null; 
+		XFTTable table;
 		
 		if(this.getQueryVariable("tag")!=null){
 			final String tag=getQueryVariable("tag");

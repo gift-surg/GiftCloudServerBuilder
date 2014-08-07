@@ -116,7 +116,12 @@ public class ScanResource extends ItemResource {
             }
 
             if (!item.instanceOf("xnat:imageScanData")) {
-                getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Only Scan documents can be PUT to this address. Expected: xnat:imageScanData Received: " + item.getXSIType());
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only Scan documents can be PUT to this address. Expected: xnat:imageScanData Received: " + item.getXSIType());
+                return;
+            }
+            
+            if(item.getXSIType().equals("xnat:imageScanData")){
+            	getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Multiple scan modalities can be associated here.  Please retry with the specification of a particular modality (i.e. ?xsiType=xnat:mrScanData).");
                 return;
             }
 

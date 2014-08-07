@@ -52,6 +52,19 @@ $page.setVlinkColor($ui.vlink)
 											$!item.getStringProperty("xdat:userGroup/displayName") <input id="xdat:userGroup/displayName" type="hidden" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
 										#else
 											<input id="xdat:userGroup/displayName" class="required max256" data-regex="^[A-Za-z0-9 _]+$" type="text" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
+											<script>
+												XNAT.app.usedNames=[];
+												
+												#foreach($name in $usedNames)
+													XNAT.app.usedNames.push("$!name");
+												#end
+
+												YAHOO.util.Event.onDOMReady(function(){
+                                                    _addValidation("xdat:userGroup/displayName",{box:document.getElementById("xdat:userGroup/displayName"),validate:function(_box){
+    													return (! XNAT.app.usedNames.contains(this.box.value));
+    												}},"This Display Name is already in use.");
+                                                });
+											</script>
 										#end
 									</TD>
 								</TR>

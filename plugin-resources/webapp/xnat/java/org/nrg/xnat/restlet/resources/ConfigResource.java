@@ -282,11 +282,19 @@ public class ConfigResource extends SecureResource {
 
             Representation entity = getRequest().getEntity();
             boolean hasBodyContent = entity.getAvailableSize() > 0;
-            if (handledStatus && hasBodyContent) {
+
+            // If we handled the status and there was no content posted, i.e.
+            // no change to the configuration's contents, then we're done, OK.
+            if (handledStatus && !hasBodyContent) {
                 getResponse().setStatus(Status.SUCCESS_OK);
                 return;
             }
 
+            // This lets you post empty content to a configuration. Note that this
+            // can only be done to a configuration where you are not changing the
+            // status, since a status change operation with no body presumes that
+            // all you wanted to do was change the status and returns OK (see lines
+            // immediately above here).
             final String contents = hasBodyContent ? getBodyContents() : "";
 
             final String isUnversionedParam = getQueryVariable("unversioned");

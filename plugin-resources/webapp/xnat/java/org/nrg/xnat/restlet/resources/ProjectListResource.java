@@ -10,13 +10,20 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+
 import org.nrg.action.ActionException;
+import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.om.XdatStoredSearch;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.search.DisplayCriteria;
 import org.nrg.xdat.search.DisplaySearch;
 import org.nrg.xdat.security.SecurityManager;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.XFTTable;
@@ -39,10 +46,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
+import com.google.common.collect.Lists;
 
 public class ProjectListResource extends QueryOrganizerResource {
 	private static final String ACCESSIBLE = "accessible";
@@ -147,26 +151,68 @@ public class ProjectListResource extends QueryOrganizerResource {
 		return true;
 	}
 
+	public final static List<FilteredResourceHandlerI> _defaultHandlers=Lists.newArrayList();
+	static{
+		_defaultHandlers.add(new DefaultProjectHandler());
+		_defaultHandlers.add(new FilteredProjects());
+	}
+
 	@Override
 	public Representation getRepresentation(Variant variant) {
 		DisplaySearch ds;
 		Representation rep1 = super.getRepresentation(variant);
 		if (rep1 != null)
 			return rep1;
+		
+		FilteredResourceHandlerI handler=null;
+        try {
+			for(FilteredResourceHandlerI filter:getHandlers("org.nrg.xnat.restlet.projectsList.extensions",_defaultHandlers)){
+				if(filter.canHandle(this)){
+					handler=filter;
+				}
+			}
+		} catch (InstantiationException e1) {
+			logger.error("",e1);
+		} catch (IllegalAccessException e1) {
+			logger.error("",e1);
+		}
+		
+		try {
+			if(handler!=null){
+				return handler.handle(this,variant);
+			}else{
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("",e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			return null;
+		}
+	}
+    
+    public static class FilteredProjects implements FilteredResourceHandlerI{
 
-		if (containsQueryVariable(ACCESSIBLE)
-				|| containsQueryVariable("prearc_code")
-				|| containsQueryVariable("owner")
-				|| containsQueryVariable("member")
-				|| containsQueryVariable("collaborator")
-				|| containsQueryVariable("activeSince")
-				|| containsQueryVariable("recent")
-				|| containsQueryVariable("favorite")
-				|| containsQueryVariable("admin")
-				|| (this.requested_format != null && requested_format.equals("search_xml"))) {
+		@Override
+		public boolean canHandle(SecureResource resource) {
+			return (resource.containsQueryVariable(ACCESSIBLE)
+					|| resource.containsQueryVariable("prearc_code")
+					|| resource.containsQueryVariable("owner")
+					|| resource.containsQueryVariable("member")
+					|| resource.containsQueryVariable("collaborator")
+					|| resource.containsQueryVariable("activeSince")
+					|| resource.containsQueryVariable("recent")
+					|| resource.containsQueryVariable("favorite")
+					|| resource.containsQueryVariable("admin")
+					|| (resource.requested_format != null && resource.requested_format.equals("search_xml")));
+		}
 
+		@Override
+		public Representation handle(SecureResource resource, Variant variant) throws Exception {
+
+			DisplaySearch ds = new DisplaySearch();
+			XDATUser user=resource.user;
+			XFTTable table=null;
 			try {
-				ds = new DisplaySearch();
 				ds.setUser(user);
 				ds.setRootElement("xnat:projectData");
 				ds.addDisplayField("xnat:projectData", "ID");
@@ -182,7 +228,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 				ds.addDisplayField("xnat:projectData", "USER_ROLE", "Role", user.getXdatUserId());
 				ds.addDisplayField("xnat:projectData", "LAST_ACCESSED", "Last Accessed", user.getXdatUserId());
 
-				if (this.isQueryVariableTrue("prearc_code")) {
+				if (resource.isQueryVariableTrue("prearc_code")) {
 					ds.addDisplayField("xnat:projectData", "PROJ_QUARANTINE");
 					ds.addDisplayField("xnat:projectData", "PROJ_PREARCHIVE_CODE");
 				}
@@ -190,7 +236,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 				CriteriaCollection allCC = new CriteriaCollection("AND");
 				CriteriaCollection orCC = new CriteriaCollection("OR");
 
-				String access = this.getQueryVariable(ACCESSIBLE);
+				String access = resource.getQueryVariable(ACCESSIBLE);
 				if (access != null) {
 					if (access.equalsIgnoreCase("true")) {
 						if (user.getGroup("ALL_DATA_ACCESS") == null && user.getGroup("ALL_DATA_ADMIN") == null) {
@@ -227,7 +273,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 					}
 				}
 
-				String owner = this.getQueryVariable("owner");
+				String owner = resource.getQueryVariable("owner");
 				if (owner != null) {
 					if (owner.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
@@ -249,8 +295,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 						orCC.addCriteria(cc);
 					}
 				}
-				if (getQueryVariable("admin") != null) {
-					if (isQueryVariableTrue("admin")) {
+				if (resource.getQueryVariable("admin") != null) {
+					if (resource.isQueryVariableTrue("admin")) {
 						if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
 							CriteriaCollection cc = new CriteriaCollection("OR");
 							DisplayCriteria dc = new DisplayCriteria();
@@ -264,7 +310,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 					}
 				}
 
-				String member = this.getQueryVariable("member");
+				String member = resource.getQueryVariable("member");
 				if (member != null) {
 					if (member.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
@@ -287,7 +333,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 					}
 				}
 
-				String collaborator = this.getQueryVariable("collaborator");
+				String collaborator = resource.getQueryVariable("collaborator");
 				if (collaborator != null) {
 					if (collaborator.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
@@ -310,7 +356,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 					}
 				}
 
-				String activeSince = this.getQueryVariable("activeSince");
+				String activeSince = resource.getQueryVariable("activeSince");
 				if (activeSince != null) {
 					try {
 						Date d = DateUtils.parseDateTime(activeSince);
@@ -321,11 +367,11 @@ public class ProjectListResource extends QueryOrganizerResource {
 						dc.setValue(d, false);
 						orCC.add(dc);
 					} catch (RuntimeException e) {
-						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+						resource.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
 
-				String recent = this.getQueryVariable("recent");
+				String recent = resource.getQueryVariable("recent");
 				if (recent != null) {
 					try {
 						DisplayCriteria dc = new DisplayCriteria();
@@ -334,11 +380,11 @@ public class ProjectListResource extends QueryOrganizerResource {
 						dc.setValue("% " + user.getLogin() + " %", false);
 						orCC.addCriteria(dc);
 					} catch (RuntimeException e) {
-						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+						resource.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
 
-				String favorite = this.getQueryVariable("favorite");
+				String favorite = resource.getQueryVariable("favorite");
 				if (favorite != null) {
 					try {
 						DisplayCriteria dc = new DisplayCriteria();
@@ -347,7 +393,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 						dc.setValue("% " + user.getLogin() + " %", false);
 						orCC.addCriteria(dc);
 					} catch (RuntimeException e) {
-						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+						resource.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
 
@@ -359,16 +405,16 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				ds.setSortBy("SECONDARY_ID");
 
-				if (this.requested_format == null || !requested_format.equals("search_xml")) {
+				if (resource.requested_format == null || !resource.requested_format.equals("search_xml")) {
 					table = (XFTTable) ds.execute(user.getLogin());
 				}
 			} catch (IllegalAccessException e) {
 				logger.error("", e);
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+				resource.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;
 			} catch (Exception e) {
 				logger.error("", e);
-				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				resource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}
 
@@ -376,9 +422,9 @@ public class ProjectListResource extends QueryOrganizerResource {
 			params.put("title", "Projects");
 			params.put("xdat_user_id", user.getXdatUserId());
 
-			MediaType mt = overrideVariant(variant);
+			MediaType mt = resource.overrideVariant(variant);
 
-			if (this.requested_format != null && this.requested_format.equals("search_xml")) {
+			if (resource.requested_format != null && resource.requested_format.equals("search_xml")) {
 
 				XdatStoredSearch xss = ds.convertToStoredSearch("");
 
@@ -387,26 +433,39 @@ public class ProjectListResource extends QueryOrganizerResource {
 					rep.setAllowDBAccess(false);
 					return rep;
 				} else {
-					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+					resource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 					return new StringRepresentation("", MediaType.TEXT_XML);
 				}
 			} else {
 				if (table != null)
 					params.put("totalRecords", table.size());
-				return this.representTable(table, mt, params);
+				return resource.representTable(table, mt, params);
 			}
-		} else {
+		}
+    	
+    }
+    
+    public static class DefaultProjectHandler implements FilteredResourceHandlerI{
+
+		@Override
+		public boolean canHandle(SecureResource resource) {
+			return true;
+		}
+
+		@Override
+		public Representation handle(SecureResource resource, Variant variant) throws Exception {
+			ProjectListResource projResource=(ProjectListResource)resource;
 			XFTTable table;
+			XDATUser user=resource.user;
 			try {
-				final String re = this.getRootElementName();
+				final String re = projResource.getRootElementName();
 
-				final QueryOrganizer qo = new QueryOrganizer(re, user,
-						ViewManager.ALL);
+				final QueryOrganizer qo = new QueryOrganizer(re, user, ViewManager.ALL);
 
-				this.populateQuery(qo);
+				projResource.populateQuery(qo);
 
-				if (this.containsQueryVariable("restrict") && user.getGroup("ALL_DATA_ADMIN") == null) {
-					final String restriction = this.getQueryVariable("restrict");
+				if (resource.containsQueryVariable("restrict") && user.getGroup("ALL_DATA_ADMIN") == null) {
+					final String restriction = resource.getQueryVariable("restrict");
 					if (restriction.equals(SecurityManager.EDIT) || restriction.equals(SecurityManager.DELETE)) {
 						final List<Object> ps = user.getAllowedValues("xnat:projectData", "xnat:projectData/ID", restriction);
 						final CriteriaCollection cc = new CriteriaCollection("OR");
@@ -419,25 +478,25 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				final String query = qo.buildQuery();
 
-				table = XFTTable.Execute(query, user.getDBName(), userName);
+				table = XFTTable.Execute(query, user.getDBName(), resource.userName);
 
-				table = formatHeaders(table, qo, re + "/ID", "/data/projects/");
+				table = projResource.formatHeaders(table, qo, re + "/ID", "/data/projects/");
 			} catch (IllegalAccessException e) {
 				logger.error("", e);
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+				resource.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;
 			} catch (Exception e) {
 				logger.error("", e);
-				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				resource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}
 
-			final MediaType mt = overrideVariant(variant);
+			final MediaType mt = resource.overrideVariant(variant);
 			final Hashtable<String, Object> params = new Hashtable<String, Object>();
 			if (table != null)
 				params.put("totalRecords", table.size());
-			return this.representTable(table, mt, params);
+			return resource.representTable(table, mt, params);
 		}
-	}
-
+    	
+    }
 }

@@ -10,21 +10,31 @@
  */
 package org.nrg.xnat.restlet.resources;
 
+import java.util.Hashtable;
+import java.util.List;
+
 import org.nrg.action.ActionException;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
+import org.nrg.xdat.security.SecurityManager;
+import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
+import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.InvalidPermissionException;
+import org.nrg.xft.search.CriteriaCollection;
+import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
+import org.nrg.xnat.restlet.resources.SecureResource.FilteredResourceHandlerI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
@@ -38,10 +48,12 @@ import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 public class ProjectResource extends ItemResource {
     private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
 
-    XnatProjectdata proj = null;
+    public XnatProjectdata proj = null;
     String pID = null;
 
     public ProjectResource(Context context, Request request, Response response) {
@@ -262,44 +274,88 @@ public class ProjectResource extends ItemResource {
 
     @Override
     public Representation represent(Variant variant) {
-        MediaType mt = overrideVariant(variant);
 
         if (proj != null) {
-            if (filepath != null && !filepath.equals("")) {
-                if (filepath.equals("quarantine_code")) {
-                    try {
-                        return new StringRepresentation(proj.getArcSpecification().getQuarantineCode().toString(), mt);
-                    } catch (Throwable e) {
-                        logger.error("", e);
-                        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-                        return null;
-                    }
-                } else if (filepath.startsWith("prearchive_code")) {
-                    try {
-                        return new StringRepresentation(proj.getArcSpecification().getPrearchiveCode().toString(), mt);
-                    } catch (Throwable e) {
-                        logger.error("", e);
-                        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-                        return null;
-                    }
-                } else if (filepath.startsWith("current_arc")) {
-                    try {
-                        return new StringRepresentation(proj.getArcSpecification().getCurrentArc(), mt);
-                    } catch (Throwable e) {
-                        logger.error("", e);
-                        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-                        return null;
-                    }
-                } else {
-                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-                    return null;
-                }
-            } else {
-                return representItem(proj.getItem(), mt);
-            }
+        	FilteredResourceHandlerI handler=null;
+            try {
+    			for(FilteredResourceHandlerI filter:getHandlers("org.nrg.xnat.restlet.projectResource.extensions",_defaultHandlers)){
+    				if(filter.canHandle(this)){
+    					handler=filter;
+    				}
+    			}
+    		} catch (InstantiationException e1) {
+    			logger.error("",e1);
+    		} catch (IllegalAccessException e1) {
+    			logger.error("",e1);
+    		}
+    		
+    		try {
+    			if(handler!=null){
+    				return handler.handle(this,variant);
+    			}else{
+    				return null;
+    			}
+    		} catch (Exception e) {
+    			logger.error("",e);
+    			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+    			return null;
+    		}
         } else {
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find the specified experiment.");
             return null;
         }
+    }
+    
+
+	public final static List<FilteredResourceHandlerI> _defaultHandlers=Lists.newArrayList();
+	static{
+		_defaultHandlers.add(new DefaultProjectHandler());
+	}
+    
+    public static class DefaultProjectHandler implements FilteredResourceHandlerI{
+
+		@Override
+		public boolean canHandle(SecureResource resource) {
+			return true;
+		}
+
+		@Override
+		public Representation handle(SecureResource resource, Variant variant) throws Exception {
+	        MediaType mt = resource.overrideVariant(variant);
+	        ProjectResource projResource=(ProjectResource)resource;
+            if (resource.filepath != null && !resource.filepath.equals("")) {
+                if (resource.filepath.equals("quarantine_code")) {
+                    try {
+                        return new StringRepresentation(projResource.proj.getArcSpecification().getQuarantineCode().toString(), mt);
+                    } catch (Throwable e) {
+                        logger.error("", e);
+                        projResource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+                        return null;
+                    }
+                } else if (resource.filepath.startsWith("prearchive_code")) {
+                    try {
+                        return new StringRepresentation(projResource.proj.getArcSpecification().getPrearchiveCode().toString(), mt);
+                    } catch (Throwable e) {
+                        logger.error("", e);
+                        projResource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+                        return null;
+                    }
+                } else if (resource.filepath.startsWith("current_arc")) {
+                    try {
+                        return new StringRepresentation(projResource.proj.getArcSpecification().getCurrentArc(), mt);
+                    } catch (Throwable e) {
+                        logger.error("", e);
+                        resource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+                        return null;
+                    }
+                } else {
+                	resource.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                    return null;
+                }
+            } else {
+                return projResource.representItem(projResource.proj.getItem(), mt);
+            }
+		}
+    	
     }
 }

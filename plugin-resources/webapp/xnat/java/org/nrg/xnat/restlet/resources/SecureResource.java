@@ -108,6 +108,7 @@ import org.restlet.util.Series;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.noelios.restlet.http.HttpConstants;
 
@@ -833,7 +834,7 @@ public abstract class SecureResource extends Resource {
         responseHeaders.add(key, value);
     }
 
-    protected boolean isQueryVariableTrue(String key) {
+    public boolean isQueryVariableTrue(String key) {
         return isQueryVariableTrueHelper(getQueryVariable(key));
     }
 
@@ -850,7 +851,7 @@ public abstract class SecureResource extends Resource {
         }
     }
 
-    protected boolean isQueryVariableFalse(String key) {
+    public boolean isQueryVariableFalse(String key) {
         return isQueryVariableFalseHelper(getQueryVariable(key));
     }
 
@@ -1397,4 +1398,41 @@ public abstract class SecureResource extends Resource {
 
     protected final static TypeReference<ArrayList<String>> TYPE_REFERENCE_LIST_STRING = new TypeReference<ArrayList<String>>() {};
     protected final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    
+
+
+	private static Map<String,List<FilteredResourceHandlerI>> handlers=Maps.newConcurrentMap();
+    
+    /**
+     * Get a list of the possible handlers.  This allows additional handlers to be injected at a later date or via a module.
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public static List<FilteredResourceHandlerI> getHandlers(String _package,List<FilteredResourceHandlerI> _defaultHandlers) throws InstantiationException, IllegalAccessException{
+    	if(handlers.get(_package)==null){
+	    	handlers.put(_package,_defaultHandlers);
+	    	
+	    	//ordering here is important.  the last match wins
+	    	List<Class<?>> classes;
+	        try {
+	            classes = Reflection.getClassesForPackage(_package);
+	        } catch (Exception exception) {
+	            throw new RuntimeException(exception);
+	        }
+	
+	        for (Class<?> clazz : classes) {
+	            if (FilteredResourceHandlerI.class.isAssignableFrom(clazz)) {
+	            	handlers.get(_package).add((FilteredResourceHandlerI)clazz.newInstance());
+	            }
+	        }
+    	}
+        
+        return handlers.get(_package);
+    }
+    
+    public static interface FilteredResourceHandlerI{
+    	public boolean canHandle(SecureResource resource);
+    	public Representation handle(SecureResource resource, Variant variant) throws Exception;
+    }
 }

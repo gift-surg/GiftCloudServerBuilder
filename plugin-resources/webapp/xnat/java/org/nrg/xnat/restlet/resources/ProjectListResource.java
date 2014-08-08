@@ -148,12 +148,13 @@ public class ProjectListResource extends QueryOrganizerResource {
 	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
 		DisplaySearch ds;
-		Representation rep1=super.getRepresentation(variant);
-		if(rep1!=null)return rep1;
-		
-		if(containsQueryVariable(ACCESSIBLE)
+		Representation rep1 = super.getRepresentation(variant);
+		if (rep1 != null)
+			return rep1;
+
+		if (containsQueryVariable(ACCESSIBLE)
 				|| containsQueryVariable("prearc_code")
 				|| containsQueryVariable("owner")
 				|| containsQueryVariable("member")
@@ -162,7 +163,7 @@ public class ProjectListResource extends QueryOrganizerResource {
 				|| containsQueryVariable("recent")
 				|| containsQueryVariable("favorite")
 				|| containsQueryVariable("admin")
-				|| (this.requested_format!=null && requested_format.equals("search_xml"))){
+				|| (this.requested_format != null && requested_format.equals("search_xml"))) {
 
 			try {
 				ds = new DisplaySearch();
@@ -178,257 +179,255 @@ public class ProjectListResource extends QueryOrganizerResource {
 				ds.addDisplayField("xnat:projectData", "PROJECT_ACCESS_IMG");
 				ds.addDisplayField("xnat:projectData", "INSERT_DATE");
 				ds.addDisplayField("xnat:projectData", "INSERT_USER");
-				ds.addDisplayField("xnat:projectData", "USER_ROLE","Role",user.getXdatUserId());
-				ds.addDisplayField("xnat:projectData", "LAST_ACCESSED","Last Accessed",user.getXdatUserId());
-				
-				if(this.isQueryVariableTrue("prearc_code")){
+				ds.addDisplayField("xnat:projectData", "USER_ROLE", "Role", user.getXdatUserId());
+				ds.addDisplayField("xnat:projectData", "LAST_ACCESSED", "Last Accessed", user.getXdatUserId());
+
+				if (this.isQueryVariableTrue("prearc_code")) {
 					ds.addDisplayField("xnat:projectData", "PROJ_QUARANTINE");
 					ds.addDisplayField("xnat:projectData", "PROJ_PREARCHIVE_CODE");
 				}
-				
-				CriteriaCollection allCC= new CriteriaCollection("AND");
-				CriteriaCollection orCC= new CriteriaCollection("OR");
-				
+
+				CriteriaCollection allCC = new CriteriaCollection("AND");
+				CriteriaCollection orCC = new CriteriaCollection("OR");
+
 				String access = this.getQueryVariable(ACCESSIBLE);
-				if(access!=null){
-					if(access.equalsIgnoreCase("true")){
-						if(user.getGroup("ALL_DATA_ACCESS")==null && user.getGroup("ALL_DATA_ADMIN")==null){
+				if (access != null) {
+					if (access.equalsIgnoreCase("true")) {
+						if (user.getGroup("ALL_DATA_ACCESS") == null && user.getGroup("ALL_DATA_ADMIN") == null) {
 							CriteriaCollection cc = new CriteriaCollection("OR");
 							DisplayCriteria dc = new DisplayCriteria();
-							dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_USERS");
+							dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
 							dc.setComparisonType(" LIKE ");
-							dc.setValue("% " + user.getLogin() + " %",false);
+							dc.setValue("% " + user.getLogin() + " %", false);
 							cc.add(dc);
-							
+
 							dc = new DisplayCriteria();
-							dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_ACCESS");
-							dc.setValue("public",false);
+							dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_ACCESS");
+							dc.setValue("public", false);
 							cc.add(dc);
-							
+
 							allCC.addCriteria(cc);
 						}
-					}else{
+					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_USERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
 						dc.setComparisonType(" NOT LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_USERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
 						dc.setComparisonType(" IS ");
-						dc.setValue(" NULL ",false);
+						dc.setValue(" NULL ", false);
 						dc.setOverrideDataFormatting(true);
 						cc.add(dc);
-						
+
 						allCC.addCriteria(cc);
 					}
 				}
-				
+
 				String owner = this.getQueryVariable("owner");
-				if(owner!=null){
-					if(owner.equalsIgnoreCase("true")){
+				if (owner != null) {
+					if (owner.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_OWNERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_OWNERS");
 						dc.setComparisonType(" LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						orCC.addCriteria(cc);
-					}else{
+					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_USERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
 						dc.setComparisonType(" NOT LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						orCC.addCriteria(cc);
 					}
 				}
-				if(getQueryVariable("admin") != null){
+				if (getQueryVariable("admin") != null) {
 					if (isQueryVariableTrue("admin")) {
 						if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
 							CriteriaCollection cc = new CriteriaCollection("OR");
 							DisplayCriteria dc = new DisplayCriteria();
-							dc.setSearchFieldByDisplayField("xnat:projectData","ID");
+							dc.setSearchFieldByDisplayField("xnat:projectData", "ID");
 							dc.setComparisonType(" IS NOT ");
-							dc.setValue(" NULL ",false);
+							dc.setValue(" NULL ", false);
 							dc.setOverrideDataFormatting(true);
 							cc.add(dc);
 							orCC.addCriteria(cc);
-						}			
+						}
 					}
 				}
-								
+
 				String member = this.getQueryVariable("member");
-				if(member!=null){
-					if(member.equalsIgnoreCase("true")){
+				if (member != null) {
+					if (member.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_MEMBERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_MEMBERS");
 						dc.setComparisonType(" LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						orCC.addCriteria(cc);
-					}else{
+					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_MEMBERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_MEMBERS");
 						dc.setComparisonType(" NOT LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						orCC.addCriteria(cc);
 					}
 				}
-				
+
 				String collaborator = this.getQueryVariable("collaborator");
-				if(collaborator!=null){
-					if(collaborator.equalsIgnoreCase("true")){
+				if (collaborator != null) {
+					if (collaborator.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_COLLABS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_COLLABS");
 						dc.setComparisonType(" LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						orCC.addCriteria(cc);
-					}else{
+					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_COLLABS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_COLLABS");
 						dc.setComparisonType(" NOT LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
-						
+
 						orCC.addCriteria(cc);
 					}
 				}
-				
+
 				String activeSince = this.getQueryVariable("activeSince");
-				if(activeSince!=null){
-				    try {
-						Date d =DateUtils.parseDateTime(activeSince);
-						
+				if (activeSince != null) {
+					try {
+						Date d = DateUtils.parseDateTime(activeSince);
+
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_LAST_WORKFLOW");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_LAST_WORKFLOW");
 						dc.setComparisonType(">");
-						dc.setValue(d,false);
+						dc.setValue(d, false);
 						orCC.add(dc);
 					} catch (RuntimeException e) {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
-				
+
 				String recent = this.getQueryVariable("recent");
-				if(recent!=null){
-				    try {
+				if (recent != null) {
+					try {
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_LAST_ACCESS");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_LAST_ACCESS");
 						dc.setComparisonType(" LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						orCC.addCriteria(dc);
 					} catch (RuntimeException e) {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
-				
+
 				String favorite = this.getQueryVariable("favorite");
-				if(favorite!=null){
-				    try {
+				if (favorite != null) {
+					try {
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData","PROJECT_FAV");
+						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_FAV");
 						dc.setComparisonType(" LIKE ");
-						dc.setValue("% " + user.getLogin() + " %",false);
+						dc.setValue("% " + user.getLogin() + " %", false);
 						orCC.addCriteria(dc);
 					} catch (RuntimeException e) {
 						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
-				
 
-
-				if(orCC.size()>0)
+				if (orCC.size() > 0)
 					allCC.addCriteria(orCC);
 
-				if(allCC.size()>0)
+				if (allCC.size() > 0)
 					ds.addCriteria(allCC);
-				
-				
+
 				ds.setSortBy("SECONDARY_ID");
 
-                if (this.requested_format == null || !requested_format.equals("search_xml")) {
-                    table=(XFTTable)ds.execute(user.getLogin());
-                }
-            } catch (IllegalAccessException e) {
-				logger.error("",e);
+				if (this.requested_format == null || !requested_format.equals("search_xml")) {
+					table = (XFTTable) ds.execute(user.getLogin());
+				}
+			} catch (IllegalAccessException e) {
+				logger.error("", e);
 				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;
 			} catch (Exception e) {
-				logger.error("",e);
+				logger.error("", e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}
-		
-			Hashtable<String,Object> params=new Hashtable<String,Object>();
+
+			Hashtable<String, Object> params = new Hashtable<String, Object>();
 			params.put("title", "Projects");
 			params.put("xdat_user_id", user.getXdatUserId());
-	
+
 			MediaType mt = overrideVariant(variant);
 
-			if(this.requested_format!=null && this.requested_format.equals("search_xml")){
-				
-			XdatStoredSearch xss = ds.convertToStoredSearch("");
-				
-			if(xss!=null){
-				ItemXMLRepresentation rep= new ItemXMLRepresentation(xss.getItem(),MediaType.TEXT_XML);
-				rep.setAllowDBAccess(false);
-				return rep;
-			}else{
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-				return new StringRepresentation("",MediaType.TEXT_XML);
-			}
-		}else{
-			if(table!=null)params.put("totalRecords", table.size());
+			if (this.requested_format != null && this.requested_format.equals("search_xml")) {
+
+				XdatStoredSearch xss = ds.convertToStoredSearch("");
+
+				if (xss != null) {
+					ItemXMLRepresentation rep = new ItemXMLRepresentation(xss.getItem(), MediaType.TEXT_XML);
+					rep.setAllowDBAccess(false);
+					return rep;
+				} else {
+					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+					return new StringRepresentation("", MediaType.TEXT_XML);
+				}
+			} else {
+				if (table != null)
+					params.put("totalRecords", table.size());
 				return this.representTable(table, mt, params);
 			}
-		}else{
+		} else {
 			XFTTable table;
 			try {
-				final String re=this.getRootElementName();
-				
+				final String re = this.getRootElementName();
+
 				final QueryOrganizer qo = new QueryOrganizer(re, user,
 						ViewManager.ALL);
-					
+
 				this.populateQuery(qo);
-				
-				if(this.containsQueryVariable("restrict") && user.getGroup("ALL_DATA_ADMIN")==null){
-					final String restriction=this.getQueryVariable("restrict");
-					if(restriction.equals(SecurityManager.EDIT) || restriction.equals(SecurityManager.DELETE)){
-						final List<Object> ps=user.getAllowedValues("xnat:projectData", "xnat:projectData/ID", restriction);
-						final CriteriaCollection cc=new CriteriaCollection("OR");
-						for(Object p: ps){
+
+				if (this.containsQueryVariable("restrict") && user.getGroup("ALL_DATA_ADMIN") == null) {
+					final String restriction = this.getQueryVariable("restrict");
+					if (restriction.equals(SecurityManager.EDIT) || restriction.equals(SecurityManager.DELETE)) {
+						final List<Object> ps = user.getAllowedValues("xnat:projectData", "xnat:projectData/ID", restriction);
+						final CriteriaCollection cc = new CriteriaCollection("OR");
+						for (Object p : ps) {
 							cc.addClause("xnat:projectData/ID", p);
 						}
 						qo.setWhere(cc);
 					}
 				}
-				
+
 				final String query = qo.buildQuery();
 
 				table = XFTTable.Execute(query, user.getDBName(), userName);
 
-				table = formatHeaders(table, qo, re+"/ID","/data/projects/");
+				table = formatHeaders(table, qo, re + "/ID", "/data/projects/");
 			} catch (IllegalAccessException e) {
-				logger.error("",e);
+				logger.error("", e);
 				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 				return null;
 			} catch (Exception e) {
-				logger.error("",e);
+				logger.error("", e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}

@@ -158,6 +158,7 @@ public class SettingsRestlet extends SecureResource {
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
         settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
         settings.put("anonEnabled", XDAT.getConfigService().getStatus("anon", "script").equals(Configuration.ENABLED_STRING));
+        settings.put("tracerList", XDAT.getConfigService().getConfigContents("tracers", "tracers"));
         settings.put("appletScript", XDAT.getConfigService().getConfigContents("applet", "settings"));
         settings.put("restMockCallMap", getFormattedRestMockCallMap());
         settings.putAll(getSeriesImportFilterAsMap());
@@ -411,6 +412,14 @@ public class SettingsRestlet extends SecureResource {
                     XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the site-wide anonymization script", "anon", "script", anonScript);
                 } catch (ConfigServiceException exception) {
                     throw new Exception("Error setting the site-wide anonymization script", exception);
+                }
+                dirtied = true;
+            } else if (property.equals("tracerList")) {
+                final String tracerList = map.get("tracerList");
+                try {
+                    XDAT.getConfigService().replaceConfig(user.getUsername(), "Updating the site-wide list of PET tracers", "tracers", "tracers", tracerList);
+                } catch (ConfigServiceException exception) {
+                    throw new Exception("Error setting the site-wide list of PET tracers", exception);
                 }
                 dirtied = true;
             } else if (property.equals("appletScript")) {

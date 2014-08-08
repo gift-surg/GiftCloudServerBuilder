@@ -154,6 +154,9 @@
                     if(window.seriesImportFilterManager==undefined) {
                         window.seriesImportFilterManager = new SettingsTabManager('seriesImportFilter_mgmt_div', 'seriesImportFilter');
                     }
+                    if(window.petTracerManager==undefined) {
+                        window.petTracerManager = new SettingsTabManager('tracers_mgmt_div', 'tracers');
+                    }
                 };
             }
             window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo', postLoad);

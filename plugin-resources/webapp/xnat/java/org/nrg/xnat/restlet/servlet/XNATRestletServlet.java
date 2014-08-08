@@ -29,6 +29,7 @@ import org.nrg.xnat.helpers.prearchive.PrearcConfig;
 import org.nrg.xnat.helpers.prearchive.PrearcDatabase;
 import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.security.XnatPasswordEncrypter;
+import org.nrg.xnat.services.PETTracerUtils;
 import org.nrg.xnat.workflow.WorkflowSaveHandlerAbst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,25 @@ public class XNATRestletServlet extends ServerServlet {
             // there is a default site-wide script, so nothing to do here for the else.
         } catch (Throwable e){
             logger.error("Unable to either find or initialize script database", e);
+        }
+
+        // blatant copy of how we initialize the anon script
+        try {
+            String path = PETTracerUtils.getService().buildScriptPath(PETTracerUtils.ResourceScope.SITE_WIDE, "");
+            Configuration init_config = PETTracerUtils.getService().getTracerList(path, null);
+            if (init_config == null) {
+                logger.info("Creating PET Tracer List.");
+                String site_wide = FileUtils.readFileToString(PETTracerUtils.getDefaultTracerList());
+                String adminUser = this.getAdminUser();
+                if (adminUser != null) {
+                    PETTracerUtils.getService().setSiteWideTracerList(adminUser, path, site_wide);
+                } else {
+                    throw new Exception("Site administrator not found.");
+                }
+            }
+            // there is a default site-wide tracer list, so nothing to do here for the else.
+        } catch (Throwable e){
+            logger.error("Unable to either find or initialize the PET tracer list.", e);
         }
 
         PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);

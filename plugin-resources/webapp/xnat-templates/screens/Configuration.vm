@@ -49,6 +49,7 @@
                         <li><a href="#anonymization"><em>Anonymization<span class="spacer"></span></em></a></li>
                         <li><a href="#applets"><em>Applets<span class="spacer"></span></em></a></li>
                         <li><a href="#seriesImportFilter"><em>Series Import Filter<span class="spacer"></span></em></a></li>
+                        <li><a href="#petTracers"><em>PET Tracers<span class="spacer"></span></em></a></li>
                         <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
                         #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-mock-rest-config", "false")))
                             <li><a href="#mockRestConfig"><em>Mock REST Calls<span class="spacer"></span></em></a></li>
@@ -86,6 +87,9 @@
                         </div>
                         <div id="seriesImportFilter">
                             #parse('screens/configuration/seriesImportFilter.vm')
+                        </div>
+                        <div id="petTracers">
+                            #parse('screens/configuration/petTracers.vm')
                         </div>
                         <div id="dicomReceiver">
                             #parse('screens/configuration/dicomReceiver.vm')

@@ -1156,14 +1156,23 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
 				this.set.newValueSelectBox.style.display="none";
 				this.set.newValueSelectBox.disabled=true;
 			}else if(this.selected_value=="="){
-				this.set.newValueBox.style.display="none";
-				this.set.newValueBox.disabled=true;
-				this.set.newValueBox.value="";
+      
+        this.set.newValueBox.value="";
+        if(column.currentValues.length < 10000){
+          this.set.newValueBox.style.display="none";
+          this.set.newValueBox.disabled=true;
+          this.set.newValueSelectBox.style.display="inline";
+          this.set.newValueSelectBox.disabled=false;
+        } else {
+          this.set.newValueBox.style.display="inline";
+          this.set.newValueBox.disabled=false;
+          this.set.newValueSelectBox.style.display="none";
+          this.set.newValueSelectBox.disabled=true;
+        }
         this.set.newValueBoxEndSpan.style.display="none";
         this.set.newValueBoxEnd.disabled=true;
         this.set.newValueBoxEnd.value="";
-				this.set.newValueSelectBox.style.display="inline";
-				this.set.newValueSelectBox.disabled=false;
+
 			}else if(column.type=="date"){
 				this.set.newValueBox.style.display="inline";
 				this.set.newValueBox.disabled=false;
@@ -1180,8 +1189,10 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
         this.set.newValueBoxEndSpan.style.display="none";
         this.set.newValueBoxEnd.disabled=true;
         this.set.newValueBoxEnd.value="";
-				this.set.newValueSelectBox.style.display="none";
-				this.set.newValueSelectBox.disabled=true;
+        if(this.set.newValueSelectBox){
+          this.set.newValueSelectBox.style.display="none";
+          this.set.newValueSelectBox.disabled=true;
+        }
 			}
 			if(this.selected_value=="BETWEEN"){
         if(column.type=="date"){
@@ -1246,16 +1257,19 @@ xdat_criteria_set.prototype.renderFilters=function(containerDIV){
   this.newValueBoxEndSpan.appendChild(this.newValueBoxEnd);
 	this.CritDiv.appendChild(this.newValueBoxEndSpan);
 
-	this.newValueSelectBox=document.createElement("select");
-	this.newValueSelectBox.style.display="none";
-	this.newValueSelectBox.disabled=true;
-  if(column.type!="date"){ // don't populate this select for dates/timestamps because there are too many values and it will crash the browser.
-    this.newValueSelectBox.options[0]=new Option("SELECT","",false);
-    for(var occvC=0;occvC<column.currentValues.length;occvC++){
-        this.newValueSelectBox.options[this.newValueSelectBox.options.length]=new Option(column.currentValues[occvC].values.split(/<[^<>]*>/g).join('') + " (" +column.currentValues[occvC].count +")",column.currentValues[occvC].values);
+  if(column.currentValues.length < 10000){
+    this.newValueSelectBox=document.createElement("select");
+    this.newValueSelectBox.style.display="none";
+    this.newValueSelectBox.disabled=true;
+    // don't populate this select for dates/timestamps because there are too many values and it will crash the browser.
+    if(column.type!="date"){
+      this.newValueSelectBox.options[0]=new Option("SELECT","",false);
+      for(var occvC=0;occvC<column.currentValues.length;occvC++){
+          this.newValueSelectBox.options[this.newValueSelectBox.options.length]=new Option(column.currentValues[occvC].values.split(/<[^<>]*>/g).join('') + " (" +column.currentValues[occvC].count +")",column.currentValues[occvC].values);
+      }
     }
+    this.CritDiv.appendChild(this.newValueSelectBox);
   }
-	this.CritDiv.appendChild(this.newValueSelectBox);
 	this.CritDiv.appendChild(document.createTextNode(" "));
 
 	this.newButton=document.createElement("input");
@@ -1289,12 +1303,21 @@ xdat_criteria_set.prototype.isValid=function(){
 	var c=this.newComparisonBox.options[this.newComparisonBox.selectedIndex].value;
 	if(c=="IS NULL" || c=="IS NOT NULL"){
 	}else if(c=="="){
-		if(this.newValueSelectBox.selectedIndex==0){
-            xModalMessage('Search Validation', "Please specify a value to match against.");
-			this.newValueSelectBox.disabled=false;
-			this.newValueSelectBox.focus();
-			return false;
-		}
+    if(this.oColumn.currentValues.length < 10000){
+      if(this.newValueSelectBox.selectedIndex==0){
+              xModalMessage('Search Validation', "Please specify a value to match against.");
+        this.newValueSelectBox.disabled=false;
+        this.newValueSelectBox.focus();
+        return false;
+      }
+    } else {
+      if(this.newValueBox.value.length > 0){
+              xModalMessage('Search Validation', "Please specify a value to match against.");
+        this.newValueBox.disabled=false;
+        this.newValueBox.focus();
+        return false;
+      }
+    }
 	}else if(c=="BETWEEN"){
 		if(this.newValueBox.value==""){
             xModalMessage('Search Validation', "Please specify a value to match against.");

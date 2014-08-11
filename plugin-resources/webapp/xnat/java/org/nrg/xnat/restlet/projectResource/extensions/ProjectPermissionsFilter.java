@@ -13,7 +13,7 @@ public class ProjectPermissionsFilter implements FilteredResourceHandlerI{
 
 	@Override
 	public boolean canHandle(SecureResource resource) {
-		return resource.isQueryVariableTrue("createableTypes");
+		return resource.isQueryVariableTrue("creatableTypes");
 	}
 
 	@Override

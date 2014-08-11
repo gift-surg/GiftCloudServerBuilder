@@ -46,6 +46,6 @@
         }
     }
 
-    YAHOO.util.Event.onDOMReady(addTracerMgmtMonitor;
+    YAHOO.util.Event.onDOMReady(addTracerMgmtMonitor);
     putConfigurationControls('tracers', ['tracerList']);
 </script>

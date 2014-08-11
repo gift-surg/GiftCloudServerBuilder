@@ -167,6 +167,10 @@ function scriptGet (_dom,_obj) {
     document.getElementById(that.obj.enable_checkbox).onclick=function() {
       that.current.status=this.checked;
       that.determineDifference();
+      var text_area = document.getElementById(that.obj.script_text_area);
+      if(text_area){
+        text_area.disabled=!that.current.status;
+      }
     };
 /*
     document.getElementById(that.obj.enable_radio).onclick=function() {
@@ -186,6 +190,7 @@ function scriptGet (_dom,_obj) {
       that.initial.status = that.current.status;
       that.initial.script = that.current.script;
       document.getElementById(that.obj.save_button).disabled=true;
+      xModalMessage('Success','Your settings have been successfully updated.','OK');
     };
     var statusPut = function () {
       var uri = that.obj.putStatus+that.current.status;
@@ -193,7 +198,7 @@ function scriptGet (_dom,_obj) {
     };
     var scriptPut = function (f) {
       YAHOO.util.Connect.asyncRequest('PUT', that.obj.putScript + "&XNAT_CSRF=" + window.csrfToken,
-    		  									{success : f,
+    		  									{success : f ? f : resetInitial,
     	  										 failure: that.onFailure,
                                                  cache:false, // Turn off caching for IE
     	  										 scope: that},

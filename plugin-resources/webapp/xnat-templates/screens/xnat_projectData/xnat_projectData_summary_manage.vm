@@ -165,8 +165,10 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
     <td colspan="2" class="highlighted" id="applet_script_container">
       <DIV style="font-weight:700;">Applet Configuration Script</DIV>
       <TABLE>
-	<TR><TD><input id="enable_applet_script" type="radio" name="applet_script" value="true"/></TD><TD>Enable</TD></TR>
-	<TR><TD><input id="disable_applet_script" type="radio" name="applet_script" value="false"/></TD><TD>Disable</TD></TR>
+          <tr>
+              <td><label for="enable_applet_script">Enable Applet Script</label></td>
+              <td><input type="checkbox" name="enable_applet_script" id="enable_applet_script" /></td>
+          </tr>
 	<TR><TD></TD><TD><textarea id="applet_script_text_area" rows="20" cols="80"></textarea></TD></TR>
 	<TR><TD COLSPAN="2"><input type="button" id="applet_script_save" value="Save" disabled="true"/></TD></TR>
       </TABLE>      
@@ -181,8 +183,7 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
 	       'getScript' : serverRoot + '/data/projects/$project.getId()/config/applet/settings?format=json',
 	       'putScript' : serverRoot + '/data/projects/$project.getId()/config/applet/settings?inbody=true',
 	       'project' : '$project.getId()',
-	       'enable_radio' : 'enable_applet_script',
-	       'disable_radio' : 'disable_applet_script',
+	       'enable_checkbox' : 'enable_applet_script',
 	       'script_text_area' : 'applet_script_text_area',
 	       'save_button' : 'applet_script_save'
 	    });

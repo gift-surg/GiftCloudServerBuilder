@@ -104,7 +104,7 @@ public class XNATRestletServlet extends ServerServlet {
 
         // blatant copy of how we initialize the anon script
         try {
-            String path = PETTracerUtils.getService().buildScriptPath(PETTracerUtils.ResourceScope.SITE_WIDE, "");
+            String path = PETTracerUtils.buildScriptPath(PETTracerUtils.ResourceScope.SITE_WIDE, "");
             Configuration init_config = PETTracerUtils.getService().getTracerList(path, null);
             if (init_config == null) {
                 logger.info("Creating PET Tracer List.");

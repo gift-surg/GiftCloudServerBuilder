@@ -206,12 +206,24 @@ function summaryTabManagerInit(){
                             <TD VALIGN="top">
                             <Table border="0" width="100%">
                                 <TR><TH align=left colspan="3">STEP 1: Enable and Verify Account</TH></TR>
-                                <TR><TD align=left><INPUT TYPE="radio" name="xdat:user.enabled" value="true" #if($item.getBooleanProperty("enabled"))CHECKED #end/>Enabled</TD>
-                                    <TD align=left><INPUT TYPE="radio" name="xdat:user.enabled" value="false" #if(!$item.getBooleanProperty("enabled"))CHECKED #end/>Disabled</TD></TD>
+                                <TR>
+                                    <TD align=left style="width:80px">
+                                        <INPUT TYPE="radio" id="enabledRadio" name="xdat:user.enabled" value="true" #if($item.getBooleanProperty("enabled"))CHECKED #end/><label for="enabledRadio">Enabled</label>
+                                    </TD>
+                                    <TD align=left>
+                                        <INPUT TYPE="radio" id="disabledRadio" name="xdat:user.enabled" value="false" #if(!$item.getBooleanProperty("enabled"))CHECKED #end/><label for="disabledRadio">Disabled</label>
+                                    </TD>
                                 </TR>
-                                <TR><TD align=left><INPUT TYPE="radio" name="xdat:user.verified" value="true" #if($item.getBooleanProperty("verified"))CHECKED #end/>Verified</TD>
-                                    <TD align=left><INPUT TYPE="radio" name="xdat:user.verified" value="false" #if(!$item.getBooleanProperty("verified"))CHECKED #end/>Unverified</TD>
-                                    <TD align=right><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <TR>
+                                    <TD align=left style="width:80px">
+                                        <INPUT TYPE="radio" id="verifiedRadio" name="xdat:user.verified" value="true" #if($item.getBooleanProperty("verified"))CHECKED #end/><label for="verifiedRadio">Verified</label>
+                                    </TD>
+                                    <TD align=left>
+                                        <INPUT TYPE="radio" id="unverifiedRadio" name="xdat:user.verified" value="false" #if(!$item.getBooleanProperty("verified"))CHECKED #end/><label for="unverifiedRadio">Unverified</label>
+                                    </TD>
+                                </TR>
+                                <TR>
+                                    <TD align=right colspan="2"><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
                                         <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
                                     #else
@@ -229,20 +241,24 @@ function summaryTabManagerInit(){
 			<TD align=left colspan=2 valign=top>&nbsp;
 			</td>
 		</tr>
-	        <TR><TD align=left colspan=2 valign=top>
-                         <TABLE border="1" width="80%">
-                                 <TR><TD valign="top">
-                                         <Table border="0" width="100%">	
-								<TR><TH align=left colspan="2">STEP 2: Assign $displayManager.getSingularDisplayNameForProject().toLowerCase() membership and roles
-								</TH></TR>
-			<TR>
-			<TD align=left colspan=2 valign=top><DIV ID="groupDIV"></DIV>
-			</td>
-		</tr>
-			<TR>
-			<TD align=left colspan=2 valign=top><DIV ID="addGroupDIV"></DIV>
-			</td>
-		</tr>
+	    <TR><TD align=left colspan=2 valign=top>
+            <TABLE border="1" width="80%">
+            <TR>
+                <TD valign="top">
+                    <Table border="0" width="100%">
+                    <TR>
+                        <TH align=left colspan="2">STEP 2: Assign $displayManager.getSingularDisplayNameForProject().toLowerCase() membership and roles</TH>
+                    </TR>
+                    <TR>
+                        <TD align=left colspan=2 valign=top>
+                            <DIV ID="groupDIV"></DIV>
+                        </td>
+                    </tr>
+                    <TR>
+                        <TD align=left colspan=2 valign=top>
+                            <DIV ID="addGroupDIV"></DIV>
+                        </td>
+                    </tr>
 		
 	<SCRIPT language="javascript">
 	var selectedgroups = new Array();
@@ -576,14 +592,14 @@ addGroup("$!groupid.getGroupid()");
 				#xdatEditProps($item $edit_screen)
 				
 		<TR>
-					<TD ALIGN="right">&nbsp;<BR><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					#if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
-						<input type="button" ONCLICK="javascript:window.close()" value="Close"/>
-                    #else
-                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
-					#end
-					</TD>
-				</TR>
+            <TD ALIGN="right"><input type="submit" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
+                <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
+            #else
+                <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+            #end
+            </TD>
+        </TR>
 </Table>
 </TD>
 </TR>
@@ -607,7 +623,7 @@ addGroup("$!groupid.getGroupid()");
 								</tr>
 								#foreach($role in $allRoles)
 								<TR><TD align=left colspan="4">
-<INPUT TYPE="checkbox" id="role_$role.getKey()" name="custom_role" value="$role.getKey()" #if($userObject.checkRole($role.getKey()))CHECKED#end/> <label for="role_">$role.getName()</label>
+                                    <INPUT TYPE="checkbox" id="role_$role.getKey()" name="custom_role" value="$role.getKey()" #if($userObject.checkRole($role.getKey()))CHECKED#end/> <label for="role_">$role.getName()</label>
 								: $!role.getDescription()
 								</TD></TR>
 									#if($role.getWarning())
@@ -623,36 +639,40 @@ addGroup("$!groupid.getGroupid()");
 								
 								
 							  #set($groupCounter=0)
-							  
-																#if($turbineUtils.toBoolean($siteConfig.getProperty("security.allow-data-admins","true")))
-																<TR>
-																	<TH align=left colspan="4"><br>Allow All Data Access: </TH>
-																</tr>
+
+                                #if($turbineUtils.toBoolean($siteConfig.getProperty("security.allow-data-admins","true")))
                                     <TR>
-                                        <TD align="center"><img src="$content.getURI("images/rc.gif")" border="0"></td>
-                                        <TD align="left" colspan="3">WARNING: Allowing 'All Data Access' will allow this user to see ALL data stored in this system.  It supersedes project membership.  Most accounts on your server should NOT have All Data Access allowed.</TD>
-    								</TR>
-																<TR>
-																	<TD align=left nowrap>
-<INPUT TYPE="radio" id="data_none" name="xdat:user.groups.groupID[$groupCounter].groupID" value="" CHECKED/> <label for="data_none">No</label>
-								</TD>
-								<TD align=left nowrap>
-<INPUT TYPE="radio" id="data_access" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ACCESS" #if($userObject.getGroup("ALL_DATA_ACCESS"))CHECKED#end/> <label for="data_access">Read Only</label>
-								</TD>
-								<TD align=left nowrap>
-<INPUT TYPE="radio" id="data_admin" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ADMIN" #if($userObject.getGroup("ALL_DATA_ADMIN"))CHECKED#end/> <label for="data_admin">Read, Edit & Delete</label>
-								</TD>
-																</TR>
-																#end
-																<TR>
-																	<TD colspan="3">&nbsp;</TD>
-								<TD align=center><input type="button" onclick="XNAT.app.userRoles.update();" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <TH align=left colspan="2"><br>Allow All Data Access: </TH>
+                                    </tr>
+                                    <TR>
+                                        <TD align="center" style="width:20px"><img src="$content.getURI("images/rc.gif")" border="0"></td>
+                                        <TD align="left">WARNING: Allowing 'All Data Access' will allow this user to see ALL data stored in this system.  It supersedes project membership.  Most accounts on your server should NOT have All Data Access allowed.</TD>
+                                    </TR>
+                                    <TR>
+                                        <TD colspan="2">
+                                            <span align=left nowrap>
+                                                <INPUT TYPE="radio" id="data_none" name="xdat:user.groups.groupID[$groupCounter].groupID" value="" CHECKED/><label for="data_none">No</label>
+                                            </span>
+                                            &nbsp;&nbsp;&nbsp;
+                                            <span align=left nowrap>
+                                                <INPUT TYPE="radio" id="data_access" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ACCESS" #if($userObject.getGroup("ALL_DATA_ACCESS"))CHECKED#end/><label for="data_access">Read Only</label>
+                                            </span>
+                                            &nbsp;&nbsp;&nbsp;
+                                            <span align=left nowrap>
+                                                <INPUT TYPE="radio" id="data_admin" name="xdat:user.groups.groupID[$groupCounter].groupID" value="ALL_DATA_ADMIN" #if($userObject.getGroup("ALL_DATA_ADMIN"))CHECKED#end/><label for="data_admin">Read, Edit & Delete</label>
+                                            </span>
+                                        </TD>
+                                    </TR>
+                                #end
+                                <TR>
+                                    <TD align=right colspan="2"><input type="button" onclick="XNAT.app.userRoles.update();" name="eventSubmit_doPerform" value="Submit"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         #if ($turbineUtils.GetPassedParameter("popup",$data)=="true")
-                                                <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
-                    #else
-                        <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
-                                        #end</TD>
-                                                             </TR>
+                                            <input type="button" ONCLICK="javascript:window.close()" value="Close"/>
+                                        #else
+                                            <input type="button" ONCLICK="javascript:history.go(-1)" value="Back"/>
+                                        #end
+                                    </TD>
+                                </TR>
 							  #set($groupCounter=$groupCounter+1)
 							</TABLE>
 						</TD>

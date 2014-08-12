@@ -17,7 +17,7 @@
 stored_searches.push({ID:"$!bundle.getId()",label:"$!bundle.getBriefDescription()",URL:serverRoot +"/REST/projects/${project.getId()}/searches/$!bundle.getId()"});
     #if($bundle.getId().equals("@xnat:subjectData"))
 		#set($default_search="$!bundle.getId()")
-    #elseif($bundle.getId().equals("${project.getId()}_xnat:subjectData") && $default_search.equals(""))
+    #elseif(($bundle.getId().contains("xnat:subjectData") || $bundle.getId().contains("xnat_subjectData")) && $default_search.equals(""))
 		#set($default_search="$!bundle.getId()")
     #end
 #end

@@ -198,11 +198,7 @@ function SavePopupForm(_search,_div,_config){
 			input.id="save_id";
 			input.name="save_id";
 			if(this.searchDOM.getId() && !this.searchDOM.getId().startsWith("@")){
-				if(this.config.saveAs){
-					input.value=this.searchDOM.getId()+"_1";
-				}else{
-					input.value=this.searchDOM.getId();
-				}
+				input.value=this.searchDOM.getId();
 			}else{
 				input.value="xs"+ (new Date()).getTime();
 			}

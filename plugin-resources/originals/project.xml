@@ -1502,7 +1502,7 @@
 		<dependency>
 			<groupId>groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>2.2.2</version>
+			<version>2.3.6</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1520,7 +1520,7 @@
 		<dependency>
 			<groupId>groovy</groupId>
 			<artifactId>http-builder</artifactId>
-			<version>0.7.1</version>
+			<version>0.7.2</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1529,7 +1529,7 @@
 		<dependency>
 			<groupId>groovy</groupId>
 			<artifactId>json-lib</artifactId>
-			<version>2.3-jdk15</version>
+			<version>2.4-jdk15</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1538,7 +1538,7 @@
 		<dependency>
 			<groupId>groovy</groupId>
 			<artifactId>nekohtml</artifactId>
-			<version>1.9.16</version>
+			<version>1.9.21</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

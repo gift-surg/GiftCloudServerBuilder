@@ -5,21 +5,25 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="plugin-resources/webapp/xnat/javatest"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/groovy-all-2.2.2.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/groovy-all-2.3.6.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/ezmorph-1.0.6.jar" sourcepath="plugin-resources/repository/groovy/jars/ezmorph-1.0.6-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/ezmorph-1.0.6-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/http-builder-0.7.1.jar" sourcepath="plugin-resources/repository/groovy/jars/http-builder-0.7.1-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/http-builder-0.7.2.jar" sourcepath="plugin-resources/repository/groovy/jars/http-builder-0.7.2-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/http-builder-0.7.1-javadoc.jar"/>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/http-builder-0.7.2-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/json-lib-2.3-jdk15.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/nekohtml-1.9.16.jar" sourcepath="plugin-resources/repository/groovy/jars/nekohtml-1.9.16-sources.jar">
+    <classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/json-lib-2.4-jdk15.jar" sourcepath="plugin-resources/repository/groovy/jars/json-lib-2.4-jdk15-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/nekohtml-1.9.16-javadoc.jar"/>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/json-lib-2.4-jdk15-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/nekohtml-1.9.21.jar" sourcepath="plugin-resources/repository/groovy/jars/nekohtml-1.9.21-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/groovy/jars/nekohtml-1.9.21-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="plugin-resources/repository/groovy/jars/xml-resolver-1.2.jar" sourcepath="plugin-resources/repository/groovy/jars/xml-resolver-1.2-sources.jar"/>
@@ -298,17 +302,17 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-dom/jars/saxon8-dom-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/saxon8-xpath/jars/saxon8-xpath-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/servletapi/jars/servletapi-2.3.jar"/>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/slf4j/jars/slf4j-api-1.7.7-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/slf4j/jars/slf4j-log4j12-1.7.7-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7-sources.jar">
+	<classpathentry kind="lib" path="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7.jar" sourcepath="plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/slf4j/jars/jul-to-slf4j-1.7.7-javadoc.jar"/>
 		</attributes>
@@ -370,8 +374,6 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/xdat/jars/xdat-storeXAR-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xerces-J_1.4.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/xerces/jars/xercesImpl-2.4.0.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/xml-apis/jars/xml-apis-1.0.b2.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/xmlrpc/jars/xmlrpc-1.2-b1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/xnatfs/jars/xnatfs-1.5.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

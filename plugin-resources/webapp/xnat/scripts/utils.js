@@ -230,29 +230,43 @@ function getParameterByName(name) {
 }
 
 
-// utility for sorting DOM elements
-// usage: sortElements('ul#list','li');
-function sortElements(_parent,_child){
-    //console.log('sorting...');
-    var mylist = $(_parent);
-    var listitems = mylist.children(_child).get();
-    listitems.sort(function(a, b) {
-        var compA = $(a).text().toUpperCase();
-        var compB = $(b).text().toUpperCase();
-        return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
+// alphabetically (but not numerically)
+// sort an array of objects ('objects')
+// by a specific property ('prop')
+function sortObjects( objects, prop ){
+    return objects.sort( function ( _a, _b ) {
+        var a = _a[prop].toUpperCase();
+        var b = _b[prop].toUpperCase();
+        return (a < b) ? -1 : (a > b) ? 1 : 0;
     });
-    $.each(listitems, function(idx, itm) { mylist.append(itm); });
+}
+
+
+// utility for sorting DOM elements
+// by the text they contain
+// usage: sortElements('ul#list','li');
+function sortElements( _parent, _child ){
+    //console.log('sorting...');
+    var mylist = jQuery(_parent);
+    var listitems = mylist.children(_child).get();
+    listitems.sort(function( _a, _b ) {
+        var a = $(_a).text().toUpperCase();
+        var b = $(_b).text().toUpperCase();
+        return (a < b) ? -1 : (a > b) ? 1 : 0;
+    });
+    $.each(listitems, function( idx, itm ) { mylist.append(itm) });
 }
 
 
 // returns single-digit number as a string with leading zero
+// up to 1000
 function zeroPad (x) {
     var y = parseInt(x,10) ; // make sure it's a number
     return (y < 10) ? '0'+y : ''+y ; // make it a string again
 }
 
 
-// feed an array of numbers to make sure ALL of them are numbers
+// feed an array of values to make sure ALL of them are numbers
 function allNumbers(_array){
     var is_num = true ;
     if ($.isArray(_array)){
@@ -269,7 +283,7 @@ function allNumbers(_array){
 }
 
 
-// feed an array of numbers to make check for at least one number
+// feed an array of values to check for at least one number
 function hasNumber(_array){
     var is_num = false ;
     if ($.isArray(_array)){

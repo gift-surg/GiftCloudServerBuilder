@@ -6,7 +6,7 @@
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="-1">
 <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
-<script type="text/javascript" src="$content.getURI('scripts/jquery/jquery.min.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/jquery/jquery-1.8.3.js')"></script>
 <script type="text/javascript">
     // use 'jq' instead of '$' for jQuery functions to avoid _possible_ conflicts with Velocity
     // but $() and jQuery() should still work since we're not using noConflict()
@@ -224,7 +224,7 @@
 <!-- date input stuff -->
 <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
 ##<script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar.js')"></script>
-<script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
+<script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></script>
 
 <script type="text/javascript" src="$content.getURI('scripts/jquery.maskedinput.min.js')"></script>
 <script type="text/javascript" src="$content.getURI('scripts/ezCalendar.js')"></script>

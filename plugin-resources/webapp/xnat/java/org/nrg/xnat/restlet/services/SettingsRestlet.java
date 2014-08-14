@@ -156,14 +156,18 @@ public class SettingsRestlet extends SecureResource {
         settings.put("issue", getSubscribersForEvent(NotificationType.Issue));
         settings.put("newUser", getSubscribersForEvent(NotificationType.NewUser));
         settings.put("update", getSubscribersForEvent(NotificationType.Update));
-        settings.put("anonScript", XDAT.getConfigService().getConfigContents("anon", "script"));
-        settings.put("anonEnabled", XDAT.getConfigService().getStatus("anon", "script").equals(Configuration.ENABLED_STRING));
-        settings.put("tracerList", XDAT.getConfigService().getConfigContents("tracers", "tracers"));
-        settings.put("appletScript", XDAT.getConfigService().getConfigContents("applet", "settings"));
+        settings.put("anonScript", emptyStringIfNull(XDAT.getConfigService().getConfigContents("anon", "script")));
+        settings.put("anonEnabled", Configuration.ENABLED_STRING.equals(XDAT.getConfigService().getStatus("anon", "script")));
+        settings.put("tracerList", emptyStringIfNull(XDAT.getConfigService().getConfigContents("tracers", "tracers")));
+        settings.put("appletScript", emptyStringIfNull(XDAT.getConfigService().getConfigContents("applet", "settings")));
         settings.put("restMockCallMap", getFormattedRestMockCallMap());
         settings.putAll(getSeriesImportFilterAsMap());
 
         return settings;
+    }
+
+    private String emptyStringIfNull(final String configContents) {
+        return configContents == null ? "" : configContents;
     }
 
     private Map<String, String> getSeriesImportFilterAsMap() {

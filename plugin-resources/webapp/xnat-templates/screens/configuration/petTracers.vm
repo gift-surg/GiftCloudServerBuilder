@@ -3,8 +3,8 @@
 <div class="mgmt_container">
     <div id="tracers_mgmt_div" class="row">
         <p>
-            This is the site-wide list of PET tracers. This list can also be supplemented by additional tracers 
-            specified at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.
+            This is the site-wide list of PET tracers. List entries should be separated by whitespace. This list can also be replaced
+            at the $displayManager.getSingularDisplayNameForProject().toLowerCase() level.
         </p>
         <p><label for="tracerList">Tracers:</label></p>
         <textarea id="tracerList" name="tracerList" rows="20" cols="80"></textarea>

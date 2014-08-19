@@ -156,7 +156,7 @@ public class ConfigResource extends SecureResource {
                     // if meta=false && contents==false, this is the same as not specifying either in the querystring. So, just act as if they didn't.
                     if (contents && !meta) {
                         Configuration c = configurations.get(0);
-                        if (c == null) {
+                        if (c == null || "disabled".equals(c.getStatus())) {
                             _log.warn("Config not found for user {} and project {} on tool [{}] path [{}]", user.getUsername(), projectName, toolName, path);
                             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                             return null;

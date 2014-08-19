@@ -1,17 +1,20 @@
+<br/>
 <table id="project_pet_tracers_table">
     <tr>
         <td colspan="2" class="highlighted" id="pet_tracer_container">
             <div style="font-weight:700;">PET Tracers</div>
             <table>
                 <tr>
-                    <td colspan="2"><label for="enable_project_pet_tracers">Enable Project Level PET Tracer List</label>&nbsp;<input type="checkbox" name="enable_project_pet_tracers" id="enable_project_pet_tracers" /></td>
+                    <td ><label for="enable_project_pet_tracers">Enable Project Level PET Tracer List</label>&nbsp;<input type="checkbox" name="enable_project_pet_tracers" id="enable_project_pet_tracers" /></td>
                 </tr>
                 <tr>
-                    <td style="width:80px"></td>
+                    <td>List entries should be separated by whitespace:</td>
+                </tr>
+                <tr>
                     <td><textarea id="pet_tracers_text_area" rows="20" cols="80" disabled="disabled"></textarea></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="button" id="project_pet_tracers_save" value="Save" disabled="disabled"/></td>
+                    <td><input type="button" id="project_pet_tracers_save" value="Save" disabled="disabled"/></td>
                 </tr>
             </table>
         </td>

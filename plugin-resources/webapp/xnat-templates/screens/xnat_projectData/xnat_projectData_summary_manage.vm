@@ -25,7 +25,7 @@
 <script>
 window.quarantine=(new RadioSettingsManager(document.getElementById('quarantine_container'),{'URI':serverRoot+'/REST/projects/$project.getId()/quarantine_code/','radio_ids':['yes_quarantine','no_quarantine'],'current_value':'$quar','button':'project_quarantine_save'}));
 </script>		
-	<br/>
+<br/>
 #end
 <table id="prearchive_table">
  <tr>
@@ -48,17 +48,17 @@ window.quarantine=(new RadioSettingsManager(document.getElementById('quarantine_
 <script>
 window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_container'),{'URI':serverRoot+'/REST/projects/$project.getId()/prearchive_code/','radio_ids':['0_prearchive','4_prearchive','5_prearchive'],'current_value':'$prearc','button':'project_prearchive_save'}));
 </script>
+<br/>
 <table id="script_table">
   <tr>
-    <td colspan="2" class="highlighted" id="script_container">
+    <td class="highlighted" id="script_container">
       <DIV style="font-weight:700;">Anonymization Script</DIV>
       <TABLE>
 	<TR>
-    <TD><label for="enable_anon_script">Enable Script</label></TD>
-    <TD><input id="enable_anon_script" type="checkbox" name="enable_anon_script" value="true"/></TD>
+    <TD><label for="enable_anon_script">Enable Script</label><input id="enable_anon_script" type="checkbox" name="enable_anon_script" value="true"/></TD>
   </TR>
-	<TR><TD></TD><TD><textarea id="script_text_area" rows="20" cols="80" disabled="disabled"></textarea></TD></TR>
-	<TR><TD COLSPAN="2"><input type="button" id="anon_script_save" value="Save" disabled="true"/></TD></TR>
+	<TR><TD><textarea id="script_text_area" rows="20" cols="80" disabled="disabled"></textarea></TD></TR>
+	<TR><TD><input type="button" id="anon_script_save" value="Save" disabled="true"/></TD></TR>
       </TABLE>      
     </td>
   </tr>
@@ -118,18 +118,17 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
   YAHOO.util.Event.onDOMReady(addAnonymizationMgmtMonitor);
 //  putConfigurationControls('anonymization', ['anonScript', 'enableAnonScript']);
 </script>
+<br/>
 <table id="series_import_filter_table">
     <tr>
         <td colspan="2" class="highlighted" id="series_import_filter_container">
             <div style="font-weight:700;">Series Import Filters</div>
             <table>
                 <tr>
-                    <td><label for="enable_series_import_filter">Enable Filter</label></td>
-                    <td><input type="checkbox" name="enable_series_import_filter" id="enable_series_import_filter" /></td>
+                    <td><label for="enable_series_import_filter">Enable Filter</label><input type="checkbox" name="enable_series_import_filter" id="enable_series_import_filter" /></td>
                 </tr>
                 <tr>
-                    <td><label for="series_import_filter_mode_list">Mode</label></td>
-                    <td>
+                    <td><label for="series_import_filter_mode_list">Mode</label>
                         <select name="series_import_filter_mode_list" id="series_import_filter_mode_list" disabled placeholder="Enter white- or blacklisted series filters separated by newlines, e.g. <b>localizer</b> for localizer series.">
                             <option value="whitelist">Whitelist</option>
                             <option value="blacklist">Blacklist</option>
@@ -137,11 +136,10 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
                     <td><textarea id="series_import_filter_text_area" rows="20" cols="80" disabled="disabled"></textarea></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="button" id="series_import_filter_save" value="Save" disabled="disabled"/></td>
+                    <td><input type="button" id="series_import_filter_save" value="Save" disabled="disabled"/></td>
                 </tr>
             </table>
         </td>
@@ -160,6 +158,7 @@ window.prearchive=(new RadioSettingsManager(document.getElementById('prearchive_
     filtersGet.get();
 </script>
 #if($turbineUtils.toBoolean($siteConfig.getProperty("enableProjectAppletScript", "false")))
+<br/>
 <table id="applet_script_table">
   <tr>
     <td colspan="2" class="highlighted" id="applet_script_container">

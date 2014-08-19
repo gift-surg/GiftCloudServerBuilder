@@ -4,6 +4,7 @@
 <!-- Sequence: 100 -->
 #if($data.getSession().getAttribute("user").canCreate($project))
 
+<br/>
 <table id="project_resource_table">
   <tr>
     <td colspan="2" class="highlighted" id="project_resource_container">

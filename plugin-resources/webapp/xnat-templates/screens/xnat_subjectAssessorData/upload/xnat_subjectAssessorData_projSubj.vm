@@ -1,5 +1,5 @@
 <tr>
-    <th align="left">$displayManager.getSingularDisplayNameForProject()</th>
+    <th align="left">$displayManager.getSingularDisplayNameForProject():</th>
     <td>
         #if(! $!item.getProperty("project"))
             <select id="$!item.getXSIType()/project" name="$!item.getXSIType()/project" disabled=true></select>
@@ -32,7 +32,7 @@
         <td>
             <select id="$!item.getXSIType()/subject_id" name="$!item.getXSIType()/subject_id"></select>
             #if(!$preventSubject)
-             &nbsp; <a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a>
+             &nbsp; <a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject():</a>
             #end
         </td>
 

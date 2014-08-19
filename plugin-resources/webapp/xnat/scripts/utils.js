@@ -136,7 +136,7 @@ jQuery.loadScript = function (url, arg1, arg2) {
 
     var load = true;
     //check all existing script tags in the page for the url
-    jQuery('script[type="text/javascript"]')
+    jQuery('script')
         .each(function () {
             return load = (url != $(this).attr('src'));
         });
@@ -157,67 +157,55 @@ jQuery.loadScript = function (url, arg1, arg2) {
     }
 };
 
-// non-YUI way to make elements draggable
+
+// Make elements draggable.
 // usage:
 // $('#element_id').drags();  // <- drag the element that's clicked on
 // $('#element_id').drags({handle:'.drag_handle'});
-(function($) {
+$.fn.drags = function (opt) {
 
-    $.fn.drags = function(opt) {
+    opt = $.extend({handle: '', cursor: 'move'}, opt);
 
-        opt = $.extend({handle:"",cursor:"move"}, opt);
+    var $el;
 
-        var $el ;
-
-        if(opt.handle === "") {
-            $el = this;
-        } else {
-            $el = this.find(opt.handle);
-        }
-
-        return $el.css('cursor', opt.cursor).on("mousedown", function(e) {
-            var $drag ;
-            if(opt.handle === "") {
-                $drag = $(this).addClass('draggable');
-            } else {
-                $drag = $(this).addClass('active-handle').parent().addClass('draggable');
-            }
-            var z_idx = $drag.css('z-index'),
-                drg_h = $drag.outerHeight(),
-                drg_w = $drag.outerWidth(),
-                pos_y = $drag.offset().top + drg_h - e.pageY,
-                pos_x = $drag.offset().left + drg_w - e.pageX;
-            $drag.css('z-index', 1000).parents().on("mousemove", function(e) {
-                $('.draggable').offset({
-                    top:e.pageY + pos_y - drg_h,
-                    left:e.pageX + pos_x - drg_w
-                }).on("mouseup", function() {
-                        $(this).removeClass('draggable').css('z-index', z_idx);
-                    });
-            });
-            e.preventDefault(); // disable selection
-        }).on("mouseup", function() {
-            if(opt.handle === "") {
-                $(this).removeClass('draggable');
-            } else {
-                $(this).removeClass('active-handle').parent().removeClass('draggable');
-            }
-        });
-
+    if (opt.handle === '') {
+        $el = this;
     }
-})(jQuery);
-//
-// make ".draggable" elements draggable
-// seems to only work on elements that
-// are on the page on DOM ready
-// must use the .drags() method on
-// dynamically generated elements
-//
-// sample usage:
-//$(function(){
-//    $('.draggable').drags();
-//});
-//
+    else {
+        $el = this.find(opt.handle);
+    }
+
+    return $el.css('cursor', opt.cursor).on('mousedown', function (e) {
+        var $drag;
+        if (opt.handle === '') {
+            $drag = $(this).addClass('draggable');
+        }
+        else {
+            $drag = $(this).addClass('active-handle').parent().addClass('draggable');
+        }
+        var z_idx = $drag.css('z-index')-0,
+            drg_h = $drag.outerHeight(),
+            drg_w = $drag.outerWidth(),
+            pos_y = $drag.offset().top + drg_h - e.pageY,
+            pos_x = $drag.offset().left + drg_w - e.pageX;
+        $drag.parents().on('mousemove', function (e) {
+            $('.draggable').css({ 'right': 'auto', 'bottom': 'auto' }).offset({
+                top: e.pageY + pos_y - drg_h,
+                left: e.pageX + pos_x - drg_w
+            }).on('mouseup', function () {
+                $(this).removeClass('draggable')/*.css('z-index', z_idx)*/;
+            });
+        });
+        e.preventDefault(); // disable selection
+    }).on('mouseup', function () {
+        if (opt.handle === "") {
+            $(this).removeClass('draggable');
+        }
+        else {
+            $(this).removeClass('active-handle').parent().removeClass('draggable');
+        }
+    });
+};
 // end draggable
 
 
@@ -243,18 +231,36 @@ function sortObjects( objects, prop ){
 
 
 // utility for sorting DOM elements
-// by the text they contain
+// by their 'title' attribute
 // usage: sortElements('ul#list','li');
+// 'child' must be DIRECT descendent of 'parent'
 function sortElements( _parent, _child ){
     //console.log('sorting...');
-    var mylist = jQuery(_parent);
-    var listitems = mylist.children(_child).get();
+    var $mylist = jqObj(_parent);
+    var listitems = $mylist.children(_child).get();
     listitems.sort(function( _a, _b ) {
-        var a = $(_a).text().toUpperCase();
-        var b = $(_b).text().toUpperCase();
+        var a = $(_a).attr('title').toUpperCase();
+        var b = $(_b).attr('title').toUpperCase();
         return (a < b) ? -1 : (a > b) ? 1 : 0;
     });
-    $.each(listitems, function( idx, itm ) { mylist.append(itm) });
+    $mylist.html('');
+    $.each(listitems, function( idx, itm ) { $mylist.append(itm) });
+}
+
+
+// this will make sure we've got a jQuery DOM object
+function jqObj(el){
+    if (!el) { return false }
+    var $el = el;
+    if (!$el.jquery){
+        $el = $(el);
+        // if there's not a matching DOM element
+        // then it's PROBABLY just an id string
+        if (!$el.length){
+            $el = $('#'+el);
+        }
+    }
+    return $el;
 }
 
 

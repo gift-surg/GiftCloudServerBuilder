@@ -101,6 +101,12 @@ public class XNATApplication extends Application {
         attachURI(router, ("/archive" + uri).intern(), clazz);
     }
 
+    private void attachURIs(final Router router, final Class<? extends Resource> clazz, final String... uris) {
+        for (final String uri : uris) {
+            attachURI(router, uri, clazz);
+        }
+    }
+
     private void attachURI(final Router router, final String uri, final Class<? extends Resource> clazz) {
         attachURI(router, uri, clazz, null);
     }
@@ -333,6 +339,8 @@ public class XNATApplication extends Application {
         attachURI(router, "/services/audit", AuditRestlet.class);
         attachURI(router, "/services/refresh/catalog", RefreshCatalog.class);
         attachURI(router, "/services/features", FeatureDefinitionRestlet.class);
+
+        attachURIs(router, ScriptResource.class, "/services/scripts/{COMPOSITE_ID}", "/services/scripts/{COMPOSITE_ID}/{SCRIPT_ID}");
 
         attachURI(router, "/status/{TRANSACTION_ID}", SQListenerRepresentation.class);
 

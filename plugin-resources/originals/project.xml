@@ -1601,6 +1601,15 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>nrg</groupId>
+			<artifactId>nrg-automation</artifactId>
+            <version>%VERSION%</version>
+			<properties>
+				<war.bundle>true</war.bundle>
+			</properties>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>antlr</groupId>
 			<artifactId>antlr</artifactId>
 			<version>2.7.6</version>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/plugin-resources/conf/dicom-import-context.xml
+  ~ XNAT http://www.xnat.org
+  ~ Copyright (c) 2014, Washington University School of Medicine
+  ~ All Rights Reserved
+  ~
+  ~ Released under the Simplified BSD.
+  ~
+  ~ Last modified 2/7/14 12:19 PM
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="WEB-INF/conf/services.properties,WEB-INF/conf/services-custom.properties" ignore-resource-not-found="true" ignore-unresolvable="true"/>
+
+    <bean name="baseProjectIdent" class="org.nrg.dcm.id.Xnat15DicomProjectIdentifier"/>
+    <bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
+    <bean name="baseAAIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getAAExtractors"/>
+
+    <bean name="dicomObjectIdentifier" class="org.nrg.dcm.id.ScriptedCompositeDicomObjectIdentifier">
+        <constructor-arg ref="baseProjectIdent"/>
+        <constructor-arg ref="baseSubjectIdent"/>
+        <constructor-arg>
+            <list>
+                <bean id="scriptedSessionIdent" class="org.nrg.dcm.id.ScriptedSessionAssignmentExtractor">
+                    <constructor-arg name="scriptId" value="splitPetMrSession"/>
+                    <constructor-arg name="tags">
+                        <list>
+                            <value>524384</value>
+                        </list>
+                    </constructor-arg>
+                    <constructor-arg name="extractors">
+                        <list>
+                            <bean class="org.nrg.dcm.ContainedAssignmentExtractor">
+                                <constructor-arg name="tag" value="1064960"/>
+                                <constructor-arg name="id" value="Session"/>
+                                <constructor-arg name="patternFlags" value="2"/>
+                            </bean>
+                            <bean class="org.nrg.dcm.ContainedAssignmentExtractor">
+                                <constructor-arg name="tag" value="3293184"/>
+                                <constructor-arg name="id" value="Session"/>
+                                <constructor-arg name="patternFlags" value="2"/>
+                            </bean>
+                            <bean class="org.nrg.dcm.TextExtractor">
+                                <constructor-arg name="tag" value="1048608"/>
+                            </bean>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="baseAAIdent"/>
+		<property name="userProvider" ref="receivedFileUserProvider" />
+	</bean>
+
+	<bean name="dicomFileNamer" class="org.nrg.dcm.id.TemplatizedDicomFileNamer">
+		<constructor-arg name="naming" value="${StudyInstanceUID}-${SeriesNumber}-${InstanceNumber}-${HashSOPClassUIDWithInstanceNumber}" />
+	</bean>
+
+    <bean name="dicomSCPExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+
+	<bean name="dicomSCP" class="org.nrg.dcm.DicomSCP" factory-method="create">
+		<constructor-arg ref="dicomSCPExecutor" />
+        <constructor-arg value="${services.dicom.scp.port}"/>
+		<constructor-arg ref="receivedFileUserProvider" />
+        <constructor-arg value="${services.dicom.scp.aetitle}"/>
+		<constructor-arg ref="dicomObjectIdentifier" />
+		<constructor-arg ref="dicomFileNamer" />
+	</bean>
+
+	<bean name="dicomSCPManager" class="org.nrg.dcm.DicomSCPManager">
+		<constructor-arg ref="dicomSCP" />
+	</bean>
+
+	<bean name="sessionDataFactoryClasses" class="java.util.ArrayList" />
+</beans>

@@ -242,6 +242,11 @@
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/nrg/jars/nrg-config-1.6.4-SNAPSHOT-javadoc.jar"/>
 		</attributes>
 	</classpathentry>
+    <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-automation-1.6.4-SNAPSHOT.jar" sourcepath="plugin-resources/repository/nrg/jars/nrg-automation-1.6.4-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/nrg/jars/nrg-automation-1.6.4-SNAPSHOT-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
     <classpathentry kind="lib" path="plugin-resources/repository/nrg/jars/nrg-framework-1.6.4-SNAPSHOT.jar" sourcepath="plugin-resources/repository/nrg/jars/nrg-framework-1.6.4-SNAPSHOT.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:plugin-resources/repository/nrg/jars/nrg-framework-1.6.4-SNAPSHOT-javadoc.jar"/>

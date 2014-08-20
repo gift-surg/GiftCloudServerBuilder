@@ -173,7 +173,7 @@ public final class PrearcDatabase {
         try {
             new SessionOp<Void>() {
                 public Void op() throws Exception {
-                    String query ="SELECT relname FROM pg_catalog.pg_class WHERE relname=LOWER('" + PrearcDatabase.table + "');";
+                    String query ="SELECT * FROM information_schema.tables WHERE table_schema = LOWER('xdat_search') and table_name = LOWER('" + PrearcDatabase.table + "');";
                     String exists = (String) PoolDBUtils.ReturnStatisticQuery(query, "relname", null,null);
                     if (exists==null){
                         PoolDBUtils.ExecuteNonSelectQuery(tableSql, null , null);

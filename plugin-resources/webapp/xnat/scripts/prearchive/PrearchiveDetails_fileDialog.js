@@ -1,6 +1,6 @@
 XNAT.app.fileDialog = XNAT.app.fileDialog || {};
 
-XNAT.app.fileDialog.load = function( url, title ){
+XNAT.app.fileDialog.loadScan = function( url, title ){
 
     openModalPanel("resource_loading","Loading");
 

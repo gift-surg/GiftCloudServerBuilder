@@ -12,8 +12,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:property-placeholder location="WEB-INF/conf/services.properties,WEB-INF/conf/services-custom.properties" ignore-resource-not-found="true" ignore-unresolvable="true"/>
 
@@ -30,23 +32,25 @@
                     <constructor-arg name="scriptId" value="splitPetMrSession"/>
                     <constructor-arg name="tags">
                         <list>
-                            <value>524384</value>
+                            <util:constant static-field="org.dcm4che2.data.Tag.Modality"/>
+                            <util:constant static-field="org.dcm4che2.data.Tag.SOPClassUID"/>
+                            <util:constant static-field="org.dcm4che2.data.Tag.SeriesDescription"/>
                         </list>
                     </constructor-arg>
                     <constructor-arg name="extractors">
                         <list>
                             <bean class="org.nrg.dcm.ContainedAssignmentExtractor">
-                                <constructor-arg name="tag" value="1064960"/>
+                                <constructor-arg name="tag"><util:constant static-field="org.dcm4che2.data.Tag.PatientComments"/></constructor-arg>
                                 <constructor-arg name="id" value="Session"/>
                                 <constructor-arg name="patternFlags" value="2"/>
                             </bean>
                             <bean class="org.nrg.dcm.ContainedAssignmentExtractor">
-                                <constructor-arg name="tag" value="3293184"/>
+                                <constructor-arg name="tag"><util:constant static-field="org.dcm4che2.data.Tag.StudyComments"/></constructor-arg>
                                 <constructor-arg name="id" value="Session"/>
                                 <constructor-arg name="patternFlags" value="2"/>
                             </bean>
                             <bean class="org.nrg.dcm.TextExtractor">
-                                <constructor-arg name="tag" value="1048608"/>
+                                <constructor-arg name="tag"><util:constant static-field="org.dcm4che2.data.Tag.PatientID"/></constructor-arg>
                             </bean>
                         </list>
                     </constructor-arg>

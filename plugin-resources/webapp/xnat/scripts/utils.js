@@ -209,15 +209,6 @@ $.fn.drags = function (opt) {
 // end draggable
 
 
-// utility for getting URL query string value
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return (results == null) ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-
 // alphabetically (but not numerically)
 // sort an array of objects ('objects')
 // by a specific property ('prop')

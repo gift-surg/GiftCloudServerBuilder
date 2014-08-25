@@ -597,6 +597,22 @@ jq(window).load(function(){
     $('#loading').hide();
 
 
+    if (window.jsdebug) {
+        if (window.console && window.console.log){
+            console.log('\n');
+            console.log('XNAT:');
+            console.log(XNAT);
+            console.log('\n');
+            console.log('XNAT.data:');
+            console.log(XNAT.data);
+            console.log('\n');
+            console.log('XNAT.data.context:');
+            console.log(XNAT.data.context);
+            console.log('\n');
+        }
+    }
+
+
 // end footer.js
 });
 

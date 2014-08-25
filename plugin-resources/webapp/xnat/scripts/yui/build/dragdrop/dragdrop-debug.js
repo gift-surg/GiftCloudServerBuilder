@@ -9,7 +9,7 @@
  * Last modified 7/1/13 9:12 AM
  */
 
-f (!YAHOO.util.DragDropMgr) {
+if (!YAHOO.util.DragDropMgr) {
 
 /**
  * DragDropMgr is a singleton that tracks the element interaction for 

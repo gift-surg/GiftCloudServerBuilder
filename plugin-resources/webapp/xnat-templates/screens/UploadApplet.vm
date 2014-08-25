@@ -26,7 +26,7 @@
 // to ensure that a supported version of the JRE exists on the client.
 // Use an anonymous function to prevent global scope
 (function() {
-    var SUPPORTED_JRE_VERSIONS = ["1.6", "1.7"];
+    var SUPPORTED_JRE_VERSIONS = ["1.6", "1.7", "1.8"];
     function hasSupport(versions) {
         for (var i=0; i < versions.length; i++) {
             if (deployJava.versionCheck(versions[i])) {

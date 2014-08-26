@@ -56,10 +56,14 @@ public class ScriptedSessionAssignmentExtractor extends ChainExtractor {
             return defaultValue;
         }
 
+        Map<Integer, String> values = new HashMap<Integer, String>();
+        for (final Integer tag : _tags) {
+            values.put(tag, object.getString(tag));
+        }
+
         final Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("defaultValue", defaultValue);
-        parameters.put("tags", _tags);
-        parameters.put("dicom", object);
+        parameters.put("values", values);
         parameters.put("logger", _log);
 
         final Object results = _service.runScript("admin", scope, projectId, _scriptId, _path, parameters);

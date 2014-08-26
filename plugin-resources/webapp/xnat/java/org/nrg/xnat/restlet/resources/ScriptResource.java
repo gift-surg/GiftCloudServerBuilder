@@ -101,6 +101,21 @@ public class ScriptResource extends SecureResource {
                 properties.setProperty("script", "");
         }
 
+        if (properties == null) {
+            final StringBuilder message = new StringBuilder("Unable to find script ID[").append(_scriptId).append("] ");
+            if (!StringUtils.isBlank(_path)) {
+                message.append("path[").append(_path).append("]");
+            }
+            if (_scope == Scope.Site) {
+                message.append(" for the site");
+            } else {
+                message.append(" for the project with ID ").append(_entityId);
+            }
+            _log.info(message.toString());
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, message.toString());
+            return null;
+        }
+
         try {
             return new StringRepresentation(MAPPER.writeValueAsString(properties), mediaType);
         } catch (JsonProcessingException e) {

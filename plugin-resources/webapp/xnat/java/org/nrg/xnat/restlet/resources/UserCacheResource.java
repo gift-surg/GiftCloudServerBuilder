@@ -622,8 +622,8 @@ public class UserCacheResource extends SecureResource {
     private String constructResourceURI(String resource) {
     	
     	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
-    	return requestPart + "/" + resource;
-    	
+    	return requestPart + (requestPart.endsWith("/")?"":"/") + resource;
+
     }
 			
     private String constructURI(String path) {

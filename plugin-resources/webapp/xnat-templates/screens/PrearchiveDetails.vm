@@ -68,17 +68,17 @@
 #startElementActionBox()
 	#if($allowArchive)
 	<li class="yuimenuitem">
-			<A id="archiveLink" href="" ONCLICK="XNAT.app.archiveValidator.validate();return false;"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Archive</A>
+			<a id="archiveLink" href="#" class="nolink" onclick="XNAT.app.archiveValidator.validate()"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Archive</a>
 	 </li>
 	<li class="yuimenuitem">
-			<A href="$content.getURI("/data${url}?format=html&screen=XDATScreen_uploaded_xnat_imageSessionData.vm")"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Modify and Archive</A>
+			<a href="$content.getURI("/data${url}?format=html&screen=XDATScreen_uploaded_xnat_imageSessionData.vm")"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Modify and Archive</a>
 	 </li>
 	 #end
 	<li class="yuimenuitem">
-			<A href="" ONCLICK="XNAT.app.prearhiveActions.requestMoveDialog();return false;"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Change Project</A>
+			<a href="#" class="nolink" onclick="XNAT.app.prearchiveActions.requestMoveDialog()"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Change Project</a>
 	 </li>
 	<li class="yuimenuitem">
-			<A href="" ONCLICK="XNAT.app.prearhiveActions.requestDelete();return false;"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Delete</A>
+			<a href="#" class="nolink" onclick="XNAT.app.prearchiveActions.requestDelete()"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>Delete</a>
 	 </li>
 
 #endElementActionsBox()
@@ -92,12 +92,12 @@
 		<tr id="scanTR$!scan.getId()">
 			<td>$!scan.getId()</td>
 			<td>$!scan.getSeriesDescription()</td>
-			<td NOWRAP><div id="scan${scan.getId()}Files"><a onclick="XNAT.app.fileCounter.load()" style="text-decoration:underline">Show Counts</a></div></td>
+			<td nowrap><div id="scan${scan.getId()}Files"><a href="#" class="nolink" onclick="XNAT.app.fileCounter.load()" style="text-decoration:underline">Show Counts</a></div></td>
 			<td nowrap>
-				&nbsp;&nbsp;<button id="scanB1$$scan.getId()" onclick="window.location='$content.getURI("/REST$url/scans/$scan.getId()?format=zip")'">Download Files</button>
+				&nbsp;&nbsp;<button id="scanB1$$scan.getId()" onclick="XNAT.app.prearchiveActions.downloadFiles('$url', '$scan.getId()')">Download Files</button>
 				#foreach($res in $scan.getFile())
-					&nbsp;&nbsp;<button id="scanB3$$scan.getId()" onclick="XNAT.app.fileDialog.loadScan('$content.getURI("/REST$url/scans/$scan.getId()/resources/$res.getLabel()/files?format=html&requested_screen=PrearchiveFileList.vm&popup=true&prettyPrint=true")','Scan $scan.getId() files');">Review File Details</button>
-					&nbsp;&nbsp;<button #if($res.getLabel()!="DICOM") class="hide_me" #end id="scanB4$$scan.getId()" onclick="XNAT.app.headerDialog.load('$content.getURI("/REST/services/dicomdump?src=$url/scans/$scan.getId()&format=html&requested_screen=DicomScanTable.vm&popup=true")','Scan $scan.getId() DICOM');">Review DICOM Tags</button>
+					&nbsp;&nbsp;<button id="scanB3$$scan.getId()" onclick="XNAT.app.prearchiveActions.reviewFileDetails('$url', '$scan.getId()', '$res.getLabel()')">Review File Details</button>
+					&nbsp;&nbsp;<button #if($res.getLabel()!="DICOM") class="hide_me" #end id="scanB4$$scan.getId()" onclick="XNAT.app.prearchiveActions.reviewDicomTags('$url', '$scan.getId()')">Review DICOM Tags</button>
 				#end
 				&nbsp;&nbsp;<button id="scanB2$$scan.getId()" onclick="XNAT.app.scanDeleter.requestDelete('$!scan.getId()');">Delete Series</button>
 			</td>
@@ -105,7 +105,7 @@
 	#end
 	<tr>
 		<td colspan="3">&nbsp;</td>
-		<td>&nbsp;&nbsp;<button id="dAscans" onclick="window.location='$content.getURI("/REST$url?format=zip")'">Download All Files</button></td>
+		<td>&nbsp;&nbsp;<button id="dAscans" onclick="XNAT.app.prearchiveActions.downloadAllFiles('$url')">Download All Files</button></td>
 	</tr>
 	</table>
 </div>
@@ -142,12 +142,6 @@
 		</div>
 	</div> 
 </div> 
-
-<script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_fileDialog.js")"></script>
-<script>
-    XNAT.app.fileDialog.url='$url';
-</script>
-
 
 
 <!-- begin header dialog -->
@@ -212,21 +206,50 @@ dd.valMessage 	{	width:630px;	}
 
 
 <script type="text/javascript" src="$content.getURI("scripts/imageSessionData/archive.js")"></script>
+<script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_fileDialog.js")"></script>
 <script type="text/javascript" src="$content.getURI("scripts/prearchive/PrearchiveDetails_headerDialog.js")"></script>
 <script>
-    XNAT.app.headerDialog.url='$url';
-</script>
 
-<script>
-	//automatically show file counts
-	XNAT.app.fileCounter.load();
-	
-	XNAT.app.prearhiveActions.url="$url";
-	XNAT.app.prearhiveActions.timestamp="$timestamp";
-	XNAT.app.prearhiveActions.folder="$folder";
-    XNAT.app.prearhiveActions.loadLogs();
-	
-#if($allowArchive)
+    jq(document.body).on('click','a.nolink',function(e){
+        e.preventDefault();
+    });
+
+    XNAT.app.prearchiveActions.downloadAllFiles = function( url ){
+        window.location = serverRoot + '/REST' + url + '?format=zip';
+        return false;
+    }
+
+    XNAT.app.prearchiveActions.downloadFiles = function( url, scan_id ){
+        window.location = serverRoot + '/REST' + url + '/scans/' + scan_id + '?format=zip';
+        return false;
+    }
+
+    XNAT.app.prearchiveActions.reviewFileDetails = function( url, scan_id, label ){
+        var RESTurl = serverRoot +
+            '/data' + url + '/scans/' + scan_id + '/resources/' + label +
+            '/files?format=html&requested_screen=PrearchiveFileList.vm&popup=true&prettyPrint=true';
+        XNAT.app.fileDialog.loadScan(RESTurl, 'Scan ' + scan_id + ' files');
+    }
+
+    XNAT.app.prearchiveActions.reviewDicomTags = function( url, scan_id ){
+        var RESTurl = serverRoot +
+            '/data/services/dicomdump?src=' + url + '/scans/' + scan_id +
+            '&format=html&requested_screen=DicomScanTable.vm&popup=true';
+        XNAT.app.headerDialog.load(RESTurl, 'Scan ' + scan_id + ' DICOM');
+    }
+
+    XNAT.app.fileDialog.url='$url';
+    XNAT.app.headerDialog.url='$url';
+
+    //automatically show file counts
+    XNAT.app.fileCounter.load();
+
+    XNAT.app.prearchiveActions.url="$url";
+    XNAT.app.prearchiveActions.timestamp="$timestamp";
+    XNAT.app.prearchiveActions.folder="$folder";
+    XNAT.app.prearchiveActions.loadLogs();
+
+        #if($allowArchive)
 	//validation CODES that are not allowed to be overidden
 	XNAT.app.validator.fail_merge_on=$siteConfig.getProperty("security.fail_merge_on","[]");
 	XNAT.app.validator.xsiType="$session.getXSIType()";
@@ -238,5 +261,7 @@ dd.valMessage 	{	width:630px;	}
 	#end
 	
     XNAT.app.validator.validate();
+
 #end
 </script>
+<script type="text/javascript" src="$content.getURI('/scripts/popupCentered.js')"></script>

@@ -5,7 +5,7 @@
     $!template.setLayoutTemplate($siteConfig.getProperty("siteHomeLayout","/Index.vm"))
 #end
 #if ($data.message)
-<DIV class="warning">$data.message</DIV><br>
+<div class="note">$data.message</div><br>
 #end
 
 #if(0 < $par_count)

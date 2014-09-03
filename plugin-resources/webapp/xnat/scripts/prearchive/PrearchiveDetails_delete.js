@@ -39,10 +39,10 @@ XNAT.app.scanDeleter={
 		closeModalPanel("delete_scan");
 		$('#scanTR'+this.lastScan).remove();
 		XNAT.app.validator.validate();
-		XNAT.app.prearhiveActions.loadLogs();
+		XNAT.app.prearchiveActions.loadLogs();
 	},
 	handleFailure:function(o){
 		closeModalPanel("delete_scan");
 	    showMessage("page_body", "Error", "Failed to delete scan. ("+ e.message + ")");
 	}
-}
+};

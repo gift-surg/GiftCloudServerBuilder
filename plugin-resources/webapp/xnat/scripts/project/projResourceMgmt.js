@@ -22,7 +22,7 @@ XNAT.app.pResources={
 	menu:function(level){
 		$("#pResource_form").html("");
 		var temp_html="<div class='colA'><div class='info simple'>What resource are you requiring?</div>" +
-				"<div class='row'><div class='rowTitle' for='pResource.name'>Title</div> <input class='pResourceField' required='true' required-msg='Title field is required.' data-prop-name='name' type='text' id='pResource.name' value='' placeholder='Natural Language Title'/></div>" +
+				"<div class='row'><div class='rowTitle' for='pResource.name'>Title</div> <input class='pResourceField' required='true' data-required-msg='<b>Title</b> field is required.' data-prop-name='name' type='text' id='pResource.name' value='' placeholder='Natural Language Title'/></div>" +
 				"<div class='row'><div class='rowTitle' for='pResource.desc'>Description (optional)</div> <textarea class='pResourceField' data-prop-name='description' id='pResource.desc' placeholder='' /></div>" +
 				"</div>";
 		temp_html+="<div class='colB'><div class='info simple'>Where will it be stored?</div>";
@@ -67,7 +67,7 @@ XNAT.app.pResources={
 			temp_html+="<option value='in'>inputs dir (in)</option>";
 			temp_html+="</select></div>";
 		}
-		temp_html+=" <div class='row'><div class='rowTitle' for='pResource.label'>Resource Folder</div> <input class='pResourceField' required='true' required-msg='Resource folder is required.' data-prop-name='label' size='10' type='text' id='pResource.label' required=true placeholder='ex. DICOM' data-regex='^[a-zA-Z0-9_-]+$' /></div>";
+		temp_html+=" <div class='row'><div class='rowTitle' for='pResource.label'>Resource Folder</div> <input class='pResourceField' required='true' data-required-msg='<b>Resource Folder</b> is required.' data-prop-name='label' size='10' type='text' id='pResource.label' required=true placeholder='ex. DICOM' data-regex='^[a-zA-Z0-9_-]+$' /></div>";
 		temp_html+=" <div class='row'><div class='rowTitle' for='pResource.subdir'>Sub-folder (optional)</div> <input class='pResourceField' data-prop-name='subdir' type='text' id='pResource.subdir' placeholder='(optional) ex. data/sub/dir' size='24' data-regex='^[a-zA-Z0-9_\\-\\/]+$'/></div>";
 		temp_html+=" <div class='row'><div class='rowTitle'>&nbsp;</div><input class='pResourceField' style='width:10px;' data-prop-name='overwrite' type='checkbox' id='pResource.overwrite'/> <label for='pResource.overwrite'>Allow overwrite</label></div>";
 		temp_html+=" </div>";
@@ -87,11 +87,11 @@ XNAT.app.pResources={
 		$(".pResourceField").each(function(){
 			var tmpValue=$(this).val();
 			if($(this).attr('required')=='required' && tmpValue==""){
-				if($(this).attr('required-msg'))
+				if($(this).attr('data-required-msg'))
 				{
-					xModalMessage("Required field",$(this).attr('required-msg'));
+					xModalMessage("Required field",$(this).attr('data-required-msg'));
 				}else{
-					xModalMessage("Required field",$(this).attr('data-prop-name') + " is required.");
+					xModalMessage("Required field", "<b>" + $(this).attr('data-prop-name') + "</b> is required.");
 				}
 				valid=false;
 			}
@@ -103,19 +103,19 @@ XNAT.app.pResources={
 					{
 						xModalMessage("Invalid value",$(this).attr('data-regex-msg'));
 					}else{
-						xModalMessage("Invalid value",$(this).attr('data-prop-name') + " has an invalid character.");
+						xModalMessage("Invalid value", "<b>" + $(this).attr('data-prop-name') + "</b> has an invalid character.");
 					}
 					valid=false;
 				}
 			}
 			
 			if(tmpValue!="" && (tmpValue.indexOf("'")>-1 || tmpValue.indexOf("\"")>-1)){
-				xModalMessage("Invalid value",$(this).attr('data-prop-name') + " has an invalid character (quote).");
+				xModalMessage("Invalid value", "<b>" + $(this).attr('data-prop-name') + "</b> has an invalid character (quote).");
 				valid=false;
 			}
 			
 			if(tmpValue!="" && (tmpValue.length>255)){
-				xModalMessage("Invalid value",$(this).attr('data-prop-name') + " exceeds size limits.");
+				xModalMessage("Invalid value", "<b>" + $(this).attr('data-prop-name') + "</b> exceeds size limits.");
 				valid=false;
 			}
 			

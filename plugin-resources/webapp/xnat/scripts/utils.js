@@ -75,6 +75,13 @@ if (!Array.prototype.map) {
     };
 }
 
+// make sure we've got a .trim() method
+if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+}
+
 // add commas to numbers
 function addCommas(nStr) {
     nStr += '';

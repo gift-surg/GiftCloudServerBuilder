@@ -12,6 +12,7 @@
 if (typeof XNAT == 'undefined') XNAT={};
 // if the XNAT.app namespace object isn't defined yet, we've STILL got some problems
 if (typeof XNAT.app == 'undefined') XNAT.app={};
+if (typeof XNAT.app.utils == 'undefined') XNAT.app.utils={};
 if (typeof XNAT.app.defaults == 'undefined') XNAT.app.defaults={};
 if (typeof XNAT.app.datePicker == 'undefined') XNAT.app.datePicker={};
 // making sure there's an XNAT.data object
@@ -32,37 +33,44 @@ XNAT.app.datePicker.selected = XNAT.data.selectedDate = {};
 function closeModal_pickDate(_this,$input){
     var modal_id = $(_this).closest('.xmodal').attr('id');
     xModalCloseNew(modal_id);
-    //_$input.focus();
     XNAT.app.datePicker.reveal($input.closest('.ez_cal_wrapper'));
 }
 
 
-function focusInput(_$input){
+// check for a class on a container and return that value
+XNAT.app.utils.getValueByClass = function( $container, values ){
+    var val='';
+    $.each(values, function( i, v ){
+        if ($container.hasClass(v)){
+            val = v;
+            return false; // exit if we have a match
+        }
+    });
+    return val ;
+};
+
+
+XNAT.app.datePicker.focusInput = function(_$input){
     if (!_$input) { return false }
     var $input = _$input;
-    //if ($input.is('input.single')){
-        //$input.val('').focus();
-        //$input.select();
-    //}
     // if 'multi', the class will be on element (div, span, etc.)
     // CONTAINING the mm, dd, and yyyy input fields
     if ($input.is('.multi')){
         $input = _$input.find('input.date').first();
     }
     $input.val('').focus();
-}
+};
 
 
 XNAT.app.maskDateInput = function( _$input , _filler , _format ){
 
-    if ( !$.mask.dataName || !_$input) return ; // exit if the jquery.maskedinput plugin is not loaded
+    if ( !$.mask.dataName || !_$input ) return ; // exit if the jquery.maskedinput plugin is not loaded
 
     var $input, filler, format ;
 
     $input = (_$input.jquery) ? _$input : $(_$input); // we prefer a jQuery object, but we'll transmogrify a regular selector if necessary
 
-    if ($input.hasClass('us')){ format='us' }
-    if ($input.hasClass('iso')){ format='iso' }
+    format = XNAT.app.utils.getValueByClass( $input, ['us','iso','eu','euro'] );
 
     format = _format || format || 'us';
     format = format.toLowerCase() ;
@@ -168,14 +176,12 @@ XNAT.app.checkDateInput = function(_$input,_format,_value) {
     date.max_future = max_date_num+1000000 ;
     date.min_past = max_date_num-1200000 ;
 
-    //message_opts.action = function(){closeModal_pickDate(this,$input)};
-    //message_opts.id = 'invalid_date' ;
     message_opts.height = 175 ;
     message_opts.okClose = false ;
     message_opts.action = function(){
         var modal_id = $(this).closest('.xmodal').attr('id');
         xModalCloseNew(modal_id);
-        focusInput($focus);
+        XNAT.app.datePicker.focusInput($focus);
     };
 
     var useDatePicker = function(){
@@ -241,7 +247,7 @@ XNAT.app.checkDateInput = function(_$input,_format,_value) {
     }
 
     if (return_val === false) {
-        focusInput($focus);
+        XNAT.app.datePicker.focusInput($focus);
     }
     else {
         $input.removeClass('invalid');
@@ -532,8 +538,6 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
 
     ezCal.render();
 
-        //_$e.find('table.yui-calendar').css('width','180px'); // not using this because the width will change when changing months
-
 };
 
 
@@ -543,6 +547,8 @@ XNAT.app.datePicker.init = function($container,_config){
     // I guess we can make this work without any parameters
     // on any element with 'xnat-date' class?
     $container = $container || $('.xnat-date') ;
+
+    if (!$container) { return } // no use going on if we have nothing to work with
 
     $container = ($container.jquery) ? $container : $($container); // don't freak out if it's a selector instead of a jQuery object
 
@@ -554,19 +560,12 @@ XNAT.app.datePicker.init = function($container,_config){
 
         var _kind, _layout, _format, _validate, _today, _future, _disabled, _readonly ;
 
-        // since the class matches the value we want to pass...
-        // return the match (_val1 or _val2)
-        var containerClass = function(_val1,_val2){
-            var val ;
-            if ($this_container.hasClass(_val1)){ val = _val1 }
-            if ($this_container.hasClass(_val2)){ val = _val2 }
-            return val ;
-        };
+        var getVal = XNAT.app.utils.getValueByClass;
         //
-        _kind = containerClass('multi','single');
-        _layout = containerClass('stacked','inline');
-        _format = containerClass('iso','us');
-        _validate = containerClass('onblur','onsubmit');
+        _kind = getVal($this_container,['multi','single']);
+        _layout = getVal($this_container,['stacked','inline']);
+        _format = getVal($this_container,['iso','us','eu','euro']);
+        _validate = getVal($this_container,['onblur','onsubmit']);
         //
 
         if ($this_container.hasClass('today')){ _today = true }
@@ -582,7 +581,7 @@ XNAT.app.datePicker.init = function($container,_config){
 
         var opts = {} ;
         opts.kind = _kind ; // 'single' or 'multi'
-        opts.layout = _layout ; // 'inline' or 'stacked' - for 'multi' only
+        opts.layout = _layout ; // (for 'multi' only) 'inline' or 'stacked'
         opts.format = _format ; // 'iso' or 'us'
         opts.validate = _validate ; // validate onblur or onsubmit - false if neither
         opts.todayButton = _today ; // show 'today' link/button - true or false
@@ -629,7 +628,7 @@ $(function(){
     var do_date_check = true ;
 
     var checkDateOnBlur = function(input){
-        if ($('div.xmask.open.top').data('xmodal-x') === xModalMessageCount) return ;
+        //if ($('div.xmask.open.top').data('xmodal-x') === xModalMessageCount) return ;
         if (do_date_check !== true) return ;
 
         do_date_check = false ;
@@ -640,7 +639,7 @@ $(function(){
         var $month = $wrapper.find('input:hidden.month');
         var $day = $wrapper.find('input:hidden.day');
         var $input = $(input);
-        var format = ($input.hasClass('iso')) ? 'iso' : 'us' ;
+        var format = XNAT.app.utils.getValueByClass($input,['iso','us','eu','euro']);
         var val = $input.val();
         if (val === ('__/__/____' || '____-__-__' || '')){
             $input.val('');
@@ -684,15 +683,12 @@ $(function(){
     // this now checks both generated inputs as well as
     // existing inputs with "check_date" class
     $body.on('blur','input.ez_cal.validate.onblur, input.check_date',function(){
-        //$(this).off('blur');
-        //$(this).on('blur', function(){
-            do_date_check = true ;
-            checkDateOnBlur(this);
-        //});
+        do_date_check = true ;
+        checkDateOnBlur(this);
     });
 
 
-    // onsubmit
+    // onsubmit - not sure if this is working
     $body.on('click','button.validate.onsubmit, a.validate.onsubmit',function(e){
         e.preventDefault();
         var $form = $(this).closest('form');
@@ -702,8 +698,4 @@ $(function(){
     });
     //
 
-    //
-    // populate hidden date inputs
-    //
-    //$body.on('blur','input.')
 });

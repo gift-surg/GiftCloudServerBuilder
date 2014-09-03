@@ -512,10 +512,18 @@ var XNAT_version ;
 
 $(function(){
 
+    var $body = $body || $(document.body);
+
     // add title for <option> of multi-select on hover
-    $('body').on('hover','select[multiple] > option',function(){
+    $body.on('hover','select[multiple] > option',function(){
         $(this).attr('title',$(this).text());
     });
+
+
+    $body.on('click','a.nolink',function(e){
+        e.preventDefault();
+    });
+
 
     // add version to title attribute of XNAT logos
     if (typeof logged_in != 'undefined' && logged_in == true){

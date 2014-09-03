@@ -8,12 +8,12 @@
  *
  * Last modified 1/6/14 3:48 PM
  */
-XNAT.app.prearhiveActions={
+XNAT.app.prearchiveActions={
 	requestDelete:function(){
-		xModalConfirm({
+        xModalConfirm({
           content: "Are you sure you want to permanently delete this session?",
           okAction: function(){
-        	  XNAT.app.prearhiveActions.doDelete();
+        	  XNAT.app.prearchiveActions.doDelete();
           },
           cancelAction: function(){
           }
@@ -40,7 +40,7 @@ XNAT.app.prearhiveActions={
 	    showMessage("page_body", "Error", "Failed to delete session. ("+ o.message + ")");
 	},
 	requestMoveDialog:function(){
-		if(this.projects==undefined){
+        if(this.projects==undefined){
 			this.projCallback={
 	            success:this.handleProjectsLoad,
 	            failure:function(o){
@@ -58,7 +58,7 @@ XNAT.app.prearhiveActions={
 		}
 	},
 	handleProjectsLoad:function(o){
-		this.projects=new Array();
+		this.projects=[];
 		var projectResults= eval("(" + o.responseText +")");
 		for(var pC=0;pC<projectResults.ResultSet.Result.length;pC++){
 			this.projects.push(projectResults.ResultSet.Result[pC]);
@@ -109,7 +109,7 @@ XNAT.app.prearhiveActions={
 	    };
 		YAHOO.util.Connect.asyncRequest('GET',serverRoot+"/REST" + this.url+"/logs?template=details&format=html&requested_screen=PrearchiveDetailsLogs.vm&popup=true",logsCallback,null,this);
 	}
-}
+};
 
 //validator is used to simply validate if archiving would work (not to actually archive).
 XNAT.app.validator={
@@ -122,7 +122,7 @@ XNAT.app.validator={
 			},
 	        cache:false, // Turn off caching for IE
 			scope:this
-		}		
+		};
 		var validate_service=serverRoot+"/REST/services/validate-archive?format=json&XNAT_CSRF=" + csrfToken;
 
 		YAHOO.util.Connect.setForm(document.getElementById("form1"),false);
@@ -136,7 +136,7 @@ XNAT.app.validator={
 	},
 	handleValidation:function(o){
 		var validation= eval("(" + o.responseText +")");
-		this.show=new Array();
+		this.show=[];
 		var matched=false;
 		var failed=false;
 		//iterate over the list of reasons why the archive might fail.
@@ -177,7 +177,7 @@ XNAT.app.validator={
 			$("#validationAlerts").html("");
 		}
 	}
-}
+};
 
 //project selector dialog
 XNAT.app.move_project_dialog = new YAHOO.widget.Dialog("move_project_dialog", { fixedcenter:true, visible:false, width:"400px", height:"150px", modal:true, close:true, draggable:true,resizable:true});
@@ -186,5 +186,5 @@ XNAT.app.move_project_dialog.cfg.queueProperty("buttons", [
     	XNAT.app.move_project_dialog.hide();
     }}},{ text:"Move",id:'move_project_continue', handler:{fn:function(){
     	XNAT.app.move_project_dialog.hide();
-    	XNAT.app.prearhiveActions.move($("#proj_move_select").val());
+    	XNAT.app.prearchiveActions.move($("#proj_move_select").val());
     }, isDefault:true}}]);

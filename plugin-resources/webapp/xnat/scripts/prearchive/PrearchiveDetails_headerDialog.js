@@ -2,13 +2,35 @@ XNAT.app.headerDialog = XNAT.app.headerDialog || {};
 
 XNAT.app.headerDialog.load = function( url, title ){
 
-    openModalPanel("resource_loading","Loading");
+    //openModalPanel("resource_loading","Loading");
+    xmodal.loading.open();
+
+    var csvURL = url.split('format=html')[0] + 'format=csv';
+
+    console.log(csvURL);
 
     var modalOpts={};
     modalOpts.width = 700;
     modalOpts.height = 500;
-    modalOpts.okLabel = 'Close';
-    modalOpts.cancel = 'hide';
+    modalOpts.maximize = true;
+    modalOpts.buttons = {
+        close: {
+            label: 'Close',
+            close: true,
+            isDefault: true
+        },
+        csv: {
+            label: 'Download CSV',
+            close: false,
+            //link: true, // this would make it look like a regular link
+            action: function(){
+                window.location.href = csvURL;
+            }
+        }
+    };
+    modalOpts.beforeShow = function(){
+        xmodal.loading.close();
+    };
 
     var getData = $.ajax({
         type: 'GET',
@@ -20,15 +42,13 @@ XNAT.app.headerDialog.load = function( url, title ){
     getData.done(function(data){
         modalOpts.title = title;
         modalOpts.content = data;
-        xModalOpenNew(modalOpts);
-        closeModalPanel("resource_loading");
+        xmodal.open(modalOpts);
     });
 
     getData.fail(function(jqXHR, textStatus, errorThrown){
         modalOpts.title = 'Error - ' + title;
         modalOpts.content = 'Error: ' + textStatus;
-        xModalOpenNew(modalOpts);
-        closeModalPanel("resource_loading");
+        xmodal.open(modalOpts);
     });
 
 };

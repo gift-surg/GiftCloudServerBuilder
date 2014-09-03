@@ -330,6 +330,7 @@ div.containerTitle.withColor { font-weight: bold ; background: #084FAB ; }
 #breadcrumbs { padding: 10px 8px 0 0 ; }
 #breadcrumbs a { text-decoration: underline ; }
 
+.highlight-row:hover { background: #e5f2ff; }
 
 /* //////////  BRAND-SPANKING NEW NAV BAR!  ////////// */
 #main_nav { position: absolute ; right: 0 ; bottom: 0 ; height: 24px ; width: /* 578px */ /* 525px */ 728px ; color: #333 ; background: url('images/nav_bkdg.png') center center repeat-x ;
@@ -621,3 +622,19 @@ span.spacer { display: none !important ; }
 
 /* overrides for Chosen menus (if used) */
 html .chosen-container-single .chosen-single { color: #000 ; }
+
+
+/* fix for #layout_content being rendered in an xmodal modal */
+div.xmodal #layout_content { padding-top: 0 ; }
+
+
+/* prearchive file list modal */
+table.file-details { margin-top: -5px ; }
+table.file-details th,
+table.file-details td { padding: 3px 5px ; white-space: nowrap; }
+/*table.file-details td { border-right: 1px solid #d0d0d0 ; }*/
+table.file-details td.scan-image-link { max-width: 275px; overflow: hidden; }
+table.file-details td.scan-image-size { font-family: Courier, monospace; font-size: 13px; }
+table.file-details td.scan-image-buttons { border: none ; }
+
+

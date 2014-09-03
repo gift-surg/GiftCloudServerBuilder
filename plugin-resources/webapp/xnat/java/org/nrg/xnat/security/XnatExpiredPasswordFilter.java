@@ -225,7 +225,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 
     private boolean isUserNonExpiring(XDATUser user) {
         try {
-            return user.checkRole("Non-expiring");
+            return user.checkRole("non_expiring");
         } catch (Exception e) {
             return false;
         }

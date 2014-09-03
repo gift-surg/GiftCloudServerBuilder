@@ -1553,7 +1553,7 @@ public final class PrearcDatabase {
     				     					     final File tsFile,
     				     					     final PrearchiveCode autoArchive)
     throws SQLException, SessionException, Exception {
-    	Either<SessionData, SessionData> result = PrearcDatabase.eitherGetOrCreateSession(project, suid, s, tsFile, autoArchive);
+    	Either<SessionData, SessionData> result = PrearcDatabase.eitherGetOrCreateSession(s, tsFile, autoArchive);
         if (result.isLeft()) {
             return result.getLeft();
         }
@@ -1568,9 +1568,6 @@ public final class PrearcDatabase {
      * prearchive table an Either object with the "Left" branch set is returned.
      * 
      * This is useful in case the caller needs to know which operation was performed.
-     * @param project
-     * @param suid
-     * @param s
      * @param tsFile
      * @param autoArchive
      * @return
@@ -1578,8 +1575,8 @@ public final class PrearcDatabase {
      * @throws SessionException
      * @throws Exception
      */
-    public static synchronized Either<SessionData,SessionData> eitherGetOrCreateSession (final String project, final String suid, final SessionData s, final File tsFile, final PrearchiveCode autoArchive) throws SQLException, SessionException, Exception {
-        Either<SessionData,SessionData> result = new PredicatedOp<SessionData,SessionData>() {
+    public static synchronized Either<SessionData,SessionData> eitherGetOrCreateSession(final SessionData sessionData, final File tsFile, final PrearchiveCode autoArchive) throws SQLException, SessionException, Exception {
+        return new PredicatedOp<SessionData,SessionData>() {
             SessionData ss;
             /**
              * Return the found session
@@ -1597,30 +1594,29 @@ public final class PrearcDatabase {
 
                 SessionData resultSession = new SessionOp<SessionData>() {
                     public SessionData op()  throws SQLException, SessionException, Exception {
-                        int dups = PrearcDatabase.countOf(s.getFolderName(), s.getTimestamp(), s.getProject());
+                        int dups = PrearcDatabase.countOf(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject());
                         int suffix = 1;
                         String suffixString = "";
                         while (dups == 1) {
                             suffixString = "_" + suffix;
-                            dups = PrearcDatabase.countOf(s.getFolderName() + suffixString, s.getTimestamp(), s.getProject());
+                            dups = PrearcDatabase.countOf(sessionData.getFolderName() + suffixString, sessionData.getTimestamp(), sessionData.getProject());
                             if (dups > 1) {
-                                throw new SessionException("Database is in a bad state, " + dups + "sessions (name : " + s.getFolderName() + " timestamp: " + s.getTimestamp() + " project : " + s.getProject());
+                                throw new SessionException("Database is in a bad state, " + dups + "sessions (name : " + sessionData.getFolderName() + " timestamp: " + sessionData.getTimestamp() + " project : " + sessionData.getProject());
                             }
                             suffix++;
                         }
 
-                        s.setFolderName(s.getFolderName() + suffixString);
-                        s.setName(s.getName() + suffixString);
-                        s.setUrl((new File(tsFile,s.getFolderName()).getAbsolutePath()));
-                        s.setAutoArchive((Object) autoArchive);
+                        sessionData.setFolderName(sessionData.getFolderName() + suffixString);
+                        sessionData.setName(sessionData.getName() + suffixString);
+                        sessionData.setUrl((new File(tsFile, sessionData.getFolderName()).getAbsolutePath()));
+                        sessionData.setAutoArchive((Object) autoArchive);
 
                         PreparedStatement statement = this.pdb.getPreparedStatement(null,PrearcDatabase.insertSql());
                         for (int i = 0; i < DatabaseSession.values().length; i++) {
-                            DatabaseSession.values()[i].setInsertStatement(statement, s);
+                            DatabaseSession.values()[i].setInsertStatement(statement, sessionData);
                         }
                         statement.executeUpdate();
-                        SessionData tmp = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());	
-                        return tmp;
+                        return PrearcDatabase.getSession(sessionData.getFolderName(), sessionData.getTimestamp(), sessionData.getProject());
                     }
                 }.run();
                 result.setLeft(resultSession);
@@ -1635,16 +1631,16 @@ public final class PrearcDatabase {
              * was called so I'm doing it here. 
              * 
              */
-            boolean predicate() throws SQLException, SessionException, Exception {
+            boolean predicate() throws Exception {
                 return new SessionOp<Boolean>(){
-                    public Boolean op() throws SQLException, SessionException, Exception {
-                        String [] constraints = {
-                                DatabaseSession.PROJECT.searchSql(project), 
-                                DatabaseSession.TAG.searchSql(suid) 		
-                        };		
-                        ResultSet rs = this.pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints), null);
-                        boolean found = false;
-                        found = rs.next();
+                    public Boolean op() throws Exception {
+                        final List<String> constraints = new ArrayList<String>();
+                        constraints.add(DatabaseSession.PROJECT.searchSql(sessionData.getProject()));
+                        constraints.add(DatabaseSession.TAG.searchSql(sessionData.getTag()));
+                        constraints.add(DatabaseSession.NAME.searchSql(sessionData.getName()));
+
+                        ResultSet rs = pdb.executeQuery (null, DatabaseSession.findSessionSql(constraints.toArray(new String[constraints.size()])), null);
+                        boolean found = rs.next();
                         if (found) {
                         	ss = DatabaseSession.fillSession(rs);
                         }
@@ -1653,9 +1649,6 @@ public final class PrearcDatabase {
                 }.run();
             }
         }.run();
-        
-        return result;
-
     }
 
     /**

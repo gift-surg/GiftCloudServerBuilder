@@ -22,7 +22,10 @@ public class ServerException extends ActionException {
 	public ServerException(Status s, String msg,Throwable e){
 		super(s,msg,e);
 	}
-	
+    public ServerException(Status s, String message){
+        super(message);
+        status=s;
+    }
 	public ServerException(Status s, Throwable e){
 		super(s,e);
 	}

@@ -27,8 +27,8 @@ public final class SessionData implements Serializable {
 	private Date scan_date;
 	private String scan_time, subject, url, session, tag, source, visit, protocol, timeZone;
 	private PrearchiveCode autoArchive;
-    private Boolean preventAnon = Boolean.valueOf(false);
-    private Boolean preventAutoCommit = Boolean.valueOf(false);
+    private Boolean preventAnon = false;
+    private Boolean preventAutoCommit = false;
 
 	public SessionData() {
 	}
@@ -78,8 +78,7 @@ public final class SessionData implements Serializable {
                 throw new ClassCastException("The object submitted for auto-archive must be a String, Integer, or PrearchiveCode; the submitted class is invalid for casting to PrearchiveCode: " + object.getClass());
             }
 			this.setAutoArchive(code);
-		}
-		else {
+        } else {
 			this.autoArchive = null;
 		}
 		return this;
@@ -213,8 +212,7 @@ public final class SessionData implements Serializable {
 	public SessionData setProject(String project) {
 		if (project != null) {
 			this.sessionTriple.setProject(project);
-		}
-		else {
+        } else {
 			this.sessionTriple.setProject(PrearcUtils.COMMON);
 		}
 		return this;

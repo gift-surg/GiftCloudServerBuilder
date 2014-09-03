@@ -26,6 +26,10 @@ public class ClientException extends ActionException {
 	public ClientException(Status s, String msg,Throwable e){
 		super(s,msg,e);
 	}
+    public ClientException(Status s, String message){
+        super(message);
+        status=s;
+    }
 	public ClientException(Status s, Throwable e){
 		super(s,e);
 	}

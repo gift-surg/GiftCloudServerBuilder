@@ -37,6 +37,11 @@ public abstract class ActionException extends Exception {
 		status=s;
 	}
 	
+	public ActionException(Status s, String message){
+		super(message);
+		status=s;
+	}
+
 	public ActionException(Status s, Throwable e){
 		super(e);
 		status=s;

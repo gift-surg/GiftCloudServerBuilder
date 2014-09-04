@@ -13,6 +13,7 @@ package org.nrg.xnat.security;
 import org.apache.commons.lang.StringUtils;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.entities.AliasToken;
+import org.nrg.xdat.entities.UserRole;
 import org.nrg.xdat.entities.XDATUserDetails;
 import org.nrg.xdat.om.ArcArchivespecification;
 import org.nrg.xdat.security.XDATUser;
@@ -108,6 +109,20 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
                     }
                     username = alias.getXdatUserId();
                 }
+                // Check whether the user is connected to an active role for non_expiring.
+                try {
+                    List<Integer> roles = (new JdbcTemplate(XDAT.getDataSource())).query("SELECT COUNT(*) FROM xhbm_user_role where username = ? and role = ? and enabled = 't'", new String[]{username, UserRole.ROLE_NON_EXPIRING}, new RowMapper<Integer>() {
+                        public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            return rs.getInt(1);
+                        }
+                    });
+                    if (roles.get(0) > 0) {
+                        chain.doFilter(request, response);
+                    }
+                } catch(Exception e) {
+                    logger.error(e);
+                }
+
                 boolean isExpired = false;
                 String interval = ((XnatProviderManager) XDAT.getContextService().getBean("customAuthenticationManager",ProviderManager.class)).getExpirationInterval().trim();
                 if(interval.equals("-1")){
@@ -225,7 +240,7 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
 
     private boolean isUserNonExpiring(XDATUser user) {
         try {
-            return user.checkRole("non_expiring");
+            return user.checkRole(UserRole.ROLE_NON_EXPIRING);
         } catch (Exception e) {
             return false;
         }

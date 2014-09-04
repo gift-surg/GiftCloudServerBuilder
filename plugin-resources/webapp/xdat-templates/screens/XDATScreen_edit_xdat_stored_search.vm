@@ -21,21 +21,21 @@ $page.setVlinkColor($ui.vlink)
 #end
 
 <p>
-	
+
 <script>
 function verifySecurity(){
 	var elemName=$(YUIDOM.get("xdat:stored_search/root_element_name")).val();
-	
+
 	if(elemName==""){
 		xModalMessage('Selection Error', 'Please select a Pivot data type.');
 	}
-	
+
 	if(elemName!=XNAT.app.lastElement){
 		XNAT.app.needsCheck=true;//we may need to verify this
 	}
-	
+
 	XNAT.app.lastElement=elemName;
-	
+
 	var registration=window.available_elements.getByName(elemName);
 	if( (XNAT.app.needsCheck) && (registration==null || registration==undefined)){
 		xModalConfirm({
@@ -233,7 +233,7 @@ return false;
 
 							<textarea name="xdat:stored_search/description" rows="3" cols="50" style="text-align:left;">$!item.getStringProperty("xdat:stored_search/description")</textarea></TD></TR>
 
-						
+
 
 							<TR><TD>Pivot Data Type</TD>
 
@@ -253,7 +253,7 @@ return false;
 
 							</TR>
 
-							
+
 
 							<TR><TD>Sort By Data Type</TD>
 
@@ -273,7 +273,7 @@ return false;
 
 							<TR><TD>Sort By Field</TD>
 
-							<TD><A ONCLICK="return popupSortFields('SORT_FIELD','xdat:stored_search/sort_by/element_name');" href=""><IMG border=0 src="$content.getURI("images/update.gif")"/></A> 
+							<TD><A ONCLICK="return popupSortFields('SORT_FIELD','xdat:stored_search/sort_by/element_name');" href=""><IMG border=0 src="$content.getURI("images/update.gif")"/></A>
 
 							#if ($item.getProperty("xdat:stored_search/sort_by/field_ID"))
 
@@ -285,7 +285,7 @@ return false;
 
 							#end
 
-							</TD></TR>							
+							</TD></TR>
 
 							<TR><TD>Display Diff Columns</TD><TD>#xdatBooleanRadio("xdat:stored_search/allow-diff-columns" $item true $vr)</TD></TR>
 
@@ -353,7 +353,7 @@ return false;
 
 							#end
 
-							
+
 
 							#foreach($xdat_search_field_1_COUNTER in [0..$xdat_search_field_1_NUM_ROWS])
 
@@ -387,7 +387,7 @@ return false;
 
 									</td>
 
-									<TD NOWRAP><A ONCLICK="return popupFields('SEARCH_FIELD${xdat_search_field_1_COUNTER}','SEARCH_FIELD_ELEMENT${xdat_search_field_1_COUNTER}','SEARCH_FIELD_HEADER${xdat_search_field_1_COUNTER}','SEARCH_FIELD_TYPE${xdat_search_field_1_COUNTER}');" href=""><IMG border=0 src="$content.getURI("images/update.gif")"/></A> 
+									<TD NOWRAP><A ONCLICK="return popupFields('SEARCH_FIELD${xdat_search_field_1_COUNTER}','SEARCH_FIELD_ELEMENT${xdat_search_field_1_COUNTER}','SEARCH_FIELD_HEADER${xdat_search_field_1_COUNTER}','SEARCH_FIELD_TYPE${xdat_search_field_1_COUNTER}');" href=""><IMG border=0 src="$content.getURI("images/update.gif")"/></A>
 
 									#if ($item.getProperty("xdat:stored_search/search_field[$xdat_search_field_1_COUNTER]/value"))
 
@@ -448,108 +448,7 @@ return false;
 					</TD>
 
 				</TR>
-
-				<TR>
-
-					<TD align="left" valign="top">
-
-						<TABLE><TR><TD>
-
-							#foreach($xdat_criteria_set_1_COUNTER in [0..2])
-
-								<BR><TABLE>
-
-									<TR><TH align="left"><BR><font face="$ui.sansSerifFonts" size="2">Where Clause $xdat_criteria_set_1_COUNTER</font></TH></TR>
-
-									<TR>
-
-										<TD align="left" valign="top">
-
-											<TABLE>
-
-												<TR>
-
-										#if($!item.getProperty("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/xdat_criteria_set_id"))
-
-												<TH>Remove</TH>
-
-									<TD>
-
-										<INPUT TYPE="checkbox" NAME="REMOVE__$xdat_criteria_set_1_COUNTER=xdat:criteria_set.xdat_criteria_set_id" VALUE="$!item.getProperty("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/xdat_criteria_set_id")"/>
-
-									</TD>
-
-										#end
-
-												#set($methods = ["AND","OR"])
-
-												<TD>method</TD><TD>
-
-												#xdatSelectBoxWSingleValue("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/method" $item $methods $vr)</TD></TR>
-
-																		#xdatHiddenBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/xdat_criteria_set_id" $item "")
-
-											</TABLE>
-
-										</TD>
-
-									</TR>
-
-									<TR>
-
-										<TD align="left" valign="top">
-
-											<TABLE>
-
-												<TR>
-
-													<TD>Display field</TD>
-
-													<TD>comparison type</TD>
-
-													<TD>value</TD>
-
-												</TR>
-
-												#set($comparisonTypes = ["=",">=","<=",">","<"," LIKE "," IS"])
-
-		
-
-												#foreach($xdat_criteria_2_COUNTER in [0..3])
-
-													<TR>
-
-														<TD>#xdatTextBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/schema_field" $item "" $vr)</TD>
-
-														<TD>#xdatSelectBoxWSingleValue("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/comparison_type" $item $comparisonTypes $vr)
-
-														</TD>
-
-														<TD>#xdatTextBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/value" $item "" $vr)</TD>
-
-														#xdatHiddenBox("xdat:stored_search/search_where[$xdat_criteria_set_1_COUNTER]/criteria[$xdat_criteria_2_COUNTER]/xdat_criteria_id" $item "")
-
-													</TR>
-
-												#end
-
-											</TABLE>
-
-										</TD>
-
-									</TR>
-
-								</TABLE>
-
-							#end
-
-						</TD></TR></TABLE>
-
-					</TD>
-
-				</TR>
-
-<TR>
+                <TR>
 
 					<TD align="left" valign="top">
 

@@ -175,6 +175,7 @@ function LeftBarTreeView(_config){
 		 	this.dataNode=new YAHOO.widget.TextNode({label:"Data",ID:"d"},root,this.open_array.contains("d"));
 		 	for(var esC=0;esC<window.available_elements.length;esC++){
 		 		var es=window.available_elements[esC];
+                if (es.element_name === "wrk:workflowData") {continue;} // do not include workflows
 		 		var cpNode=new YAHOO.widget.TextNode({label:es.plural,
 		 		ID:"d."+es.element_name,
 		 		URL:serverRoot +'/REST/search/saved/@' + es.element_name + ''},this.dataNode,false);

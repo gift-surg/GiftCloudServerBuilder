@@ -46,6 +46,12 @@ import java.io.*;
 import java.util.Calendar;
 import java.util.zip.ZipOutputStream;
 
+import org.nrg.xnat.helpers.uri.URIManager;
+import org.nrg.xnat.helpers.uri.UriParserUtils;
+import org.nrg.xnat.helpers.uri.URIManager.ArchiveItemURI;
+import org.nrg.xnat.utils.ResourceUtils;
+import org.nrg.xdat.security.XDATUser;
+
 public class ExptFileUpload extends SecureAction {
 
     private static final Logger logger = Logger.getLogger(ExptFileUpload.class);
@@ -401,7 +407,14 @@ public class ExptFileUpload extends SecureAction {
                 if (tempMR.getProject()!=null){
                     data.getParameters().setString("project", tempMR.getProject());
                 }
-                
+
+// New code to refresh the file catalog
+                URIManager.DataURIA uri=UriParserUtils.parseURI("/archive/experiments/" + tempMR.getId());
+                ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
+                XDATUser user = TurbineUtils.getUser(data);
+                ResourceUtils.refreshResourceCatalog(resourceURI, user, this.newEventInstance(data, EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"), true, true, true, true);
+// End new code
+
                 if (TurbineUtils.HasPassedParameter("destination", data)){
                     this.redirectToReportScreen((String)TurbineUtils.GetPassedParameter("destination", data), tempMR.getItem(), data);
                 }else{

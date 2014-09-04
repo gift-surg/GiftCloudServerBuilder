@@ -18,7 +18,7 @@ if (typeof jQuery == 'undefined') {
     var _xmodal={}, $html, $body, $mask, $modal;
 
 
-    _xmodal.topZ = 1000;
+    _xmodal.topZ = 10000;
 
 
     function getScriptDir() {
@@ -219,7 +219,12 @@ if (typeof jQuery == 'undefined') {
         //////////////////////////////////////////////////
         xmodal.deleteModal = function(_id){
 
-            delete xmodal.modals[_id];
+            try {
+                delete xmodal.modals[_id];
+            }
+            catch(e) {
+                // fail silently
+            }
 
             var i = xmodal.modals._ids.indexOf(_id);
             xmodal.modals._ids.splice( i, 1 );
@@ -629,6 +634,20 @@ if (typeof jQuery == 'undefined') {
             modal_id = '#' + modal.id;
             modal.$modal = $modal = $(modal_id);
 
+            if (modal.mask !== false){
+                //modal.$mask = modal.$modal.closest('xmodal-mask');
+                modal.$mask = $mask = $(modal_id + '-mask');
+                modal.$mask.css({
+                    'z-index': ++xmodal.topZ
+                });
+                modal.$mask.show().addClass('open');
+            }
+
+            // copy to Velocity-safe var names
+            // to be available to all callback methods
+            modal.__mask  = modal.$mask;
+            modal.__modal = modal.$modal;
+
             var top_ = modal.top || 0,
                 left_ = modal.left || 0;
 
@@ -677,15 +696,6 @@ if (typeof jQuery == 'undefined') {
 
             }
 
-            if (modal.mask !== false){
-                //modal.$mask = modal.$modal.closest('xmodal-mask');
-                modal.$mask = $mask = $(modal_id + '-mask');
-                modal.$mask.css({
-                    'z-index': ++xmodal.topZ
-                });
-                modal.$mask.show().addClass('open');
-            }
-
             if (modal.animation === 'fade') {
                 //$mask.fadeIn(modal.speed / 2);
                 modal.$modal.fadeIn(modal.speed, function() {
@@ -714,10 +724,6 @@ if (typeof jQuery == 'undefined') {
                     modal.$modal.drags({ handle: '.title' });
                 }
             }
-
-            // copy to Velocity-safe var names
-            modal.__mask  = modal.$mask;
-            modal.__modal = modal.$modal;
 
             // save a reference to this modal
             xmodal.modals[modal.id] = modal;

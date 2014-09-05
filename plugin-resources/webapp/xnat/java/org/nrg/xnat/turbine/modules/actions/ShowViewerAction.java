@@ -60,7 +60,7 @@ public class ShowViewerAction extends SecureAction {
                         }else{
                             DisplaySearchAction dsa = new DisplaySearchAction();
                             data.getParameters().setString("ELEMENT_0","xnat:subjectData");
-                            data.getParameters().setString("xnat:subjectData.COMBO0_FIELDS","xnat:subjectData.SUBJECTID_equals");
+                            data.getParameters().setString("xnat:subjectData.COMBO0_FIELDS","xnat:subjectData.SUBJECTID_equals,xnat:subjectData/label_equals,xnat:subjectData/sharing/share/label_equals");
                             data.getParameters().setString("xnat:subjectData.COMBO0",s);
                             dsa.doPerform(data,context);
                             return;

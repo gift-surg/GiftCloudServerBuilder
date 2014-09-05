@@ -50,18 +50,18 @@
 			#end
 		#end
 		#if($f.getRequired()==0 || !$f.getRequired())
-			<label><input #if($isDisabled)disabled#end type="radio" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="" #if($currentValue=="")CHECKED#end/> No value</label>
+			<label><input #if($isDisabled)disabled#end type="radio" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="NULL" #if($currentValue=="")CHECKED#end/> No value</label>
 		#end
 		<label><input #if($isDisabled)disabled#end type="radio" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="true" #if($currentValue)CHECKED#end/> True</label>
 		<label><input #if($isDisabled)disabled#end type="radio" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="false" #if($currentValue==false)CHECKED#end/> False</label>
     #elseif($f.getDatatype()=="date")
 		<script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
 		<link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')"> 
-		<input #if($isDisabled)disabled#end type="text" ID="$!f.getXmlpath()" name="$!f.getXmlpath()" #if($om.getProperty($!f.getXmlpath())) value="$turbineUtils.formatDate($!om.getDateProperty($!f.getXmlpath()),"MM/dd/yyyy")" #end  #if($f.getRequired()==1 || $f.getRequired()) class="required" #end/>
+		<input #if($isDisabled)disabled#end type="text" ID="$!f.getXmlpath()" name="$!f.getXmlpath()" #if($om.getProperty($!f.getXmlpath())) value="$turbineUtils.formatDate($!om.getDateProperty($!f.getXmlpath()),"MM/dd/yyyy")" #end  #if($f.getRequired()==1 || $f.getRequired()) class="required" #else class="nullable $!f.getDatatype()" #end/>
 		<script type="text/javascript">
 	      insertCalendar(document.getElementById("$!f.getXmlpath()"),"$!f.getName()");
 	    </script>
-	#else
+    #else
 		#if($f.getPossiblevalues_possiblevalue().size()>0)
 			<select #if($isDisabled)disabled#end id="$!f.getXmlpath()" name="$!f.getXmlpath()" #if($f.getRequired()==1 || $f.getRequired()) class="required" #end>
     			<option value="">(SELECT)</option>

@@ -1,35 +1,103 @@
-$navigation.setTemplate("/htmlOpen.vm")
-## insert any template-specific <head> code here
-
+<!DOCTYPE html>
+##Copyright 2005 Harvard University / Howard Hughes Medical Institute (HHMI) All Rights Reserved
 <!-- BEGIN Noninteractive.vm -->
+<!--[if lt IE 7]> <html class="ie ie6 ltie7 ltie8 ltie9 ltie10 no-js"> <![endif]-->
+<!--[if IE 7]>    <html class="ie ie7 ltie8 ltie9 ltie10 no-js"> <![endif]-->
+<!--[if IE 8]>    <html class="ie ie8 ltie9 ltie10 no-js"> <![endif]-->
+<!--[if IE 9]>    <html class="ie ie9 ltie10 no-js"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html class="no-js"> <!--<![endif]-->
 
-$navigation.setTemplate("/bodyOpen.vm")
-## insert any template-specific code here that needs to be directly after opening <body> tag
+<head>
+    <title></title>
 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="max-age=0">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="-1">
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
 
-<!-- path: xdat-templates/layouts/NoMenu -->
+    <script type="text/javascript">
 
-<table id="wrapper_table" height="500" border="0" valign="top">
-<tr height="120">
-        <td valign="top">
-            $navigation.setTemplate("/NoninteractiveTop.vm")
-        </td>
-    </tr>
-    <tr>
-        <td align="left" valign="top">
-            <div id="layout_content2" style="display:none;">Loading...</DIV>
-            <div id="layout_content">$screen_placeholder</DIV>
-        </td>
-    </tr>
-    <tr>
-        <td valign="bottom">
-            $navigation.setTemplate("/DefaultBottom.vm")
-        </td>
-    </tr>
-</table>
+        var serverRoot = "$content.getURI('')";
+        var csrfToken = "$!XNAT_CSRF";
 
-## insert any template-specific code here that needs to be directly before closing </body> tag
+        // utility for getting URL query string value
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return (results == null) ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
 
+        window.jsdebug = getParameterByName('jsdebug').toLowerCase();
+        window.js = getParameterByName('js').toLowerCase();
+
+        // convert window.jsdebug to boolean
+        window.jsdebug = (window.jsdebug === 'true' || window.jsdebug === 'debug' || window.js === 'debug');
+
+        var jQuery_script = (function () {
+            var script = (window.jsdebug) ? 'jquery/jquery-1.8.3.js' : 'jquery/jquery-1.8.3.min.js';
+            return '<script type="text/javascript" src="' + serverRoot + '/scripts/' + script + '"><\/script>';
+        })();
+
+        document.write(jQuery_script);
+
+    </script>
+    <!-- document.write(jQuery_script); -->
+##    <script type="text/javascript" src="$content.getURI('scripts/jquery/jquery-1.8.3.js')"></script>
+    <script type="text/javascript">
+
+        var jq = jQuery;
+        jq.ajaxSetup({cache: false});
+
+        if (typeof XNAT == 'undefined') { XNAT = {} }
+        if (typeof XNAT.app == 'undefined') { XNAT.app = {} }
+        if (typeof XNAT.data == 'undefined') { XNAT.data = {} }
+        if (typeof XNAT.app.utils == 'undefined') { XNAT.app.utils = {} }
+
+    </script>
+
+    <script type="text/javascript" src="$content.getURI("scripts/utils.js")"></script>
+
+##    <link rel="stylesheet" type="text/css" href="$content.getURI("scripts/yui/build/assets/skins/sam/skin.css")">
+
+    <!-- xdat.css and xnat.css loaded last to override YUI styles -->
+    <link rel="stylesheet" type="text/css" href="$content.getURI("style/xdat.css")">
+    <link rel="stylesheet" type="text/css" href="$content.getURI("style/xnat.css")">
+
+    <link rel="stylesheet" type="text/css" href="$content.getURI("scripts/xmodal-v1/xmodal.css")">
+    <script type="text/javascript" src="$content.getURI("scripts/xmodal-v1/xmodal.js")"></script>
+    <script type="text/javascript" src="$content.getURI("scripts/xmodal-v1/xmodal-migrate.js")"></script>
+
+</head>
+<body>
+
+<div id="page_wrapper">
+
+    <table id="wrapper_table" class="non-interactive" height="500" style="width:100%;" cellspacing="0" border="0">
+        <tr height="120">
+            <td valign="top">
+                $navigation.setTemplate("/NoninteractiveTop.vm")
+            </td>
+        </tr>
+        <tr>
+            <td align="left" valign="top">
+                <div id="layout_content2" style="display:none;">Loading...</DIV>
+                <div id="layout_content">$screen_placeholder</DIV>
+            </td>
+        </tr>
+        <tr>
+            <td valign="bottom">
+                $navigation.setTemplate("/DefaultBottom.vm")
+            </td>
+        </tr>
+    </table>
+
+</div>
+<!-- /page_wrapper -->
+##<script type="text/javascript" src="$content.getURI('scripts/footer.js')"></script>
 <!-- END Noninteractive.vm -->
-
-$navigation.setTemplate("/htmlClose.vm")
+</body>
+</html>

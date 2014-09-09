@@ -192,17 +192,3 @@ $page.setBgColor($ui.bgcolor)
 
     })();
 </script>
-##    <div valign="top">
-##        <table valign="top" align="center">
-##            <tr>
-##                <td colspan="3" align="left">Enter your email address to resend the verification email.</td>
-##            </tr>
-##            <tr>
-##                #formLabel("Email")
-##                <td><input id="requestEmail" type="text" name="email" value="$!email"></td>
-##                <td><input class="ui_sansSerifFonts" type="button" value="Request" onclick="requestVerificationEmail()"></td>
-##            </tr>
-##            <tr><td colspan="3"><br><br></td></tr>
-##        </table>
-##    </div>
-##</div>

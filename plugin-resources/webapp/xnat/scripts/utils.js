@@ -119,6 +119,11 @@ function sizeFormat(fs) {
 // make sure the ajax calls are NOT cached
 $.ajaxSetup({cache:false});
 
+// checks for email address in format 'name@domain.com'
+function validEmailFormat(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
 
 // where is the 'scripts' directory?
 //if (typeof scripts_dir === 'undefined') {

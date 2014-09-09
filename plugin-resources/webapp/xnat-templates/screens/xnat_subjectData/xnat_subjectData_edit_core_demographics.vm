@@ -1,108 +1,135 @@
 <!-- BEGIN /screens/xnat_subjectData/xnat_subjectData_edit_core_demographics.vm -->
-		<tr>
-			 #formLabel("YOB/DOB/Age")
+<tr>
 
-			 #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"))
-			  #set($hasDOB=true)
-			 #elseif($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"))
-			  #set($hasYOB=true)
-			 #elseif($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age"))
-			  #set($hasAGE=true)
-			 #else
-			  ##default to DOB
-			  #set($hasDOB=true)
-			 #end
-  			<td style="border:1px solid #AAAAAA;">
-   <table >
-    <tr><td colspan="2">Please Select One</td></tr>
-    <tr>
-     <td nowrap><input type="radio" id="dob" name="dob_group" #if($hasDOB)defaultChecked checked#end onclick="selectDOBVariant(this);return true;"/>Date Of Birth</td>
+    #formLabel("YOB/DOB/Age")
 
-     <td rowspan="3" valign="top">
-      <div id="DIV_DOB" #if($hasDOB)style="display:block"#else style="display:none"#end>
-				       <script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
-				       <link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
-									       <input type="text" id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob" #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob")) value="$!turbineUtils.formatDate($!om.getDateProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"MM/dd/yyyy")" #end/>
-									       <script type="text/javascript">
-									        insertCalendar(document.getElementById("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"Date Of Birth");
-									       </script>
-      </div>
-      <div id="DIV_YOB" #if($hasYOB)style="display:block"#else style="display:none"#end>
-       #set($years = [ 1900..$!turbineUtils.getYear()])
-       #set ($currentYear = $!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"))
-						       <select id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob" >
-							        <option value="NULL">(SELECT)</option>
-							        #foreach ($year in $years)
-					         		<option value="$year" #if ( $year == $currentYear ) SELECTED="true" #end>$year</option>
-							        #end
-						       </select>
-      </div>
-      <div id="DIV_AGE" #if($hasAGE)style="display:block"#else style="display:none"#end>
-       #set ($currentAge = $!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age"))
-						       <input type="text" size="3" id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age" name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age" value="$!currentAge"/>
-      </div>
-     </td>
-    </tr>
-    <tr>
-     <td nowrap><input type="radio" id="yob" name="dob_group" #if($hasYOB)defaultChecked checked#end onclick="selectDOBVariant(this);return true;"/>Year Of Birth</td>
-    </tr>
-    <tr>
-     <td nowrap><input type="radio" id="age" name="dob_group" #if($hasAGE)defaultChecked checked#end onclick="selectDOBVariant(this);return true;"/>Age</td>
-    </tr>
-   </table>
-<script type="text/javascript">
- function selectDOBVariant(radio){
-    //prevent action on double click
-    if(window.lastSelectedVariant==undefined || window.lastSelectedVariant!=radio.id){
-      if(radio.id=="yob"){
-        document.getElementById("DIV_AGE").style.display="none";
-        document.getElementById("DIV_YOB").style.display="block";
-        document.getElementById("DIV_DOB").style.display="none";
-        document.getElementById("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob").focus();
-      }else if(radio.id=="age"){
-        document.getElementById("DIV_AGE").style.display="block";
-        document.getElementById("DIV_YOB").style.display="none";
-        document.getElementById("DIV_DOB").style.display="none";
-        document.getElementById("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age").focus();
-      }else{
-        //dob
-        document.getElementById("DIV_AGE").style.display="none";
-        document.getElementById("DIV_YOB").style.display="none";
-        document.getElementById("DIV_DOB").style.display="block";
-        document.getElementById("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob").focus();
-      }
-      window.lastSelectedVariant=radio.id;
-    }
-      return true;
-  }
-</script>
-				  </td>
-		</tr>
-		<tr>
-			 #formLabel("Gender")
-			 <td>
-			 #set($temp_gender=$!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender"))
-			<select name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender" >
-            		<option value="" #if ( "" ==  $temp_gender) SELECTED="true" #end>(SELECT)</option>
-            		#if ( "M" ==  $temp_gender || "F" ==  $temp_gender)
-            			<option value="M" #if ( "M" ==  $temp_gender) SELECTED="true" #end>M</option>
-            			<option value="F" #if ( "F" == $temp_gender ) SELECTED="true" #end>F</option>
-            		#else
-            		<option value="male" #if ( "male" ==  $temp_gender) SELECTED="true" #end>Male</option>
-            		<option value="female" #if ( "female" == $temp_gender ) SELECTED="true" #end>Female</option>
-            		#end
-            		<option value="unknown" #if ( "unknown" == $temp_gender ) SELECTED="true" #end>Unknown</option>
-			</select></td>
-		</tr>
-		<tr>
-			 #set($temp_hand=$!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness"))
-			#formLabel("Handedness")
-			<td><select name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness" >
-            		<option value="" #if ( "" ==  $temp_hand) SELECTED="true" #end>(SELECT)</option>
-            		<option value="right" #if ( "right" == $temp_hand ) SELECTED="true" #end>Right</option>
-            		<option value="left" #if ( "left" == $temp_hand ) SELECTED="true" #end>Left</option>
-            		<option value="ambidextrous" #if ( "ambidextrous" == $temp_hand ) SELECTED="true" #end>Ambidextrous</option>
-            		<option value="unknown" #if ( "unknown" == $temp_hand ) SELECTED="true" #end>Unknown</option>
-			</select></td>
-		</tr>
-		<!-- END /screens/xnat_subjectData/xnat_subjectData_edit_core_demographics.vm -->
+    #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"))
+        #set($hasDOB=true)
+    #elseif($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"))
+        #set($hasYOB=true)
+    #elseif($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age"))
+        #set($hasAGE=true)
+    #else
+    ##default to DOB
+        #set($hasDOB=true)
+    #end
+    <td>
+
+        <style type="text/css">
+            #dob-yob-age td { height: 25px; padding: 0; vertical-align: middle; white-space: nowrap; }
+            #dob-datepicker td { height: auto; }
+        </style>
+        <fieldset style="width:275px;border:1px solid #ccc">
+            <legend>Please Select One</legend>
+            <table id="dob-yob-age" cellspacing="0">
+                <tr title="Date of Birth">
+                    <td class="radio">
+                        <input type="radio" value="dob-input" id="dob" name="dob_group" #if ($hasDOB) checked #end>Date Of Birth
+                        &nbsp; &nbsp;
+                    </td>
+                    <td valign="center">
+                        <div class="input" id="dob-input" style="display: #if($hasDOB) block #else none #end">
+                        <span id="dob-datepicker" class="single us"
+                            #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"))
+                                data-value='$!turbineUtils.formatDate($!om.getDateProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"),"MM/dd/yyyy")'
+                            #end
+                            data-validate="onblur"
+                            data-input-id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"
+                            data-input-name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"></span>
+                            <script type="text/javascript">XNAT.app.datePicker.init(jQuery('#dob-datepicker'))</script>
+                        </div>
+                    </td>
+                </tr>
+                <tr title="Year of Birth">
+                    <td class="radio">
+                        <input type="radio" value="yob-input" id="yob" name="dob_group" #if ($hasYOB) checked #end>Year Of Birth
+                        &nbsp; &nbsp;
+                    </td>
+                    <td valign="center">
+                        <div class="input" id="yob-input" style="display: #if($hasYOB) block #else none #end">
+                            <input type="text" size="4" maxlength="4"
+                                id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"
+                                name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob">
+                            <script type="text/javascript">
+                                (function(){
+                                    var yobInput = document.getElementById('xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob');
+                                    var max = parseInt(XNAT.data.todaysDate.yyyy);
+                                    var min = 1900;
+                                    jQuery(yobInput).mask('9999',{placeholder:' '}); // forces numeric input
+                                    jQuery(yobInput).change(function(){
+                                        var __input = jQuery(this);
+                                        var year = __input.val();
+                                        if (year && (year > max || year < min)){
+                                            xmodal.message({
+                                                title: 'Invalid Date',
+                                                width: 350,
+                                                content: 'Please enter a date between 1900 and ' + max + '.',
+                                                action: function(){
+                                                    __input.val('').focus();
+                                                }
+                                            });
+                                        }
+                                    });
+                                })();
+                            </script>
+                        </div>
+                    </td>
+                </tr>
+                <tr title="Age">
+                    <td class="radio">
+                        <input type="radio" value="age-input" id="age" name="dob_group" #if($hasAGE) checked #end>Age
+                        &nbsp; &nbsp;
+                    </td>
+                    <td valign="center">
+                        <div class="input" id="age-input" style="display: #if($hasAGE) block #else none #end">
+                            #set ($currentAge = $!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age"))
+                            <input type="text" size="3"
+                                id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age"
+                                name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age"
+                                value="$!currentAge">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <script type="text/javascript">
+                // activate date input for corresponding radio button
+                jQuery('[name="dob_group"]').click(function(){
+                    var input_val = jQuery(this).val();
+                    var __form = jQuery('#dob-yob-age');
+                    __form.find('div.input').hide();
+                    __form.find('#'+input_val).show().find('input').focus();
+                });
+            </script>
+
+        </fieldset>
+    </td>
+</tr>
+<tr>
+    #formLabel("Gender")
+    <td>
+        #set($temp_gender=$!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender"))
+        <select name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/gender">
+            <option value="" #if ( "" ==  $temp_gender) selected="selected" #end>(SELECT)</option>
+            #if ( "M" ==  $temp_gender || "F" ==  $temp_gender)
+                <option value="M" #if ( "M" ==  $temp_gender) selected="selected" #end>M</option>
+                <option value="F" #if ( "F" == $temp_gender ) selected="selected" #end>F</option>
+            #else
+                <option value="male" #if ( "male" ==  $temp_gender) selected="selected" #end>Male</option>
+                <option value="female" #if ( "female" == $temp_gender ) selected="selected" #end>Female</option>
+            #end
+            <option value="unknown" #if ( "unknown" == $temp_gender ) selected="selected" #end>Unknown</option>
+        </select></td>
+</tr>
+<tr>
+    #set($temp_hand=$!item.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness"))
+    #formLabel("Handedness")
+    <td><select name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/handedness">
+        <option value="" #if ( "" ==  $temp_hand) selected="selected" #end>(SELECT)</option>
+        <option value="right" #if ( "right" == $temp_hand ) selected="selected" #end>Right</option>
+        <option value="left" #if ( "left" == $temp_hand ) selected="selected" #end>Left</option>
+        <option value="ambidextrous" #if ( "ambidextrous" == $temp_hand ) selected="selected" #end>Ambidextrous</option>
+        <option value="unknown" #if ( "unknown" == $temp_hand ) selected="selected" #end>Unknown</option>
+    </select></td>
+</tr>
+<!-- END /screens/xnat_subjectData/xnat_subjectData_edit_core_demographics.vm -->

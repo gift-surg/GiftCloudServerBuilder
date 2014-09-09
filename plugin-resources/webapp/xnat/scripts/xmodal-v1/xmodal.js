@@ -401,8 +401,14 @@ if (typeof jQuery == 'undefined') {
 
                     var button_ = modal.buttons[_prop];
                     var button_action = button_.action;
+
+                    var click_btn = 'click.' + button_id;
+
+                    // unbind any existing onclick events
+                    $body.off(click_btn, '#' + button_id);
+
                     // bind onclick events to THESE buttons
-                    $body.on('click', '#' + button_id, function () {
+                    $body.on(click_btn, '#' + button_id, function () {
                         if ($.isFunction(button_action)) {
                             button_action(modal);
                         }
@@ -668,7 +674,7 @@ if (typeof jQuery == 'undefined') {
                 'right': (left_ !== 0) ? 'auto' : 0,
                 'width': modal.width,
                 'height': modal.height,
-                'z-index': ++xmodal.topZ + 2
+                'z-index': ++xmodal.topZ
             });
 
             if (modal.scroll === true) {
@@ -906,8 +912,8 @@ if (typeof jQuery == 'undefined') {
             this.count = opts.count || ++xmodal.count;
             this.kind = 'alert';
             this.id = 'xmodal' + this.count + '-alert';
-            this.width = 420;
-            this.height = 220;
+            this.width = 400;
+            this.height = 200;
             this.animation = 'fade';
             this.speed = 100;
             this.title = false;

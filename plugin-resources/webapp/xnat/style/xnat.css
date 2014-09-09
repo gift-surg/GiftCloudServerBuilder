@@ -317,7 +317,7 @@ td.highlighted { background-color: #f0f0f0 ; border: 1px solid #d8d8d8 ; }
 .yuimenubaritemlabel,
 .yuimenuitemlabel { outline: none; }
 
-#layout_content { padding-top: 10px ; z-index: 0 ; font-size: 12px ; }
+#layout_content { padding-top: 10px ; z-index: 0 ; font-size: 13px ; line-height: 17px; }
 /*
 #layout_content, #layout_content .yui-content { width: 700px ; }
 #layout_content .yui-nav { width: 714px ; }
@@ -331,6 +331,7 @@ div.containerTitle.withColor { font-weight: bold ; background: #084FAB ; }
 #breadcrumbs a { text-decoration: underline ; }
 
 .highlight-row:hover { background: #e5f2ff; }
+.off-canvas, .off-screen, .offscreen, .html-template { position: fixed; left: -9999px; top: -9999px; }
 
 /* //////////  BRAND-SPANKING NEW NAV BAR!  ////////// */
 #main_nav { position: absolute ; right: 0 ; bottom: 0 ; height: 24px ; width: /* 578px */ /* 525px */ 728px ; color: #333 ; background: url('images/nav_bkdg.png') center center repeat-x ;

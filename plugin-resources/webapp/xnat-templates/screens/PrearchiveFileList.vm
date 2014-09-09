@@ -80,7 +80,13 @@
             xmodal.open(imageModal);
         });
 
-        jq(document.body).on('click', 'a.image-download', function(e){
+        // remove event handlers in 'imageDownload' namespace
+        // to prevent firing more than once on the same element
+        // since this template (and JavaScript) is (re)loaded multiple times
+        jq(document.body).off('click.imageDownload', 'a.image-download');
+
+        // download original file from link or image preview
+        jq(document.body).on('click.imageDownload', 'a.image-download', function(e){
             e.preventDefault();
             var title = this.title;
             var url   = this.href;

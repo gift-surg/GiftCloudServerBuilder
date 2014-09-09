@@ -424,9 +424,9 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
     if (_opts && _opts.todayButton === true){
         the_html += ' &nbsp <a href="#" class="btn today use-todays-date" style="font-size:11px;text-decoration:underline;">use today\'s date</a>';
     }
-    the_html += ' <div class="calendar" id="' + this_cal + '-container" style="display:none;position:absolute;right:0;float:none;"></div>' ;
+    the_html += ' <div class="calendar" id="' + this_cal + '-container" style="display:none;position:absolute;float:none;"></div>' ;
 
-    _$e.addClass('ez_cal_wrapper yui-skin-sam').css({position:'relative',whiteSpace:'nowrap'}).append(the_html);
+    _$e.addClass('ez_cal_wrapper yui-skin-sam').css({whiteSpace:'nowrap'}).append(the_html);
 
     var $new_cal = _$e.find('input.ez_cal');
     var $select_date = _$e.find('button.insert-date');

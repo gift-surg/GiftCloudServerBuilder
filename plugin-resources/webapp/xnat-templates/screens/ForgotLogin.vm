@@ -3,52 +3,49 @@
 $!template.setLayoutTemplate("Noninteractive.vm")
 $page.setTitle("XDAT -- Register")
 $page.setBgColor($ui.bgcolor)
-<div valign="top">
-    <form name="form2" method="post" action="$link.setAction("XDATForgotLogin")">
+<style type="text/css">
+    #email-request-form > table th { padding: 0; vertical-align: baseline; }
+    #email-request-form > table td { vertical-align: baseline; }
+    #email-request-form h3 { margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #ccc; }
+</style>
+<div style="width:100%;">
+    <form id="email-request-form" name="form2" method="post" action="$link.setAction("XDATForgotLogin")">
         <table valign="top" align="center">
             #if ( $data.getMessage() )
-                <tr>
-                    <td colspan="2"><span style="color:#FF0000;">$data.getMessage()</span></td>
-                </tr>
+                <tr><td colspan="2"><span style="color:#FF0000;">$data.getMessage()</span></td></tr>
             #end
             <tr>
-                <th colspan="3" align="left">Did you forget your username?</th>
+                <td colspan="2" align="left"><h3>Did you forget your username?</h3></td>
             </tr>
             <tr>
-                <td colspan="3" align="left">Enter your email address and the matching username will be emailed to
-                    you.
-                </td>
+                <td colspan="2" align="left">Enter your email address and the corresponding username will be emailed to you.</td>
             </tr>
             <tr>
-                #formLabel("Email")
-                <td><input type="text" name="email" value="$!email"></td>
+                #formLabel("Email")  ## outputs <th class="formLabel">Email</th> ## WHY???
                 <td>
-                    <input class="ui_sansSerifFonts" type="submit" value="Request">
+                    <input class="email_format" type="text" name="email" value="$!email" size="30" maxlength="255"> &nbsp;
+                    <input class="validate_email" type="submit" value="Request">
                 </td>
             </tr>
+            <tr><td colspan="2"><br><br><br></td></tr>
             <tr>
-                <td colspan="3"><br><br></td>
+                <td colspan="2" align="left"><h3>Did you forget your password?</h3></td>
             </tr>
             <tr>
-                <th colspan="3"><br/></th>
-            </tr>
-            <tr>
-                <th colspan="3" align="left">Did you forget your password?</th>
-            </tr>
-            <tr>
-                <td colspan="3" align="left">Enter your username and a new password will be emailed to you.</td>
+                <td colspan="2" align="left">Enter your username and a new password will be emailed to you.</td>
             </tr>
             <tr>
                 #formLabel("Username")
-                <td><input type="text" name="username" value="$!username"></td>
                 <td>
-                    <input class="ui_sansSerifFonts" type="submit" value="Request">
+                    <input type="text" name="username" value="$!username" size="30" maxlength="255"> &nbsp;
+                    <input type="submit" value="Request">
                 </td>
             </tr>
+            <tr><td colspan="2"><br><br><br></td></tr>
             <tr>
-                <td colspan="3" style="text-align:center; font-weight: bold;">
-                    <br/><br/>
-                    <a href="$link.setPage("ResendEmail.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Resend email verification</a>
+                <td colspan="2">
+##                    <a href="$link.setPage("ResendEmail.vm")#if($turbineUtils.GetPassedParameter('par',$data))/par/$turbineUtils.GetPassedParameter('par',$data)#end">Resend email verification</a>
+                    <a href="#" class="nolink" id="resend-email-link" style="text-decoration:underline;font-weight:bold;">Resend Email Verification</a>
                 </td>
             </tr>
         </table>
@@ -59,3 +56,153 @@ $page.setBgColor($ui.bgcolor)
         #end
     </form>
 </div>
+
+<div id="resend-email-template" class="html-template">
+    <div id="resend-email-form">
+        <p style="font-size:13px;line-height:17px;"><label for="requestEmail">Enter your email address to resend the verification email:</label></p>
+        <input id="requestEmail" type="text" name="email" value="$!email" size="30" maxlength="255" style="width:210px">
+##        <button id="request-verification-email" class="ui_sansSerifFonts" type="submit" onclick="requestVerificationEmail()">Request</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function(){
+
+        function validEmailFormat(email) {
+            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+        }
+
+        // set a 'master' position for all modals on this page
+        var modal_top = '20%';
+
+        function requestVerificationEmail(email){
+
+            xmodal.loading.open('Please Wait...');
+
+            var msg = {} ;
+            msg.buttonLabel = 'OK';
+            msg.top = modal_top;
+
+            var requestURL = serverRoot + '/data/services/sendEmailVerification?email=' + encodeURIComponent(email) ;
+
+            var request = jQuery.ajax({
+                type: 'POST',
+                url: requestURL
+            });
+
+            request.done(function( data, status ){
+                xmodal.loading.close();
+                msg.title = 'Email Sent';
+                msg.content = 'A verification email has been sent to ' + email + '.';
+                msg.action = function(){
+                    if (window.requestModal) {
+                        xmodal.close(window.requestModal);
+                    }
+                    else {
+                        xmodal.closeAll();
+                    }
+                    window.location = serverRoot + '/app/template/Login.vm';
+                };
+                xmodal.message(msg)
+            });
+
+            request.fail(function( data, status, error ){
+                xmodal.loading.close();
+                //xmodal.closeAll();
+
+                var _status = data.status;
+
+                msg.title = 'Error';
+
+                if (_status === 503){
+                    msg.content = 'You have exceeded the allowed number of email requests. Please try again later.';
+                    xmodal.message(msg);
+                }
+                else if (_status === 400){
+                    msg.content = 'Unknown email address.';
+                    xmodal.message(msg);
+                }
+                else {
+                    msg.content = 'An unexpected error has occurred. Please contact your administrator.';
+                    xmodal.message(msg);
+                }
+            });
+        }
+
+
+
+
+        jQuery('#resend-email-link').click(function(e){
+            e.preventDefault();
+
+            var __modal, __emailInput;
+
+            var requestModal={};
+            //requestModal.id = 'request-modal'
+            requestModal.width = 400;
+            requestModal.height = 200;
+            requestModal.title = 'Resend Email Verification';
+            requestModal.top = modal_top;
+            requestModal.template = jQuery('#resend-email-template');
+            requestModal.afterShow = function(modal){
+                __modal = jQuery('#'+modal.id);
+                __emailInput = __modal.find('#requestEmail');
+                __emailInput.focus();
+            };
+            requestModal.buttons = {
+                ok: {
+                    label: 'Go',
+                    close: false,
+                    isDefault: true,
+                    action: function(modal){
+                        var email = __emailInput.val();
+                        if (!email){
+                            xmodal.message({
+                                title: 'Missing Email Address',
+                                content: 'Please enter an email address and try again.',
+                                top: modal_top,
+                                action: function(){
+                                    __emailInput.val('').focus();
+                                }
+                            });
+                            return false;
+                        }
+                        if (!validEmailFormat(email)){
+                            xmodal.message({
+                                title: 'Invalid Email Address',
+                                content: 'Please enter a valid email address in the format "name@domain.com" and try again.',
+                                top: modal_top,
+                                action: function(){
+                                    __emailInput.val('').focus();
+                                }
+                            });
+                            return false;
+                        }
+                        window.requestModal = modal.id;
+                        requestVerificationEmail(email);
+                    }
+                },
+                close: {
+                    label: 'Close'
+                }
+            }
+            xmodal.open(requestModal);
+        });
+
+    })();
+</script>
+##    <div valign="top">
+##        <table valign="top" align="center">
+##            <tr>
+##                <td colspan="3" align="left">Enter your email address to resend the verification email.</td>
+##            </tr>
+##            <tr>
+##                #formLabel("Email")
+##                <td><input id="requestEmail" type="text" name="email" value="$!email"></td>
+##                <td><input class="ui_sansSerifFonts" type="button" value="Request" onclick="requestVerificationEmail()"></td>
+##            </tr>
+##            <tr><td colspan="3"><br><br></td></tr>
+##        </table>
+##    </div>
+##</div>

@@ -16,7 +16,6 @@ div.xmodal.v1 {
     position: fixed ; top: 0 ; right: 0 ; bottom: 0 ; left: 0 ; margin: auto ; overflow: hidden ;
     background: #fff ; border: 1px solid #a0a0a0 ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ;
     font-family: Arial, Helvetica, sans-serif ; }
-/*div.xmodal.v1.open { display: block ; }*/
 
 div.xmodal.v1.dialog { width: 600px ; height: 400px ; }
 
@@ -48,10 +47,10 @@ div.xmodal.v1 .title .maximize:hover { cursor: pointer; }
 /*
 div.xmodal .title .close { background: transparent center center no-repeat ; background-image: url(data:image/gif;base64,R0lGODlhGQAPALMJALGxsZ2dnezs7HNzc21tbYWFhfX19cHBwf///////wAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAkALAAAAAAZAA8AAAROMJ1Jq71Tos27/9sEjqMIAgZnAOVxEkVqFAT7md4MC3QM4jnaAJb6uUaC4UBAAnZ0Q58RpCvwiNNPAKsLZHOBIsIQ/pLOCCf6J8G4MYkIADs=); }
 */
-
+/* */
 div.xmodal.v1 .body { width: 100% ; height: 100% ; position: absolute ; overflow: hidden ; }
 div.xmodal.v1 .body.scroll { overflow-y: auto ; }
-div.xmodal.v1 .body .inner { display: none ; padding: 16px ; font-size: 13px ; line-height: 17px ; }
+div.xmodal.v1 .body .inner { display: none ; padding: 20px ; font-size: 13px ; line-height: 17px ; }
 div.xmodal.v1.nopad .body .inner { padding: 0 ; }
 div.xmodal.v1.open .body .inner { display: block ; }
 div.xmodal.v1 .body h1,

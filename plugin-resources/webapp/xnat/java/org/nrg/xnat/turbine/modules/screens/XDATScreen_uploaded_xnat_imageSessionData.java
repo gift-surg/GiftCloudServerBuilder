@@ -22,6 +22,7 @@ import org.nrg.xdat.turbine.modules.screens.EditScreenA;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xnat.turbine.utils.XNATUtils;
+import org.nrg.xnat.utils.PetTracerListUtils;
 
 public final class XDATScreen_uploaded_xnat_imageSessionData extends
 	EditScreenA {
@@ -103,6 +104,7 @@ public final class XDATScreen_uploaded_xnat_imageSessionData extends
 		}
 	            
 		context.put("edit_screen", "XDATScreen_uploaded_xnat_imageSessionData.vm");
+        context.put("petTracerList", PetTracerListUtils.getPetTracerList(session.getProject()));
     }
 
     /* (non-Javadoc)

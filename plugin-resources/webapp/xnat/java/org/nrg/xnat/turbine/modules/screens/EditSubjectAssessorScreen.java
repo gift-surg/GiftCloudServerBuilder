@@ -21,6 +21,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.turbine.utils.ScanQualityUtils;
+import org.nrg.xnat.utils.PetTracerListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public abstract class EditSubjectAssessorScreen extends EditScreenA {
                 project = (String)context.get("project");
             }
             context.put("qualityLabels", ScanQualityUtils.getQualityLabels(project, TurbineUtils.getUser(data)));
+            context.put("petTracerList", PetTracerListUtils.getPetTracerList(project));
         } catch(Throwable t) {
             logger.warn("error in preparing subject assessor edit screen", t);
         }

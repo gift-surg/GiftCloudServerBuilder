@@ -141,23 +141,23 @@
 	<td></td> <!-- no hints available -->
 </tr>
 
+
 <tr>
     <th align="left">Tracer</th>
     <td>
-        #set($tracers = $data.getSession().getAttribute("user").getQueryResultsAsArrayList("SELECT DISTINCT tracer_name,tracer_name  FROM xnat_petmrSessionData WHERE tracer_name IS NOT NULL"))
-        #if($tracers.size()==0)
-            #xdatTextBox("xnat:petmrSessionData.tracer.name" $item "" $vr)
+        #if($petTracerList.size()==0)
+            #xdatTextBox("xnat:petSessionData.tracer.name" $item "" $vr)
         #else
             <script type="text/javascript">
                 window.tracer=new Object();
                 window.tracer.local_values=new Array();
                 window.tracer.valueField="tracer";
-                    #foreach ($pValue in $tracers)
-                        #if($pValue.get(0))		   window.tracer.local_values.push({"tracer":"$pValue.get(0)"}); #end
-                    #end
+                #foreach ($pValue in $petTracerList)
+                window.tracer.local_values.push({"tracer":"$pValue"});
+                #end
             </script>
-            #xdatComboBox("xnat:petmrSessionData.tracer.name" $item "window.tracer" $vr)
-            <a onclick="xModalMessage('Tracer Type', 'If the required value is not in the list, select CUSTOM to add your own value.');"><img border="0" src="$content.getURI("images/qm.gif")"/></a>
+            #xdatComboBox("xnat:petSessionData.tracer.name" $item "window.tracer" $vr)
+            <a onclick="xModalMessage('Session Data Fields', 'If the required value is not in the list, select MORE to show additional options or CUSTOM to add your own value.');"><img border="0" src="$content.getURI("images/qm.gif")"/></a>
         #end
     </td>
 </tr>

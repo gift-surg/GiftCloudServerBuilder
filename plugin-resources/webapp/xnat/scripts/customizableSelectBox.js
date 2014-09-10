@@ -65,7 +65,9 @@ function CustomSelectBox(_input,_settings){
 			while(this.options.length>0){
 				this.remove(0);
 			}
-			
+
+            var hasDefault = false;
+
 			this.options[0]=new Option("(SELECT)","NULL");
 					
 			if(this.manager.settings.custom!=undefined){
@@ -73,6 +75,7 @@ function CustomSelectBox(_input,_settings){
 					var v=this.manager.settings.custom[tC];
 					this.options[this.options.length]=new Option(v,v,(v==_v)?true:false,(v==_v)?true:false);
 					if(v==_v){
+                        hasDefault = true
 						this.selectedIndex=(this.options.length-1);
 					}
 				}
@@ -83,6 +86,7 @@ function CustomSelectBox(_input,_settings){
 					var v=this.manager.settings.all_values[tC];
 					this.options[this.options.length]=new Option(v[this.manager.settings.valueField],v[this.manager.settings.displayField],(v[this.manager.settings.valueField]==_v)?true:false,(v[this.manager.settings.valueField]==_v)?true:false);
 					if(v[this.manager.settings.valueField]==_v){
+                        hasDefault = true
 						this.selectedIndex=(this.options.length-1);
 					}
 				}
@@ -91,6 +95,7 @@ function CustomSelectBox(_input,_settings){
 					var v=this.manager.settings.local_values[tC];
 					this.options[this.options.length]=new Option(v[this.manager.settings.valueField],v[this.manager.settings.displayField],(v[this.manager.settings.valueField]==_v)?true:false,(v[this.manager.settings.valueField]==_v)?true:false);
 					if(v[this.manager.settings.valueField]==_v){
+                        hasDefault = true
 						this.selectedIndex=(this.options.length-1);
 					}
 				}
@@ -98,6 +103,11 @@ function CustomSelectBox(_input,_settings){
 					this.options[this.options.length]=new Option("View more options...","");
 				}
 			}
+
+            if(!hasDefault){
+                this.options[this.options.length]=new Option(_v,_v,true,true);
+                this.selectedIndex=(this.options.length-1);
+            }
 			
 			this.options[this.options.length]=new Option("Add custom entry...","");
 		}

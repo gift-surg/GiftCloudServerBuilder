@@ -64,7 +64,7 @@
     #else
 		#if($f.getPossiblevalues_possiblevalue().size()>0)
 			<select #if($isDisabled)disabled#end id="$!f.getXmlpath()" name="$!f.getXmlpath()" #if($f.getRequired()==1 || $f.getRequired()) class="required" #end>
-    			<option value="">(SELECT)</option>
+    			<option value="NULL">(SELECT)</option>
     			#foreach($pv in $f.getPossiblevalues_possiblevalue())
     				#if($pv.getDisplay())
     					<option value="$pv.getPossiblevalue()" #if($om.getProperty($!f.getXmlpath())==$pv.getPossiblevalue()) SELECTED #end>$pv.getDisplay()</option>

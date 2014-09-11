@@ -1413,6 +1413,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
         arcP.setProperty("arc:project/paths/prearchivePath", ArcSpecManager.GetInstance().getGlobalPrearchivePath() + getId()+"/");
         arcP.setProperty("arc:project/paths/cachePath", ArcSpecManager.GetInstance().getGlobalCachePath() + getId()+"/");
         arcP.setProperty("arc:project/paths/buildPath", ArcSpecManager.GetInstance().getGlobalBuildPath() + getId()+"/");
+        arcP.setPrearchiveCode(4);
 
         SaveItemHelper.authorizedSave(arcP,user, true, false,c);
         ArcSpecManager.Reset();

@@ -507,9 +507,9 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
         var month = zeroPad(date[1]);
         var day = zeroPad(date[2]);
 
-        _$e.find('input:hidden.date.month').val(month);
-        _$e.find('input:hidden.date.day').val(day);
-        _$e.find('input:hidden.date.year').val(year);
+        _$e.find('input:hidden.date.month').val(month).change();
+        _$e.find('input:hidden.date.day').val(day).change();
+        _$e.find('input:hidden.date.year').val(year).change();
 
         if (kind === 'single'){
             var $single = _$e.find('.ez_cal.single.date');
@@ -519,12 +519,13 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
             if (format === 'us'){
                 $single.val(month +'/'+ day +'/'+ year);
             }
+            $single.change(); // trigger change event
         }
 
         if (kind === 'multi'){
-            _$e.find('.ez_cal.month').val(month);
-            _$e.find('.ez_cal.day').val(day);
-            _$e.find('.ez_cal.year').val(year);
+            _$e.find('.ez_cal.month').val(month).change();
+            _$e.find('.ez_cal.day').val(day).change();
+            _$e.find('.ez_cal.year').val(year).change();
         }
 
         _$e.find('#'+this_cal+'-container').hide();

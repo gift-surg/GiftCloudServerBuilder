@@ -5,9 +5,7 @@ XNAT.app.headerDialog.load = function( url, title ){
     //openModalPanel("resource_loading","Loading");
     xmodal.loading.open();
 
-    var csvURL = url.split('format=html')[0] + 'format=csv';
-
-    console.log(csvURL);
+    //var csvURL = url.split('format=html')[0] + 'format=csv';
 
     var modalOpts={};
     modalOpts.width = 700;
@@ -18,15 +16,16 @@ XNAT.app.headerDialog.load = function( url, title ){
             label: 'Close',
             close: true,
             isDefault: true
-        },
-        csv: {
-            label: 'Download CSV',
-            close: false,
-            //link: true, // this would make it look like a regular link
-            action: function(){
-                window.location.href = csvURL;
-            }
-        }
+        }//,
+        // letting this linger in case it can be used in the future
+//        csv: {
+//            label: 'Download CSV',
+//            close: false,
+//            //link: true, // this would make it look like a regular link
+//            action: function(){
+//                window.location.href = csvURL;
+//            }
+//        }
     };
     modalOpts.beforeShow = function(){
         xmodal.loading.close();

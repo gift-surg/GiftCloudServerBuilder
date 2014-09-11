@@ -1700,6 +1700,24 @@ $!turbineUtils.escapeJS($s)
 	#end
 #end
 
+#macro(hasCustomScreens $dataType $subFolder)
+    #set($hasCustomScreens = false)
+    #foreach($screenProps in $turbineUtils.getTemplates($dataType,$subFolder))
+        #set($templateFileName=$screenProps.getProperty("path"))
+        #if($data.getSession().getAttribute("user").getUsername()=="guest")
+            #if($turbineUtils.toBoolean($screenProps.getProperty("allowGuest","false")))
+                #set($hasCustomScreens = true)
+            #end
+        #elseif($screenProps.getProperty("adminOnly"))
+            #if($turbineUtils.toBoolean($data.getSession().getAttribute("user").checkRole("Administrator"),"false"))
+                #set($hasCustomScreens = true)
+            #end
+        #elseif($data.getSession().getAttribute("user").getUsername())
+            #set($hasCustomScreens = true)
+        #end
+    #end
+#end
+
 #macro (xdatCalendar $property $item $vr)
     #if ($vr)
         #if($vr.getField($property))

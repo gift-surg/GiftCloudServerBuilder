@@ -1,4 +1,6 @@
-#set($exptCounts = $project.getExperimentCountByXSIType())    
+#set($exptCounts = $project.getExperimentCountByXSIType())
+#hasCustomScreens("xnat:projectData" "actionsBox")
+#if ($hasCustomScreens)
     <!-- actions menu -->
     <DIV id="actionsMenu" class="yuimenu">
      <DIV class="bd">
@@ -10,7 +12,7 @@
       <ul>
 		
 	#addCustomScreens("xnat:projectData" "actionsBox")
-	
+#end
       </ul>
      </DIV>
     </DIV>

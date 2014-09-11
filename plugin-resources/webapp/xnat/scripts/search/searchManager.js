@@ -1311,7 +1311,7 @@ xdat_criteria_set.prototype.isValid=function(){
         return false;
       }
     } else {
-      if(this.newValueBox.value.length > 0){
+      if(this.newValueBox.value.length == 0){
               xModalMessage('Search Validation', "Please specify a value to match against.");
         this.newValueBox.disabled=false;
         this.newValueBox.focus();

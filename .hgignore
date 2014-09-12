@@ -55,6 +55,7 @@ plugin-resources/webapp/xdat/xdat.iml
 plugin-resources/webapp/xnat/xnat.iml
 bin\initXnatDb.bat
 
+.launches/tomcat-startup.launch
 syntax: regexp
 ^.idea
 ^.*\.[ei]ml

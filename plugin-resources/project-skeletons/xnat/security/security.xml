@@ -732,7 +732,7 @@
 			<xdat:element_actions>
 				<xdat:element_action element_action_name="xml" grouping="View" display_name="View XML" sequence="2" image="r.gif"/>
 				<xdat:element_action element_action_name="edit" display_name="Edit" sequence="0" image="e.gif" popup="never" secureAccess="edit"/>
-				<xdat:element_action element_action_name="Viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
+				<xdat:element_action element_action_name="Viewer" secureFeature="classic_viewer" grouping="View" display_name="View Images" sequence="3" image="v.gif" popup="always" parameterString="/popup_params/width=320,height=420,status=yes,resizable=yes,scrollbars=yes,toolbar=yes"/>
 				<xdat:element_action element_action_name="XDATScreen_upload_scans_xnat_imageSessionData" display_name="Upload Scans" grouping="Upload" sequence="4" image="Up.gif" popup="sometimes" secureAccess="edit" secureFeature="upload_scans"/>
 				<xdat:element_action element_action_name="XDATScreen_upload_xnat_imageSessionData" display_name="Tagged Upload" sequence="5" grouping="Upload" image="Up.gif" popup="never" secureAccess="edit" secureFeature="tagged_upload"/>
 				<xdat:element_action element_action_name="xml_file" grouping="Download" display_name="Download XML" sequence="7" image="save.gif"/>

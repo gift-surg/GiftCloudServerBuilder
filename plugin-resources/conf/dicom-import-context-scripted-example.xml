@@ -23,20 +23,13 @@
     <bean name="baseSubjectIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getSubjectExtractors"/>
     <bean name="baseAAIdent" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier" factory-method="getAAExtractors"/>
 
-    <bean name="dicomObjectIdentifier" class="org.nrg.dcm.id.ScriptedCompositeDicomObjectIdentifier">
+    <bean name="dicomObjectIdentifier" class="org.nrg.dcm.id.ReferencedCompositeDicomObjectIdentifier">
         <constructor-arg ref="baseProjectIdent"/>
         <constructor-arg ref="baseSubjectIdent"/>
         <constructor-arg>
             <list>
                 <bean id="scriptedSessionIdent" class="org.nrg.dcm.id.ScriptedSessionAssignmentExtractor">
                     <constructor-arg name="scriptId" value="splitPetMrSession"/>
-                    <constructor-arg name="tags">
-                        <list>
-                            <util:constant static-field="org.dcm4che2.data.Tag.Modality"/>
-                            <util:constant static-field="org.dcm4che2.data.Tag.SOPClassUID"/>
-                            <util:constant static-field="org.dcm4che2.data.Tag.SeriesDescription"/>
-                        </list>
-                    </constructor-arg>
                     <constructor-arg name="extractors">
                         <list>
                             <bean class="org.nrg.dcm.ContainedAssignmentExtractor">

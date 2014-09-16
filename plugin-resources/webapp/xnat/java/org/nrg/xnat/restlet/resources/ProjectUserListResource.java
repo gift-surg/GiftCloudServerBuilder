@@ -48,20 +48,20 @@ public class ProjectUserListResource extends SecureResource {
         if (proj == null) {
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "The project ID " + pID + " does not appear to be a valid project ID. Please verify your information.");
         } else {
-        final Object projectData = proj.getItem().getProps().get("projectdata_info");
-        if (!(projectData instanceof Integer)) {
-            String message = "Can't parse the project data info identifier property for project " + proj.getDisplayName() + ". Object is " + (projectData == null ? "null" : projectData.getClass().getName()) + ". Must be an Integer object.";
-            logger.error(message);
+            final Object projectData = proj.getItem().getProps().get("projectdata_info");
+            if (!(projectData instanceof Integer)) {
+                String message = "Can't parse the project data info identifier property for project " + proj.getDisplayName() + ". Object is " + (projectData == null ? "null" : projectData.getClass().getName()) + ". Must be an Integer object.";
+                logger.error(message);
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, message);
-        } else {
-            int projectId = (Integer) projectData;
-            if (!(user.isSiteAdmin() || user.isOwner(proj.getId()) || isWhitelisted(projectId))) {
-            logger.error("Unauthorized Access to project-level user resources. User: " + userName);
+            } else {
+                int projectId = (Integer) projectData;
+                if (!(user.isSiteAdmin() || user.isOwner(proj.getId()) || isWhitelisted(projectId))) {
+                    logger.error("Unauthorized Access to project-level user resources. User: " + userName);
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Access Denied: Only project owners and site managers can access user resources.");
+                }
+                displayHiddenUsers = Boolean.parseBoolean((String) getParameter(request, "DISPLAY_HIDDEN_USERS"));
+            }
         }
-        displayHiddenUsers = Boolean.parseBoolean((String)getParameter(request, "DISPLAY_HIDDEN_USERS"));
-    }
-    }
     }
 
     @Override

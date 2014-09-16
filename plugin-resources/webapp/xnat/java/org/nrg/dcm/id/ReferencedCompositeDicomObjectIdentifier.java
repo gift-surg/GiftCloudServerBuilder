@@ -11,8 +11,9 @@
 package org.nrg.dcm.id;
 
 import org.nrg.dcm.Extractor;
+import org.nrg.xnat.DicomObjectIdentifier;
 
-public class ScriptedCompositeDicomObjectIdentifier extends CompositeDicomObjectIdentifier {
+public class ReferencedCompositeDicomObjectIdentifier extends CompositeDicomObjectIdentifier {
 
 //    private static final ImmutableList<Extractor> _sessionExtractors;
 //
@@ -30,15 +31,23 @@ public class ScriptedCompositeDicomObjectIdentifier extends CompositeDicomObject
 //        return _sessionExtractors;
 //    }
 
-    public ScriptedCompositeDicomObjectIdentifier(final DicomProjectIdentifier projectID,
-                                                  final Iterable<Extractor> subjectExtractors,
-                                                  final Iterable<Extractor> sessionExtractors,
-                                                  final Iterable<Extractor> aaExtractors) {
+    public ReferencedCompositeDicomObjectIdentifier(final DicomProjectIdentifier projectID,
+                                                    final Iterable<Extractor> subjectExtractors,
+                                                    final Iterable<Extractor> sessionExtractors,
+                                                    final Iterable<Extractor> aaExtractors) {
         super(projectID, subjectExtractors, sessionExtractors, aaExtractors);
-        for (final Extractor extractor : sessionExtractors) {
-            if (extractor instanceof ScriptedSessionAssignmentExtractor) {
-                ((ScriptedSessionAssignmentExtractor) extractor).setIdentifier(this);
+
+        referenceExtractors(subjectExtractors);
+        referenceExtractors(sessionExtractors);
+        referenceExtractors(aaExtractors);
+    }
+
+    private void referenceExtractors(final Iterable<Extractor> extractors) {
+        for (final Extractor extractor : extractors) {
+            if (extractor instanceof ReferencingExtractor) {
+                ((ReferencingExtractor) extractor).setIdentifier(this);
             }
         }
+
     }
 }

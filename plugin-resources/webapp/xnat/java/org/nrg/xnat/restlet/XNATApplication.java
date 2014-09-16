@@ -375,6 +375,7 @@ public class XNATApplication extends Application {
                     _log.debug("Found " + classesForPackage.size() + " classes for package: " + pkg);
                 }
                 for (Class<?> clazz : classesForPackage) {
+                	System.out.println(clazz.getPackage()+ "." + clazz.getName());
                     if (Resource.class.isAssignableFrom(clazz)) {
                         if (_log.isDebugEnabled()) {
                             _log.debug("Found resource class: " + clazz.getName());
@@ -391,6 +392,23 @@ public class XNATApplication extends Application {
             if (clazz.isAnnotationPresent(XnatRestlet.class)) {
                 XnatRestlet annotation = clazz.getAnnotation(XnatRestlet.class);
                 final String[] urls = annotation.value();
+                if (urls == null || urls.length == 0) {
+                    throw new RuntimeException("The restlet extension class " + clazz.getName() + " has no URLs configured.");
+                }
+                if (annotation.secure()) {
+                    if (_log.isDebugEnabled()) {
+                        _log.debug("Found XnatRestlet-annotated secure function class " + clazz.getName() + " for URLs: " + Joiner.on(", ").join(urls));
+                    }
+                    attachPath(router, clazz, annotation);
+                } else {
+                    if (_log.isDebugEnabled()) {
+                        _log.debug("Found XnatRestlet-annotated public function class " + clazz.getName() + " for URLs: " + Joiner.on(", ").join(urls));
+                    }
+                    publicClasses.add(clazz);
+                }
+            }else if (clazz.isAnnotationPresent(XnatRestlet2.class)) {
+                XnatRestlet2 annotation = clazz.getAnnotation(XnatRestlet2.class);
+                final XnatRestletURI[] urls = annotation.value();
                 if (urls == null || urls.length == 0) {
                     throw new RuntimeException("The restlet extension class " + clazz.getName() + " has no URLs configured.");
                 }
@@ -428,6 +446,23 @@ public class XNATApplication extends Application {
         } else {
             for (String path : paths) {
                 attachURI(router, path, clazz);
+            }
+        }
+    }
+
+    private void attachPath(Router router, Class<? extends Resource> clazz, XnatRestlet2 annotation) {
+        XnatRestletURI[] paths = annotation.value();
+        boolean required = annotation.required();
+        if (paths == null || paths.length == 0) {
+            String message = "You must specify a value for the XnatRestlet annotation to indicate the hosting path for the restlet extension in class: " + clazz.getName();
+            if (required) {
+                throw new NrgServiceRuntimeException(message);
+            } else {
+                _log.error(message);
+            }
+        } else {
+            for (XnatRestletURI path : paths) {
+                attachURI(router, path.value(), clazz,path.matchingMode());
             }
         }
     }

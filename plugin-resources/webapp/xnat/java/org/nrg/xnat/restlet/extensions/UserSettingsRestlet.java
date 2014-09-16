@@ -10,6 +10,24 @@
  */
 package org.nrg.xnat.restlet.extensions;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,14 +43,20 @@ import org.nrg.xdat.services.XdatUserAuthService;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperField;
 import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xnat.restlet.XnatRestlet;
+import org.nrg.xnat.restlet.XnatRestlet2;
+import org.nrg.xnat.restlet.XnatRestletURI;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.restlet.util.Template;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -40,15 +64,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.*;
-
-@XnatRestlet({"/user", "/user/{USER_ID}", "/user/actions/{ACTION}", "/user/actions/{USER_ID}/{ACTION}"})
+@XnatRestlet2({@XnatRestletURI(matchingMode=Template.MODE_EQUALS,value="/user"), @XnatRestletURI(matchingMode=Template.MODE_EQUALS,value="/user/{USER_ID}"), @XnatRestletURI("/user/actions/{ACTION}"), @XnatRestletURI("/user/actions/{USER_ID}/{ACTION}")})
 public class UserSettingsRestlet extends SecureResource {
     public static final String PARAM_USER_ID = "USER_ID";
     public static final String PARAM_ACTION = "ACTION";

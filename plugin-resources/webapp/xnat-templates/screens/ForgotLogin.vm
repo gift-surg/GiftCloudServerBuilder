@@ -25,6 +25,7 @@ $page.setBgColor($ui.bgcolor)
                 <td>
                     <input class="email_format" type="text" name="email" value="$!email" size="30" maxlength="255"> &nbsp;
                     <input class="validate_email" type="submit" value="Request">
+
                 </td>
             </tr>
             <tr><td colspan="2"><br><br><br></td></tr>
@@ -158,25 +159,29 @@ $page.setBgColor($ui.bgcolor)
                     action: function(modal){
                         var email = __emailInput.val();
                         if (!email){
+
                             xmodal.message({
                                 title: 'Missing Email Address',
                                 content: 'Please enter an email address and try again.',
                                 top: modal_top,
                                 action: function(){
-                                    __emailInput.val('').focus();
+                                    __emailInput.focus().select();
                                 }
                             });
+
                             return false;
                         }
                         if (!validEmailFormat(email)){
+
                             xmodal.message({
                                 title: 'Invalid Email Address',
                                 content: 'Please enter a valid email address in the format "name@domain.com" and try again.',
                                 top: modal_top,
                                 action: function(){
-                                    __emailInput.val('').focus();
+                                    __emailInput.focus().select();
                                 }
                             });
+
                             return false;
                         }
                         window.requestModal = modal.id;

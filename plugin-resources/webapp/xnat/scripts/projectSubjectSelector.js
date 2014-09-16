@@ -95,16 +95,16 @@ XNAT.app.projectSubjectSelector = function( proj_menu, subj_menu, submit_button,
                     prop('disabled',true);
             }
             else {
-                results = sortObjects(results, 'name');
-                for (var i=0, id, name, option; i < len; i++){
+                results = sortObjects(results, 'secondary_id');
+                for (var i=0, id, title, option; i < len; i++){
                     id = results[i]['ID'] || results[i]['id'];
-                    name = results[i]['name'];
+                    title = results[i]['secondary_id'] || results[i]['secondary_ID']; // WHICH IS IT???
                     projectsArray.push(id);
                     option = '<option' +
                         ' value="' + id + '"' +
-                        ' title="' + name + '"' +
+                        ' title="' + title + '"' +
                         //' data-uri="' + results[i]['URI'] + '"' +
-                        '>' + name + '</option>';
+                        '>' + title + '</option>';
                     //
                     projectsOptions.push(option);
                 }

@@ -375,7 +375,6 @@ public class XNATApplication extends Application {
                     _log.debug("Found " + classesForPackage.size() + " classes for package: " + pkg);
                 }
                 for (Class<?> clazz : classesForPackage) {
-                	System.out.println(clazz.getPackage()+ "." + clazz.getName());
                     if (Resource.class.isAssignableFrom(clazz)) {
                         if (_log.isDebugEnabled()) {
                             _log.debug("Found resource class: " + clazz.getName());

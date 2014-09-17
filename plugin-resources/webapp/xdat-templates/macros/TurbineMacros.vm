@@ -1314,11 +1314,12 @@ div.ic_spacer{
 #set($previousLink=$link.getLink())
         #foreach ($actionGroup in $actions)
          #if($actionGroup.getGroup()!="")
-           <li class="yuimenuitem #if($actionGroup.group=="Upload") lockable #end " style="margin-bottom:2px">
+           <li class="yuimenuitem #if($actionGroup.group=="Upload") lockable #end ${actionGroup.group}Grouping" style="margin-bottom:2px">
      <a class="yuimenuitemlabel" href="#${actionGroup.group}box"><div class="ic">&nbsp;</div><div class="ic_spacer">&nbsp;</div>$actionGroup.group</a>
             <div id="${actionGroup.group}box" class="yuimenu">
              <div class="bd">
               <ul class="first-of-type">
+              #set($groupingCount=0)
          #end
          #foreach ($actionObject in $actionGroup.getActions())
             #set($canAccess = "true")
@@ -1376,6 +1377,7 @@ div.ic_spacer{
             #set($height=$actionObject.getPopupHeight())
 
             #if($canAccess.equalsIgnoreCase("true"))
+              #set($groupingCount=$groupingCount + 1)
              #if ($actionObject.getPopup() && $actionObject.getPopup()=="always")
 <li class="yuimenuitem $!li_class">
                           <a href="#!" onclick="return popupWithProperties('${link.setAction("XDATActionRouter").addPathInfo("xdataction",$actionObject.getName()).addPathInfo("search_element","$element.getFullXMLName()").addPathInfo("search_field","$search_field").addPathInfo("search_value","$search_value").addPathInfo("popup",'true').addPathInfo("project","$!project")}$!additionalParameters','','width='+'700'+/*$!width*/',height='+'550'+/*$!height*/',status=yes,resizable=yes,scrollbars=yes,toolbar=no');"><div class="ic">#if($actionObject.hasImage())<img border="0" src="$content.getURI("images/$actionObject.getImage()")"/>#else&nbsp;#end</div><div class="ic_spacer">&nbsp;</div>$actionObject.getDisplayName()</a>
@@ -1398,12 +1400,14 @@ div.ic_spacer{
              #end
             #end
        #if($actionGroup.getGroup()!="")
-		
 			#addCustomScreens("$element" "actionsBox/$actionGroup.getGroup()")
            </ul>
           </div>
          </div>
         </li>
+        #if($groupingCount==0)
+        	<script>$(".${actionGroup.group}Grouping").hide();</script>
+        #end
            #end
       #end
 #end

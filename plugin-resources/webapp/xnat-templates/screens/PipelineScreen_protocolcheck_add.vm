@@ -34,7 +34,7 @@ $newpipeline.getDescription()
 </p>
  <table>
 	<TR>
-		<TD><b>Is this pipeline to be launched automatically while archiving?</b></TD>
+		<TD><b>Launch pipeline automatically when session is archived.</b></TD>
 		<TD> <input type="checkbox"  name="auto_archive" $checked/> </TD>
 	</TR>
 

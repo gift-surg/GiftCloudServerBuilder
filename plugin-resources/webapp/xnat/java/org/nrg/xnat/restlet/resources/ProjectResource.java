@@ -12,6 +12,7 @@ package org.nrg.xnat.restlet.resources;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Date;
 
 import org.nrg.action.ActionException;
 import org.nrg.xdat.om.ArcProject;
@@ -102,6 +103,11 @@ public class ProjectResource extends ItemResource {
                         try {
                             proj.delete(removeFiles, user, ci);
                             PersistentWorkflowUtils.complete(workflow, ci);
+
+                            Date curr = new Date();
+                            long timestamp = curr.getTime();
+                            String query = "UPDATE xnat_projectdata_history SET id = '"+ proj.getId() + timestamp +"' where id = '"+ proj.getId() +"';";
+                            PoolDBUtils.ExecuteNonSelectQuery(query, proj.getItem().getDBName(), user.getLogin());
                         } catch (Exception e) {
                             logger.error("", e);
                             PersistentWorkflowUtils.fail(workflow, ci);

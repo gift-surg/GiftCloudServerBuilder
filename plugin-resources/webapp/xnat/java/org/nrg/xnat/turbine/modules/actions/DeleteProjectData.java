@@ -25,6 +25,7 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xft.ItemI;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.db.PoolDBUtils;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -35,6 +36,7 @@ import org.nrg.xnat.utils.WorkflowUtils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Date;
 
 public class DeleteProjectData extends SecureAction {
     static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DeleteProjectData.class);
@@ -203,7 +205,12 @@ public class DeleteProjectData extends SecureAction {
 			                logger.error("",e);
 			            }
 			        }
-				    
+
+                    Date curr = new Date();
+                    long timestamp = curr.getTime();
+                    String query = "UPDATE xnat_projectdata_history SET id = '"+ project.getId() + timestamp +"' where id = '"+ project.getId() +"';";
+                    PoolDBUtils.ExecuteNonSelectQuery(query, project.getItem().getDBName(), user.getLogin());
+
 				    //DELETE storedSearches
 				    Iterator bundles=project.getBundles().iterator();
 				    while (bundles.hasNext())

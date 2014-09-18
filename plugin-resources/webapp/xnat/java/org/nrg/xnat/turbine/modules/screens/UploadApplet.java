@@ -52,9 +52,8 @@ public class UploadApplet extends SecureScreen {
         		String hr = (String)TurbineUtils.GetPassedParameter("session_time_h", data);
         		String mm =(String)TurbineUtils.GetPassedParameter("session_time_m", data);
         		try{
-        			Integer.parseInt(hr);  //poor man's validation
-        			Integer.parseInt(mm);  
-        			hhmm =  hr + ":" + mm;
+        			//poor man's validation
+        			hhmm =  Integer.parseInt(hr) + ":" + Integer.parseInt(mm);
         		} catch (Exception e){
         			//if one or both aren't an integer, we'll get here, which is fine. it just means they didn't select a time. 
         		}
@@ -83,8 +82,8 @@ public class UploadApplet extends SecureScreen {
 			}
 		}
 		
-		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, projectId);
-		
+        boolean enableProjectAppletScript = XDAT.getBoolSiteConfigurationProperty("enableProjectAppletScript", false);
+        org.nrg.config.entities.Configuration config = enableProjectAppletScript ? configService.getConfig(AppletConfig.toolName, AppletConfig.path, projectId) : null;
 		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())) {
 			//try to pull a site-wide config
 			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, null);

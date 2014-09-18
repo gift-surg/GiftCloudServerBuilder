@@ -16,12 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nrg.config.services.ConfigService;
 import org.nrg.framework.utilities.Reflection;
-import org.nrg.xdat.XDAT;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.utils.AppletConfig;
 import org.nrg.xnat.utils.XnatHttpUtils;
@@ -32,7 +27,7 @@ import java.util.List;
  * @author timo
  *
  */
-public class LaunchUploadApplet extends SecureScreen {
+public class LaunchUploadApplet extends UploadAppletScreen {
 	
 	private static final Log _log = LogFactory.getLog(LaunchUploadApplet.class);
 	
@@ -41,9 +36,6 @@ public class LaunchUploadApplet extends SecureScreen {
 	@Override
 	public void doBuildTemplate(RunData data, Context context) {
 		context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
-		
-		XDATUser user = TurbineUtils.getUser(data);
-		String projectName = (String)context.get("project");
 		
 		if(StringUtils.trimToEmpty((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data)).equals("xnat:subjectData.ID")) {
 		    context.put("subject", StringUtils.trimToEmpty((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data)));
@@ -55,27 +47,7 @@ public class LaunchUploadApplet extends SecureScreen {
             _log.error("",e);
         }
 
-        //grab the applet config. Project level if it exists, otherwise, do the site-wide
-		ConfigService configService = XDAT.getConfigService();
-		Long projectId = null;
-		
-		if(projectName != null){
-			final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
-			try {
-				if(user.canRead(("xnat:subjectData/project").intern(), p.getId())){
-                    projectId = (long) (Integer) p.getItem().getProps().get("projectdata_info");
-				}
-			} catch (Exception e) {
-				projectId = null;
-			}
-		}
-		
-		org.nrg.config.entities.Configuration config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, projectId);
-		
-		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())) {
-			//try to pull a site-wide config
-			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, null);
-		}
+        org.nrg.config.entities.Configuration config = getAppletConfiguration(TurbineUtils.getUser(data), (String)context.get("project"));
 
 		if(config != null) {
 			String json = config.getContents();

@@ -13,11 +13,6 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nrg.config.services.ConfigService;
-import org.nrg.xdat.XDAT;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.AppletConfig;
@@ -25,8 +20,8 @@ import org.nrg.xnat.utils.XnatHttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UploadApplet extends SecureScreen {
-	static Logger logger = LoggerFactory.getLogger(UploadApplet.class);
+public class UploadApplet extends UploadAppletScreen {
+	private static final Logger logger = LoggerFactory.getLogger(UploadApplet.class);
 	
 	@Override
 	protected void doBuildTemplate(RunData data, Context context) throws Exception {
@@ -64,30 +59,8 @@ public class UploadApplet extends SecureScreen {
         }
 		context.put("arc", ArcSpecManager.GetInstance());
 		
-		XDATUser user = TurbineUtils.getUser(data);
-		String projectName = (String)context.get("project");
+        org.nrg.config.entities.Configuration config = getAppletConfiguration(TurbineUtils.getUser(data), (String)context.get("project"));
 		
-		//grab the applet config. Project level if it exists, otherwise, do the site-wide
-		ConfigService configService = XDAT.getConfigService();
-		Long projectId = null;
-		
-		if(projectName != null) {
-			final XnatProjectdata p = XnatProjectdata.getXnatProjectdatasById(projectName, user, false);
-			try {
-				if(user.canRead(("xnat:subjectData/project").intern(), p.getId())){
-                    projectId = (long) (Integer) p.getItem().getProps().get("projectdata_info");
-				}
-			} catch (Exception e){
-				projectId = null;
-			}
-		}
-		
-        boolean enableProjectAppletScript = XDAT.getBoolSiteConfigurationProperty("enableProjectAppletScript", false);
-        org.nrg.config.entities.Configuration config = enableProjectAppletScript ? configService.getConfig(AppletConfig.toolName, AppletConfig.path, projectId) : null;
-		if(config == null || org.nrg.config.entities.Configuration.DISABLED_STRING.equalsIgnoreCase(config.getStatus())) {
-			//try to pull a site-wide config
-			config = configService.getConfig(AppletConfig.toolName, AppletConfig.path, null);
-		}
 		if(config != null) {
 			String json = config.getContents();
 	    	

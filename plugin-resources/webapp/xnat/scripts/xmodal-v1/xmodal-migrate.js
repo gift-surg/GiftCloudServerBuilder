@@ -28,9 +28,9 @@ xModal.Modal = function( _opts ){
         this.footer={};
         this.footer.buttons = !(_opts.footerButtons && _opts.footerButtons !== 'show');
         this.footer.content = _opts.footerContent;
-        this.footer.height = _opts.footerHeight+'px';
         this.footer.background = _opts.footerBackground;
         this.footer.border = _opts.footerBorder;
+        if (_opts.footerHeight) { this.footer.height = _opts.footerHeight + 'px' }
     }
     var opts = $.extend(true, {}, this, _opts);
     this.opts = opts;

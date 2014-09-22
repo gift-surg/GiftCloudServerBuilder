@@ -8,7 +8,6 @@
 maven.appserver.home = TOMCAT_HOME
 
 xdat.project.name=xnat
-xdat.project.template=xnat
 xdat.project.db.name=xnat
 xdat.project.db.driver=org.postgresql.Driver
 xdat.project.db.connection.string=jdbc:postgresql://localhost/xnat

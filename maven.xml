@@ -52,9 +52,12 @@
                 --------------------------------------------------------------------------
             </fail>
         </u:available>
-        <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
+        <!-- Fix for XNAT-3397: Removes conditional include of xnat project template. If you do have another
+             project template you want to use in place of the xnat project template, uncomment the conditionals
+             around the various <j:set> elements for xdat.project.includeXNAT. -->
+        <!-- j:if test="${context.getVariable('xdat.project.template') == 'xnat'}" -->
             <j:set var="xdat.project.includeXNAT" value="true"/>
-        </j:if>
+        <!-- /j:if -->
         <j:set var="build.db" value="true"/>
         <j:if test="${context.getVariable('prevent.db.connection') == 'true'}">
             <j:set var="build.db" value="false"/>
@@ -167,9 +170,12 @@
     </goal>
     <goal name="xdat:updateFiles" description="Update XDAT Files">
         <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-        <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
+        <!-- Fix for XNAT-3397: Removes conditional include of xnat project template. If you do have another
+             project template you want to use in place of the xnat project template, uncomment the conditionals
+             around the various <j:set> elements for xdat.project.includeXNAT. -->
+        <!-- j:if test="${context.getVariable('xdat.project.template') == 'xnat'}" -->
             <j:set var="xdat.project.includeXNAT" value="true"/>
-        </j:if>
+        <!-- /j:if -->
         <ant:echo>INCLUDE XNAT TEMPLATE: ${xdat.project.includeXNAT}</ant:echo>
         <maven:makeAbsolutePath var="xdat.webapp.target" path="deployments/${xdat.project.name}/target" basedir="${basedir}"/>
         <!-- CLEAN TURBINE JAR -->
@@ -205,9 +211,12 @@
         <ant:echo>Going to try to get the version</ant:echo>
         <attainGoal name="xdat:version"/>
         <ant:echo>I should now have the version: ${xdat.project.version}</ant:echo>
-        <j:if test="${context.getVariable('xdat.project.template') == 'xnat'}">
+        <!-- Fix for XNAT-3397: Removes conditional include of xnat project template. If you do have another
+             project template you want to use in place of the xnat project template, uncomment the conditionals
+             around the various <j:set> elements for xdat.project.includeXNAT. -->
+        <!-- j:if test="${context.getVariable('xdat.project.template') == 'xnat'}" -->
             <j:set var="xdat.project.includeXNAT" value="true"/>
-        </j:if>
+        <!-- /j:if -->
         <j:set var="build.db" value="true"/>
         <j:if test="${context.getVariable('prevent.db.connection') == 'true'}">
             <j:set var="build.db" value="false"/>
@@ -764,9 +773,12 @@
     </goal>
     <goal name="xdat:setupProject" description="Setup the Jakarta Turbine Maven project for the XNAT project">
         <maven:param-check value="${xdat.project.name}" fail="true" message="'xdat.project.name' must be specified"/>
-        <j:if test="${context.getVariable('xdat.project.includeXNAT') == null}">
+        <!-- Fix for XNAT-3397: Removes conditional include of xnat project template. If you do have another
+             project template you want to use in place of the xnat project template, uncomment the conditionals
+             around the various <j:set> elements for xdat.project.includeXNAT. -->
+        <!-- j:if test="${context.getVariable('xdat.project.includeXNAT') == null}">
             <j:set var="xdat.project.includeXNAT" value="false"/>
-        </j:if>
+        </j:if -->
         <ant:echo>xdat.project.includeXNAT: ${context.getVariable('xdat.project.includeXNAT')}</ant:echo>
         <maven:makeAbsolutePath var="turbine.plugin.root.dir" path="deployments/${xdat.project.name}" basedir="${basedir}"/>
         <ant:echo>turbine.plugin.root.dir: ${turbine.plugin.root.dir}</ant:echo>

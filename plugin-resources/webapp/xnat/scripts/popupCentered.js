@@ -77,7 +77,7 @@ function popupCentered( /* url, title, w, h, y, params */ ) {
         }
     }
 
-    return window.open( url, title, paramsArray.join(',') ).focus();
+    return window.open( url, title, paramsArray.join(',') );
 
 }
 

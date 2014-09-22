@@ -82,6 +82,13 @@ if (!String.prototype.trim) {
     };
 }
 
+// polyfill for isArray
+if (!Array.isArray) {
+    Array.isArray = function(arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]';
+    };
+}
+
 // add commas to numbers
 function addCommas(nStr) {
     nStr += '';

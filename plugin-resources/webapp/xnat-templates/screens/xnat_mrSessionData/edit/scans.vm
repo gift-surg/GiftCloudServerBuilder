@@ -5,28 +5,26 @@
 <DIV class="edit_header1" style="margin-bottom:16px">Scans &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" value="Add Scan" onclick="addScan(this)"/>
 </DIV>
-#end	    
-					<TABLE>
-					 <thead>
-	  <TR>
-	  	  <TH align=left></TH>
-	  	  <TH align=left>Scan</TH>
-	  	  <TH align=left>Type <a onclick="xModalMessage('Scan Type', 'If the required value is not in the list, select MORE to show additional options or CUSTOM to add your own value.');"><img border="0" src="$content.getURI("images/qm.gif")"/></a></TH>
-	  	  <TH align=left>Quality</TH>
-	  	  <TH align=left>Note</TH>
-	  </TR>
-	 </thead>
-#set ($scanCounter = 0)
- <tbody id="scan_tbody">
- </tbody>
- <tr>
-   <td></td>
-   <td></td>
-   <td></td>
-   <td></td>
-   <td></td>
-   <td><b>Total:</b> $!om.getFormattedSessionReadableScanStats()</td></tr>
-</TABLE>
+#end
+<table>
+    <thead>
+    <tr>
+        <th align=left></th>
+        <th align=left>Scan</th>
+        <th align=left>Type
+            <a onclick="xModalMessage('Scan Type', 'If the required value is not in the list, select MORE to show additional options or CUSTOM to add your own value.');"><img border="0" src="$content.getURI("images/qm.gif")"/></a>
+        </th>
+        <th align=left>Quality</th>
+        <th align=left>Note</th>
+    </tr>
+    </thead>
+    #set ($scanCounter = 0)
+    <tbody id="scan_tbody">
+    </tbody>
+    <tr>
+        <td colspan="5" style="padding-top:10px;"><b>Total:</b> $!om.getFormattedSessionReadableScanStats()</td>
+    </tr>
+</table>
 <div id="scans" style="position:absolute;top:50px;left:50px;"></div>
 <script type="text/javascript" src="$content.getURI("scripts/imageScanData/scan_tools.js")"></script>
 <script type="text/javascript">
@@ -39,10 +37,10 @@
     window.scanSet.new_scans.push(tempScan);
     window.scanSet.onLoad.fire();
   }
-  
+
   var options = new Object();
   options.session_id="$!om.getId()";
-  
+
     options.types=new Object();
     options.types["xnat:mrScanData"]=new Object();
     options.types["xnat:mrScanData"].values = new Array();
@@ -51,7 +49,7 @@
       for(var tC=0;tC<this.values.length;tC++){
         if(this.values[tC].value==_v){
           return true;
-        }		
+        }
       }
       return false;
     };
@@ -61,23 +59,23 @@
       options.types["xnat:mrScanData"].values.push({"value":"$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scanT.get(0)))","display":"$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scanT.get(0)))"});
     #end
   #end
-  
+
 #if($allowDataDeletion)
    options.allowDataDeletion="$allowDataDeletion";
 #else
    options.allowDataDeletion="true";
 #end
-  
+
   window.scanSet=new ScanSet(options);
   if(window.classMapping==undefined)window.classMapping=new ClassMapping();
-  
+
 	  #set($numScans = $om.getSortedScans().size())
 	  #if($numScans>0)
 	  #set ($TOP_SCAN = $numScans - 1)
 	  #foreach($scani in [0..$TOP_SCAN])
     #set($scan=$om.getSortedScans().get($scani))
     var tempScan = window.classMapping.newInstance("$!scan.getXSIType()");
-    tempScan.setProperty("ID","$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scan.getId()))"); 
+    tempScan.setProperty("ID","$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scan.getId()))");
 	#if($scan.getType())
     	tempScan.setProperty("type","$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scan.getType()))");
 	#else
@@ -97,21 +95,21 @@
     tempScan.stats='$!scan.getFormattedReadableFileStats($user)';
     tempScan.setProperty("xnat_imageScanData_id","$!turbineUtils.unescapeParam($!scan.getProperty('xnat_imagescandata_id'))");
     window.scanSet.scans.push(tempScan);
-    
+
       if(!options.types["xnat:mrScanData"].containsValue("$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scan.getType()))")){
          options.types["xnat:mrScanData"].values.push({"value":"$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scan.getType()))","display":"$!turbineUtils.escapeJS($!turbineUtils.unescapeParam($!scan.getType()))"});
       }
    #end
   #end
-   
+
   window.scanSet.onLoad.subscribe(function(obj){
     var listing=new scanListingEditor("scan_tbody",this);
     listing.render();
   });
-      
-      
+
+
 #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-addition","true")))
-  
+
   if(window.scanSet.scans.length==0){
     for(var newC=0;newC<5;newC++){
       var tempScan = window.classMapping.newInstance("xnat:mrScanData");
@@ -119,9 +117,9 @@
     }
   }
 #end
-  
+
 XNAT.app.sTMod=$turbineUtils.toBoolean($siteConfig.getProperty("UI.allow-scan-type-modification","true"))
-       
+
   window.scanSet.onLoad.fire();
 </script>
 <!-- END /xnat-templates/screens/xnat_mrSessionData/edit/scans.vm -->

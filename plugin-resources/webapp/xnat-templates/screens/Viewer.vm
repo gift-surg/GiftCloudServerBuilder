@@ -19,7 +19,7 @@ $page.setTitle("Viewer: $om.Id")
     <tr  bgcolor="white">
         <td style="border-style:none;"  valign="top" align="left" colspan="2">
 				<applet name="plexiviewer" code="org.nrg.plexiViewer.lite.applet.PlexiViewerApplet"
-					codebase="$!appletPath" archive="plexiviewer-1.6.3.jar, imagej-1.44.update.jar, xdat-beans-1.6.3.jar, log4j-1.2.16.jar, commons-lang-2.6.jar, nrgutil-1.1.0.jar"
+					codebase="$!appletPath" archive="plexiviewer-1.6.4.jar, ij-1.49h.jar, xdat-beans-1.6.4.jar, log4j-1.2.17.jar, commons-lang-2.6.jar, nrgutil-2.0.0.jar"
 					width=250 height=200>
 					<param name="sessionId" value="$om.Id">
 					#if ($startDisplayWith)

@@ -23,7 +23,7 @@
     <goal name="xdat:version" description="Initializes the XNAT version">
         <ant:echo>Setting the project version</ant:echo>
         <j:if test="${context.getVariable('xdat.project.version') == null}">
-            <j:set var="xdat.project.version" value="1.6.4-SNAPSHOT"/>
+            <j:set var="xdat.project.version" value="1.6.4"/>
         </j:if>
         <!-- Test to see if we've checked the version already in this build. -->
         <j:if test="${context.getVariable('xdat.project.version.checked') == null}">

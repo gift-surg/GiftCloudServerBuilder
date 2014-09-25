@@ -15,11 +15,32 @@ var xModal = xModal || {};
 
 // NOTE: camel case "xModal"
 xModal.Modal = function( _opts ){
-    this._opts = _opts || {};
+
+    this._opts = _opts = _opts || {};
+
+    $.extend( true, this, _opts );
+
+    function isValue( a, b ){
+        if (arguments.length !== 2) return; // need exactly TWO args
+        if (typeof a != 'undefined'){
+            return (a.toString() === b.toString());
+        }
+    }
+
     // if there's a value that's NOT the 'default'
     // set the value to false
     this.scroll = !(_opts.scroll && _opts.scroll !== 'yes');
     this.closeBtn = !(_opts.closeBtn && _opts.closeBtn !== 'show');
+
+    if (_opts.id && isValue(_opts.content,'static')) {
+        this.template = _opts.id
+    }
+
+    if (_opts.id && isValue(_opts.content,'existing')){
+        this.template = _opts.id;
+        this.padding = 0;
+        this.footer = _opts.footer = false;
+    }
 
     if (_opts.footer && _opts.footer !== 'show'){
         this.footer = false;
@@ -30,8 +51,9 @@ xModal.Modal = function( _opts ){
         this.footer.content = _opts.footerContent;
         this.footer.background = _opts.footerBackground;
         this.footer.border = _opts.footerBorder;
-        if (_opts.footerHeight) { this.footer.height = _opts.footerHeight + 'px' }
+        if (_opts.footerHeight) { this.footer.height = _opts.footerHeight }
     }
+
     var opts = $.extend(true, {}, this, _opts);
     this.opts = opts;
 
@@ -58,7 +80,7 @@ var xModalMessageCount = 0 ;
 function xModalMessage( title, message, label, options ){
     xModalMessageCount++ ;
     var opts={};
-    opts.title = title || false;
+    opts.title = title || ' ';
     opts.content = message || ' ';
     opts.buttonLabel = label || 'OK';
     $.extend(true, opts, options);

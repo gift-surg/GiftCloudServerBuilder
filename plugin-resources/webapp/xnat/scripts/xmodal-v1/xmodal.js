@@ -15,10 +15,34 @@ if (typeof jQuery == 'undefined') {
 (function() {
 
     var $ = jQuery;
-    var _xmodal={}, $html, $body, $mask, $modal;
+    var _xmodal = {}, $html, $body, $mask, $modal;
 
 
     _xmodal.topZ = 10000;
+
+    // polyfill for string.trim(); method
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () {
+            return this.replace(/^[\s\xA0]+|[\s\xA0]+$/g, '');
+        };
+    }
+
+    // this will make sure we've got a jQuery DOM object
+    function jqObj(el) {
+        if (!el) {
+            return false
+        }
+        var $el = el;
+        if (!$el.jquery) {
+            $el = $(el);
+            // if there's not a matching DOM element
+            // then it's PROBABLY just an id string
+            if (!$el.length) {
+                $el = $('#' + el);
+            }
+        }
+        return $el;
+    }
 
 
     function getScriptDir() {
@@ -48,6 +72,24 @@ if (typeof jQuery == 'undefined') {
         if (!$('script[src*="' + _filename + '"]').length) {
             $('head').append('<script type="text/javascript" src="' + _path + _filename + '"></script>');
         }
+    }
+
+
+    function isValue( a, b ){
+        if (arguments.length !== 2) return; // need exactly TWO args
+        if (typeof a != 'undefined'){
+            return (a.toString() === b.toString());
+        }
+    }
+
+
+    function isFalse( val ){
+        return isValue( val, false );
+    }
+
+
+    function isTrue( val ){
+        return isValue( val, true );
     }
 
 
@@ -215,6 +257,32 @@ if (typeof jQuery == 'undefined') {
 
 
         //////////////////////////////////////////////////
+        // get xmodal config opts from data attribute
+        //////////////////////////////////////////////////
+        // usage:
+        // <div data-xmodal-opts="size:large|speed:2000|mask:false"><div>
+        xmodal.getOptsFromData = function( el, opts, delim, sep ){
+            // el = DOM element (jQuery object, selector, or id)
+            // opts = config object we're modifying
+            if ( !el || !opts ) { return } // need both args
+            delim = delim || '|'; // delimiter between properties
+            sep   = sep   || ':'; // separator between key:value
+            var $el = jqObj(el);
+            var data = $el.data('xmodal-opts');
+            if (data){
+                var dataOpts = data.split(delim);
+                $.each( dataOpts, function(i, v) {
+                    var opt = v.split(sep);
+                    opts[opt[0].trim()] = opt[1].trim();
+                });
+            }
+        };
+        //////////////////////////////////////////////////
+
+
+
+
+        //////////////////////////////////////////////////
         // delete the 'xmodal.modals[_id]' object
         //////////////////////////////////////////////////
         xmodal.deleteModal = function(_id){
@@ -266,14 +334,14 @@ if (typeof jQuery == 'undefined') {
                     'height': body_height - 1
                 });
 
-                if (modal.closeBtn){
+                if ( !isFalse(modal.closeBtn) ){
                     title_width = title_width - 48;
                     $title.find('.inner').css({
                         'width': title_width
                     });
                 }
 
-                if (modal.maximize){
+                if ( !isFalse(modal.maximize) ){
                     title_width = title_width - 34;
                     $title.find('.inner').css({
                         'width': title_width
@@ -340,10 +408,10 @@ if (typeof jQuery == 'undefined') {
             //};
 
             // shortcuts to hide the ok and cancel buttons
-            if (_opts.ok === false || _opts.ok === 'hide') {
+            if ( isFalse(_opts.ok) || _opts.ok === 'hide') {
                 buttons.ok = false
             }
-            if (_opts.cancel === false || _opts.cancel === 'hide') {
+            if ( isFalse(_opts.cancel) || _opts.cancel === 'hide') {
                 buttons.cancel = false
             }
             //this.defaultButton = this.buttons.ok;
@@ -396,7 +464,7 @@ if (typeof jQuery == 'undefined') {
                     if (button.isDefault === true) { classNames.push('default') }
 
                     html += '' +
-                        '<a href="javascript:" id="' + button_id + '"' +
+                        '<a tabindex="0" href="javascript:" id="' + button_id + '"' +
                         ' class="' + classNames.join(' ') + '">' + button.label + '</a> ';
 
                     var button_ = modal.buttons[_prop];
@@ -434,7 +502,7 @@ if (typeof jQuery == 'undefined') {
             // HTML for the mask
             output.container._pre +=
                 // only generate the mask if not false (true is default)
-                (modal.mask !== false) ?
+                ( !isFalse(modal.mask) ) ?
                     '<div class="' + [xmodal.strings.mask, xmodal.strings.version, modal.className].join(' ') + '"' +
                         ' id="' + modal.id + '-mask" data-xmodal-id="' + modal.id + '"' +
                         ' data-xmodal-x="' + modal.count + '"></div>' :
@@ -447,7 +515,7 @@ if (typeof jQuery == 'undefined') {
 
             output.container.post_ = '</div>';
 
-            if (modal.title !== false){
+            if ( !isFalse(modal.title) ){
                 modal.titleStyle = '';
             }
             else {
@@ -457,10 +525,10 @@ if (typeof jQuery == 'undefined') {
             }
             output.title  = '<div title="' + modal.title + '" class="title"' + modal.titleStyle + '>';
             output.title += '<span class="inner">' + modal.title + '</span>';
-            output.title += (modal.maximize === true) ?
+            output.title += ( isTrue(modal.maximize) ) ?
                 '<b class="maximize" title="maximize/minimize this dialog">&ndash;</b>':
                 '';
-            output.title += (modal.closeBtn === true) ?
+            output.title += ( isTrue(modal.closeBtn) ) ?
                 '<b class="close" title="(alt-click to close all modals)">&times;</b>' :
                 '';
             output.title += '</div>';
@@ -468,13 +536,13 @@ if (typeof jQuery == 'undefined') {
 
             output.body =
                 '<div class="body content">' +
-                '' + '<div class="inner" style="padding:'+modal.padding+';">' + modal.content + '</div>' +
+                '' + '<div class="inner" style="padding:'+modal.padding+'px;">' + modal.content + '</div>' +
                 '</div>';
 
 
-            if (modal.footer !== false) {
+            if ( !isFalse(modal.footer) ) {
                 output.footerStyle =
-                    'height:' + modal.footer.height + ';' +
+                    'height:' + modal.footer.height + 'px;' +
                     'background-color:' + modal.footer.background + ';' +
                     'border-color:' + modal.footer.border + ';' +
                     '';
@@ -527,13 +595,39 @@ if (typeof jQuery == 'undefined') {
 
             //xmodal.count++;
             this.count = _opts.count || ++xmodal.count;
-            this.id = 'xmodal' + this.count;
+            this.id = _opts.id =
+                (_opts.id) ? _opts.id + '-xmodal' : 'xmodal' + this.count;
+
             // we can use 'className', 'classNames' or 'classes'
             this.className = this.classNames = this.classes =
                 _opts.className || _opts.classNames || _opts.classes || '' ;
-            this.kind = 'dialog'; // is this used now? let's use 'preset' objects to set default properties for different types of modals
+
             this.width = 600;
             this.height = 400;
+
+            // support for 'preset' sizes
+            if (_opts.kind || _opts.size){
+                (function( modal ){
+                    var kinds = {
+                        dialog:  [600, 400],
+                        message: [400, 200],
+                        max:     ['98%', '96%'],
+                        full:    ['98%', '96%'],
+                        large:   ['90%', '90%'],
+                        med:     ['70%', '60%'],
+                        small:   ['50%', '30%'],
+                        xsmall:  ['40%', '30%']
+                    };
+                    $.each(kinds, function( kind, dims ){
+                        if (_opts.kind === kind || _opts.size === kind){
+                            modal.width = dims[0];
+                            modal.height = dims[1];
+                            return false; // exits $.each()
+                        }
+                    });
+                })( this );
+            }
+
             this.position = false; // top: css property - false is vertically centered
             this.animation = 'fade'; // false, 'fade' or 'slide'
             this.duration = _opts.speed || _opts.duration || 100; // if we're passing duration as 'speed'
@@ -547,14 +641,9 @@ if (typeof jQuery == 'undefined') {
             this.template = false; // don't use a template by default (set a value if a condition below is met)
 
             if (_opts.template){
-                if (_opts.template.jquery) {
-                    this.template = this.$template = _opts.template
-                }
-                else if (_opts.template.charAt(0) === '#') {
-                    this.template = this.$template = $(_opts.template)
-                }
-                else {
-                    this.template = this.$template = $('#'+_opts.template);
+                this.template = this.$template = _opts.template = jqObj(_opts.template);
+                if (this.template.data('xmodal-opts')){
+                    xmodal.getOptsFromData(this.template, this);
                 }
             }
 
@@ -562,17 +651,17 @@ if (typeof jQuery == 'undefined') {
             // 1) set this.content and _opts.content to _opts.content or "(no content)" if we're NOT using a template
             // 2) BUT... if we ARE using a template (if there's a value set for _opts.template), grab the HTML from that
             this.content = _opts.content =
-                (this.template !== false) ?
+                ( !isFalse(this.template) ) ?
                     this.template.html() :
                     _opts.content || '(no content)';
             this.scroll = true;
             this.footer = { // this.footer = false -- will not render footer
                 //show: true, // probably don't need this - just pass "false" to "footer" property to not render footer
-                content: '',
-                height: '50px',
-                background: '#f0f0f0',
-                border: '#e0e0e0',
-                buttons: true
+                content:    _opts.footerContent || '',
+                height:     _opts.footerHeight || 50,
+                background: _opts.footerBackground || '#f0f0f0',
+                border:     _opts.footerBorder || '#e0e0e0',
+                buttons:    _opts.footerButtons || true
             };
             // okLabel, okAction, okClose, cancelLabel, cancelAction included for easy config of default buttons
 
@@ -580,7 +669,7 @@ if (typeof jQuery == 'undefined') {
 
             this.isDraggable = _opts.draggable || true;
 
-            if (this.template !== false && this.template.jquery) {
+            if ( !isFalse(this.template) && this.template.jquery ) {
                 this.template.empty()
             }
 
@@ -640,7 +729,7 @@ if (typeof jQuery == 'undefined') {
             modal_id = '#' + modal.id;
             modal.$modal = $modal = $(modal_id);
 
-            if (modal.mask !== false){
+            if ( !isFalse(modal.mask) ){
                 //modal.$mask = modal.$modal.closest('xmodal-mask');
                 modal.$mask = $mask = $(modal_id + '-mask');
                 modal.$mask.css({
@@ -704,13 +793,13 @@ if (typeof jQuery == 'undefined') {
 
             if (modal.animation === 'fade') {
                 //$mask.fadeIn(modal.speed / 2);
-                modal.$modal.fadeIn(modal.speed, function() {
+                modal.$modal.fadeIn(+modal.speed, function() {
                     afterRender($(this));
                 });
             }
             else if (modal.animation === 'slide') {
                 //$mask.fadeIn(modal.speed / 2);
-                modal.$modal.slideDown(modal.speed, function() {
+                modal.$modal.slideDown(+modal.speed, function() {
                     afterRender($(this));
                 });
             }
@@ -723,7 +812,7 @@ if (typeof jQuery == 'undefined') {
             }
 
             $(xmodal.dialog.box).removeClass('top'); // strip 'top' class from ALL xmodal modals
-            modal.$modal.addClass('open top'); // add 'top' (and 'open') class to only top one
+            modal.$modal.addClass('open top').attr('tabindex',0).focus(); // add 'top' (and 'open') class to only top one
 
             if (modal.isDraggable !== false) {
                 if (typeof $.fn.drags != 'undefined') {
@@ -792,7 +881,7 @@ if (typeof jQuery == 'undefined') {
                     $html.removeClass('noscroll');
                     return ; // be done if there are no more open modals
                 }
-                $(xmodal.dialog.open).last().addClass('top');
+                $(xmodal.dialog.open).last().addClass('top').focus();
             });
 
             // NONE OF THE CODE BELOW THIS WILL EXECUTE
@@ -885,14 +974,8 @@ if (typeof jQuery == 'undefined') {
         // maximize this modal
         //////////////////////////////////////////////////
         xmodal.maximize = function(modal){
-            var $modal;
             if (!modal) { return }
-            if (modal.jquery){
-                $modal = modal;
-            }
-            else {
-                $modal = $('#'+modal);
-            }
+            var $modal = jqObj(modal);
             $modal.toggleClass('maxxed');
         };
         //////////////////////////////////////////////////
@@ -918,8 +1001,6 @@ if (typeof jQuery == 'undefined') {
             this.speed = 100;
             this.title = false;
             this.content = opts.content || opts.message || '(no message - must set value for "content" property)';
-            this.scroll = false;
-            this.closeBtn = false;
             this.buttons = {};
             this.buttons.ok = {};
             this.buttons.ok.label = opts.label || opts.button || opts.okLabel || opts.buttonLabel || 'OK';
@@ -1007,10 +1088,10 @@ if (typeof jQuery == 'undefined') {
 
             // seems redundant to pass _opts to the constructor
             // as well as merging with the alert var
-            var alert = new xmodal.presets.Message(opts);
+            var msg = new xmodal.presets.Message(opts);
 
             // or maybe not since we alias some properties (like okLabel)
-            opts = $.extend(true, {}, alert, opts);
+            opts = $.extend(true, {}, msg, opts);
 
             opts.className = [(opts.className || opts.classNames || opts.classes || ''), 'xmodal-message'].join(' ');
 

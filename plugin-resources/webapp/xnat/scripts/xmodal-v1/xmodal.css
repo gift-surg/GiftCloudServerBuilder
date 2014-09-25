@@ -17,10 +17,12 @@ div.xmodal.v1 {
     background: #fff ; border: 1px solid #a0a0a0 ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ;
     font-family: Arial, Helvetica, sans-serif ; }
 
+div.xmodal.v1:focus { outline: 1px solid #808080; }
+
 div.xmodal.v1.dialog { width: 600px ; height: 400px ; }
 
 div.xmodal.v1.maxxed {
-    width: 98% !important; height: 96% !important;
+    width: 98% !important; height: 98% !important;
     top: 0 !important; right: 0 !important;
     bottom: 0 !important; left: 0 !important; }
 

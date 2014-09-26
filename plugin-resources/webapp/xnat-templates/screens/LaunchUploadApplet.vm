@@ -137,8 +137,7 @@
             return;
         }
         window.create_subject_link+="/project/" + project + "/destination/JS_Parent_Return.vm";
-        //this.subjectForm=window.open(window.create_subject_link, '','width=600,height=850,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
-        this.subjectForm = popupCentered(window.create_subject_link,'Subject Info',610,800,10,'status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+        this.subjectForm = popupCentered(window.create_subject_link,'Subject',610,800,10,'status=yes,resizable=yes,scrollbars=yes,toolbar=no');
         if (this.subjectForm.opener == null) this.subjectForm.opener = self;
         return this.subjectForm;
 

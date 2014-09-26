@@ -1,85 +1,91 @@
 <TABLE>
-	<TR>
-		<TD VALIGN="top">
-			<b>Enter Search Criteria<b><br>
-<TABLE VALIGN="top">
-  	<TR>
-		<TD COLSPAN=6><b><u>$displayManager.getSingularDisplayNameForSubject() Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
-	</TR>
-	<TR>
-  		<TD>$displayManager.getSingularDisplayNameForSubject()</TD>
-  		<INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData.SUBJECTID_equals,xnat:subjectData.ADD_IDS_equals,xnat:subjectData/label_equals,xnat:subjectData/sharing/share/label_equals"/>
-		<TD>
-  			<INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")" maxlength="100"/>
-		</TD>
-		
-		<TD>Cohort</TD>
-		<TD>
-  			<INPUT size="8" type="text" name="xnat:subjectData.COHORT_equals" value="$!search.getWebFormValue("xnat:subjectData.COHORT_equals")"/>
-		</TD>
-		
-  		<TD>Gender</TD>
-		<TD>
-  			<select name="xnat:subjectData.GENDER_TEXT_equals">
-  				#set($GENDER_TEXT_value=$!search.getWebFormValue("xnat:subjectData.GENDER_TEXT_equals"))
-				<option value="" #if($GENDER_TEXT_value=="") SELECTED #end>(SELECT)</option>
-	    		<option value="F" #if($GENDER_TEXT_value=="F") SELECTED #end>female</option>
-	    		<option value="M" #if($GENDER_TEXT_value=="M") SELECTED #end>male</option>
-	    		<option value="O" #if($GENDER_TEXT_value=="O") SELECTED #end>other</option>
-	    		<option value="U" #if($GENDER_TEXT_value=="U") SELECTED #end>unknown</option>
-			</select>
-		</TD>
-	</TR>
-	<TR>
-		<TD>Age</TD>
-		<TD>
-  			<INPUT size="3" type="text" name="xnat:petSessionData.GEN_AGE_equals" value="$!search.getWebFormValue("xnat:petSessionData.GEN_AGE_equals")" maxlength="3"/>
-		</TD>
-	</TR>
-	<TR>
-		<TD COLSPAN=6><b><u>PET Fields</u></b></TD>
-	</TR>
-	<TR>
-  		<TD>PET ID</TD>
-		<TD>
-  			<INPUT size="10" type="text" name="xnat:petSessionData.EXPT_ID_equals" value="$!search.getWebFormValue("xnat:petSessionData.EXPT_ID_equals")" maxlength="100"/>
-		</TD>
-		
-		<TD>Date</TD>
-		<TD>
-  			#xdatSearchField($schemaElement $schemaElement.getDisplayField("DATE"))
-		</TD>
-			#advancedSearchCreateProjectList($data $displayManager $search $schemaElement)	
-	</TR>
-	<TR>
-  		<TD>Tracer</TD>
-  		<TD COLSPAN=4>
-  			<select name="xnat:petSessionData.TRACER_NAME_equals">
-  				#set($SCANNER_value=$!search.getWebFormValue("xnat:petSessionData.TRACER_NAME_equals"))
-				<option value="" #if($SCANNER_value=="") SELECTED #end>(SELECT)</option>
-	    		<option value="PIB" #if($SCANNER_value=="PIB") SELECTED #end>PIB</option>
-	    <option value="FDG" #if($SCANNER_value=="FDG") SELECTED #end>FDG</option>
-	    <option value="RAC" #if($SCANNER_value=="RAC") SELECTED #end>RAC</option>
-	    <option value="PK" #if($SCANNER_value=="PK") SELECTED #end>PK</option>
-		</select>
-		</TD>
-	</TR>
+    <TR>
+        <TD VALIGN="top">
+            <b>Enter Search Criteria<b><br>
+                <TABLE VALIGN="top">
+                    <TR>
+                        <TD COLSPAN=6><b><u>$displayManager.getSingularDisplayNameForSubject() Fields</u></b>&nbsp;&nbsp;&nbsp;&nbsp;<A href="#" ONCLICK="return popupWithProperties('$link.setPage("SearchHelp.vm").addPathInfo("popup","true")','','width=300,height=300,resizable=yes,scrollbars=yes');">Help</a></TD>
+                    </TR>
+                    <TR>
+                        <TD>$displayManager.getSingularDisplayNameForSubject()</TD>
+                        <INPUT type="hidden" name="xnat:subjectData.COMBO0_FIELDS" value="xnat:subjectData.SUBJECTID_equals,xnat:subjectData.ADD_IDS_equals,xnat:subjectData/label_equals,xnat:subjectData/sharing/share/label_equals"/>
+                        <TD>
+                            <INPUT size="6" type="text" name="xnat:subjectData.COMBO0" value="$!search.getWebFormValue("xnat:subjectData.COMBO0")" maxlength="100"/>
+                        </TD>
+
+                        <TD>Cohort</TD>
+                        <TD>
+                            <INPUT size="8" type="text" name="xnat:subjectData.COHORT_equals" value="$!search.getWebFormValue("xnat:subjectData.COHORT_equals")"/>
+                        </TD>
+
+                        <TD>Gender</TD>
+                        <TD>
+                            <select name="xnat:subjectData.GENDER_TEXT_equals">
+                                #set($GENDER_TEXT_value=$!search.getWebFormValue("xnat:subjectData.GENDER_TEXT_equals"))
+                                <option value="" #if($GENDER_TEXT_value=="") SELECTED #end>(SELECT)</option>
+                                <option value="F" #if($GENDER_TEXT_value=="F") SELECTED #end>female</option>
+                                <option value="M" #if($GENDER_TEXT_value=="M") SELECTED #end>male</option>
+                                <option value="O" #if($GENDER_TEXT_value=="O") SELECTED #end>other</option>
+                                <option value="U" #if($GENDER_TEXT_value=="U") SELECTED #end>unknown</option>
+                            </select>
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD>Age</TD>
+                        <TD>
+                            <INPUT size="3" type="text" name="xnat:petSessionData.GEN_AGE_equals" value="$!search.getWebFormValue("xnat:petSessionData.GEN_AGE_equals")" maxlength="3"/>
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD COLSPAN=6><b><u>PET Fields</u></b></TD>
+                    </TR>
+                    <TR>
+                        <TD>PET ID</TD>
+                        <TD>
+                            <INPUT size="10" type="text" name="xnat:petSessionData.EXPT_ID_equals" value="$!search.getWebFormValue("xnat:petSessionData.EXPT_ID_equals")" maxlength="100"/>
+                        </TD>
+
+                        <TD>Date</TD>
+                        <TD>
+                            #xdatSearchField($schemaElement $schemaElement.getDisplayField("DATE"))
+                        </TD>
+                        #advancedSearchCreateProjectList($data $displayManager $search $schemaElement)
+                    </TR>
+                    <TR>
+                        <TD>Tracer</TD>
+                        <TD COLSPAN=4>
+                            <select name="xnat:petSessionData.TRACER_NAME_equals">
+                                #set($SCANNER_value=$!search.getWebFormValue("xnat:petSessionData.TRACER_NAME_equals"))
+                                <option value="" #if($SCANNER_value=="") SELECTED #end>(SELECT)</option>
+                                <option value="PIB" #if($SCANNER_value=="PIB") SELECTED #end>PIB</option>
+                                <option value="FDG" #if($SCANNER_value=="FDG") SELECTED #end>FDG</option>
+                                <option value="RAC" #if($SCANNER_value=="RAC") SELECTED #end>RAC</option>
+                                <option value="PK" #if($SCANNER_value=="PK") SELECTED #end>PK</option>
+                            </select>
+                        </TD>
+                    </TR>
+                </TABLE>
+        </TD>
+    </TR>
 </TABLE>
-		</TD>
-		
-		<TD VALIGN="top" height="100%" class="cornflower_border">
-			<b>... or enter exact IDs.</b><br>
-					<TABLE VALIGN="top">
-  				<TR>
-  					<TD VALIGN="top">
-						<SELECT name="xnat:petSessionData.COMBO0_FIELDS">
-			  				<option value="xnat:petSessionData/ID_in,xnat:petSessionData/label_in,xnat:petSessionData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:petSessionData.COMBO0_FIELDS")=="xnat:petSessionData/ID_in,xnat:petSessionData/label_in,xnat:petSessionData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForImageSession().toUpperCase() ID</option>
-			  				<option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:petSessionData.COMBO0_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForSubject().toUpperCase()</option>
-			  			</SELECT><BR>
-						<TEXTAREA NAME="xnat:petSessionData.COMBO0" COLS=18 ROWS=14>$!search.getWebFormValue("xnat:petSessionData.COMBO0")</TEXTAREA>
-		</TD>
-	</TR>
-			</TABLE>
-		</TD>
-	</TR>
-</TABLE>
+<br/>
+<div VALIGN="top" height="100%" class="cornflower_border">
+    <TABLE VALIGN="top">
+        <TR>
+            <TD VALIGN="bottom">
+                <b>...or enter exact IDs&nbsp;&nbsp;</b>
+            </TD>
+            <TD rowspan="2">
+                <TEXTAREA NAME="xnat:petSessionData.COMBO0" cols="30" rows="3">$!search.getWebFormValue("xnat:petSessionData.COMBO0")</TEXTAREA>
+            </TD>
+        </TR>
+        <TR>
+            <TD VALIGN="top">
+                <SELECT name="xnat:petSessionData.COMBO0_FIELDS">
+                    <option value="xnat:petSessionData/ID_in,xnat:petSessionData/label_in,xnat:petSessionData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:petSessionData.COMBO0_FIELDS")=="xnat:petSessionData/ID_in,xnat:petSessionData/label_in,xnat:petSessionData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForImageSession().toUpperCase() ID</option>
+                    <option value="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in" #if($!search.getWebFormValue("xnat:petSessionData.COMBO0_FIELDS")=="xnat:subjectData/ID_in,xnat:subjectData/label_in,xnat:subjectData/sharing/share/label_in")SELECTED#end>$displayManager.getSingularDisplayNameForSubject().toUpperCase()</option>
+                </SELECT><BR>
+            </TD>
+        </TR>
+    </TABLE>
+</div>

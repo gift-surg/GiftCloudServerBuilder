@@ -6,39 +6,39 @@ $page.setVlinkColor($ui.vlink)
 <DIV class="error">$data.message</DIV><br>
 #end
 <p>
-#parse("/screens/userValidationJS.vm")
+    #parse("/screens/userValidationJS.vm")
 
 <form name="form1" method="post" action="$link.setAction("ModifyUser")" onsubmit="return XNAT.app.register.validateForm();">
-	<input type="hidden" name="xdat:user.xdat_user_id" value="$!item.getProperty("xdat_user_id")"/>
-<table border="0" width="95%">
-	<tr>
-		<TH align=center colspan=2>User Details</TH>
-	</tr>
-	<tr>
-		<TD align=right>Username:</TD>
-	#if($item.getProperty("xdat_user_id"))
-	<TD>$!item.getProperty("login")
-			<INPUT type="hidden" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" />
-		</TD>
-	#else
-	<TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" ONCHANGE="validateUsername(this,'eventSubmit_doSetup');"/></TD>
-	#end
-	</tr>
-	<tr>
-		<TD align=right>Password:</TD><TD><INPUT class="required" type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" value="$!item.getProperty("xdat:user.primary_password")" autocomplete="off"/></TD>
-	</tr>
-	#xdatHiddenBox("xdat:user.enabled" $item "false")
-	<tr>
-		<TD align=right>First Name:</TD><TD><INPUT class="required alphaSP" type="text" id="xdat:user.firstname" name="xdat:user.firstname" value="$!item.getProperty("firstname")"/></TD>
-	</tr>
-	<tr>
-		<TD align=right>Last Name:</TD><TD><INPUT class="required alphaSP" type="text" id="xdat:user.lastname" name="xdat:user.lastname" value="$!item.getProperty("lastname")"/></TD>
-	</tr>
-	<tr>
-		<TD align=right>Email:</TD><TD><INPUT class="required" type="text" id="xdat:user.email" name="xdat:user.email" value="$!item.getProperty("email")"/></TD>
-	</tr>
-	#xdatEditProps($item $edit_screen)
-	<TR><TD COLSPAN=2 ALIGN=center><input type="submit" id="eventSubmit_doSetup" name="eventSubmit_doSetup" value="Submit"/></TD></TR>
-</table>
+    <input type="hidden" name="xdat:user.xdat_user_id" value="$!item.getProperty("xdat_user_id")"/>
+    <table border="0" width="95%">
+        <tr>
+            <TH align=center colspan=2>User Details</TH>
+        </tr>
+        <tr>
+            <TD align=right>Username:</TD>
+            #if($item.getProperty("xdat_user_id"))
+                <TD>$!item.getProperty("login")
+                    <INPUT type="hidden" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" />
+                </TD>
+            #else
+                <TD><INPUT class="required alphaNumSP" type="text" id="xdat:user.login" name="xdat:user.login" value="$!item.getProperty("login")" onchange="validateUsername(this,'eventSubmit_doSetup');"/></TD>
+            #end
+        </tr>
+        <tr>
+            <TD align=right>Password:</TD><TD><INPUT class="required" type="password" id="xdat:user.primary_password" name="xdat:user.primary_password" value="$!item.getProperty("xdat:user.primary_password")" autocomplete="off"/></TD>
+        </tr>
+        #xdatHiddenBox("xdat:user.enabled" $item "false")
+        <tr>
+            <TD align=right>First Name:</TD><TD><INPUT class="required alphaSP" type="text" id="xdat:user.firstname" name="xdat:user.firstname" value="$!item.getProperty("firstname")" onchange="validateName(this, 'First', 'eventSubmit_doSetup');"/></TD>
+        </tr>
+        <tr>
+            <TD align=right>Last Name:</TD><TD><INPUT class="required alphaSP" type="text" id="xdat:user.lastname" name="xdat:user.lastname" value="$!item.getProperty("lastname")" onchange="validateName(this, 'Last', 'eventSubmit_doSetup');"/></TD>
+        </tr>
+        <tr>
+            <TD align=right>Email:</TD><TD><INPUT class="required" type="text" id="xdat:user.email" name="xdat:user.email" value="$!item.getProperty("email")" onchange="validateEmail(this,'eventSubmit_doSetup');"/></TD>
+        </tr>
+        #xdatEditProps($item $edit_screen)
+        <TR><TD COLSPAN=2 ALIGN=center><input type="submit" id="eventSubmit_doSetup" name="eventSubmit_doSetup" value="Submit"/></TD></TR>
+    </table>
 </form>
 </p>

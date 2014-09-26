@@ -1,9 +1,4 @@
 <!-- BEGIN /screens/xnat_subjectData/xnat_subjectData_edit.vm -->
-<style type="text/css">
-    /* hide potential scroll bars */
-    body.xmodal-popup { overflow: hidden ; }
-    body.xmodal-popup #eventSubmit_doInsert { display: none ; }
-</style>
 <table align="left" border=0>
     <tr>
         <td>
@@ -133,14 +128,14 @@
 <input type="hidden" name="project" value="$!{project}">
 #xdatEditProps($item $edit_screen)
 
-<script type="text/javascript">
-    function validateEditForm() {
-        if (validateKeyFields()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-</script>
+##<script type="text/javascript">
+##    function validateEditForm() {
+##        if (validateKeyFields()) {
+##            return true;
+##        }
+##        else {
+##            return false;
+##        }
+##    }
+##</script>
 <!-- END /screens/xnat_subjectData/xnat_subjectData_edit.vm -->

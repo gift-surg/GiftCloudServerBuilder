@@ -4,8 +4,9 @@
 #* @vtlvariable name="content" type="org.apache.turbine.services.pull.tools.ContentTool" *#
 #* @vtlvariable name="arc" type="org.nrg.xdat.om.ArcArchivespecification" *#
 #* @vtlvariable name="link" type="org.apache.turbine.util.template.TemplateLink" *#
-<script type="text/javascript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
-<link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')">
+
+## YUI calendar files are now in HeaderIncludes.vm
+
 <style type="text/css">
     #launchUploadAppletForm .select_label { display: inline-block ; width: 100px ; text-align: left ; }
     #launchUploadAppletForm th { padding: 0 ; }
@@ -17,6 +18,7 @@
     #set ($requireDate = "optional")
 #end
 
+<script type="text/javascript" src="$content.getURI('scripts/popupCentered.js')"></script>
 <form id="launchUploadAppletForm" class="noHide" action='$link.setPage("UploadApplet.vm")' method="post" target='_self' >
             <h3>Upload Image $displayManager.getPluralDisplayNameForImageSession()</h3>
                 <p style="width:500px;margin-top:10px;margin-bottom:20px;">
@@ -45,14 +47,21 @@
  <div id="hideIfProtocol" >
         #if ("$!requireDate" == "true" || "$!requireDate" == "optional")
             #if ("$requireDate" == "true")
-                <input type="hidden" id="no_session_date" name="no_session_date" value="false"/>
+                <input type="hidden" id="no_session_date" name="no_session_date" value="false">
             #end
       <table border="0">       
         <tr>
             <th align="left"><label for="session_date" class="select_label">$displayManager.getSingularDisplayNameForImageSession() Date</label></th>
             <td>
-                <input type="text" id="session_date" name="session_date"/>
-                <script type="text/javascript">insertCalendar(document.getElementById("session_date"), "$displayManager.getSingularDisplayNameForImageSession() Date");</script>
+                ##<input type="text" id="session_date" name="session_date">
+                ##<script type="text/javascript">insertCalendar(document.getElementById("session_date"), "$displayManager.getSingularDisplayNameForImageSession() Date");</script>
+                ## using the new date picker
+                <span id="upload-datepicker" class="single us today" data-value="" data-validate="onblur" data-input-id="session_date" data-input-name="session_date"></span>
+                <script type="text/javascript">
+                    jQuery('#upload-datepicker').data('value',XNAT.data.todaysDate.us);
+                    XNAT.app.datePicker.init(jQuery('#upload-datepicker'))
+                </script>
+            </td>
 		</tr>
                 #if ("$!requireTime" == "true")
 		<tr>
@@ -85,14 +94,14 @@
         <tr>
             <td>&nbsp;</td>
             <td>
-                <input type="checkbox" id="no_session_date" name="no_session_date" value="false"/> <label for="no_session_date">I don't know the date or my $displayManager.getSingularDisplayNameForImageSession().toLowerCase() doesn't have a date</label>
+                <input type="checkbox" id="no_session_date" name="no_session_date" value="false"> <label for="no_session_date">I don't know the date or my $displayManager.getSingularDisplayNameForImageSession().toLowerCase() doesn't have a date</label>
             </td>
         </tr>
                 #end
           </table>
         #else
-            <input type="hidden" id="no_session_date" name="no_session_date" value="true"/>
-            <input type="hidden" id="session_date" name="session_date"/>
+            <input type="hidden" id="no_session_date" name="no_session_date" value="true">
+            <input type="hidden" id="session_date" name="session_date">
 #end        
         <script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_visit_selector.js')"></SCRIPT>
         <script type="text/javascript">
@@ -104,9 +113,9 @@
 
      <br>
 
-     <input type="hidden" id="session_id" name="session_id" value=""/>
+     <input type="hidden" id="session_id" name="session_id" value="">
 
-     <input type="submit" id="gojuice" name="gojuice" value="Launch Uploader" disabled="true" style="min-width:135px;font-size:13px;" />
+     <input type="submit" id="gojuice" name="gojuice" value="Launch Uploader" disabled style="min-width:135px;font-size:13px;" >
 
  </div> <!-- end of hideIfProtocol -->
 <div id="forProtocolContent" style="display:none"></div>
@@ -128,9 +137,11 @@
             return;
         }
         window.create_subject_link+="/project/" + project + "/destination/JS_Parent_Return.vm";
-        this.subjectForm=window.open(window.create_subject_link, '','width=600,height=850,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+        //this.subjectForm=window.open(window.create_subject_link, '','width=600,height=850,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+        this.subjectForm = popupCentered(window.create_subject_link,'Subject Info',610,800,10,'status=yes,resizable=yes,scrollbars=yes,toolbar=no');
         if (this.subjectForm.opener == null) this.subjectForm.opener = self;
         return this.subjectForm;
+
     }
 
     window.success=function(subject_id){

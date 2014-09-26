@@ -24,7 +24,10 @@
             <table id="dob-yob-age" cellspacing="0">
                 <tr title="Date of Birth">
                     <td class="radio">
-                        <input type="radio" value="dob-input" id="dob" name="dob_group" #if ($hasDOB) checked #end>Date Of Birth
+                        <label>
+                            <input type="radio" value="dob-input" id="dob" name="dob_group" #if ($hasDOB) checked #end>
+                            Date Of Birth
+                        </label>
                         &nbsp; &nbsp;
                     </td>
                     <td valign="center">
@@ -36,48 +39,40 @@
                             data-validate="onblur"
                             data-input-id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"
                             data-input-name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob"></span>
-                            <script type="text/javascript">XNAT.app.datePicker.init(jQuery('#dob-datepicker'))</script>
+                            <!-- datePicker is initialized in JavaScript below -->
                         </div>
                     </td>
                 </tr>
                 <tr title="Year of Birth">
                     <td class="radio">
-                        <input type="radio" value="yob-input" id="yob" name="dob_group" #if ($hasYOB) checked #end>Year Of Birth
+                        <label>
+                            <input type="radio" value="yob-input" id="yob" name="dob_group" #if ($hasYOB) checked #end>
+                            Year Of Birth
+                        </label>
                         &nbsp; &nbsp;
                     </td>
                     <td valign="center">
                         <div class="input" id="yob-input" style="display: #if($hasYOB) block #else none #end">
                             <input type="text" size="4" maxlength="4"
                                 id="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"
-                                name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob">
+                                name="xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"
+                                #if($om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob"))
+                                    value='$om.getProperty("xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob")'
+                                #else
+                                    value=""
+                                #end
+                                style="font-family:Courier,monospace;font-size:13px;">
                             <script type="text/javascript">
-                                (function(){
-                                    var yobInput = document.getElementById('xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob');
-                                    var max = parseInt(XNAT.data.todaysDate.yyyy);
-                                    var min = 1900;
-                                    jQuery(yobInput).mask('9999',{placeholder:' '}); // forces numeric input
-                                    jQuery(yobInput).change(function(){
-                                        var __input = jQuery(this);
-                                        var year = __input.val();
-                                        if (year && (year > max || year < min)){
-                                            xmodal.message({
-                                                title: 'Invalid Date',
-                                                width: 350,
-                                                content: 'Please enter a date between 1900 and ' + max + '.',
-                                                action: function(){
-                                                    __input.val('').focus();
-                                                }
-                                            });
-                                        }
-                                    });
-                                })();
                             </script>
                         </div>
                     </td>
                 </tr>
                 <tr title="Age">
                     <td class="radio">
-                        <input type="radio" value="age-input" id="age" name="dob_group" #if($hasAGE) checked #end>Age
+                        <label>
+                            <input type="radio" value="age-input" id="age" name="dob_group" #if($hasAGE) checked #end>
+                            Age
+                        </label>
                         &nbsp; &nbsp;
                     </td>
                     <td valign="center">
@@ -93,13 +88,60 @@
             </table>
 
             <script type="text/javascript">
-                // activate date input for corresponding radio button
-                jQuery('[name="dob_group"]').click(function(){
-                    var input_val = jQuery(this).val();
-                    var __form = jQuery('#dob-yob-age');
-                    __form.find('div.input').hide();
-                    __form.find('#'+input_val).show().find('input').focus();
+                // functions for dob/yob/age inputs
+                jq(function(){
+
+                    // the <span> that spawns and contains the datepicker input
+                    var __dobDatepicker = jq('#dob-datepicker');
+
+                    // creating date input field and datepicker
+                    XNAT.app.datePicker.init(__dobDatepicker);
+
+                    // cache our DOM objects
+                    var __dobInput = jq(document.getElementById('xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/dob'));
+                    var __yobInput = jq(document.getElementById('xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/yob'));
+                    var __ageInput = jq(document.getElementById('xnat:subjectData/demographics[@xsi:type=xnat:demographicData]/age'));
+
+                    // set the initial date value, if any,
+                    // on the date <input> element we've
+                    // just created with the datePicker
+                    var date = __dobDatepicker.data('value');
+                    if (date){
+                        __dobInput.val(date);
+                    }
+
+                    var max = parseInt(XNAT.data.todaysDate.yyyy);
+                    var min = 1900;
+                    __yobInput.mask('9999',{placeholder:' '}); // forces numeric input
+                    __yobInput.change(function(){
+                        var __input = jq(this);
+                        var year = __input.val();
+                        if (year && (year > max || year < min)){
+                            xmodal.message({
+                                title: 'Invalid Date',
+                                width: 350,
+                                content: 'Please enter a date between 1900 and ' + max + '.',
+                                action: function(){
+                                    __input.focus().select();
+                                }
                 });
+                            return;
+                        }
+                        //__dobInput.val('NULL');
+                    });
+
+                    // activate date input for corresponding radio button
+                    jq('[name="dob_group"]').click(function(){
+                        var __form = jq('#dob-yob-age');
+                        var input_val = jq(this).val();
+                        // hide and reset ALL inputs
+                        __form.find('div.input').hide().find('input').addClass('nullify');
+                        // show the one we want
+                        __form.find('#'+input_val).show().find('input').removeClass('nullify').focus().select();
+                    });
+
+                });
+
             </script>
 
         </fieldset>

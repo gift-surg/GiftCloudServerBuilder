@@ -57,7 +57,9 @@
 #addGlobalCustomScreens("projectSubjectForm")
 
 
-<script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></SCRIPT>
+<script type="text/javascript" src="$content.getURI('scripts/subjectAssessorData/proj_subj_selector.js')"></script>
+<script type="text/javascript" src="$content.getURI('scripts/popupCentered.js')"></script>
+
 
 #parse($turbineUtils.getTemplateName("_session.vm",$om.getXSIType(),$project,"upload"))
 
@@ -96,11 +98,10 @@
 
         window.create_subject_link += "/project/" + project + "/destination/JS_Parent_Return.vm";
 
-        this.subjectForm = window.open(window.create_subject_link, '', 'width=500,height=550,status=yes,resizable=yes,scrollbars=yes,toolbar=no');
-
+        this.subjectForm = popupCentered(window.create_subject_link,'Subject Info',610,800,10,'status=yes,resizable=yes,scrollbars=yes,toolbar=no');
         if (this.subjectForm.opener == null) this.subjectForm.opener = self;
-
         return this.subjectForm;
+
     }
 
     window.success = function (subject_id) {

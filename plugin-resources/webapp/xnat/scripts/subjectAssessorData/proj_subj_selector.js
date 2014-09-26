@@ -27,8 +27,9 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
         };
 
         var params = "";
-        params += "&owner=true";
-        params += "&member=true";
+        //params += "&owner=true";
+        //params += "&member=true";
+        params += '&creatableTypes=true';
 
         YAHOO.util.Connect.asyncRequest('GET',
             serverRoot +
@@ -74,8 +75,7 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
             this.projBox.options[0] = new Option("Select a Project", "");
 
             for (var pC = 0; pC < this.projectResultSet.ResultSet.Result.length; pC++) {
-//                var defaultSelected = (this.projectResultSet.ResultSet.Result[pC].id == this.defaultProject) ? true : false;
-                var defaultSelected = !!(this.projectResultSet.ResultSet.Result[pC].id == this.defaultProject);
+                var defaultSelected = (this.projectResultSet.ResultSet.Result[pC].id == this.defaultProject);
                 opt = new Option(
                     this.projectResultSet.ResultSet.Result[pC].secondary_id.replace(/&apos;/g, '\''),
                     this.projectResultSet.ResultSet.Result[pC].id,

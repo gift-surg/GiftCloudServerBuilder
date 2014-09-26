@@ -217,10 +217,12 @@ if (typeof jQuery == 'undefined') {
                 }
             }
             if (keyCode === 13) {  // key 13 = 'enter'
-                if ($body.hasClass('open') && xmodal.closeModal === true) {
-                    e.preventDefault();
+                if ($body.hasClass('open') &&
+                        ($top_modal.has(document.activeElement).length ||
+                            $top_modal.is(document.activeElement))) {
+                    //e.preventDefault();
                     $top_modal.find('.buttons .default').trigger('click');
-                    xmodal.closeModal = false;
+                    //xmodal.closeModal = false;
                 }
             }
         });
@@ -268,7 +270,7 @@ if (typeof jQuery == 'undefined') {
             delim = delim || '|'; // delimiter between properties
             sep   = sep   || ':'; // separator between key:value
             var $el = jqObj(el);
-            var data = $el.data('xmodal-opts');
+            var data = $el.data('xmodal-options');
             if (data){
                 var dataOpts = data.split(delim);
                 $.each( dataOpts, function(i, v) {
@@ -276,6 +278,7 @@ if (typeof jQuery == 'undefined') {
                     opts[opt[0].trim()] = opt[1].trim();
                 });
             }
+            return opts;
         };
         //////////////////////////////////////////////////
 
@@ -323,7 +326,7 @@ if (typeof jQuery == 'undefined') {
                 var footer_height = _$modal.find('.footer').height();
                 var body_height   = 200; // set an initial value
 
-                if (_modal.footer && $.isPlainObject(_modal.footer)) {
+                if ( !isFalse(_modal.footer) && $.isPlainObject(_modal.footer) ) {
                     body_height = Math.round(modal_height - title_height - footer_height - 1);
                 }
                 else {
@@ -386,7 +389,7 @@ if (typeof jQuery == 'undefined') {
             buttons.ok = newDefaultButton();
             buttons.ok.label = _opts.okLabel || 'OK';
             buttons.ok.action = _opts.okAction || $.noop;
-            buttons.ok.close = (_opts.okClose !== false);
+            buttons.ok.close = ( !isFalse(_opts.okClose) );
             buttons.ok.isDefault = true;
             //buttons.ok.className = '';
             //buttons.ok = {
@@ -460,8 +463,8 @@ if (typeof jQuery == 'undefined') {
                         classNames.push('button');
                     }
                     if (button.className && button.className > '') { classNames.push(button.className) }
-                    if (button.close === true) { classNames.push('close') }
-                    if (button.isDefault === true) { classNames.push('default') }
+                    if ( isTrue(button.close) ) { classNames.push('close') }
+                    if ( isTrue(button.isDefault) ) { classNames.push('default') }
 
                     html += '' +
                         '<a tabindex="0" href="javascript:" id="' + button_id + '"' +
@@ -607,25 +610,25 @@ if (typeof jQuery == 'undefined') {
 
             // support for 'preset' sizes
             if (_opts.kind || _opts.size){
-                (function( modal ){
+                (function(){
                     var kinds = {
                         dialog:  [600, 400],
                         message: [400, 200],
                         max:     ['98%', '96%'],
                         full:    ['98%', '96%'],
-                        large:   ['90%', '90%'],
-                        med:     ['70%', '60%'],
-                        small:   ['50%', '30%'],
-                        xsmall:  ['40%', '30%']
+                        large:   ['80%', '80%'],
+                        med:     ['60%', '60%'],
+                        small:   ['40%', '40%'],
+                        xsmall:  ['30%', '20%']
                     };
                     $.each(kinds, function( kind, dims ){
                         if (_opts.kind === kind || _opts.size === kind){
-                            modal.width = dims[0];
-                            modal.height = dims[1];
+                            _opts.width = dims[0];
+                            _opts.height = dims[1];
                             return false; // exits $.each()
                         }
                     });
-                })( this );
+                })();
             }
 
             this.position = false; // top: css property - false is vertically centered
@@ -743,18 +746,19 @@ if (typeof jQuery == 'undefined') {
             modal.__mask  = modal.$mask;
             modal.__modal = modal.$modal;
 
-            var top_ = modal.top || 0,
+            var top_  = modal.top  || 0,
                 left_ = modal.left || 0;
 
             if ($.isPlainObject(modal.position)) {
-                top_ = modal.position.top || top_;
+                top_  = modal.position.top  || top_;
                 left_ = modal.position.left || left_;
             }
 
             // adjust height if there's no text in the title bar
-            if (modal.title === false) {
-                modal.height = modal.height-10
-            }
+            // or DON'T because it breaks with % values
+            //if (modal.title === false) {
+            //    modal.height = modal.height-10
+            //}
 
             modal.$modal.css({
                 'top': top_,
@@ -766,7 +770,7 @@ if (typeof jQuery == 'undefined') {
                 'z-index': ++xmodal.topZ
             });
 
-            if (modal.scroll === true) {
+            if ( isTrue(modal.scroll) ) {
                 modal.$modal.find('.body').addClass('scroll');
             }
 
@@ -782,6 +786,8 @@ if (typeof jQuery == 'undefined') {
 
                 $('body').addClass('open');
                 $('html').addClass('noscroll');
+
+                $modal.attr('tabindex',0).focus();
 
                 if ($.isFunction(modal.afterShow)) {
                     modal.afterShow(modal);
@@ -812,9 +818,9 @@ if (typeof jQuery == 'undefined') {
             }
 
             $(xmodal.dialog.box).removeClass('top'); // strip 'top' class from ALL xmodal modals
-            modal.$modal.addClass('open top').attr('tabindex',0).focus(); // add 'top' (and 'open') class to only top one
+            modal.$modal.addClass('open top'); // add 'top' (and 'open') class to only top one
 
-            if (modal.isDraggable !== false) {
+            if ( !isFalse(modal.isDraggable) ) {
                 if (typeof $.fn.drags != 'undefined') {
                     modal.$modal.drags({ handle: '.title' });
                 }
@@ -921,7 +927,7 @@ if (typeof jQuery == 'undefined') {
             // for a modal that isn't the current one, but we can here.
             // I guess you could override the .deleteModal() method to not delete
             // anything at all - but why?
-            if (modal.deleteModal !== false){
+            if ( !isFalse(modal.deleteModal) ){
 
                 // one last chance to do something with
                 // this modal's object
@@ -973,9 +979,9 @@ if (typeof jQuery == 'undefined') {
         //////////////////////////////////////////////////
         // maximize this modal
         //////////////////////////////////////////////////
-        xmodal.maximize = function(modal){
-            if (!modal) { return }
-            var $modal = jqObj(modal);
+        xmodal.maximize = function($modal){
+            if (!$modal) { return }
+            $modal = jqObj($modal);
             $modal.toggleClass('maxxed');
         };
         //////////////////////////////////////////////////

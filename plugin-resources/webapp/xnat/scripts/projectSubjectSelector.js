@@ -75,6 +75,15 @@ XNAT.app.projectSubjectSelector = function( proj_menu, subj_menu, submit_button,
         var projects_url = function(){
             // do we need timestamps for these requests? does it (help) prevent caching?
             projParams.push(getTimestampParam());
+
+            // if going directly to a new experiment page
+            // from the top menu bar, only show projects
+            // the current user is allowed to create this
+            // kind of experiment
+            if (XNAT.data.context.xsiType > ''){
+                projParams.push('data-type=' + XNAT.data.context.xsiType);
+            }
+
             return serverRoot + '/data/projects?' + projParams.join('&');
         };
 
@@ -88,6 +97,7 @@ XNAT.app.projectSubjectSelector = function( proj_menu, subj_menu, submit_button,
             var results = json.ResultSet.Result;
             var len = results.length;
             var html = '';
+            var titleProp = '';
 
             if (len === 0){
                 $proj_menu.
@@ -95,10 +105,16 @@ XNAT.app.projectSubjectSelector = function( proj_menu, subj_menu, submit_button,
                     prop('disabled',true);
             }
             else {
-                results = sortObjects(results, 'secondary_id');
+
+                // trying to handle both lowercase and uppercase 'ID'
+                if (results[0].hasOwnProperty('secondary_id')) { titleProp = 'secondary_id' }
+                if (results[0].hasOwnProperty('secondary_ID')) { titleProp = 'secondary_ID' }
+
+                results = sortObjects(results, titleProp);
+
                 for (var i=0, id, title, option; i < len; i++){
                     id = results[i]['ID'] || results[i]['id'];
-                    title = results[i]['secondary_id'] || results[i]['secondary_ID']; // WHICH IS IT???
+                    title = results[i][titleProp];
                     projectsArray.push(id);
                     option = '<option' +
                         ' value="' + id + '"' +
@@ -229,7 +245,7 @@ XNAT.app.projectSubjectSelector = function( proj_menu, subj_menu, submit_button,
 
         getExptTypes.done(function(json){
 
-            // just an example of what the returned JSON looks like
+            // example of what the returned JSON looks like
             var sample = {
                 "ResultSet": {
                     "Result": [
@@ -251,7 +267,8 @@ XNAT.app.projectSubjectSelector = function( proj_menu, subj_menu, submit_button,
                 exptTypes.push('[data-type="' + el_name + '"]');
             }
 
-            //console.log(app.creatableTypes);
+            // copy to XNAT.data object
+            XNAT.data.creatableTypes = app.creatableTypes;
 
             // Exit if we're not on the "Add Experiment" page
             if (window.page !== 'add_experiment') { return }

@@ -31,6 +31,10 @@ function ProjectSubjectSelector(_proj_select, _subj_select, _submit_button, _def
         //params += "&member=true";
         params += '&creatableTypes=true';
 
+        if (XNAT.data.context.isExperiment && XNAT.data.context.xsiType){
+            params += '&data-type=' + XNAT.data.context.xsiType;
+        }
+
         YAHOO.util.Connect.asyncRequest('GET',
             serverRoot +
                 '/REST/projects?XNAT_CSRF=' + window.csrfToken +

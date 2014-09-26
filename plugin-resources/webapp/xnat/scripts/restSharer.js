@@ -202,7 +202,7 @@ RestSharer = function(_array,_config) {
     	
     	if(!processing){
     		this.oncomplete.fire(this.new_label);
-            window.location.reload();
+//            window.location.reload();
     		this.popup.destroy();
     	}
     }

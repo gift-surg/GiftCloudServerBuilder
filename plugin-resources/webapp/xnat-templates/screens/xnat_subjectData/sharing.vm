@@ -111,46 +111,57 @@ XNAT.app.subject.shared_projects.push({id:"$pp.getProperty("project")",
       		else{ 
       		   		document.getElementById("sharing_summary_table").style.display="block";
       		}
-      		document.getElementById("sharing_summary_title").innerHTML="This $displayManager.getSingularDisplayNameForSubject().toLowerCase() has been shared into <b>" + XNAT.app.subject.cfDT.getRecordSet().getRecords().length + "</b> $displayManager.getSingularDisplayNameForProject().toLowerCase()(s):";
+      		document.getElementById("sharing_summary_title").innerHTML="This $displayManager.getSingularDisplayNameForSubject().toLowerCase() has been shared into <span id='sharedInto' style='font-weight:bold;'>"+XNAT.app.subject.shared_projects.length+"</span> $displayManager.getSingularDisplayNameForProject().toLowerCase()(s):";
    }
    refreshSharing();
 		
    		XNAT.app.subject.cfDT.subscribe("buttonClickEvent", function(oArgs){  
-   	   		    var oRecord = this.getRecord(oArgs.target);
-   	   		    
-   	   		    if(oRecord.getData("id")==XNAT.app.subject.primary_project){
-                    xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForProject() owner.  Contact a system administrator.");
-   	   		       return;
-   	   		    }
-   	   		    
-   	   		    if(oRecord.getData("expts")>0){
-                    xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject() has created experiments which would be deleted by this action.  Please either modify the ownership of this $displayManager.getSingularDisplayNameForSubject().toLowerCase() to match that $displayManager.getSingularDisplayNameForProject(), or separately delete the created experiments.");
-   	   		       return;
-   	   		    }
-   	   		    
-   	   		    if(confirm("Are you sure you want to remove this $displayManager.getSingularDisplayNameForSubject().toLowerCase() from the " + oRecord.getData("name") + " $displayManager.getSingularDisplayNameForProject()?\r\n\r\nAny experiments for this $displayManager.getSingularDisplayNameForSubject().toLowerCase() will also be removed from the $displayManager.getSingularDisplayNameForProject().")){
-   	   		     var deleteCallback={
-								             success:function(o){
-				             	   closeModalPanel("share");
-								   document.getElementById("s_projects").add(new Option(oRecord.getData("id"), oRecord.getData("name")));
-				             	   XNAT.app.subject.cfDT.deleteRow(o.argument.oArgs.target);
-                                   window.location.replace(window.location.href+"#tab2");
-								   refreshSharing();
-								             },
-				             failure:function(o){
-				             	   closeModalPanel("share");
-                                 xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForSubject().toLowerCase() from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
-								             },
-                             cache:false, // Turn off caching for IE
-				             scope:this,
-				             argument:{"oRecord":oRecord,"oArgs":oArgs}
-			           };
-			           openModalPanel("share","Un-sharing $displayManager.getSingularDisplayNameForSubject().toLowerCase()...");
-			           var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
-			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/'+ label +'?format=json&XNAT_CSRF='+csrfToken+'&event_reason=standard unshare';
-   				        YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
-		   	   		    }
-   	   		     
+        var oRecord = this.getRecord(oArgs.target);
+
+        if(oRecord.getData("id")==XNAT.app.subject.primary_project){
+          xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForProject() owner.  Contact a system administrator.");
+          return;
+        }
+
+        if(oRecord.getData("expts")>0){
+          xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject() has created experiments which would be deleted by this action.  Please either modify the ownership of this $displayManager.getSingularDisplayNameForSubject().toLowerCase() to match that $displayManager.getSingularDisplayNameForProject(), or separately delete the created experiments.");
+          return;
+        }
+
+        xModalConfirm({
+          title: 'Remove Share?',
+          content: 'Are you sure you want to remove this $displayManager.getSingularDisplayNameForSubject().toLowerCase() from the '+oRecord.getData("name")+' $displayManager.getSingularDisplayNameForProject().toLowerCase()?<br/><br/>Any experiments for this $displayManager.getSingularDisplayNameForSubject().toLowerCase() will also be removed from the $displayManager.getSingularDisplayNameForProject().toLowerCase().',
+          okLabel: 'Yes',
+          cancelLabel: 'No',
+          okAction: function(){
+            var deleteCallback={
+              success:function(o){
+                closeModalPanel("share");
+                document.getElementById("s_projects").add(new Option(oRecord.getData("name"), oRecord.getData("id")));
+                XNAT.app.subject.cfDT.deleteRow(o.argument.oArgs.target);
+                for(var i=0; i<XNAT.app.subject.shared_projects.length; i++){
+                  if(XNAT.app.subject.shared_projects[i].id == o.argument.oRecord._oData.id){
+                    XNAT.app.subject.shared_projects.splice(i, 1);
+                  }
+                }
+                $('#sharedInto').text(XNAT.app.subject.shared_projects.length);
+              },
+              failure:function(o){
+                closeModalPanel("share");
+                xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForSubject().toLowerCase() from "+o.argument.oRecord.getData("name") + "<br/><br/>" + o.statusText);
+              },
+              cache:false, // Turn off caching for IE
+              scope:this,
+              argument:{"oRecord":oRecord,"oArgs":oArgs}
+            };
+
+            openModalPanel("share","Un-sharing $displayManager.getSingularDisplayNameForSubject().toLowerCase()...");
+            var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
+            var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/'+ label +'?format=json&XNAT_CSRF='+csrfToken+'&event_reason=standard unshare';
+            YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
+          },
+          cancelAction: function(){}
+        });
    		});
 				
 				function restShare(_shareAll){

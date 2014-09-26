@@ -46,19 +46,19 @@ ERROR:  No $displayManager.getPluralDisplayNameForProject().toLowerCase() exist.
   .ygtvcheck2 { background: url($content.getURI("scripts/yui/build/treeview/assets/img/check/check2.gif")) 0 0 no-repeat; width:16px; cursor:pointer }
 </style>
 <script>
-window.shared_projects=new Array();
+XNAT.app.shared_projects=new Array();
 window.all_items=new Array();
 window.primary_project="$om.getProject()";
 
 #foreach($pp in $om.getSharing_share())
-shared_projects.push({id:"$pp.getProperty("project")",
+XNAT.app.shared_projects.push({id:"$pp.getProperty("project")",
      name:"$pp.getProjectDisplayID()",
      label:"$!pp.getProperty("label")",
      group:"$!pp.getProperty("group")",
      expts:$om.getAssessmentCount($pp.getProperty("project"))});
 #end
 
-   var dataSource = new YAHOO.util.DataSource(window.shared_projects);
+   var dataSource = new YAHOO.util.DataSource(XNAT.app.shared_projects);
    		dataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
    		dataSource.responseSchema = {
      		fields:["id","name","label","group","expts"]
@@ -79,52 +79,65 @@ shared_projects.push({id:"$pp.getProperty("project")",
    
    	window.cfDT.render();
    	
-   function refreshSharing(){
-      		if(window.shared_projects.length==0){
-      		   		document.getElementById("sharing_summary_table").style.display="none";
-      		}
-      		else{ 
-      		   		document.getElementById("sharing_summary_table").style.display="block";
-      		}
-      		document.getElementById("sharing_summary_title").innerHTML="This experiment has been shared into <b>$om.getSharing_share().size()</b> $displayManager.getSingularDisplayNameForProject().toLowerCase()(s):";
-   }
-   refreshSharing();
+    function refreshSharing(){
+      if(XNAT.app.shared_projects.length==0){
+        document.getElementById("sharing_summary_table").style.display="none";
+      }
+      else{ 
+        document.getElementById("sharing_summary_table").style.display="block";
+      }
+      document.getElementById("sharing_summary_title").innerHTML="This experiment has been shared into <span id='sharedInto' style='font-weight:bold;'>"+XNAT.app.shared_projects.length+"</span> $displayManager.getSingularDisplayNameForProject().toLowerCase()(s):";
+    }
+    refreshSharing();
 		
-   		window.cfDT.subscribe("buttonClickEvent", function(oArgs){  
-   	   		    var oRecord = this.getRecord(oArgs.target);
-   	   		    
-   	   		    if(oRecord.getData("id")==window.primary_project){
-                   xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForProject().toLowerCase() owner.  Contact a system administrator.");
-   	   		       return;
-   	   		    }
-   	   		    
-   	   		    if(oRecord.getData("expts")>0){
-                   xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or separately delete the created experiments.");
-   	   		       return;
-   	   		    }
-   	   		    
-   	   		    if(confirm("Are you sure you want to remove this experiment from the " + oRecord.getData("name") + " $displayManager.getSingularDisplayNameForProject().toLowerCase()?\r\n\r\nAny experiments for this experiment will also be removed from the $displayManager.getSingularDisplayNameForProject().toLowerCase().")){
-   	   		     var deleteCallback={
-								             success:function(o){
-				             	   closeModalPanel("share");
-				             	   window.cfDT.deleteRow(o.argument.oArgs.target);
-                                   window.location.replace(window.location.href+"#tab2");
-								             },
-				             failure:function(o){
-				             	   closeModalPanel("share");
-                                 xModalMessage("Error", "Unable to remove experiment from "+o.argument.oRecord.getData("name") + "\r\n\r\n" + o.statusText);
-								             },
-                             cache:false, // Turn off caching for IE
-				             scope:this,
-				             argument:{"oRecord":oRecord,"oArgs":oArgs}
-			           };
-			           openModalPanel("share","Un-sharing experiment...");
-			           var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
-			           var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/${om.getSubjectData().getId()}/experiments/'+ label +'?format=json&XNAT_CSRF='+csrfToken+'&event_reason=standard unshare';
-   				        YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
-		   	   		    }
-   	   		     
-   		});
+    window.cfDT.subscribe("buttonClickEvent", function(oArgs){
+      var oRecord = this.getRecord(oArgs.target);
+      
+      if(oRecord.getData("id")==window.primary_project){
+        xModalMessage("Error", "Unable to remove $displayManager.getSingularDisplayNameForProject().toLowerCase() owner.  Contact a system administrator.");
+        return;
+      }
+      
+      if(oRecord.getData("expts")>0){
+        xModalMessage("Error", "This $displayManager.getSingularDisplayNameForProject().toLowerCase() has created experiments which would be deleted by this action.  Please either modify the ownership of this experiment to match that $displayManager.getSingularDisplayNameForProject().toLowerCase(), or separately delete the created experiments.");
+        return;
+      }
+
+      xModalConfirm({
+      title: 'Remove Share?',
+      content: 'Are you sure you want to remove this experiment from the '+oRecord.getData("name")+' $displayManager.getSingularDisplayNameForProject().toLowerCase()?<br/><br/>Any assessors for this experiment will also be removed from the $displayManager.getSingularDisplayNameForProject().toLowerCase().',
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+      okAction: function(){
+        var deleteCallback={
+          success:function(o){
+             closeModalPanel("share");
+             document.getElementById("s_projects").add(new Option(oRecord.getData("name"), oRecord.getData("id")));
+             window.cfDT.deleteRow(o.argument.oArgs.target);
+             for(var i=0; i<XNAT.app.shared_projects.length; i++){
+               if(XNAT.app.shared_projects[i].id == o.argument.oRecord._oData.id){
+                 XNAT.app.shared_projects.splice(i, 1);
+               }
+             }
+             $('#sharedInto').text(XNAT.app.shared_projects.length);
+          },
+          failure:function(o){
+             closeModalPanel("share");
+              xModalMessage("Error", "Unable to remove experiment from "+o.argument.oRecord.getData("name") + "<br/><br/>" + o.statusText);
+          },
+          cache:false, // Turn off caching for IE
+          scope:this,
+          argument:{"oRecord":oRecord,"oArgs":oArgs}
+        };
+
+        openModalPanel("share","Un-sharing experiment...");
+        var label=(oRecord.getData("label")=="" ||oRecord.getData("label")==null)?"$om.getId()":oRecord.getData("label");
+        var uri=serverRoot +'/REST/projects/' +oRecord.getData("id")+'/subjects/${om.getSubjectData().getId()}/experiments/'+ label +'?format=json&XNAT_CSRF='+csrfToken+'&event_reason=standard unshare';
+        YAHOO.util.Connect.asyncRequest('DELETE',uri,deleteCallback,null,this);
+      },
+      cancelAction: function(){}
+      });
+    });
 				
 				function restShare(){
 				  if(document.getElementById("s_projects").selectedIndex>0){
@@ -136,8 +149,8 @@ shared_projects.push({id:"$pp.getProperty("project")",
      label:args[0],
      group:"",
      expts:0};
-			     	window.cfDT.addRow(newSP);
-			     	shared_projects.push(newSP);
+		window.cfDT.addRow(newSP);
+		XNAT.app.shared_projects.push(newSP);
      document.getElementById("s_projects").remove(document.getElementById("s_projects").selectedIndex);
      document.getElementById("s_projects").selectedIndex=0;
      refreshSharing();

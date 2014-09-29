@@ -10,6 +10,7 @@
  */
 package org.nrg.xdat.om.base;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.nrg.xdat.model.XnatImagescandataI;
 import org.nrg.xdat.model.XnatMrqcscandataI;
@@ -135,12 +136,16 @@ public class BaseXnatMrscandata extends AutoXnatMrscandata {
      */
 	public static class MRScanTypeMapping extends AbstractScanTypeMapping<ScanTypeHistory> implements ScanTypeMappingI {	    
 	    public MRScanTypeMapping(String project,String dbName){
-	        super(dbName, buildSelectSql(project));
+	        super(project, dbName, buildSelectSql(project));
 	    }
 		
 	    private static final String buildSelectSql(final String project) {
-	        return "SELECT DISTINCT REPLACE(REPLACE(REPLACE(REPLACE(UPPER(scan.series_description),' ',''),'_',''),'-',''),'*','') AS series_description,scan.type,UPPER(parameters_imagetype) AS parameters_imagetype,frames FROM xnat_imagescandata scan LEFT JOIN xnat_mrscandata mr ON scan.xnat_imagescandata_id=mr.xnat_imagescandata_id LEFT JOIN xnat_experimentData isd ON scan.image_session_id=isd.id WHERE scan.series_description IS NOT NULL AND isd.project='" + project + "';"; 
-	    }
+            if (Strings.isNullOrEmpty(project)) {
+                return null;
+            } else {
+	            return "SELECT DISTINCT REPLACE(REPLACE(REPLACE(REPLACE(UPPER(scan.series_description),' ',''),'_',''),'-',''),'*','') AS series_description,scan.type,UPPER(parameters_imagetype) AS parameters_imagetype,frames FROM xnat_imagescandata scan LEFT JOIN xnat_mrscandata mr ON scan.xnat_imagescandata_id=mr.xnat_imagescandata_id LEFT JOIN xnat_experimentData isd ON scan.image_session_id=isd.id WHERE scan.series_description IS NOT NULL AND isd.project='" + project + "';";
+	        }
+        }
 	    	    
         /*
          * (non-Javadoc)

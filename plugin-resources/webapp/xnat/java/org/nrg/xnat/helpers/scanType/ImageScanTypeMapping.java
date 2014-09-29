@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class ImageScanTypeMapping extends AbstractScanTypeMapping<ImageScanTypeMapping.ScanTypeHistory> implements ScanTypeMappingI {
     public ImageScanTypeMapping(final String project, final String dbName) {
-        super(dbName, buildSql(project));
+        super(project, dbName, buildSql(project));
     }
 
     private static final String buildSql(final String project) {

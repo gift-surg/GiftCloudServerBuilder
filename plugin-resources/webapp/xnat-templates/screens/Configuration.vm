@@ -51,6 +51,7 @@
                         <li><a href="#seriesImportFilter"><em>Series Import Filter<span class="spacer"></span></em></a></li>
                         <li><a href="#petTracers"><em>PET Tracers<span class="spacer"></span></em></a></li>
                         <li><a href="#dicomReceiver"><em>DICOM Receiver<span class="spacer"></span></em></a></li>
+                        <li><a href="#scanTypeMapping"><em>Scan Type Mapping<span class="spacer"></span></em></a></li>
                         #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-mock-rest-config", "false")))
                             <li><a href="#mockRestConfig"><em>Mock REST Calls<span class="spacer"></span></em></a></li>
                         #end
@@ -93,6 +94,9 @@
                         </div>
                         <div id="dicomReceiver">
                             #parse('screens/configuration/dicomReceiver.vm')
+                        </div>
+                        <div id="scanTypeMappingDefault">
+                            #parse('screens/configuration/scanTypeMapping.vm')
                         </div>
                         #if($turbineUtils.toBoolean($siteConfig.getProperty("UI.show-mock-rest-config", "false")))
                             <div id="mockRestConfig">

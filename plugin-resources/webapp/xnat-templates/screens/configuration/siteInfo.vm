@@ -157,6 +157,9 @@
                     if(window.petTracerManager==undefined) {
                         window.petTracerManager = new SettingsTabManager('tracers_mgmt_div', 'tracers');
                     }
+                    if(window.scanTypeMappingManager==undefined) {
+                        window.scanTypeMappingManager = new SettingsTabManager('scanTypeMapping_mgmt_div', 'scanTypeMapping');
+                    }
                 };
             }
             window.siteInfoManager = new SettingsTabManager('site_info_mgmt_div', 'siteInfo', postLoad);

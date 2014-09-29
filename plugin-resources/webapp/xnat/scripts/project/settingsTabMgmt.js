@@ -262,7 +262,9 @@ function SettingsTabManager(settingsTabDivId, settings, postLoad) {
         this.setFormDisabled(false);
         this.dirtyFlag = false;
         this.disableResetButtons();
-        this.firstControl.focus();
+        if (this.firstControl) {
+            this.firstControl.focus();
+        }
     };
 
     this.dirtyForm = function() {

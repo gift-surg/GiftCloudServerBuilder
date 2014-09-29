@@ -28,6 +28,9 @@ import java.util.Map;
 import org.nrg.action.ActionException;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
+import org.nrg.config.entities.Configuration;
+import org.nrg.config.exceptions.ConfigServiceException;
+import org.nrg.config.services.ConfigService;
 import org.nrg.xdat.XDAT;
 import org.nrg.xdat.base.BaseElement;
 import org.nrg.xdat.display.DisplayField;
@@ -2201,4 +2204,26 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		projects.getHash().put("xnat:projectData/ID", this.getId());
 		return projects;
 	}
+
+    public boolean getUseScanTypeMapping() {
+        ConfigService configService = XDAT.getConfigService();
+
+        // check project config
+        Configuration config = configService.getConfig("project", "scanTypeMapping", new Long((Integer)this.getProps().get("projectdata_info")));
+        if (config != null && config.getStatus().equals("enabled")) {
+            return Boolean.valueOf(config.getContents());
+        }
+
+        // if nothing there, check site config
+        return XDAT.getBoolSiteConfigurationProperty("scanTypeMapping", true);
+    }
+
+    public void setUseScanTypeMapping(boolean newValue) {
+        ConfigService configService = XDAT.getConfigService();
+        try {
+            configService.replaceConfig(getUser().getUsername(), "", "project", "scanTypeMapping", String.valueOf(newValue), new Long((Integer)this.getProps().get("projectdata_info")));
+        } catch (ConfigServiceException exception) {
+            logger.error("Configuration service error replacing config for user " + getUser().getUsername() + " and project " + getId());
+        }
+    }
 }

@@ -222,6 +222,14 @@ public class ProjectResource extends ItemResource {
                                     create(project, ap, false, false, newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, "Configured current arc"));
                                     ArcSpecManager.Reset();
                                 }
+                            } else if (filepath.startsWith("scan_type_mapping/")) {
+                                String stm = filepath.substring(18);
+                                if (stm.equals("false")) {
+                                    project.setUseScanTypeMapping(false);
+                                }
+                                else if (stm.equals("true")) {
+                                    project.setUseScanTypeMapping(true);
+                                }
                             } else {
                                 getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                             }

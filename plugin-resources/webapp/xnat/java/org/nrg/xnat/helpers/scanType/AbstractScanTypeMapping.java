@@ -13,6 +13,7 @@ package org.nrg.xnat.helpers.scanType;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.nrg.xdat.model.XnatImagescandataI;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
 import org.slf4j.Logger;
@@ -36,10 +37,13 @@ public abstract class AbstractScanTypeMapping<HistoryType> implements ScanTypeMa
      * @param dbName name of the database in which scan type mapping is stored
      * @param scanSelectSql SQL statement to extract scan type history
      */
-    public AbstractScanTypeMapping(final String dbName, final String scanSelectSql) {
+    public AbstractScanTypeMapping(final String projectId, final String dbName, final String scanSelectSql) {
         this.dbName = dbName;
         this.scanSelectSql = scanSelectSql;
-        loadScanTypes();
+        XnatProjectdata project = XnatProjectdata.getProjectByIDorAlias(projectId,null,false);
+        if (project != null && project.getUseScanTypeMapping()) {
+            loadScanTypes();
+        }
     }
 
     private void loadScanTypes() {

@@ -40,9 +40,11 @@
            <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo('xdataction','prearchives').addPathInfo('project',$project.getId())">View Prearchive</A>
            </li>
+           #if($project.getUseScanTypeMapping())
 		   <li class="yuimenuitem">
             <a class="yuimenuitemlabel" href="$link.setAction("XDATActionRouter").addPathInfo("xdataction","scanTypeCleanup").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$!{project.getId()}").addPathInfo("popup","$!popup")">Scan Type Cleanup</A> 
            </li>
+           #end
       </ul>
       <ul>
 #end

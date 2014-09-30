@@ -100,7 +100,7 @@
 			YAHOO.util.Connect.asyncRequest('PUT', encodeURI(workflowURI), this.insertCallback, null, this);
 		}
 		
-		this.confirm = xModal.confirm;
+		this.confirm = {};
 		this.confirm.okAction = function(){ this.putRequest(); }
 		this.confirm.content  = '<p>Are you sure you want to change the status of this workflow to "' + st + '"? </p>' +
 		                        '</br><p><b>Note</b>: This will not affect the actual pipeline.  If the pipeline is still running, it may change the status.</p>';

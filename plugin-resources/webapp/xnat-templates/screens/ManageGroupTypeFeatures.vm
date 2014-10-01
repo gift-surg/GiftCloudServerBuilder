@@ -1,18 +1,20 @@
 <!-- Title: Features -->
-<div class="mgmt_container" >
-    	<div id="features">
-            <dl class="header">
-              <dl>
-                  <dd class="featureGroup">Group</dd>
-				  #foreach($feature in $features)
-                  <dd class="featureEnabled">$feature.getName()</dd>
-				  #end
-              </dl>
-            </dl>
-			<div id='featureBody'></div>
-		</div> 
-</div>
-	
+
+<table id="group-type-features" class="xnat-table features" style="display:none;">
+    <thead class="header">
+    <tr>
+        <th class="featureGroup">Group</th>
+        #foreach($feature in $features)
+            <th class="featureEnabled">$feature.getName()</th>
+        #end
+    </tr>
+    </thead>
+    <tbody id='featureBody'>
+    ## body built dynamically in manageFeatures.js
+    </tbody>
+</table>
+
+
 ##moved common code to manageFeatures.js (also used in ManageProjectFeatures.vm)
 <script type="text/javascript" src="$content.getURI("scripts/features/manageFeatures.js")"></script>
 
@@ -25,35 +27,3 @@ XNAT.app.featureMgr.features.push({"key":"$!feature.getKey()","name":"$!feature.
 
 XNAT.app.featureMgr.init();
 </script>
-
-<style type="text/css">
-	#features .featureItem, #features .header {
-	  border-bottom:1px solid #888;
-	  font:11px Arial, Helvetica, sans-serif;
-	  margin-top:0;
-	  margin-bottom:0;
-	  padding: 4px;
-	  overflow:auto;
-	}
-	dl.featureItem, item.featureItem {
-		display:block;
-	}
-	#features dl dl 	{ margin:1px 0;	}
-	#features .header {
-		background-color: #ccc;
-		font-weight: bold;
-	}
-	#features dl dt, #features dl dd {
-		display:block;
-		float:left;
-		padding:4px 0;
-	}
-	.featureItem:hover {
-		background-color:#fe9;
-	}
-	#features dd 	{ 	margin-left:20px; }
-	dd.featureProject 	{	width:90px; }
-	dd.featureGroup 	{	width:90px; }
-	dd.featureEnabled 	{	width:80px;	}
-	dd.featureBanned 	{	width:80px;	}
-</style>

@@ -109,8 +109,10 @@ table.ruled tr:nth-child(2n+1) { background: #fff ; }
 
 .underscore { border-bottom: 2px solid #f93 ; padding-bottom: 1px ; padding-right: 20px ; padding-left: 5px ; }
 
+.mono { font-family: Courier, monospace; }
+
 div.alert { background-color: #ccc; border-width:1px; border-style:solid; color:#900; font-size:14px; line-height:16px; /* font-weight:700; */ overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
-div.info { background: url(/images/i.png) 10px center no-repeat #fff; border: 1px solid #ccc; padding: 6px 12px 6px 36px; color: #06f; font-size: 12px; line-height: 1.2; margin-bottom: 1em;}
+div.info { background: url('images/i.png') 10px center no-repeat #fff; border: 1px solid #ccc; padding: 6px 12px 6px 36px; color: #06f; font-size: 12px; line-height: 1.2; margin-bottom: 1em;}
 
 /*
 div.warning { background-color:#CCCCCC; border-width:1px; border-style:solid; color:#084FAB; font-size:14px; line-height:16px; overflow:auto; padding: 5px; margin-top:20px; margin-bottom:20px; text-align:left; clear:left; }
@@ -123,6 +125,7 @@ table.dark th, table.dark td { padding: 4px 8px ; }
 /* new header and body styles */
 body, html body, * body { margin: 0 ; background: #fff url('images/left_margin.gif') -5px top repeat-y ; font-family: Arial, Helvetica, sans-serif !important ; font-size: 12px ; line-height: 15px ; /* letter-spacing: 0.02em ; */ position: relative ; overflow-y: scroll ; overflow-x: auto ; }
 a { color: /* #2a70c6 */ #084FAB ; }
+a.link { text-decoration: underline !important; } /* force links to look like links by adding the 'link' class */
 a, a:link, a:active, a:focus,
 button, button:enabled, button:target, button:active, button:focus { outline: none !important ; }
 img { /* vertical-align: bottom ; */ border: none ; outline: none ; }
@@ -334,7 +337,7 @@ div.containerTitle.withColor { font-weight: bold ; background: #084FAB ; }
 .off-canvas, .off-screen, .offscreen, .html-template { position: fixed; left: -9999px; top: -9999px; }
 
 /* //////////  BRAND-SPANKING NEW NAV BAR!  ////////// */
-#main_nav { position: absolute ; right: 0 ; bottom: 0 ; height: 24px ; width: /* 578px */ /* 525px */ 728px ; color: #333 ; background: url('images/nav_bkdg.png') center center repeat-x ;
+#main_nav { position: absolute ; right: 0 ; bottom: 0 ; height: 24px ; width: /* 578px */ /* 525px */ 728px ; color: #333 ; background: url('images/nav_bkgd.png') center center repeat-x ;
     font-family: Arial, Helvetica, sans-serif ; font-size: 12px ; font-weight: bold ; border: 1px solid #c0c0c0 ; }
 #main_nav a { color: #333 ; text-decoration: none ; }
 #main_nav a:hover { cursor: pointer !important ; }
@@ -620,6 +623,33 @@ span.spacer { display: none !important ; }
 .mgmt_container #notifications_mgmt_div th,
 .mgmt_container #notifications_mgmt_div td { padding: 5px 0 ; }
 .mgmt_container #notifications_mgmt_div th { padding-right: 10px ; }
+
+
+/* styling for "xnat-table" table */
+.xnat-table { background: #fff; border-spacing: 0; border: 1px solid #aaa; }
+.xnat-table th,
+.xnat-table td { padding: 6px 12px; border: 1px solid #ccc; border-top: none; border-left: none; }
+.xnat-table th {
+    vertical-align: middle; font-size: 12px; font-weight: normal; text-align: center; white-space: nowrap;
+    background: #d8d8d8 url('images/nav_bkgd.png') left top repeat-x; border-color: #aaa; }
+.xnat-table td { vertical-align: middle; text-align: left; }
+.xnat-table td.checkbox { padding: 0; text-align: center; }
+.xnat-table td.checkbox label { display: block; padding: 6px 12px; }
+.xnat-table td.checkbox label:hover { cursor: pointer; }
+.xnat-table td.checkbox label:hover input[type="checkbox"],
+.xnat-table td.checkbox input[type="checkbox"]:hover { cursor: pointer; box-shadow: 0 0 5px rgba(8, 80, 180, 0.5); }
+.xnat-table td.checkbox input[type="checkbox"]:active { box-shadow: 0 0 5px rgba(8, 80, 180, 1); }
+.xnat-table th:last-of-type,
+.xnat-table td:last-of-type { border-right: none; }
+.xnat-table tr:last-of-type td { border-bottom: none; }
+.xnat-table tr.highlight:hover { background: #e5f2ff; }
+.xnat-table .top { vertical-align: top; }
+.xnat-table .middle { vertical-align: middle; }
+.xnat-table .bottom { vertical-align: bottom; }
+.xnat-table .left { text-align: left !important; }
+.xnat-table .center { text-align: center !important; }
+.xnat-table .right { text-align: right !important; }
+
 
 /* overrides for Chosen menus (if used) */
 html .chosen-container-single .chosen-single { color: #000 ; }

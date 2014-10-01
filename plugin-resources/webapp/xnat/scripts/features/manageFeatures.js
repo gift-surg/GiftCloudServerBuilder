@@ -8,14 +8,14 @@ XNAT.app.featureMgr={
 			var proj=parsedResponse[i1];
 			$(proj.groups).each(function(i2,v2){
     			var group=proj.groups[i2];
-    			_html+='<dl class="featureItem" id="">';
+    			_html+='<tr class="featureItem highlight" id="">';
 				if(XNAT.app.featureMgr.level=="group"){
-    				_html+='<dd class="featureProject">' + proj.id +'</dd>';
+    				_html+='<td class="featureProject">' + proj.id +'</td>';
     			}
-				_html+='<dd class="featureGroup">' + group.display +'</dd>';
+				_html+='<td class="featureGroup">' + group.display +'</td>';
     			$(XNAT.app.featureMgr.features).each(function(i3,v3){
     				var feature=XNAT.app.featureMgr.features[i3];
-    				_html+='<dd class="featureEnabled"><input type="checkbox"';
+    				_html+='<td class="featureEnabled checkbox"><label><input type="checkbox"';
 					_html+=' data-feature="' + feature.key + '" data-group="' + group.id + '" ';
     				
 					if(proj.banned!=undefined && proj.banned.contains(feature.key)){
@@ -53,14 +53,16 @@ XNAT.app.featureMgr={
     					_html+=' class="standard featureToggle" CHECKED '; 
     				}else{
 						_html+=' class="standard featureToggle"';
-					};
-    				_html+='/></dd>';
+					}
+    				_html+='></label></td>';
     			});
-    			_html+='</dl>';
+    			_html+='</tr>';
 			});
 		});
-		$("#featureBody").html(_html);
-		$("input.half-check").each(function(i1,v1){
+		var $featureBody = $("#featureBody");
+        $featureBody.html(_html);
+        $featureBody.closest('.features').fadeIn(100); // show table only after it has the HTML
+        $("input.half-check").each(function(i1,v1){
 			//class=inherited implies that this feature was set to OnByDefault at a higher level.  So, it defaults to being on here, but not because it was specifically set here.
 			$(v1).prop('indeterminate',true);
 		});
@@ -68,7 +70,7 @@ XNAT.app.featureMgr={
 			//had to set this ourselves because IE handles the onchange event weirdly for intermediate boxes.
 			//so we are taking over the marking of enabled/disabled with our own variable to track it.
 			var boxCh=this.checked;
-			$(this).toggleClass("half-check")
+			$(this).toggleClass("half-check");
 			
 			manageBlocked(this);
 			return false;

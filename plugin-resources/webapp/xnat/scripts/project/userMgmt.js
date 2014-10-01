@@ -35,7 +35,7 @@ var allUsersGroupDropdownFormatter = function(elCell, oRecord, oColumn, oData) {
     access_select += "<option value=\"\" selected></option>";
     $(window.userManager.groups).each(function (i1,v1){
         access_select += "<option value=\"" + v1.id + "\">" + v1.displayname + "</option>";
-    });;
+    });
     access_select += "</select>";
     elCell.innerHTML=access_select;
 };
@@ -127,19 +127,31 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	this.handleGroupLoad=function(response){
 		this.groups= eval("(" + response.responseText +")").ResultSet.Result;
 		
-		var tmpUploadFrm='<div id="grp_dialog" style="visibility:hidden">';
-		tmpUploadFrm+='	   <div class="hd">Manage Groups</div>';
-		tmpUploadFrm+='    <div class="bd" style="">';
-		tmpUploadFrm+='		<div class="grp_a" style="overflow:auto;height:410px;">';
-		tmpUploadFrm+='				<div>Current Groups: <button id="create_group" onclick="window.location.href=\'' + serverRoot + '/app/template/XDATScreen_edit_xdat_userGroup.vm/tag/' + this.pID + '/src/project\'">Create Custom User Group</button></div>';
-		tmpUploadFrm+='				<div style="margin-top:5px;" id="groups_div"></div>';
-		tmpUploadFrm+='		</div>';
-		tmpUploadFrm+='	</div> ';
-		tmpUploadFrm+='</div> ';
-		$("body").append(tmpUploadFrm);
+		var tmpUploadFrm='' +
+            '<div id="grp_dialog" style="visibility:hidden">' +
+
+            '<div class="hd">Manage Groups</div>' +
+            '<div class="bd" style="">' +
+            '<div class="grp_a" style="padding:10px;overflow:auto;height:410px;">' +
+
+            '<p>Current Groups: </p>' +
+
+            '<table id="groups_box" class="xnat-table" style="margin:5px 0 10px;width:100%;">' +
+            // GROUPS TABLE GOES HERE
+            '</table>' +
+
+            '<button id="create_group" ' +
+            'onclick="window.location.href=\'' + serverRoot + '/app/template/XDATScreen_edit_xdat_userGroup.vm/tag/' + this.pID + '/src/project\'">' +
+            'Create Custom User Group' +
+            '</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+
+        $("body").append(tmpUploadFrm);
 
 		//initialize modal upload dialog
-		XNAT.app.grp_dialog=new YAHOO.widget.Dialog("grp_dialog", { fixedcenter:true, visible:false, width:"340px", height:"500px", modal:true, close:true, draggable:true } ),
+		XNAT.app.grp_dialog=new YAHOO.widget.Dialog("grp_dialog", { fixedcenter:true, visible:false, width:"340px", height:"500px", modal:true, close:true, draggable:true });
 		XNAT.app.grp_dialog.cfg.queueProperty("buttons", [{ text:"Close", handler:{fn:function(){XNAT.app.grp_dialog.hide();}},isDefault:true}]);
 
 		$("<button style='margin-top:10px;' id='' onclick='window.userManager.showGroups();return false;'>Manage Groups</button>").insertAfter("#user_invite_div");
@@ -150,7 +162,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 		
 		$(window.userManager.groups).each(function (i1,v1){
 	        $("#access_level").append("<option value=\"" + v1.id + "\">" + v1.displayname + "</option>");
-	    });;
+	    });
 	};
 	
 	this.modifyGroup=function(gID){
@@ -158,29 +170,50 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	};
 	
 	this.showGroups=function(){
-		if(this.renderedGroups==undefined){
+		var tmpHtml='';
+        if(this.renderedGroups==undefined){
 			if(this.groups!=undefined && this.groups.length>0){
-				var tmpHtml="<dl class='header'><dl><dd class='col1'>&nbsp;</dd><dd class='col2'>Group</dd><dd class='col3'>Users</dd></dl></dl>	";
-				jq.each(this.groups,function(i1,v1){
-					tmpHtml+="<dl class='item'><dd class='col1'>";
-					if(v1.displayname=="Owners" || v1.displayname=="Members" || v1.displayname=="Collaborators"){
-						tmpHtml+="&nbsp;";
-					}else{
-						tmpHtml+="<button onclick='window.userManager.modifyGroup(\"" + v1.id + "\")'>EDIT</button>";
-					}
-					tmpHtml+="</dd><dd class='col2'>"+ v1.displayname +"</dd><dd class='col3'>"+v1.users +"</dd></dl>";
-				});
-			}else{
-				var tmpHtml="<div style='color:grey;font-style:italic;'>None</div>";
+				tmpHtml+="<thead class='header'>" +
+                    "<tr>" +
+                    "<th class='col1'>&nbsp;</th>" +
+                    "<th class='col2'>Group</th>" +
+                    "<th class='col3'>Users</th>" +
+                    "</tr>" +
+                    "</thead>	";
+
+                tmpHtml+='<tbody>';
+
+                jq.each(this.groups,function(i1,v1){
+                    tmpHtml +=
+                        "<tr class='highlight'>" +
+                        "<td class='col1 center'>";
+
+                        if (v1.displayname == "Owners" || v1.displayname == "Members" || v1.displayname == "Collaborators") {
+                            tmpHtml += "&nbsp;";
+                        }
+                        else {
+                            tmpHtml += "<a class='link' href='javascript:' onclick='window.userManager.modifyGroup(\"" + v1.id + "\")'>Edit</a>";
+                        }
+
+                    tmpHtml +=
+                        "</td>" +
+                        "<td class='col2'>" + v1.displayname + "</td>" +
+                        "<td class='col3 center'>" + v1.users + "</td>" +
+                        "</tr>";
+                });
+
+                tmpHtml+='</tbody>';
+            }else{
+				tmpHtml="<tbody><td class='center' colspan='3' style='color:grey;font-style:italic;'>None</td></tbody>";
 			}
-			$("#groups_div").html(tmpHtml);
+			$("#groups_box").html(tmpHtml);
 			
 			this.renderedGroups=true;
 			XNAT.app.grp_dialog.render(document.body);
 		}
 		XNAT.app.grp_dialog.show();
 		
-	}
+	};
 	
 	this.handleGroupFailure=function(response){
 		this.displayError("ERROR " + o.status+ ": Failed to load " + XNAT.app.displayNames.singular.project.toLowerCase() + " group list.");
@@ -222,7 +255,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
         };
         var showDeactivatedUsers=(document.getElementById('showDeactivatedUsersCheck').checked?'/true':'');
         YAHOO.util.Connect.asyncRequest('GET',serverRoot +'/REST/projects/'+ this.pID + '/users'+showDeactivatedUsers+'?format=json&stamp='+ (new Date()).getTime(),this.reloadCallback,null,this);
-    }
+    };
 
 	this.loadAllUsers=function(){
 		this.allLoader=prependLoader("add_invite_user_header","Loading users");
@@ -464,7 +497,7 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 
 		var all_users_table = document.createElement("div");
 		all_users_table.id="all_users_table";
-		all_users_table.style.marginTop="5pt";
+		all_users_table.style.marginTop="5px";
 		popupBD.appendChild(all_users_table);
 
 		//add to page

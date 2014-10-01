@@ -6,7 +6,7 @@ $page.setVlinkColor($ui.vlink)
 #set($days = [ 1..31 ])
 #set($years = [ $!turbineUtils.getYear()..1900])
 #if ($data.message)
-<font color="red" size="3">$data.message</font>
+<h3 style="color:#c00;">$data.message</h3>
 #end
 <p>
 #if($om.getTag())
@@ -18,151 +18,143 @@ $page.setVlinkColor($ui.vlink)
 #end
 
 #if($vr)
-	<font color="red">Invalid parameters:<BR>$vr.toHTML()</font>
+	<span style="color:#c00;">Invalid parameters:<BR>$vr.toHTML()</span>
 <HR>
 #end
 
 <TABLE width="100%">
 	<TR>
-		<TD>
-			<table width="100%">
-				<TR>
-					<TD align="left" valign="middle">
-						<font face="$ui.sansSerifFonts" size="3"><b>User Group Configuration</b></font>
-					</TD>
-				</TR>
-			</TABLE>
-		</TD>
+        <TD align="left" valign="middle">
+            <h3>User Group Configuration</h3>
+        </TD>
 	</TR>
 	<TR>
-		<TD>
-			<TABLE width="100%">
-				<TR>
-					<TD valign="top">
-						<TABLE>
-							#xdatHiddenBox("xdat:userGroup/xdat_userGroup_id" $item "")
-							
-							#if($om.getTag())
-    							#xdatHiddenBox("xdat:userGroup/ID" $item "")
-    							<TR>
-									<TD width="200px">Display Name</TD>
-									<TD>
-										#if($ug.getId() && $item.getStringProperty("xdat:userGroup/displayName"))
-											##display name is used in the generation of the ID, so it can't be changed once created
-											$!item.getStringProperty("xdat:userGroup/displayName") <input id="xdat:userGroup/displayName" type="hidden" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
-										#else
-											<input id="xdat:userGroup/displayName" class="required max256" data-regex="^[A-Za-z0-9 _]+$" type="text" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
-											<script>
-												XNAT.app.usedNames=[];
-												
-												#foreach($name in $usedNames)
-													XNAT.app.usedNames.push("$!name");
-												#end
+        <TD>
+            <br>
+            #xdatHiddenBox("xdat:userGroup/xdat_userGroup_id" $item "")
 
-												YAHOO.util.Event.onDOMReady(function(){
-                                                    _addValidation("xdat:userGroup/displayName",{box:document.getElementById("xdat:userGroup/displayName"),validate:function(_box){
-    													return (! XNAT.app.usedNames.contains(this.box.value));
-    												}},"This Display Name is already in use.");
-                                                });
-											</script>
-										#end
-									</TD>
-								</TR>
-    							<TR><TD colspan='2'><div class='info'>Display Name is required.  It is the value that will be displayed to users on the Project Access tab.</div></TD></TR>
-    							#xdatHiddenBox("xdat:userGroup/tag" $item "")
-							#else
-    							<TR><TD>ID</TD><TD>#xdatStringBox("xdat:userGroup/ID" $item "" $vr)</TD></TR>
-    							<TR><TD>Display Name</TD><TD>#xdatStringBox("xdat:userGroup/displayName" $item "" $vr)</TD></TR>
-    							<TR><TD>Tag</TD><TD>#xdatStringBox("xdat:userGroup/tag" $item "" $vr)</TD></TR>
-							#end
-							
-						</TABLE>
-					</TD>
-				</TR>
-			</TABLE>
-		</TD>
+            #if($om.getTag())
+                #xdatHiddenBox("xdat:userGroup/ID" $item "")
+                <b>Display Name: </b> &nbsp;
+                #if($ug.getId() && $item.getStringProperty("xdat:userGroup/displayName"))
+                ##display name is used in the generation of the ID, so it can't be changed once created
+                    $!item.getStringProperty("xdat:userGroup/displayName") <input id="xdat:userGroup/displayName" type="hidden" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
+                #else
+                    <input id="xdat:userGroup/displayName" class="required max256" data-regex="^[A-Za-z0-9 _]+$" type="text" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
+                    <script>
+                        XNAT.app.usedNames=[];
+                            #foreach($name in $usedNames)
+                            XNAT.app.usedNames.push("$!name");
+                            #end
+                    </script>
+                #end
+                <div class='note'>Display Name is required.  It is the value that will be displayed to users on the Project Access tab.</div>
+                #xdatHiddenBox("xdat:userGroup/tag" $item "")
+            #else
+                <TABLE>
+                    <TR><TD>ID</TD><TD>#xdatStringBox("xdat:userGroup/ID" $item "" $vr)</TD></TR>
+                    <TR><TD>Display Name</TD><TD>#xdatStringBox("xdat:userGroup/displayName" $item "" $vr)</TD></TR>
+                    <TR><TD>Tag</TD><TD>#xdatStringBox("xdat:userGroup/tag" $item "" $vr)</TD></TR>
+                </TABLE>
+            #end
+
+        </TD>
 	</TR>
 	<TR>	
 		<TD>
-			<style>
-	#groupPerm .item, #groupPerm .header {
-	  border-bottom:1px solid #888;
-	  font:11px Arial, Helvetica, sans-serif;
-	  margin-top:0;
-	  margin-bottom:0;
-	  padding: 4px;
-	  overflow:auto;
-	}
-	dl.item, item.item {
-		display:block;
-	}
-	#groupPerm dl dl 	{ margin:1px 0;	}
-	#groupPerm .header {
-		background-color: #ccc;
-		font-weight: bold;
-	}
-	#groupPerm dl dt, #groupPerm dl dd {
-		display:block;
-		float:left;
-		padding:4px 0;
-	}
-	.item:hover {
-		background-color:#fe9;
-	}
-	#groupPerm dd 	{ 	margin-left:20px; }
-	#groupPerm dd.col1 	{	width:120px;padding:0px;margin-left:10px }
-	#groupPerm dd.col2 	{	width:70px; }
-	#groupPerm dd.col3 	{	width:70px; }
-	#groupPerm dd.col4 	{	width:90px; }
-	#groupPerm dd.col5 	{	width:70px; }
-	#groupPerm dd.col6 	{	width:70px; }
-	#groupPerm dd.col7 	{	width:100px; }
-	#groupPerm_title {
-		font-weight:700;
-	}
-	#groupPerm dl.header dd.col1 	{	margin-left:2px }
-	#groupPerm dl.header dd.col3 	{	margin-left:28px }
+            <style>
 
-		</style>
+                #groupPerm {
+                    width: 100%;
+                }
+
+                #groupPerm label {
+                    display: block;
+                    padding: 6px 12px;
+                }
+
+                #groupPerm input[type="checkbox"]:hover,
+                #groupPerm label:hover {
+                    cursor: pointer;
+                }
+
+                #groupPerm th {
+                    font-weight: bold;
+                    padding: 0;
+                }
+
+                #groupPerm th label b {
+                    font-weight: bold;
+                    border-bottom: 1px dotted #888;
+                }
+
+                #groupPerm th label:hover b {
+                    border-bottom: 1px solid #222;
+                }
+
+                #groupPerm th input[type="checkbox"] {
+                    display: none;
+                }
+
+                #groupPerm td {
+                    padding: 0;
+                    text-align: center;
+                    min-width: 80px;
+                }
+
+                #groupPerm th:first-of-type,
+                #groupPerm td:first-of-type {
+                    padding: 6px 24px 6px 12px;
+                    text-align: left;
+                }
+
+                #groupPerm td label:hover {
+                    /*background: #bfdfff;*/
+                }
+
+            </style>
+
 <!-- BEGIN xdat:userGroup -->
-<div id='groupPerm'>
-	<div style="margin-top:20px;" id="groupPerm_title">Group Permissions</div>
-	<dl class='header'>
-		<dl>
-			<dd class='col1'>&nbsp;</dd>
-			<dd class='col3'><INPUT type="checkbox" onclick="$('.read').prop('checked', this.checked);" /> Read</dd>
-			<dd class='col4'><INPUT type="checkbox" onclick="$('.edit').prop('checked', this.checked);if(this.checked){$('.read').prop('checked', this.checked);}" /> Create/Edit</dd>
-			<dd class='col5'><INPUT type="checkbox" onclick="$('.delete').prop('checked', this.checked);if(this.checked){$('.read').prop('checked', this.checked);}" /> Delete</dd>
-		</dl>
-	</dl>	
-	#set($pValue=$ug.getTag())
-	
+<h3 style="margin-top:20px;" id="groupPerm_title">Group Permissions</h3>
+<table id='groupPerm' class="xnat-table">
+    <tr class='header'>
+        <th>&nbsp;</th>
+        <th><label><INPUT type="checkbox" class="read" data-related="all" /><b>Read</b></label></th>
+        <th><label><INPUT type="checkbox" class="edit" data-related="all" /><b>Create/Edit</b></label></th>
+        <th><label><INPUT type="checkbox" class="delete" data-related="all" /><b>Delete</b></label></th>
+    </tr>
+
+    #set($pValue=$ug.getTag())
+
 	##project permissions
 	#set($pi="")
     #set($pi=$ug.getRootPermissionObject("xnat:projectData","xnat:projectData/ID","$ug.getTag()"))
-	<dl class='item'>
-		<dd class='col1'>Project</dd>
-		<dd class='col3'><INPUT class='' type="checkbox" value="1" CHECKED DISABLED /><INPUT class='' type="hidden" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_R" value="1"  /></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_E" value="1" #if($pi.getEdit())CHECKED #end /></dd>
-	</dl>
+	<tr class='body highlight'>
+		<td>Project</td>
+		<td title="Read" class="checkbox"><label><INPUT type="checkbox" class='' value="1" CHECKED DISABLED /></label><INPUT class='' type="hidden" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_R" value="1"  /></td>
+		<td title="Create/Edit" class="checkbox"><label><INPUT type="checkbox" class='edit project' name="xnat:projectData_xnat:projectData/ID_$!{pValue}_E" value="1" #if($pi.getEdit())CHECKED #end /></label></td>
+        <td>&nbsp;</td>
+	</tr>
 	
 	##subject permissions
 	#set($pi="")
     #set($pi=$ug.getRootPermissionObject("xnat:subjectData","xnat:subjectData/project","$ug.getTag()"))
-	<dl class='item'>
-		<dd class='col1'>Subjects</dd>
-		<dd class='col3'><INPUT class='' type="checkbox" value="1"  CHECKED DISABLED /><INPUT class='' type="hidden" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_R" /></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></dd>
-	</dl>
-	#set($permissionCount = 0)
+	<tr class='body highlight'>
+		<td>Subjects</td>
+		<td title="Read" class="checkbox"><label><INPUT type="checkbox" class='' value="1" CHECKED DISABLED /></label><INPUT class='' type="hidden" value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_R" /></td>
+		<td title="Edit" class="checkbox"><label><INPUT type="checkbox" class='edit subject' value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end /></label></td>
+		<td title="Delete" class="checkbox"><label><INPUT type="checkbox" class='delete subject' value="1" name="xnat:subjectData_xnat:subjectData/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end /></label></td>
+	</tr>
+
+    #set($permissionCount = 0)
+
 	## render image sessions first
-	<dl class='item header'>
-		<dd class='col1'>Imaging Sessions</dd>
-		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.imageSession').prop('checked', this.checked);"/></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageSession').prop('checked', this.checked);if(this.checked){$('.read.imageSession').prop('checked', this.checked);}"/></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageSession').prop('checked', this.checked);if(this.checked){$('.read.imageSession').prop('checked', this.checked);}"/></dd>
-	</dl>
+	<tr class='header'>
+		<th>Imaging Sessions</th>
+		<th><label><INPUT type="checkbox" class='read imageSession' data-related="imageSession" /><b>Read</b></label></th>
+		<th><label><INPUT type="checkbox" class='edit' data-related="imageSession" /><b>Edit</b></label></th>
+		<th><label><INPUT type="checkbox" class='delete' data-related="imageSession" /><b>Delete</b></label></th>
+	</tr>
 	#foreach ($elementManager in $allElements)
 		#set($elementName = $elementManager.get(0))
 		#set($permissionCount = $permissionCount + 1)
@@ -173,23 +165,23 @@ $page.setVlinkColor($ui.vlink)
 			#if($pi!="" && ($pi.getRead() || $pi.getCreate() || $pi.getEdit() || $pi.getDelete()))
 				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
 			#end
-			<dl class='item'>
+			<tr class="body highlight">
 				#set($fieldId="${elementSQLName}_R")
-    			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
-    			<dd class='col3'><INPUT class='read imageSession' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
-    			<dd class='col4'><INPUT class='edit imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
-    			<dd class='col5'><INPUT class='delete imageSession' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
-    		</dl>
+    			<td>$elementManager.get(5).getPlural()</td>
+    			<td title="Read" class="checkbox"><label><INPUT type="checkbox" class='read imageSession' id="$fieldId" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></label></td>
+    			<td title="Edit" class="checkbox"><label><INPUT type="checkbox" class='edit imageSession' value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end data-check="#${fieldId}" /></label></td>
+    			<td title="Delete" class="checkbox"><label><INPUT type="checkbox" class='delete imageSession' value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end data-check="#${fieldId}" /></label></td>
+    		</tr>
 		#end
 	#end
 	
 	## render image assessors
-	<dl class='item header'>
-		<dd class='col1'>Image Assessments</dd>
-		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.imageAssessor').prop('checked', this.checked);"/></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.imageAssessor').prop('checked', this.checked);if(this.checked){$('.read.imageAssessor').prop('checked', this.checked);}"/></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.imageAssessor').prop('checked', this.checked);if(this.checked){$('.read.imageAssessor').prop('checked', this.checked);}"/></dd>
-	</dl>
+	<tr class='header'>
+		<th>Image Assessments</th>
+		<th><label><INPUT type="checkbox" class='read imageAssessor' data-related="imageAssessor" /> <b>Read</b> </label></th>
+		<th><label><INPUT type="checkbox" class='edit' data-related="imageAssessor" /> <b>Edit</b> </label></th>
+		<th><label><INPUT type="checkbox" class='delete' data-related="imageAssessor" /> <b>Delete</b> </label></th>
+	</tr>
 	#foreach ($elementManager in $allElements)
 		#set($elementName = $elementManager.get(0))
 		#set($permissionCount = $permissionCount + 1)
@@ -200,24 +192,24 @@ $page.setVlinkColor($ui.vlink)
 			#if($pi!="" && ($pi.getRead() || $pi.getCreate() || $pi.getEdit() || $pi.getDelete()))
 				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
 			#end
-			<dl class='item'>
-    			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
+			<tr class='body highlight'>
+    			<td>$elementManager.get(5).getPlural()</td>
 				#set($fieldId="${elementSQLName}_R")
-    			<dd class='col3'><INPUT class='read imageAssessor' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
-				<dd class='col4'><INPUT class='edit imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
-    			<dd class='col5'><INPUT class='delete imageAssessor' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
-    		</dl>
+    			<td title="Read" class="checkbox"><label><INPUT type="checkbox" class='read imageAssessor' id="$fieldId" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></label></td>
+				<td title="Edit" class="checkbox"><label><INPUT type="checkbox" class='edit imageAssessor' value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end data-check="#${fieldId}" /></label></td>
+    			<td title="Delete" class="checkbox"><label><INPUT type="checkbox" class='delete imageAssessor' value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end data-check="#${fieldId}" /></label></td>
+    		</tr>
 		#end
 	#end
 	
 	## render other subject Assessors
-	<dl class='item header'>
-		<dd class='col1'>Other Assessments</dd>
-		<dd class='col3'><INPUT class='read' type="checkbox" onclick="$('.read.other').prop('checked', this.checked);"/></dd>
-		<dd class='col4'><INPUT class='edit' type="checkbox" onclick="$('.edit.other').prop('checked', this.checked);if(this.checked){$('.read.other').prop('checked', this.checked);}"/></dd>
-		<dd class='col5'><INPUT class='delete' type="checkbox" onclick="$('.delete.other').prop('checked', this.checked);if(this.checked){$('.read.other').prop('checked', this.checked);}"/></dd>
-	</dl>
-	#foreach ($elementManager in $allElements)
+	<tr class='header'>
+		<th>Other Assessments</th>
+		<th><label><INPUT type="checkbox" class='read other' data-related="other" /> <b>Read</b> </label></th>
+		<th><label><INPUT type="checkbox" class='edit' data-related="other" /> <b>Edit</b> </label></th>
+		<th><label><INPUT type="checkbox" class='delete' data-related="other" /> <b>Delete</b> </label></th>
+	</tr>
+    #foreach ($elementManager in $allElements)
 		#set($elementName = $elementManager.get(0))
 		#set($permissionCount = $permissionCount + 1)
 		#set($elementSQLName = $elementManager.get(2))
@@ -227,31 +219,91 @@ $page.setVlinkColor($ui.vlink)
 			#if($pi!="" && ($pi.getRead() || $pi.getCreate() || $pi.getEdit() || $pi.getDelete()))
 				<input type="hidden" value="1" name="${elementName}_${elementName}/project_$!{pValue}_wasSet"/>
 			#end
-			<dl class='item'>
+			<tr class='body highlight'>
 				#set($fieldId="${elementSQLName}_R")
-    			<dd class='col1'>$elementManager.get(5).getPlural()</dd>
-    			<dd class='col3'><INPUT class='read other' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></dd>
-				<dd class='col4'><INPUT class='edit other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
-    			<dd class='col5'><INPUT class='delete other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end onclick="if(this.checked){$('#${fieldId}').prop('checked', this.checked);}" /></dd>
-    			
-    		</dl>
-		#end
+    			<td>$elementManager.get(5).getPlural()</td>
+    			<td title="Read" class="checkbox"><label><INPUT class='read other' id="$fieldId" type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_R" #if($pi.getRead())CHECKED #end /></label></td>
+				<td title="Edit" class="checkbox"><label><INPUT class='edit other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_E" #if($pi.getEdit())CHECKED #end data-check="#${fieldId}" /></label></td>
+    			<td title="Delete" class="checkbox"><label><INPUT class='delete other' type="checkbox" value="1" name="${elementName}_${elementName}/project_$!{pValue}_D" #if($pi.getDelete())CHECKED #end data-check="#${fieldId}" /></label></td>
+    		</tr>
+        #end
 	#end
-</div>
+</table>
 <!-- END xdat:userGroup -->
 		</TD>
 	</TR>
-	<TR>
-		<TD>
-				<input type="hidden" value="project" name="src"/>
-		#xdatEditProps($item $edit_screen)
-		<TR>
-		   <TD COLSPAN=2 ALIGN=right>
-			  <input type="button" name="btnBack" value="Cancel" onClick="history.go(-1)"/>
-		      <input type="submit" name="eventSubmit_doPerform" value="Submit"/>
-		   </TD>
-		</TR>
-		</TD>
-	</TR>
+    <TR>
+        <TD align="right" style="padding-top:10px;">
+            <input type="hidden" value="project" name="src"/>
+            #xdatEditProps($item $edit_screen)
+            <input type="button" name="btnBack" value="Cancel" onClick="history.go(-1)"/>
+            <input type="submit" name="eventSubmit_doPerform" value="Submit"/>
+        </TD>
+    </TR>
 </TABLE>
 </form>
+
+<script type="text/javascript">
+
+    jq(function(){
+
+        _addValidation("xdat:userGroup/displayName",{box:document.getElementById("xdat:userGroup/displayName"),validate:function(_box){
+            return (! XNAT.app.usedNames.contains(this.box.value));
+        }},"This Display Name is already in use.");
+
+        // make sure each section has a 'body'
+        // otherwise put in some filler
+        jq('tr.header').each(function(){
+            var __this = jq(this);
+            if (!__this.next('tr').hasClass('body')){
+                __this.after(
+                        '<tr class="body">' +
+                        '<td>(none)</td>' +
+                        '<td> &ndash; </td>' +
+                        '<td> &ndash; </td>' +
+                        '<td> &ndash; </td>' +
+                        '</tr>'
+                );
+            }
+        })
+
+        function toggleRelatedPermissions( ckbox, perms, type ){
+            perms = '.' + perms; // read/edit/delete
+            if (type > '') { type  = '.' + type }  // data type
+            var __el = jq(perms + type);
+            __el.prop('checked', ckbox.checked);
+            if (ckbox.checked) {
+                $('.read' + type).prop('checked', ckbox.checked);
+            }
+        }
+
+        jq('#groupPerm').on('click', 'input[data-related]', function(){
+            var __checkbox = jq(this);
+            var related    = __checkbox.data('related');
+            var className  = this.className;
+            related = (related === 'all') ? '' : related;
+            if (__checkbox.hasClass('read')){
+                toggleRelatedPermissions( this, 'read', related );
+            }
+            else {
+                toggleRelatedPermissions( this, className, related );
+            }
+        });
+
+        // check the 'read' checkbox for this data type
+        jq('#groupPerm').on('click', 'input[data-check]', function(){
+            var selector = jq(this).data('check');
+            if (this.checked){
+                jq(selector).prop('checked',true);
+            }
+        });
+
+//        // example of previous inline 'onclick' function
+//        $('.edit.imageSession').prop('checked', this.checked);
+//        if (this.checked) {
+//            $('.read.imageSession').prop('checked', this.checked);
+//        }
+
+    })
+
+</script>

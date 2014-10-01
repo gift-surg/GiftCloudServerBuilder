@@ -1,33 +1,66 @@
 <!-- Title: Features -->
-<div class="mgmt_container" >
+<style type="text/css">
+    #features-controls th.featureEnabled,
+    #features-controls th.featureBanned {
+        min-width: 80px;
+    }
+    #features-controls td label {
+        width: auto;
+    }
+</style>
+<div class="mgmt_container">
     <div id="features_mgmt_div" class="row">
         These features are currently supported by your XNAT Server.  As a site administrator, you can 'ban' any of these features
 		so that the features they represent will be concealed on the site.  Or, you can mark features as 'on by default' so that the features will be enabled for all users 
 		unless blocked for specific groups.  Features membership is also configurable on a per project/group level.
 	</div>
-	<div id="features_grp_config_div" class="row">
+
+    <div id="features_grp_config_div" class="row">
         <a href='$content.getURI("/app/template/ManageGroupTypeFeatures.vm")'>Advanced</a>
 	</div>
-		<div id="features">
-            <dl class="header">
-              <dl>
-                  <dd class="featureName">Name</dd>
-                  <dd class="featureDesc">Description</dd>
-                  <dd class="featureEnabled">On By Default</dd>
-                  <dd class="featureBanned">Banned</dd>
-              </dl>
-            </dl>
-		</div> 
-	   #foreach($feature in $features)
-		  <dl class="featureItem" id="">
-              <dd class="featureName">$feature.getName()</dd>
-              <dd class="featureDesc">$feature.getDescription()</dd>
-              <dd class="featureEnabled"><input type="checkbox" class='featureToggle' id="$feature.getKey()_enabled" onchange='return manageEnable(this);' data-feature="$feature.getKey()" #if($feature.isOnByDefault()) CHECKED #end  #if($feature.isBanned()) DISABLED #end /></dd>
-              <dd class="featureBanned"><input type="checkbox" class='featureToggle' id="$feature.getKey()_banned" onchange='return manageBanned(this);' data-feature="$feature.getKey()" #if($feature.isBanned()) CHECKED #end /></dd>
-		  </dl>
-	   #end
+
+    <table id="features-controls" class="xnat-table features">
+        <thead>
+        <tr class="header">
+            <th class="featureName">Name</th>
+            <th class="featureDesc">Description</th>
+            <th class="featureEnabled">On By Default</th>
+            <th class="featureBanned">Banned</th>
+        </tr>
+        </thead>
+        <tbody>
+        #foreach($feature in $features)
+            <tr class="featureItem highlight" id="">
+                <td class="featureName" nowrap>$feature.getName()</td>
+                <td class="featureDesc">$feature.getDescription()</td>
+                <td class="featureEnabled checkbox">
+                    <label>
+                    <input type="checkbox"
+                        class='featureToggle'
+                        id="$feature.getKey()_enabled"
+                        onchange='return manageEnable(this);'
+                        data-feature="$feature.getKey()"
+                        #if($feature.isOnByDefault()) checked #end
+                        #if($feature.isBanned()) disabled #end >
+                    </label>
+                </td>
+                <td class="featureBanned checkbox">
+                    <label>
+                    <input type="checkbox"
+                        class='featureToggle'
+                        id="$feature.getKey()_banned"
+                        onchange='return manageBanned(this);'
+                        data-feature="$feature.getKey()"
+                        #if($feature.isBanned()) checked #end >
+                    </label>
+                </td>
+            </tr>
+        #end
+        </tbody>
+    </table>
+
 </div>
-	
+
 <script>
 function manageEnable(check){
 	var key=$(check).attr("data-feature");
@@ -77,35 +110,3 @@ function featureFailure(res){
 	$("input.featureToggle").removeAttr("disabled");
 }
 </script>
-
-<style type="text/css">
-	#features .featureItem, #features .header {
-	  border-bottom:1px solid #888;
-	  font:11px Arial, Helvetica, sans-serif;
-	  margin-top:0;
-	  margin-bottom:0;
-	  padding: 4px;
-	  overflow:auto;
-	}
-	dl.featureItem, item.featureItem {
-		display:block;
-	}
-	#features dl dl 	{ margin:1px 0;	}
-	#features .header {
-		background-color: #ccc;
-		font-weight: bold;
-	}
-	#features dl dt, #features dl dd {
-		display:block;
-		float:left;
-		padding:4px 0;
-	}
-	.featureItem:hover {
-		background-color:#fe9;
-	}
-	#features dd 	{ 	margin-left:20px; }
-	dd.featureName 	{	width:160px; }
-	dd.featureDesc 	{	width:286px;  position:relative;	}
-	dd.featureEnabled 	{	width:80px;	}
-	dd.featureBanned 	{	width:80px;	}
-</style>

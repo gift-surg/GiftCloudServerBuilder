@@ -5,40 +5,7 @@
 #set($showUserList = !$turbineUtils.toBoolean($siteConfig.getProperty("restrictUserListAccessToAdmins", "true")) || $data.getSession().getAttribute("user").checkRole("Administrator"))
 <script type="text/javascript" src="$content.getURI("scripts/project/userMgmt.js")"></script>						         
 
-			<style>
-	#groups_div .item, #groups_div .header {
-	  border-bottom:1px solid #888;
-	  font:11px Arial, Helvetica, sans-serif;
-	  margin-top:0;
-	  margin-bottom:0;
-	  padding: 4px;
-	  overflow:auto;
-	}
-	dl.item, item.item {
-		display:block;
-	}
-	#groups_div dl dl 	{ margin:1px 0;	}
-	#groups_div .header {
-		background-color: #ccc;
-		font-weight: bold;
-	}
-	#groups_div dl dt, #groups_div dl dd {
-		display:block;
-		float:left;
-		padding:4px 0;
-	}
-	.item:hover {
-		background-color:#fe9;
-	}
-	#groups_div dd 	{ 	margin-left:20px; }
-	#groups_div dd.col1 	{	width:80px;padding:0px;margin-left:10px }
-	#groups_div dd.col2 	{	width:130px; }
-	#groups_div dd.col3 	{	width:50px; }
-	#groups_div dl.header dd.col1 	{	margin-left:2px }
-	#groups_div dl.header dd.col2 	{	margin-left:20px }
-
-		</style>
-						<table class="mgmt_container">
+<table class="mgmt_container">
  <tr>
   <td valign="top">
    <label><input id="showDeactivatedUsersCheck" type="checkbox" onclick="window.userManager.reloadUsersForProject();">Show Deactivated Users</label>

@@ -345,7 +345,7 @@ div.containerTitle.withColor { font-weight: bold ; background: #084FAB ; }
 #main_nav ul { margin: 0 ; padding: 0 ; list-style: none ; background: #f8f8f8 ; }
 #main_nav > ul > li { border-right: 1px solid #c0c0c0 ; }
 #main_nav li { float: left ; display: block ; position: relative ; }
-#main_nav li:hover { background: url('images/nav_bkdg_hover.png') center center repeat-x ; }
+#main_nav li:hover { background: url('images/nav_bkgd_hover.png') center center repeat-x ; }
 #main_nav li a { display: block ; padding: 0 24px 0 12px ; line-height: 24px ; vertical-align: middle ; white-space: nowrap ;
     background-position: right center ; background-repeat: no-repeat ; color: #000 ; }
 #main_nav li:hover > a { color: #000 ; }
@@ -667,5 +667,3 @@ table.file-details td { padding: 3px 5px ; white-space: nowrap; }
 table.file-details td.scan-image-link { max-width: 275px; overflow: hidden; }
 table.file-details td.scan-image-size { font-family: Courier, monospace; font-size: 13px; }
 table.file-details td.scan-image-buttons { border: none ; }
-
-

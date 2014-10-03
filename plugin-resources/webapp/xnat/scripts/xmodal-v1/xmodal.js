@@ -209,15 +209,18 @@ if (typeof jQuery == 'undefined') {
 
         $body.on('keydown', function (e) {
             var keyCode = (window.event) ? e.which : e.keyCode;
+            //if (keyCode !== 27 || keyCode !== 13) { return }
+            var $open = $(xmodal.dialog.open);
+            if (!$open.length) { return }
             var $top_modal = $(xmodal.dialog.top).last();
             if (keyCode === 27) {  // key 27 = 'esc'
-                if ($body.hasClass('open')) {
-                    //xmodal.close($top_modal);
-                    $top_modal.find('.title .close').trigger('click');
+                if ($top_modal.hasClass('esc')) {
+                    xmodal.close($top_modal);
+                    //$top_modal.find('.title .close').trigger('click');
                 }
             }
-            if (keyCode === 13) {  // key 13 = 'enter'
-                if ($body.hasClass('open') &&
+            else if (keyCode === 13) {  // key 13 = 'enter'
+                if ($top_modal.hasClass('enter') &&
                         ($top_modal.has(document.activeElement).length ||
                             $top_modal.is(document.activeElement))) {
                     //e.preventDefault();
@@ -231,8 +234,8 @@ if (typeof jQuery == 'undefined') {
         $body.on('mousedown', 'div.xmodal.open:not(.top)', function(e){
             // click anywhere in an xmodal to move it to the front
             // if there is more than one open
-            var $open = $('div.xmodal.open');
-            if ( $open.length > 1 ) {
+            var $open = $(xmodal.dialog.open);
+            if ( $open.length ) {
                 $open.removeClass('top');
                 //xmodal.topZ = $modal.css('z-index')+10;
                 $(this).css('z-index',++xmodal.topZ).addClass('top');
@@ -240,7 +243,7 @@ if (typeof jQuery == 'undefined') {
         });
 
 
-        $body.on('click', 'div.xmodal.open .title .maximize', function(){
+        $body.on('click', 'div.xmodal.open .maximize', function(){
             var $modal = $(this).closest(xmodal.dialog.box);
             $modal.toggleClass('maxxed');
             xmodal.resize($modal);
@@ -451,7 +454,7 @@ if (typeof jQuery == 'undefined') {
                     // use false, null or '' to remove a default 'ok' or 'cancel' button
                     if (!$.isPlainObject(_value)) return;
                     var button = this;
-                    button.className = button.classes;
+                    button.className = button.className || button.classNames || button.classes;
                     var button_id = modal.id + '-' + _prop + '-button';
                     // 'button' and the name of this button's property
                     // are automatically added to the class attribute
@@ -462,9 +465,9 @@ if (typeof jQuery == 'undefined') {
                     else {
                         classNames.push('button');
                     }
-                    if (button.className && button.className > '') { classNames.push(button.className) }
+                    if ( button.className ) { classNames.push(button.className) }
                     if ( isTrue(button.close) ) { classNames.push('close') }
-                    if ( isTrue(button.isDefault) ) { classNames.push('default') }
+                    if ( isTrue(button.isDefault) || isTrue(button.default) ) { classNames.push('default') }
 
                     html += '' +
                         '<a tabindex="0" href="javascript:" id="' + button_id + '"' +
@@ -599,11 +602,16 @@ if (typeof jQuery == 'undefined') {
             //xmodal.count++;
             this.count = _opts.count || ++xmodal.count;
             this.id = _opts.id =
-                (_opts.id) ? _opts.id + '-xmodal' : 'xmodal' + this.count;
+                (_opts.id) ? _opts.id : 'xmodal' + this.count;
 
             // we can use 'className', 'classNames' or 'classes'
             this.className = this.classNames = this.classes =
                 _opts.className || _opts.classNames || _opts.classes || '' ;
+
+            // don't allow dismissal of dialog with 'esc' or 'enter' keys
+            // if the corresponding property is false;
+            if ( !isFalse(_opts.enter) ) { this.className += ' enter' }
+            if ( !isFalse(_opts.esc) ) { this.className += ' esc' }
 
             this.width = 600;
             this.height = 400;
@@ -668,7 +676,7 @@ if (typeof jQuery == 'undefined') {
             };
             // okLabel, okAction, okClose, cancelLabel, cancelAction included for easy config of default buttons
 
-            this.buttons = ($.isPlainObject(_opts.buttons)) ? this.buttons = _opts.buttons : this.buttons = xmodal.defaultButtons(_opts);
+            this.buttons = ($.isPlainObject(_opts.buttons)) ? _opts.buttons : xmodal.defaultButtons(_opts);
 
             this.isDraggable = _opts.draggable || true;
 
@@ -954,11 +962,12 @@ if (typeof jQuery == 'undefined') {
 
 
         //////////////////////////////////////////////////
-        // close all open xmodal modals
+        // close all open xmodal modals (except _not)
         //////////////////////////////////////////////////
-        xmodal.closeAll = function( _$modals, _delete ){
+        xmodal.closeAll = function( _$modals, _delete, _not ){
             _$modals = _$modals || $(xmodal.dialog.open);
             var $modals = (_$modals.jquery) ? _$modals : $(_$modals);
+            if (_not) { $modals = $modals.filter(':not('+_not+')') }
             var timeout = 0;
             $($modals.get().reverse()).each(function(){
                 var $modal = $(this);
@@ -1164,7 +1173,6 @@ if (typeof jQuery == 'undefined') {
             loading.title = _title || false;
             loading.width = 260;
             loading.height = 90;
-            //loading.template = 'xmodal-loading';
             loading.content = $('#xmodal-loading').html();
             loading.animation = false;
             loading.closeBtn = false;
@@ -1175,12 +1183,13 @@ if (typeof jQuery == 'undefined') {
         };
         //
         xmodal.loading.close = function(_id){
-            var $loaders = $('div.xmodal.loading.open');
-            if (!$loaders.length) { return } // stop if there are no loading modals
-            var $top_loader = $loaders.filter('.top');
-            var id = _id || $top_loader.attr('id');
+            //var $loaders = $('div.xmodal.loading.open');
+            //if (!$loaders.length) { return } // stop if there are no loading modals
+            //var $top_loader = $loaders.last();
+            //var id = _id || $top_loader.attr('id');
             //xmodal.loading.count--;
-            xmodal.close(id)
+            var $loader = (_id) ? $('#'+_id) : $('div.xmodal.loading.open.top');
+            xmodal.close($loader);
         };
         //////////////////////////////////////////////////
 

@@ -96,7 +96,9 @@ function xModalConfirm(opts){
     confirm.height = 250;
     confirm.okLabel = 'OK';
     confirm.okAction = function(){ // REQUIRED - that's the point of using the xModal.confirm object
-        alert('Please add a function for the "OK" button to the "okAction" property.');
+        // overwritten with the jQuery .extend() method,
+        // otherwise you get this error:
+        throw new Error('Please add a function for the "OK" button to the "okAction" property.');
     };
     confirm.okClose = 'yes';
     var modal = $.extend( true, {}, confirm, opts );

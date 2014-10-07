@@ -340,7 +340,14 @@ public class XNATApplication extends Application {
         attachURI(router, "/services/refresh/catalog", RefreshCatalog.class);
         attachURI(router, "/services/features", FeatureDefinitionRestlet.class);
 
-        attachURIs(router, ScriptResource.class, "/services/scripts/{COMPOSITE_ID}", "/services/scripts/{COMPOSITE_ID}/{SCRIPT_ID}");
+        attachURIs(router, ScriptResource.class, "/automation/scripts",
+                "/automation/scripts/{SCRIPT_ID}",
+                "/projects/{PROJECT_ID}/automation/scripts",
+                "/projects/{PROJECT_ID}/automation/scripts/{SCRIPT_ID}");
+        attachURIs(router, ScriptTriggerTemplateResource.class, "/automation/templates",
+                "/automation/templates/{TEMPLATE_ID}",
+                "/projects/{PROJECT_ID}/automation/templates",
+                "/projects/{PROJECT_ID}/automation/templates/{TEMPLATE_ID}");
 
         attachURI(router, "/status/{TRANSACTION_ID}", SQListenerRepresentation.class);
 

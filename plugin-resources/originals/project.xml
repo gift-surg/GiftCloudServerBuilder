@@ -297,7 +297,7 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.6.1</version>
+			<version>1.9.2</version>
 			<url>http://jakarta.apache.org/commons/beanutils.html</url>
 			<properties>
 				<war.bundle>true</war.bundle>

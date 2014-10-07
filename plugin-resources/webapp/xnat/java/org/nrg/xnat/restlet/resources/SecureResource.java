@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -297,6 +299,39 @@ public abstract class SecureResource extends Resource {
             }
         }
         return map;
+    }
+
+    private static Map<String, List<String>> convertFormToMapOfLists(Form q) {
+        Map<String, List<String>> map = Maps.newLinkedHashMap();
+        if (q != null) {
+            for (final String s : q.getValuesMap().keySet()) {
+                final List<String> values = new ArrayList<String>();
+                final String[] all = q.getValuesArray(s);
+                for (final String item : all) {
+                    values.add(TurbineUtils.escapeParam(item));
+                }
+                map.put(s, values);
+            }
+        }
+        return map;
+    }
+
+    /**
+     * This creates an instance of the specified class and populates it from the mapped form data. Each key in the map
+     * is treated as a property name. If a setter method for any of the specified properties is not found, an exception
+     * will be thrown.
+     * @param clazz    The type of the class you want to create.
+     * @return The initialized instance of the specified class type.
+     */
+    public <T> T createObjectFromFormData(final Class<T> clazz) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+        final Map<String, List<String>> formData = getFullBodyFormAsMap();
+        T instance = clazz.newInstance();
+        BeanUtils.populate(instance, formData);
+        return instance;
+    }
+
+    public Map<String, List<String>> getFullBodyFormAsMap() {
+        return convertFormToMapOfLists(getBodyAsForm());
     }
 
     public Map<String, String> getBodyVariableMap() {

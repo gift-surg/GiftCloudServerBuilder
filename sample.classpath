@@ -40,7 +40,11 @@
 	<classpathentry kind="lib" path="plugin-resources/repository/batik/jars/batik-1.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/cglib/jars/com.springsource.net.sf.cglib-2.2.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/com.h2database/jars/h2-1.2.147.jar"/>
-	<classpathentry kind="lib" path="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar"/>
+	<classpathentry kind="lib" path="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.9.2.jar" sourcepath="plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.9.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:plugin-resources/repository/commons-beanutils/jars/commons-beanutils-1.9.2-javadoc.jar"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-codec/jars/commons-codec-1.5.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-collections/jars/commons-collections-3.0.jar"/>
 	<classpathentry kind="lib" path="plugin-resources/repository/commons-configuration/jars/commons-configuration-1.0.jar"/>

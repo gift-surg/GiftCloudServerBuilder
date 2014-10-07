@@ -1,41 +1,37 @@
 package org.nrg.xnat.restlet.resources;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.nrg.automation.services.ScriptProperty;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
+import org.nrg.automation.entities.Script;
 import org.nrg.automation.services.ScriptRunnerService;
-import org.nrg.config.exceptions.ConfigServiceException;
 import org.nrg.framework.constants.Scope;
 import org.nrg.framework.exceptions.NrgServiceException;
 import org.nrg.xdat.XDAT;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xft.db.PoolDBUtils;
+import org.nrg.xft.XFTTable;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.*;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
-public class ScriptResource extends SecureResource {
-
-    private static final Logger _log = LoggerFactory.getLogger(ScriptResource.class);
-
-    private static final String COMPOSITE_ID = "COMPOSITE_ID";
-    private static final String SCRIPT_ID = "SCRIPT_ID";
-
-    private final Scope _scope;
-    private final String _entityId;
-    private final String _scriptId;
-    private final String _path;
-
-    private final ScriptRunnerService _service;
+public class ScriptResource extends AutomationResource {
 
     public ScriptResource(Context context, Request request, Response response) throws ResourceException {
         super(context, request, response);
@@ -45,50 +41,28 @@ public class ScriptResource extends SecureResource {
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 
-        _service = XDAT.getContextService().getBean(ScriptRunnerService.class);
+        _runnerService = XDAT.getContextService().getBean(ScriptRunnerService.class);
 
-        final String compositeId = (String) getRequest().getAttributes().get(COMPOSITE_ID);
-        if (StringUtils.isBlank(compositeId)) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "You must specify a valid composite ID (for site-wide, use \"site\", otherwise use a composite ID (e.g. prj:1) to indicate the associated entity. Possible scopes include: " + Scope.Site.code() + " and " + Scope.Project.code());
-        }
-        final String[] atoms = compositeId.split(":");
-        if (atoms.length == 0 || atoms.length > 2) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "You must specify a valid composite ID (for site-wide, use \"site\", otherwise use a composite ID (e.g. prj:1) to indicate the associated entity. Possible scopes include: " + Scope.Site.code() + " and " + Scope.Project.code());
-        }
-        if (StringUtils.isBlank(atoms[0])) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "You must specify the scope for the entity with which the requested script is associated. The default is \"site\".");
-        }
-        _scope = Scope.getScope(atoms[0]);
-        _entityId = atoms.length == 1 ? null : validateEntityId(atoms[1]);
         _scriptId = (String) getRequest().getAttributes().get(SCRIPT_ID);
-        _path = request.getResourceRef().getRemainingPart();
 
-        if (_scope == Scope.Site && !StringUtils.isBlank(_entityId)) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "You can't specify an entity ID for the site scope.");
+        if (!user.isSiteAdmin()) {
+            _log.warn(getRequestContext("User " + user.getLogin() + " attempted to access forbidden script trigger template resources"));
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Only site admins can view or update script resources.");
         }
-        if (_scope != Scope.Site && StringUtils.isBlank(_entityId)) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "You must specify an entity ID for any scope that isn't site scope.");
-        }
-        if (_scope != Scope.Site && _scope != Scope.Project) {
-            throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED, "Support for scopes other than site or project is not yet implemented.");
-        }
+
         if (_log.isDebugEnabled()) {
-            _log.debug("Servicing script request for user: " + user.getLogin() + "\n * Scope: " + _scope + "\n * Entity ID: " + _entityId + "\n * Script ID: " + _scriptId + "\n * Path: " + _path);
+            _log.debug(getRequestContext("Servicing script request for user " + user.getLogin()));
         }
     }
 
     @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        final MediaType mediaType = overrideVariant(variant);
+    protected String getResourceType() {
+        return "Script";
+    }
 
-        try {
-            final Properties properties = getScriptProperties();
-            return new StringRepresentation(MAPPER.writeValueAsString(properties), mediaType);
-        } catch (JsonProcessingException e) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred marshalling the script data to JSON", e);
-        } catch (IOException e) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred marshalling the script data to JSON", e);
-        }
+    @Override
+    protected String getResourceId() {
+        return _scriptId;
     }
 
     @Override
@@ -102,7 +76,91 @@ public class ScriptResource extends SecureResource {
     }
 
     @Override
+    public Representation represent(Variant variant) throws ResourceException {
+        final MediaType mediaType = overrideVariant(variant);
+
+        if (StringUtils.isNotBlank(_scriptId)) {
+            try {
+                // They're requesting a specific script, so return that to them.
+                final Script properties = getScript();
+                return new StringRepresentation(MAPPER.writeValueAsString(properties), mediaType);
+            } catch (JsonProcessingException e) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred marshalling the script data to JSON", e);
+            } catch (IOException e) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred marshalling the script data to JSON", e);
+            }
+        } else {
+            // They're asking for list of available scripts, so give them that.
+            return listScripts(mediaType);
+        }
+    }
+
+    @Override
     public void handlePut() {
+        try {
+            if (StringUtils.isNotBlank(_scriptId)) {
+                putScript();
+            } else {
+                throw new ClientException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, "You must specify a script ID on the REST URL to PUT a script to the server.");
+            }
+        } catch (ClientException e) {
+            getResponse().setStatus(e.getStatus(), e.getMessage());
+        } catch (ServerException e) {
+            _log.error("Server error occurred trying to store a script resource", e);
+            getResponse().setStatus(e.getStatus(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void handleDelete() {
+        try {
+            if (_log.isDebugEnabled()) {
+                _log.debug("Preparing to delete script: " + _scriptId + " and its associated triggers.");
+            }
+            _runnerService.deleteScript(_scriptId);
+        } catch (NrgServiceException e) {
+            _log.warn(e.getMessage());
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "A service exception occurred trying to delete (disable) script");
+        }
+    }
+
+    /**
+     * Lists the scripts at the specified scope and entity ID.
+     *
+     * @return A representation of the scripts available at the specified scope and entity ID (if specified).
+     */
+    private Representation listScripts(final MediaType mediaType) {
+        Hashtable<String, Object> params = new Hashtable<String, Object>();
+        params.put("scope", getScope());
+        if (getScope() == Scope.Project) {
+            params.put("projectId", getProjectId());
+        }
+
+        ArrayList<String> columns = new ArrayList<String>();
+        columns.add("Script ID");
+        columns.add("Language");
+        columns.add("Language Version");
+        columns.add("Description");
+
+        XFTTable table = new XFTTable();
+        table.initTable(columns);
+
+        final List<Script> scripts = getScope() == Scope.Site ? _runnerService.getScripts() : _runnerService.getScripts(getScope(), getProjectDataInfo());
+        for (final Script script : scripts) {
+            table.insertRowItems(script.getScriptId(),
+                    script.getLanguage(),
+                    script.getLanguageVersion(),
+                    script.getDescription());
+        }
+
+        return representTable(table, mediaType, params);
+    }
+
+    private Script getScript() {
+        return _runnerService.getScript(_scriptId);
+    }
+
+    private void putScript() throws ClientException, ServerException {
         // TODO: this needs to properly handle a PUT to an existing script as well as an existing but disabled script.
         final Representation entity = getRequest().getEntity();
         if (entity.getSize() == 0) {
@@ -110,112 +168,45 @@ public class ScriptResource extends SecureResource {
             getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to find script parameters: no data sent?");
             return;
         }
-        if (entity.getMediaType().equals(MediaType.APPLICATION_JSON)) {
+
+        MediaType mediaType = entity.getMediaType();
+        if (!mediaType.equals(MediaType.APPLICATION_WWW_FORM) && !mediaType.equals(MediaType.APPLICATION_JSON)) {
+            throw new ClientException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, "This function currently only supports " + MediaType.APPLICATION_WWW_FORM + " and " + MediaType.APPLICATION_JSON);
+        }
+
             final Properties properties;
+        if (mediaType.equals(MediaType.APPLICATION_WWW_FORM)) {
+            try {
+                final List<NameValuePair> formMap = URLEncodedUtils.parse(entity.getText(), DEFAULT_CHARSET);
+                properties = new Properties();
+                for (final NameValuePair entry : formMap) {
+                    properties.setProperty(entry.getName(), entry.getValue());
+                }
+            } catch (IOException e) {
+                throw new ServerException(Status.SERVER_ERROR_INTERNAL, "An error occurred trying to read the submitted form body.", e);
+            }
+        } else {
             try {
                 final String text = entity.getText();
                 properties = MAPPER.readValue(text, Properties.class);
             } catch (IOException e) {
-                getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "An error occurred processing the script properties");
-                return;
-            }
-            final String script = (String) properties.remove("script");
-            try {
-                _service.setScopedScript(user.getLogin(), _scope, _entityId, _scriptId, _path, script, properties);
-            } catch (ConfigServiceException e) {
-                getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "An error occurred saving the script " + _scriptId + (StringUtils.isBlank(_path) ? "" : " at path " + _path));
-            }
-        } else {
-            getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, "This function currently only supports the media type " + MediaType.APPLICATION_JSON);
+                throw new ServerException(Status.SERVER_ERROR_INTERNAL, "An error occurred processing the script properties", e);
         }
     }
 
-    @Override
-    public void handleDelete() {
         try {
-            final Properties properties = getScriptProperties();
-            if (_log.isDebugEnabled()) {
-                _log.debug("Preparing to disable script: " + properties.getProperty(ScriptProperty.ScriptId.key()) + ", scope: " + properties.getProperty(ScriptProperty.Scope.key()) + (_scope != Scope.Site ? ", entity ID: " + properties.getProperty(ScriptProperty.EntityId.key()) : ""));
-            }
-            if (_scope == Scope.Site) {
-                _service.disableSiteScript(user.getLogin(), _scriptId, _path);
-            } else {
-                _service.disableScopedScript(user.getLogin(), Scope.Project, _entityId, _scriptId, _path);
-            }
-        } catch (ResourceException e) {
-            _log.info(e.getMessage());
-            getResponse().setStatus(e.getStatus(), e.getMessage());
+            _runnerService.setScript(_scriptId, properties);
         } catch (NrgServiceException e) {
-            _log.warn(e.getMessage());
-            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "A service exception occurred trying to delete (disable) script");
+            getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e, "An error occurred saving the script " + _scriptId);
         }
     }
 
-    private Properties getScriptProperties() throws ResourceException {
-        final Properties properties;
-        switch (_scope) {
-            case Site:
-                if (StringUtils.isBlank(_path)) {
-                    properties = _service.getSiteScript(_scriptId, _path);
-                } else {
-                    properties = _service.getSiteScript(_scriptId, _path);
+    private static final Logger _log = LoggerFactory.getLogger(ScriptResource.class);
+
+    private static final String SCRIPT_ID = "SCRIPT_ID";
+    private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
+    private final ScriptRunnerService _runnerService;
+
+    private final String _scriptId;
                 }
-                break;
-            case Project:
-                if (StringUtils.isBlank(_path)) {
-                    properties = _service.getScopedScript(_scope, _entityId, _scriptId);
-                } else {
-                    properties = _service.getScopedScript(_scope, _entityId, _scriptId, _path);
-                }
-                break;
-            default:
-                properties = new Properties();
-                properties.setProperty("script", "");
-        }
-
-        if (properties == null) {
-            final StringBuilder message = new StringBuilder("Unable to find script ID[").append(_scriptId).append("] ");
-            if (!StringUtils.isBlank(_path)) {
-                message.append("path[").append(_path).append("]");
-            }
-            if (_scope == Scope.Site) {
-                message.append(" for the site");
-            } else {
-                message.append(" for the project with ID ").append(_entityId);
-            }
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, message.toString());
-        }
-        return properties;
-    }
-
-    private String validateEntityId(final String entityId) throws ResourceException {
-        switch (_scope) {
-            case Site:
-                return null;
-
-            case Project:
-                if (StringUtils.isBlank(entityId)) {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "You must specify an ID for the project scope.");
-                }
-                final Long resolved = XnatProjectdata.getProjectInfoIdFromStringId(entityId);
-                if (resolved != null) {
-                    return resolved.toString();
-                }
-                try {
-                    Integer count = (Integer) PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(id)::int4 as count from xnat_projectdata where projectdata_info = " + entityId, "count", null, null);
-                    if (count != 1) {
-                        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Couldn't find a project with the ID or alias of " + _entityId);
-                    }
-                    return entityId;
-                } catch (Exception e) {
-                    throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred trying to access the database.", e);
-                }
-
-
-            default:
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "The specified scope " + _scope.code() + " is not currently supported. Supported scopes include: " + Scope.Site.code() + " and " + Scope.Project.code());
-        }
-    }
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-}

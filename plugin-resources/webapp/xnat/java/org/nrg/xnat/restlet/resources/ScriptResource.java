@@ -44,6 +44,7 @@ public class ScriptResource extends AutomationResource {
         _runnerService = XDAT.getContextService().getBean(ScriptRunnerService.class);
 
         _scriptId = (String) getRequest().getAttributes().get(SCRIPT_ID);
+        _projectId = (String) getRequest().getAttributes().get(PROJECT_ID);
 
         if (!user.isSiteAdmin()) {
             _log.warn(getRequestContext("User " + user.getLogin() + " attempted to access forbidden script trigger template resources"));
@@ -117,6 +118,7 @@ public class ScriptResource extends AutomationResource {
             if (_log.isDebugEnabled()) {
                 _log.debug("Preparing to delete script: " + _scriptId + " and its associated triggers.");
             }
+            // TODO: The delete function is woefully inadequate. You need to be able to differentiate triggers and scripts.
             _runnerService.deleteScript(_scriptId);
         } catch (NrgServiceException e) {
             _log.warn(e.getMessage());
@@ -174,7 +176,7 @@ public class ScriptResource extends AutomationResource {
             throw new ClientException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, "This function currently only supports " + MediaType.APPLICATION_WWW_FORM + " and " + MediaType.APPLICATION_JSON);
         }
 
-            final Properties properties;
+        final Properties properties;
         if (mediaType.equals(MediaType.APPLICATION_WWW_FORM)) {
             try {
                 final List<NameValuePair> formMap = URLEncodedUtils.parse(entity.getText(), DEFAULT_CHARSET);
@@ -191,8 +193,25 @@ public class ScriptResource extends AutomationResource {
                 properties = MAPPER.readValue(text, Properties.class);
             } catch (IOException e) {
                 throw new ServerException(Status.SERVER_ERROR_INTERNAL, "An error occurred processing the script properties", e);
+            }
         }
-    }
+
+        // TODO: These remove definitions of scope, entity ID, and script ID that may be passed in on the API call.
+        // TODO: We may consider throwing an exception if something in the body parameters contradicts the URI
+        // TODO: parameters. For example, if the URL indicates site scope, but the body parameters specify project and
+        // TODO: ID, it may be worth throwing an exception and indicating that you should only specify that stuff in the
+        // TODO: URL. For now, though, we'll just ignore the payload parameters for simplicity.
+        if (StringUtils.isNotBlank(_projectId)) {
+            properties.setProperty("scope", Scope.Project.code());
+            properties.setProperty("entityId", _projectId);
+        } else {
+            properties.setProperty("scope", Scope.Site.code());
+            properties.remove("entityId");
+        }
+
+        if (properties.containsKey("scriptId")) {
+            properties.remove("scriptId");
+        }
 
         try {
             _runnerService.setScript(_scriptId, properties);
@@ -204,9 +223,11 @@ public class ScriptResource extends AutomationResource {
     private static final Logger _log = LoggerFactory.getLogger(ScriptResource.class);
 
     private static final String SCRIPT_ID = "SCRIPT_ID";
+    private static final String PROJECT_ID = "PROJECT_ID";
     private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
     private final ScriptRunnerService _runnerService;
 
     private final String _scriptId;
-                }
+    private final String _projectId;
+}

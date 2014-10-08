@@ -1731,7 +1731,7 @@
 		<dependency>
 			<groupId>jackson</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.1.0</version>
+			<version>2.3.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1740,7 +1740,7 @@
 		<dependency>
 			<groupId>jackson</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.1.0</version>
+			<version>2.3.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>
@@ -1749,7 +1749,7 @@
 		<dependency>
 			<groupId>jackson</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.1.0</version>
+			<version>2.3.3</version>
 			<properties>
 				<war.bundle>true</war.bundle>
 			</properties>

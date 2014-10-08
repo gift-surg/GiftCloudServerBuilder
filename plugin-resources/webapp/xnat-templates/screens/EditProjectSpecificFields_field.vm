@@ -1,5 +1,5 @@
 <tr>
-			 <th align="left" nowrap>$!f.getName()</th>
+			 <th align="left" nowrap><label for="$!f.getXmlpath()" #if($f.getRequired()==1 || $f.getRequired()) class="formLabelRequired" #end>$!f.getName()</label>#if($f.getRequired()==1 || $f.getRequired()) <span class="noteRequired">*</span> #end</th>
 						 <td nowrap>
 			  #if ($f.getGroup())
 			   #if($!om.getProperty($!f.getXmlpath()))
@@ -54,15 +54,15 @@
 		#end
 		<label><input #if($isDisabled)disabled#end type="radio" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="true" #if($currentValue)CHECKED#end/> True</label>
 		<label><input #if($isDisabled)disabled#end type="radio" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="false" #if($currentValue==false)CHECKED#end/> False</label>
-    #elseif($f.getDatatype()=="date")
+  #elseif($f.getDatatype()=="date")
 		<script type="text/javascript" LANGUAGE="JavaScript" src="$content.getURI('scripts/yui/build/calendar/calendar-min.js')"></SCRIPT>
 		<link type="text/css" rel="stylesheet" href="$content.getURI('scripts/yui/build/calendar/assets/skins/sam/calendar.css')"> 
 		<input #if($isDisabled)disabled#end type="text" ID="$!f.getXmlpath()" name="$!f.getXmlpath()" #if($om.getProperty($!f.getXmlpath())) value="$turbineUtils.formatDate($!om.getDateProperty($!f.getXmlpath()),"MM/dd/yyyy")" #end  #if($f.getRequired()==1 || $f.getRequired()) class="required" #else class="nullable $!f.getDatatype()" #end/>
 		<script type="text/javascript">
 	      insertCalendar(document.getElementById("$!f.getXmlpath()"),"$!f.getName()");
 	    </script>
-    #else
-		#if($f.getPossiblevalues_possiblevalue().size()>0)
+  #else
+    #if($f.getPossiblevalues_possiblevalue().size()>0)
 			<select #if($isDisabled)disabled#end id="$!f.getXmlpath()" name="$!f.getXmlpath()" #if($f.getRequired()==1 || $f.getRequired()) class="required" #end>
     			<option value="NULL">(SELECT)</option>
     			#foreach($pv in $f.getPossiblevalues_possiblevalue())
@@ -76,6 +76,6 @@
 		#else
 			<input #if($f.getRequired()==1 || $f.getRequired()) class="required $!f.getDatatype()" #else class="nullable $!f.getDatatype()" #end #if($isDisabled)disabled#end type="text" size="10" id="$!f.getXmlpath()" name="$!f.getXmlpath()" value="$!om.getProperty($!f.getXmlpath())" />
 		#end
-    #end
+  #end
 		  </td>
 		</tr>

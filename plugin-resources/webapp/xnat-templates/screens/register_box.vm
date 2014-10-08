@@ -51,15 +51,15 @@
                   </tr>
                   <tr>
             #formLabelRequired("First Name")
-            <TD><input type="text" class="required alphaSP" id="xdat:user.firstname" name="xdat:user.firstname" value="$!firstName"></TD>
+            <TD><input type="text" class="required alphaSP" id="xdat:user.firstname" name="xdat:user.firstname" value="$!firstName" onchange="validateName(this, 'First', 'eventSubmit_doSetup');"></TD>
     			              </tr>
                   <tr>
             #formLabelRequired("Last Name")
-            <TD><input type="text" class="required alphaSP" id="xdat:user.lastname" name="xdat:user.lastname" value="$!lastName"></TD>
+            <TD><input type="text" class="required alphaSP" id="xdat:user.lastname" name="xdat:user.lastname" value="$!lastName" onchange="validateName(this, 'Last', 'eventSubmit_doSetup');"></TD>
         </tr>
         <tr>
             #formLabelRequired("Email")
-            <TD><input type="text" class="required" id="xdat:user.email" name="xdat:user.email" value="$!email"></TD>
+            <TD><input type="text" class="required" id="xdat:user.email" name="xdat:user.email" value="$!email" onchange="validateEmail(this,'eventSubmit_doSetup');"></TD>
         </tr>
         <tr>
             #formLabel("Phone")

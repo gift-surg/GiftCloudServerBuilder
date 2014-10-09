@@ -344,6 +344,10 @@ public class XNATApplication extends Application {
                 "/automation/scripts/{SCRIPT_ID}",
                 "/projects/{PROJECT_ID}/automation/scripts",
                 "/projects/{PROJECT_ID}/automation/scripts/{SCRIPT_ID}");
+        attachURIs(router, ScriptTriggerResource.class, "/automation/events",
+                "/automation/events/{EVENT}",
+                "/projects/{PROJECT_ID}/automation/events",
+                "/projects/{PROJECT_ID}/automation/events/{EVENT}");
         attachURIs(router, ScriptTriggerTemplateResource.class, "/automation/templates",
                 "/automation/templates/{TEMPLATE_ID}",
                 "/projects/{PROJECT_ID}/automation/templates",

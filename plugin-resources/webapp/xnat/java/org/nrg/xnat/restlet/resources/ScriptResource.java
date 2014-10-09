@@ -8,15 +8,13 @@ import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
 import org.nrg.automation.entities.Script;
 import org.nrg.automation.services.ScriptRunnerService;
+import org.nrg.automation.services.ScriptService;
 import org.nrg.framework.constants.Scope;
 import org.nrg.framework.exceptions.NrgServiceException;
 import org.nrg.xdat.XDAT;
 import org.nrg.xft.XFTTable;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -41,14 +39,18 @@ public class ScriptResource extends AutomationResource {
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 
+        _scriptService = XDAT.getContextService().getBean(ScriptService.class);
         _runnerService = XDAT.getContextService().getBean(ScriptRunnerService.class);
 
         _scriptId = (String) getRequest().getAttributes().get(SCRIPT_ID);
-        _projectId = (String) getRequest().getAttributes().get(PROJECT_ID);
 
         if (!user.isSiteAdmin()) {
             _log.warn(getRequestContext("User " + user.getLogin() + " attempted to access forbidden script trigger template resources"));
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Only site admins can view or update script resources.");
+        }
+
+        if (request.getMethod().equals(Method.DELETE) && StringUtils.isBlank(_scriptId)) {
+            throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, "You must specify a specific script ID to delete a script.");
         }
 
         if (_log.isDebugEnabled()) {
@@ -83,8 +85,8 @@ public class ScriptResource extends AutomationResource {
         if (StringUtils.isNotBlank(_scriptId)) {
             try {
                 // They're requesting a specific script, so return that to them.
-                final Script properties = getScript();
-                return new StringRepresentation(MAPPER.writeValueAsString(properties), mediaType);
+                final Script script = getScript();
+                return new StringRepresentation(MAPPER.writeValueAsString(script), mediaType);
             } catch (JsonProcessingException e) {
                 throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred marshalling the script data to JSON", e);
             } catch (IOException e) {
@@ -118,7 +120,6 @@ public class ScriptResource extends AutomationResource {
             if (_log.isDebugEnabled()) {
                 _log.debug("Preparing to delete script: " + _scriptId + " and its associated triggers.");
             }
-            // TODO: The delete function is woefully inadequate. You need to be able to differentiate triggers and scripts.
             _runnerService.deleteScript(_scriptId);
         } catch (NrgServiceException e) {
             _log.warn(e.getMessage());
@@ -201,10 +202,12 @@ public class ScriptResource extends AutomationResource {
         // TODO: parameters. For example, if the URL indicates site scope, but the body parameters specify project and
         // TODO: ID, it may be worth throwing an exception and indicating that you should only specify that stuff in the
         // TODO: URL. For now, though, we'll just ignore the payload parameters for simplicity.
-        if (StringUtils.isNotBlank(_projectId)) {
+        if (getScope() == Scope.Project) {
             properties.setProperty("scope", Scope.Project.code());
-            properties.setProperty("entityId", _projectId);
-        } else {
+            properties.setProperty("entityId", getProjectDataInfo());
+        } else if (!_scriptService.hasScript(_scriptId)) {
+            // Only create site association when this is a new script. Otherwise site association must be made
+            // explicitly.
             properties.setProperty("scope", Scope.Site.code());
             properties.remove("entityId");
         }
@@ -223,11 +226,10 @@ public class ScriptResource extends AutomationResource {
     private static final Logger _log = LoggerFactory.getLogger(ScriptResource.class);
 
     private static final String SCRIPT_ID = "SCRIPT_ID";
-    private static final String PROJECT_ID = "PROJECT_ID";
     private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
+    private final ScriptService _scriptService;
     private final ScriptRunnerService _runnerService;
 
     private final String _scriptId;
-    private final String _projectId;
 }

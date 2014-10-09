@@ -30,6 +30,7 @@
             <list>
                 <bean id="scriptedSessionIdent" class="org.nrg.dcm.id.ScriptedSessionAssignmentExtractor">
                     <constructor-arg name="event"><util:constant static-field="org.nrg.dcm.id.ScriptedSessionAssignmentExtractor.EVENT_DICOM_IMPORT"/></constructor-arg>
+                    <constructor-arg name="continueOnScriptFailure" value="true"/>
                     <constructor-arg name="extractors">
                         <list>
                             <bean class="org.nrg.dcm.ContainedAssignmentExtractor">

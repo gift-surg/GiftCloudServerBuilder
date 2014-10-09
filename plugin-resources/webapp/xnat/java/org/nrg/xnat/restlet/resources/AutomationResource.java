@@ -48,6 +48,10 @@ public abstract class AutomationResource extends SecureResource {
         return _projectDataInfo;
     }
 
+    protected String getAssociation() {
+        return Scope.encode(getScope(), getProjectDataInfo());
+    }
+
     protected String getPath() {
         return _path;
     }

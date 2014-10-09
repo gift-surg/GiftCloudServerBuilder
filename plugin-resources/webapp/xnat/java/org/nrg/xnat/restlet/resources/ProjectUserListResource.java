@@ -16,6 +16,7 @@ import org.nrg.xdat.XDAT;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTTable;
 import org.nrg.xft.exception.DBPoolException;
+import org.nrg.xft.exception.InvalidItemException;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -55,7 +56,9 @@ public class ProjectUserListResource extends SecureResource {
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, message);
             } else {
                 int projectId = (Integer) projectData;
-                if (!(user.isSiteAdmin() || user.isOwner(proj.getId()) || isWhitelisted(projectId))) {
+                boolean canCreate = false;
+                try { canCreate = user.canCreate(proj); } catch (Exception e) {}
+                if (!(canCreate || user.isSiteAdmin() || user.isOwner(proj.getId()) || isWhitelisted(projectId))) {
                     logger.error("Unauthorized Access to project-level user resources. User: " + userName);
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Access Denied: Only project owners and site managers can access user resources.");
                 }

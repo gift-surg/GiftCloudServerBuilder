@@ -12,6 +12,8 @@
     #launchUploadAppletForm th { padding: 0 ; }
     #launchUploadAppletForm tr { height: 25px ; line-height: 25px ; vertical-align: middle ; }
     #cal_session_date { margin-left: 4px ; padding: 2px 4px ; }
+    #upload-datepicker a.disabled { opacity: 0.5; }
+    #upload-datepicker a.disabled:hover { cursor: default; }
 </style>
 ## if requireDate's not set, we'll default to optional: you can specify it but don't have to.
 #if ("$!requireDate" == "")
@@ -30,13 +32,13 @@
                 </p>
         <table>
         <tr>
-            <th align="left"><label for="project" class="select_label">$displayManager.getSingularDisplayNameForProject()</label></th>
-            <td><select id="project" name="project" style="min-width:200px;" disabled=true></select></td>
+            <th align="left"><label for="project" class="select_label">$displayManager.getSingularDisplayNameForProject(): </label></th>
+            <td><select id="project" name="project" style="min-width:200px;" disabled></select></td>
         </tr>
         <tr>
-            <th align="left"><label for="part_id" class="select_label">$displayManager.getSingularDisplayNameForSubject()</label></th>
-            <td><select id="part_id" name="part_id" style="min-width:200px;" disabled=true>
-                <option>(Select a $displayManager.getSingularDisplayNameForProject().toLowerCase())</option>
+            <th align="left"><label for="part_id" class="select_label">$displayManager.getSingularDisplayNameForSubject(): </label></th>
+            <td><select id="part_id" name="part_id" style="min-width:200px;" disabled>
+                ##<option>(Select a $displayManager.getSingularDisplayNameForProject().toLowerCase())</option>
             </select></td>
             <td><a onclick="createSubjectForm();">Add New $displayManager.getSingularDisplayNameForSubject()</a></td>
         </tr>
@@ -109,6 +111,9 @@
             #set($part_id = $!subject)
             window.projectSubjectVisitManager = new ProjectSubjectVisitSelector("$!project", "$!part_id");
             window.projectSubjectVisitManager.init();
+            jq('body').on('change', '#project, #part_id, #session_date', function(){
+                window.projectSubjectVisitManager.manageLaunchUploaderButton();
+            });
         </script>
 
      <br>
@@ -125,6 +130,81 @@
 </form>
 
 <script type="text/javascript">
+
+    /*
+
+    // rewrote the date / no-date / launch upload interractions
+    // but ended up scrapping it and modifying existing functions
+
+    function getById(_id){
+        return document.getElementById(_id);
+    }
+
+    jq(function(){
+
+        var _project         = getById('project');
+        var _part_id         = getById('part_id');
+        var _session_date    = getById('session_date');
+        var _no_session_date = getById('no_session_date');
+        var _gojuice         = getById('gojuice');
+
+        // datepicker elements
+        var __datepicker  = jq('#upload-datepicker');
+        var __insert_date = __datepicker.find('.insert-date').prop('disabled',true);
+        var __use_today   = __datepicker.find('.use-todays-date').addClass('disabled');
+
+        function toggleDateInputs(disenable){
+            var bool = false;
+            if (disenable === 'disable'){
+                bool = true;
+                __use_today.addClass('disabled');
+            }
+            else {
+                __use_today.removeClass('disabled');
+            }
+            _session_date.disabled = bool;
+            __insert_date.prop('disabled',bool);
+        }
+
+        // disable date stuff on load if there's no project or subject selected
+        if (!_project.selectedIndex.value || !_part_id.selectedIndex.value){
+            toggleDateInputs('disable');
+            _no_session_date.disabled = true;
+        }
+        // turn on the juice
+        jq('body').on('change', '#project, #part_id, #session_date, #no_session_date', function(){
+
+            if ( _project.value && _part_id.value ){
+                if ( _no_session_date.checked ){
+                    toggleDateInputs('disable');
+                    _gojuice.disabled = false;
+                }
+                else if ( _session_date.value ){
+                    toggleDateInputs('enable');
+                    _gojuice.disabled = false;
+                }
+                else {
+                    toggleDateInputs('enable');
+                    _no_session_date.disabled = false;
+                    _gojuice.disabled = true;
+                }
+            }
+            else {
+                toggleDateInputs('disable');
+                _no_session_date.disabled = true;
+                _gojuice.disabled = true;
+            }
+
+        });
+
+    });
+
+    */
+
+    window.loadSubjectsCallback = function(){
+        jq('#part_id').trigger('change');
+    }
+
     function createSubjectForm(){
         if (this.subjectForm!=undefined){
             this.subjectForm.close();
@@ -138,6 +218,7 @@
         }
         window.create_subject_link+="/project/" + project + "/destination/JS_Parent_Return.vm";
         this.subjectForm = popupCentered(window.create_subject_link,'Subject',610,800,10,'status=yes,resizable=yes,scrollbars=yes,toolbar=no');
+        this.subjectForm.loadSubjectsCallback = window.loadSubjectsCallback;
         if (this.subjectForm.opener == null) this.subjectForm.opener = self;
         return this.subjectForm;
 

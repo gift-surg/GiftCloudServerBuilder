@@ -231,6 +231,15 @@ if (typeof jQuery == 'undefined') {
         });
 
 
+        $body.on('focus', 'a, button, :input, [tabindex]', function(e){
+            var $top = $(xmodal.dialog.top);
+            if (!$top) { return }
+            if (!$(this).closest($top).length){
+                e.stopPropagation();
+                $top.focus();
+            }
+        });
+
         $body.on('mousedown', 'div.xmodal.open:not(.top)', function(e){
             // click anywhere in an xmodal to move it to the front
             // if there is more than one open
@@ -268,12 +277,12 @@ if (typeof jQuery == 'undefined') {
         // <div data-xmodal-opts="size:large|speed:2000|mask:false"><div>
         xmodal.getOptsFromData = function( el, opts, delim, sep ){
             // el = DOM element (jQuery object, selector, or id)
-            // opts = config object we're modifying
+            // opts = config object we're modifying, or empty object {}
             if ( !el || !opts ) { return } // need both args
             delim = delim || '|'; // delimiter between properties
             sep   = sep   || ':'; // separator between key:value
             var $el = jqObj(el);
-            var data = $el.data('xmodal-options');
+            var data = $el.data('xmodal-opts') || $el.data('xmodal-options');
             if (data){
                 var dataOpts = data.split(delim);
                 $.each( dataOpts, function(i, v) {
@@ -303,13 +312,6 @@ if (typeof jQuery == 'undefined') {
             var i = xmodal.modals._ids.indexOf(_id);
             xmodal.modals._ids.splice( i, 1 );
 
-            // we don't want to decrement the count
-            // this helps ensure there won't be
-            // duplicate modal ids.
-            //
-            //if (xmodal.count > 0) { xmodal.count-- }
-            //xmodal.count--;
-
         };
         //////////////////////////////////////////////////
 
@@ -320,7 +322,7 @@ if (typeof jQuery == 'undefined') {
         // set the xmodal body element's size
         //////////////////////////////////////////////////
         xmodal.resize = function ($modal, modal) {
-            //console.log(modal.title);
+
             function resizeBody(_$modal, _modal) {
                 var $title = _$modal.find('.title');
                 var modal_height  = _$modal.height();
@@ -378,7 +380,6 @@ if (typeof jQuery == 'undefined') {
             _opts = _opts || {};
             _opts.buttons = _opts.buttons || {};
 
-            //console.log(_opts.buttons);
             var buttons = {};
 
             function newDefaultButton(){
@@ -389,42 +390,25 @@ if (typeof jQuery == 'undefined') {
                 return btn;
             }
 
-            buttons.ok = newDefaultButton();
-            buttons.ok.label = _opts.okLabel || 'OK';
-            buttons.ok.action = _opts.okAction || $.noop;
-            buttons.ok.close = ( !isFalse(_opts.okClose) );
-            buttons.ok.isDefault = true;
-            //buttons.ok.className = '';
-            //buttons.ok = {
-            //    label: _opts.okLabel || 'OK',
-            //    className: '',
-            //    action: _opts.okAction || $.noop(),
-            //    close: (_opts.okClose !== false), // do we close the modal when this button is clicked?
-            //    isDefault: true
-            //};
-
-            buttons.cancel = newDefaultButton();
-            buttons.cancel.label = _opts.cancelLabel || 'Cancel';
-            buttons.cancel.action = _opts.cancelAction || $.noop;
-            //buttons.cancel= {
-            //    label: _opts.cancelLabel || 'Cancel',
-            //    className: '',
-            //    action: _opts.cancelAction || $.noop(),
-            //    close: true // do we close the modal when this button is clicked?
-            //};
-
-            // shortcuts to hide the ok and cancel buttons
             if ( isFalse(_opts.ok) || _opts.ok === 'hide') {
                 buttons.ok = false
             }
+            else {
+                buttons.ok = newDefaultButton();
+                buttons.ok.label = _opts.okLabel || 'OK';
+                buttons.ok.action = _opts.okAction || $.noop;
+                buttons.ok.close = ( !isFalse(_opts.okClose) );
+                buttons.ok.isDefault = true;
+            }
+
             if ( isFalse(_opts.cancel) || _opts.cancel === 'hide') {
                 buttons.cancel = false
             }
-            //this.defaultButton = this.buttons.ok;
-
-            //buttons = $.extend(true, buttons, _opts.buttons);
-
-            //console.log(buttons);
+            else {
+                buttons.cancel = newDefaultButton();
+                buttons.cancel.label = _opts.cancelLabel || 'Cancel';
+                buttons.cancel.action = _opts.cancelAction || $.noop;
+            }
 
             return buttons;
 
@@ -653,7 +637,9 @@ if (typeof jQuery == 'undefined') {
 
             if (_opts.template){
                 this.template = this.$template = _opts.template = jqObj(_opts.template);
-                if (this.template.data('xmodal-opts')){
+                // there's a 'data-xmodal-opts' attribute on the
+                // template element, extract options from that
+                if (this.template.data('xmodal-opts') || this.template.data('xmodal-options')){
                     xmodal.getOptsFromData(this.template, this);
                 }
             }
@@ -688,8 +674,6 @@ if (typeof jQuery == 'undefined') {
 
             // merge defaults with config object
             // properties in '_opts' override 'this'
-            //var modal = $.extend(true, this, _opts);
-            //
             $.extend(true, this, _opts);
 
             // private property to let xmodal.open() know if
@@ -741,7 +725,6 @@ if (typeof jQuery == 'undefined') {
             modal.$modal = $modal = $(modal_id);
 
             if ( !isFalse(modal.mask) ){
-                //modal.$mask = modal.$modal.closest('xmodal-mask');
                 modal.$mask = $mask = $(modal_id + '-mask');
                 modal.$mask.css({
                     'z-index': ++xmodal.topZ
@@ -750,7 +733,7 @@ if (typeof jQuery == 'undefined') {
             }
 
             // copy to Velocity-safe var names
-            // to be available to all callback methods
+            // to be available to callback methods
             modal.__mask  = modal.$mask;
             modal.__modal = modal.$modal;
 
@@ -806,19 +789,16 @@ if (typeof jQuery == 'undefined') {
             }
 
             if (modal.animation === 'fade') {
-                //$mask.fadeIn(modal.speed / 2);
                 modal.$modal.fadeIn(+modal.speed, function() {
                     afterRender($(this));
                 });
             }
             else if (modal.animation === 'slide') {
-                //$mask.fadeIn(modal.speed / 2);
                 modal.$modal.slideDown(+modal.speed, function() {
                     afterRender($(this));
                 });
             }
             else {
-                //$mask.show();
                 if (modal.animation !== 'hide'){
                     modal.$modal.show();
                     afterRender($modal);
@@ -903,9 +883,6 @@ if (typeof jQuery == 'undefined') {
             // (it's for your own good, kid)
             if (!xmodal.modals[modal_id]) { return } // should prevent errors if this xmodal.modals object doesn't exist
 
-            // not gonna decrement the count 'cause it doesn't really matter
-            //if (xmodal.count > 0) { xmodal.count-- }
-
             // localize the object for this modal
             var modal = xmodal.modals[modal_id];
 
@@ -964,20 +941,26 @@ if (typeof jQuery == 'undefined') {
         //////////////////////////////////////////////////
         // close all open xmodal modals (except _not)
         //////////////////////////////////////////////////
-        xmodal.closeAll = function( _$modals, _delete, _not ){
-            _$modals = _$modals || $(xmodal.dialog.open);
-            var $modals = (_$modals.jquery) ? _$modals : $(_$modals);
-            if (_not) { $modals = $modals.filter(':not('+_not+')') }
+        xmodal.closeAll = function( $modals, $not, _delete ){
+
+            $modals = jqObj($modals) || $(xmodal.dialog.open);
+            $modals = $modals.not($not);
+
             var timeout = 0;
+
             $($modals.get().reverse()).each(function(){
+
                 var $modal = $(this);
                 var id = $modal.attr('id');
-                if (typeof _delete !== 'undefined'){
+
+                if (isTrue(_delete) || isFalse(_delete)) {
                     xmodal.modals[id].deleteModal = _delete;
                 }
+
                 setTimeout(function(){
                     xmodal.close($modal);
                 }, (timeout += 10) );
+
             });
         };
         //////////////////////////////////////////////////
@@ -1009,7 +992,7 @@ if (typeof jQuery == 'undefined') {
             //xmodal.alerts.count = ++xmodal.count;
             this.count = opts.count || ++xmodal.count;
             this.kind = 'alert';
-            this.id = 'xmodal' + this.count + '-alert';
+            this.id = 'xmodal' + this.count + '-message';
             this.width = 400;
             this.height = 200;
             this.animation = 'fade';
@@ -1017,18 +1000,25 @@ if (typeof jQuery == 'undefined') {
             this.title = false;
             this.content = opts.content || opts.message || '(no message - must set value for "content" property)';
             this.buttons = {};
-            this.buttons.ok = {};
-            this.buttons.ok.label = opts.label || opts.button || opts.okLabel || opts.buttonLabel || 'OK';
-            this.buttons.ok.action = opts.action || opts.okAction || $.noop;
-            this.buttons.ok.close = true;
-            this.buttons.ok.isDefault = true;
-            this.buttons.cancel = false; // prevents default "Cancel" button from rendering
+            this.buttons.ok = {
+                label: opts.label || opts.button || opts.okLabel || opts.buttonLabel || 'OK',
+                action: opts.action || opts.okAction || $.noop,
+                close: true,
+                isDefault: true
+            };
+            //this.buttons.cancel = false; // prevents default "Cancel" button from rendering
             this.closeModal = xmodal.closeModal = opts.closeModal || true ; // alert messages should be dismissed by pressing the enter key
+            $.extend(true, this, opts);
+            console.log(this);
         };
         //
-        xmodal.message = function( /* _title/_msg/_opts , _msg/_buttonText/_opts , _buttonText/_opts , _opts */ ) {
-
-            //_opts = $.extend(true, {}, _opts);
+        // xmodal.message() arguments:
+        // (1 arg)  content/{opts} //-- message content OR config object
+        // (2 args) title/content, content/{opts} //-- title and content OR content and config object
+        // (3 args) title, content, buttonLabel/{opts} //-- title, content, and button label OR title, content, and config object
+        // (4 args) title, content, buttonLabel, {opts} //-- title, content, button label, and config object
+        // SEE switch STATEMENT FOR FURTHER EXPLANATION
+        xmodal.message = function( /* accepts 1, 2, 3, or 4 args - see above */ ) {
 
             var opts = {};
             var arg1 = arguments[0];
@@ -1039,7 +1029,6 @@ if (typeof jQuery == 'undefined') {
             if (arguments.length === 0){
                 throw new Error('Message text and/or configuration object required.');
             }
-
 
             // figure out what to do based on the number of arguments that are passed
             switch (arguments.length){
@@ -1110,9 +1099,9 @@ if (typeof jQuery == 'undefined') {
 
             opts.className = [(opts.className || opts.classNames || opts.classes || ''), 'xmodal-message'].join(' ');
 
-            xmodal.open(opts);
+            var modal = xmodal.open(opts);
 
-            return opts;
+            return { opts: opts, modal: modal };
 
         };
         // xmodal.alert('message text') may be more intuitive to call
@@ -1136,23 +1125,30 @@ if (typeof jQuery == 'undefined') {
 
 
         xmodal.confirm = function(_opts){
-            _opts = _opts || {};
-            //xmodal.closeModal = true;
+            // pretty much the same as the Alert/Message, but with a cancel button.
+
             if (!$.isPlainObject(_opts)) {
                 throw new Error('Please pass a configuration object as the argument for the xmodal.confirm(opts) function.');
             }
-            //var confirmation = new xmodal.presets.Message(_opts);
-            // pretty much the same as the Alert/Message, but with a cancel button.
-            var confirmation={};
-            confirmation.title = 'Confirmation';
-            confirmation.buttons={};
-            confirmation.buttons.cancel={};
-            confirmation.buttons.cancel.label = _opts.cancelLabel || 'Cancel';
-            confirmation.buttons.cancel.action = _opts.cancelAction || $.noop;
-            confirmation.buttons.cancel.close = true;
-            var opts = $.extend(true, {}, confirmation, _opts);
-            xmodal.message(opts);
-            //return opts;
+
+            _opts = _opts || {};
+
+            var confirm={};
+            confirm.count = _opts.count || ++xmodal.count;
+            confirm.id = 'xmodal' + confirm.count + '-confirm';
+            confirm.title = 'Confirmation';
+            confirm.buttons = {};
+            confirm.buttons.cancel = {
+                // the 'ok' button is defined in xmodal.presets.Message
+                label: _opts.cancelLabel || 'Cancel',
+                action: _opts.cancelAction || $.noop,
+                close: true
+            };
+
+            var opts = $.extend(true, {}, confirm, _opts);
+
+            return xmodal.message(opts);
+
         };
 
 
@@ -1164,22 +1160,50 @@ if (typeof jQuery == 'undefined') {
         xmodal.loading={};
         xmodal.loading.count = 0;
         //
-        xmodal.loading.open = function( _title, _id, _opts ){
+        xmodal.loading.open = function( /* {opts} || title, {opts} || title, id, {opts} */ ){
 
-            _opts = _opts || {};
+            var opts = {};
+            opts.title = false;
+            opts.id = 'xmodal-loading-' + (++xmodal.loading.count);
+            opts.width = 260;
+            opts.height = 90;
+            opts.content = $('#xmodal-loading').html();
+            opts.animation = false;
+            opts.closeBtn = false;
+            opts.footer = false;
+            opts.className = [(opts.className || opts.classNames || opts.classes || ''), 'loader loading'].join(' ');
 
-            var loading={};
-            loading.id = _id || 'xmodal-loading-' + (++xmodal.loading.count);
-            loading.title = _title || false;
-            loading.width = 260;
-            loading.height = 90;
-            loading.content = $('#xmodal-loading').html();
-            loading.animation = false;
-            loading.closeBtn = false;
-            loading.footer = false;
-            var opts = $.extend(true, {}, loading, _opts);
-            opts.className = [(_opts.className || _opts.classNames || _opts.classes || ''), 'loader loading'].join(' ');
+            var args = arguments.length;
+
+            var arg1 = arguments[0],
+                arg2 = arguments[1],
+                arg3 = arguments[2];
+
+            if (args === 1){
+                if ($.isPlainObject(arg1)){
+                    $.extend(true, opts, arg1);
+                }
+                else if (typeof arg1 == 'string'){
+                    opts.title = arg1;
+                }
+            }
+            else if (args === 2){
+                if ($.isPlainObject(arg2)){
+                    $.extend(true, opts, arg2);
+                }
+                else if (typeof arg2 == 'string'){
+                    opts.id = arg2;
+                }
+                opts.title = arg2.title || arg1;
+            }
+            else if (args === 3){
+                $.extend(true, opts, arg3);
+                opts.title = arg3.title || arg1;
+                opts.id = arg3.id || arg2;
+            }
+
             xmodal.open(opts);
+
         };
         //
         xmodal.loading.close = function(_id){

@@ -37,6 +37,19 @@ function closeModal_pickDate(_this,$input){
 }
 
 
+$.fn.changeVal = function(){
+    var prev;
+    if ( arguments.length > 0 ){
+        prev = $.fn.val.apply(this, []);
+    }
+    var result = $.fn.val.apply(this, arguments);
+    if ( arguments.length > 0 && prev != $.fn.val.apply(this, []) ){
+        $(this).trigger('change');
+    }
+    return result;
+};
+
+
 // check for a class on a container and return that value
 XNAT.app.utils.getValueByClass = function( $container, values ){
     var val='';
@@ -507,31 +520,32 @@ XNAT.app.datePicker.createInputs = function(_$e,_kind,_layout,_format,_opts){
         var month = zeroPad(date[1]);
         var day = zeroPad(date[2]);
 
-        _$e.find('input:hidden.date.month').val(month).change();
-        _$e.find('input:hidden.date.day').val(day).change();
-        _$e.find('input:hidden.date.year').val(year).change();
+        var splitDate = new SplitDate(year + '-' + month + '-' + day, 'iso');
+
+        _$e.find('input:hidden.date.month').changeVal(month);
+        _$e.find('input:hidden.date.day').changeVal(day);
+        _$e.find('input:hidden.date.year').changeVal(year);
 
         if (kind === 'single'){
             var $single = _$e.find('.ez_cal.single.date');
-            if (format === 'iso'){
-                $single.val(year + '-' + month + '-' + day);
-            }
-            if (format === 'us'){
-                $single.val(month +'/'+ day +'/'+ year);
-            }
-            $single.change(); // trigger change event
+            $single.changeVal(splitDate[format]);
         }
 
         if (kind === 'multi'){
-            _$e.find('.ez_cal.month').val(month).change();
-            _$e.find('.ez_cal.day').val(day).change();
-            _$e.find('.ez_cal.year').val(year).change();
+            _$e.find('.ez_cal.month').changeVal(month);
+            _$e.find('.ez_cal.day').changeVal(day);
+            _$e.find('.ez_cal.year').changeVal(year);
         }
 
         _$e.find('#'+this_cal+'-container').hide();
 
-        // not used - additional function to fire on date select
-        //_config.action(_$e);
+        //if ( $.isFunction(_opts.action) ) {
+        //    _opts.action(_$e);
+        //}
+
+        //if ( $.isFunction(_opts.onChange) ) {
+        //    _opts.onChange(_$e);
+        //}
 
     };
 
@@ -606,24 +620,22 @@ $(function(){
     var $body = $body || $(document.body);
 
     $body.on('click','.insert-date',function(){
+        if ($(this).hasClass('disabled')) { return false }
         XNAT.app.datePicker.reveal($(this).closest('.ez_cal_wrapper'));
     });
 
     $body.on('click','.use-todays-date',function(e){
         e.preventDefault();
+        if ($(this).hasClass('disabled')) { return false }
         var $wrapper = $(this).closest('.ez_cal_wrapper');
         $wrapper.find('input.date.single').each(function(){
             var $date_input = $(this);
-            if ($date_input.hasClass('iso')){
-                $date_input.val(XNAT.data.todaysDate.ISO);
-            }
-            if ($date_input.hasClass('us')){
-                $date_input.val(XNAT.data.todaysDate.US);
-            }
+            var format = XNAT.app.utils.getValueByClass($date_input, ['iso','us','eu']);
+            $date_input.changeVal(XNAT.data.todaysDate[format]);
         });
-        $wrapper.find('input.year').val(XNAT.data.todaysDate.yyyy);
-        $wrapper.find('input.month').val(XNAT.data.todaysDate.mm);
-        $wrapper.find('input.day').val(XNAT.data.todaysDate.dd);
+        $wrapper.find('input.year').changeVal(XNAT.data.todaysDate.yyyy);
+        $wrapper.find('input.month').changeVal(XNAT.data.todaysDate.mm);
+        $wrapper.find('input.day').changeVal(XNAT.data.todaysDate.dd);
     });
 
     var do_date_check = true ;

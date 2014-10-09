@@ -123,7 +123,16 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         var noSessionDate = document.getElementById("no_session_date");
         noSessionDate.manager = this;
         noSessionDate.onclick = function() {
-            document.getElementById("session_date").disabled = this.checked;
+            var $datepicker = $('#upload-datepicker');
+            // disable date input and button
+            $datepicker.find('#session_date, button.ez_cal').prop('disabled',this.checked);
+            if (this.checked){
+                $datepicker.find('#session_date').val('');
+                $datepicker.find('a.today').addClass('disabled');
+            }
+            else {
+                $datepicker.find('a.today').removeClass('disabled');
+            }
             if(document.getElementById("session_time_h") != undefined) {
                 document.getElementById("session_time_h").disabled = this.checked;
             }
@@ -246,7 +255,15 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
             	document.getElementById("session_time_m").selectedIndex = 'MM';
             }
             this.manager.manageLaunchUploaderButton();
+        };
+        // if there's a "window.loadSubjectsCallback()" function, let's call that here
+        // you can define that on your page and it'll fire after the subjects are rendered
+        try {
+            if (window.loadSubjectsCallback){
+                window.loadSubjectsCallback.call();
+            }
         }
+        catch(e){}
     };
 
 
@@ -272,7 +289,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         		}
 
         		// If any of these are true, what project this is doesn't matter.
-        		if (this.projectBox.selectedIndex == 0 || this.subjectBox.selectedIndex == 0 || (!sessionDate && !noSessionDate)) {
+        		if (!$(this.projectBox).val() || !$(this.subjectBox).val() || (!sessionDate && !noSessionDate)) {
         			activate = false;
         		} else {
         			if(sessionDate && !noSessionDate){

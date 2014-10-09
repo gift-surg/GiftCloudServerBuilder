@@ -17,6 +17,8 @@ div.xmodal.v1 {
     background: #fff ; border: 1px solid #a0a0a0 ; box-shadow: 0 10px 30px rgba(0,0,0,0.5) ;
     font-family: Arial, Helvetica, sans-serif ; }
 
+div.xmodal.v1.open { display: block; }
+
 div.xmodal.v1:focus { outline: 1px solid #808080; }
 
 div.xmodal.v1.dialog { width: 600px ; height: 400px ; }
@@ -30,6 +32,8 @@ div.xmodal.v1.maxxed {
 
 div.xmodal.v1 .button:hover,
 div.xmodal.v1 .close:hover { cursor: pointer ; }
+
+div.xmodal.v1 .buttons :focus { box-shadow: 0 0 5px rgba(0, 100, 200, 0.8); }
 
 div.xmodal.v1 .title {
     height: 25px ; padding: 0 ; overflow: hidden ; line-height: inherit ;

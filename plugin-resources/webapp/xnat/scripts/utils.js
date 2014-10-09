@@ -89,6 +89,21 @@ if (!Array.isArray) {
     };
 }
 
+
+function cleanBadChars( val, what ){
+    
+    var newVal = val.replace( /\W/g, '_' );
+
+    // 'what' arg might be something like "session label"
+    // or XNAT.app.displayNames.singular.imageSession.toLowerCase()
+    if ( what && newVal != val ){
+        xmodal.message('Removing invalid characters in ' + what + '.',{footer:false});
+    }
+
+    return newVal;
+}
+
+
 // add commas to numbers
 function addCommas(nStr) {
     nStr += '';
@@ -174,6 +189,26 @@ jQuery.loadScript = function (url, arg1, arg2) {
             callback.call(this);
         }
     }
+};
+
+
+// set the value of a form element, then fire the
+// 'onchange' event ONLY if the value actually changed
+// (works on hidden inputs too)
+// usage:
+// $('#element').changeVal('foo');
+// sets '#element' to 'foo' then triggers
+// 'onchange' event if it's different than before
+$.fn.changeVal = function(){
+    var prev;
+    if ( arguments.length > 0 ){
+        prev = $.fn.val.apply(this, []);
+    }
+    var result = $.fn.val.apply(this, arguments);
+    if ( arguments.length > 0 && prev != $.fn.val.apply(this, []) ){
+        $(this).trigger('change');
+    }
+    return result;
 };
 
 
@@ -268,6 +303,12 @@ function jqObj(el){
         // then it's PROBABLY just an id string
         if (!$el.length){
             $el = $('#'+el);
+        }
+        // if there's STILL not a matching DOM element
+        // after trying to find an element with that ID,
+        // then set $el to null
+        if (!$el.length){
+            $el = null;
         }
     }
     return $el;

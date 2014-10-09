@@ -279,14 +279,15 @@ public class XnatExpiredPasswordFilter extends GenericFilterBean {
             } else if (type.equals("Interval")) {
                 passwordExpirationInterval = true;
                 passwordExpirationSetting = validatePasswordExpirationInterval(XDAT.getSiteConfigurationProperty("passwordExpirationInterval"));
-                passwordExpirationDisabled = !passwordExpirationSetting.equals("0");
+                passwordExpirationDisabled = passwordExpirationSetting.equals("0");
             } else if (type.equals("Date")) {
                 passwordExpirationInterval = false;
                 passwordExpirationSetting = validatePasswordExpirationDate(XDAT.getSiteConfigurationProperty("passwordExpirationDate"));
-                passwordExpirationDisabled = !passwordExpirationSetting.equals("0");
+                passwordExpirationDisabled = passwordExpirationSetting.equals("0");
             } else {
                 passwordExpirationDisabled = true;
             }
+            passwordExpirationDirtied = false;
             return passwordExpirationDisabled;
         } catch (ConfigServiceException e) {
             logger.error("Error accessing the configuration service", e);

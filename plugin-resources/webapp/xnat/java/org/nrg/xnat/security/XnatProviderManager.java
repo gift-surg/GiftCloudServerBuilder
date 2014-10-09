@@ -58,10 +58,6 @@ public class XnatProviderManager extends ProviderManager {
             if(AuthUtils.LOCKOUT_DURATION>0)AuthUtils.LOCKOUT_DURATION=-(AuthUtils.LOCKOUT_DURATION); //LOCKOUT must be negative for date comparison to work
         }
 
-        if(!StringUtils.isBlank(properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY))) {
-            PASSWORD_EXPIRATION=properties.getProperty(SECURITY_PASSWORD_EXPIRATION_PROPERTY);
-        }
-
         String commaDelineatedProviders = properties.getProperty("provider.providers.enabled");
         assert !StringUtils.isBlank(commaDelineatedProviders) : "You must specify at least one authentication provider configuration.";
         String[] providerArray=commaDelineatedProviders.split("[\\s,]+");
@@ -233,10 +229,6 @@ public class XnatProviderManager extends ProviderManager {
         _standaloneProviders = providers;
     }
 
-    public String getExpirationInterval(){
-        return PASSWORD_EXPIRATION;
-    }
-    
     public static XdatUserAuth getUserByAuth(Authentication authentication) {
         if(authentication==null){
             return null;
@@ -340,9 +332,6 @@ public class XnatProviderManager extends ProviderManager {
 
     private static final String SECURITY_MAX_FAILED_LOGINS_LOCKOUT_DURATION_PROPERTY = "security.max_failed_logins_lockout_duration";
     private static final String SECURITY_MAX_FAILED_LOGINS_PROPERTY = "security.max_failed_logins";
-    private static final String SECURITY_PASSWORD_EXPIRATION_PROPERTY = "security.password_expiration";
-
-    private static String PASSWORD_EXPIRATION = "-1";
 
     private static final Log _log = LogFactory.getLog(XnatProviderManager.class);
 

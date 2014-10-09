@@ -40,6 +40,7 @@ import org.nrg.xnat.restlet.representations.ItemXMLRepresentation;
 import org.nrg.xnat.restlet.resources.RestMockCallMapRestlet;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.FilterSecurityInterceptorBeanPostProcessor;
+import org.nrg.xnat.security.XnatExpiredPasswordFilter;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.SeriesImportFilter;
 import org.restlet.Context;
@@ -458,6 +459,18 @@ public class SettingsRestlet extends SecureResource {
                     throw new Exception("Error setting the emailVerification site info property", exception);
                 }
                 dirtied = true;
+            } else if (property.startsWith("passwordExpiration")) {
+                try {
+                    final String current = XDAT.getSiteConfigurationProperty(property);
+                    final String value = map.get(property);
+                    if (!StringUtils.equals(current, value)) {
+                        dirtied = true;
+                        XDAT.getContextService().getBean(XnatExpiredPasswordFilter.class).setPasswordExpirationDirtied(true);
+                        XDAT.setSiteConfigurationProperty(property, value);
+                    }
+                } catch (ConfigServiceException exception) {
+                    throw new Exception(String.format("Error getting the '%s' site info property", property), exception);
+                }
             } else if (property.startsWith("seriesImportFilter")) {
                 if (_seriesImportFilter == null) {
                     _seriesImportFilter = new SeriesImportFilter();

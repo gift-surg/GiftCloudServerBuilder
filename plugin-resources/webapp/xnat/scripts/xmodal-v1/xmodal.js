@@ -779,7 +779,7 @@ if (typeof jQuery == 'undefined') {
 
             modal.$modal.css({
                 'top': top_,
-                'bottom': (top_ !== 0) ? 'auto' : 0,
+                'bottom': (top_ !== 0) ? modal.bottom || 'auto' : 0,
                 'left': left_,
                 'right': (left_ !== 0) ? 'auto' : 0,
                 'width': modal.width,

@@ -72,6 +72,12 @@ parList.init();
 						 </tr>
 						</table>
 <script language="javascript">
+#if($data.getSession().getAttribute("user").getGroups().containsKey("$project.getId()_owner"))
+  XNAT.app.userIsOwner=true;
+#else
+  XNAT.app.userIsOwner=false;
+#end
+
 function summaryUserTabChange(obj){
    if(obj.newValue.get("href")=="#tab3"){
             if (window.userManager == undefined) {

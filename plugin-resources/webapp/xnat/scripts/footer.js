@@ -520,8 +520,15 @@ $(function(){
     });
 
 
-    $body.on('click','a.nolink',function(e){
+    $body.on('click', 'a.nolink', function(e){
         e.preventDefault();
+    });
+
+
+    $body.on('click', 'button.disabled, a.disabled', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return false;
     });
 
 

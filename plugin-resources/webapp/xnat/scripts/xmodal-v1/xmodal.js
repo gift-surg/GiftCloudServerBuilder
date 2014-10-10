@@ -224,7 +224,7 @@ if (typeof jQuery == 'undefined') {
                         ($top_modal.has(document.activeElement).length ||
                             $top_modal.is(document.activeElement))) {
                     //e.preventDefault();
-                    $top_modal.find('.buttons .default').trigger('click');
+                    $top_modal.find('.buttons .default').not('.disabled').trigger('click');
                     //xmodal.closeModal = false;
                 }
             }
@@ -239,6 +239,7 @@ if (typeof jQuery == 'undefined') {
                 $top.focus();
             }
         });
+
 
         $body.on('mousedown', 'div.xmodal.open:not(.top)', function(e){
             // click anywhere in an xmodal to move it to the front
@@ -291,6 +292,24 @@ if (typeof jQuery == 'undefined') {
                 });
             }
             return opts;
+        };
+        //////////////////////////////////////////////////
+
+
+
+
+
+        //////////////////////////////////////////////////
+        // get xmodal object from xmodal.modals
+        //////////////////////////////////////////////////
+        // usage:
+        // var modalObj = xmodal.getModalObject(id);
+        // modalObj.__modal.find('form').submit();
+        // __modal is jQuery DOM object for the modal
+        //////////////////////////////////////////////////
+        xmodal.getModalObject = function( id ){
+            if ( !id ) { return false } // need the id
+            return xmodal.modals[id];
         };
         //////////////////////////////////////////////////
 
@@ -438,7 +457,7 @@ if (typeof jQuery == 'undefined') {
                     // use false, null or '' to remove a default 'ok' or 'cancel' button
                     if (!$.isPlainObject(_value)) return;
                     var button = this;
-                    button.className = button.className || button.classNames || button.classes;
+                    button.classNames = button.classNames || button.className || button.classes;
                     var button_id = modal.id + '-' + _prop + '-button';
                     // 'button' and the name of this button's property
                     // are automatically added to the class attribute
@@ -449,7 +468,7 @@ if (typeof jQuery == 'undefined') {
                     else {
                         classNames.push('button');
                     }
-                    if ( button.className ) { classNames.push(button.className) }
+                    if ( button.classNames ) { classNames.push(button.classNames) }
                     if ( isTrue(button.close) ) { classNames.push('close') }
                     if ( isTrue(button.isDefault) || isTrue(button.default) ) { classNames.push('default') }
 
@@ -467,11 +486,12 @@ if (typeof jQuery == 'undefined') {
 
                     // bind onclick events to THESE buttons
                     $body.on(click_btn, '#' + button_id, function () {
+                        var thisModal = xmodal.getModalObject(modal.id);
                         if ($.isFunction(button_action)) {
-                            button_action(modal);
+                            button_action(thisModal);
                         }
-                        if ($(this).hasClass('close')) {
-                            xmodal.close(modal.id);
+                        if ($(this).is('.close:not(.disabled)')) {
+                            xmodal.close(thisModal.$modal);
                         }
                     });
                 });
@@ -493,14 +513,14 @@ if (typeof jQuery == 'undefined') {
             output.container._pre +=
                 // only generate the mask if not false (true is default)
                 ( !isFalse(modal.mask) ) ?
-                    '<div class="' + [xmodal.strings.mask, xmodal.strings.version, modal.className].join(' ') + '"' +
+                    '<div class="' + [xmodal.strings.mask, xmodal.strings.version, modal.classNames].join(' ') + '"' +
                         ' id="' + modal.id + '-mask" data-xmodal-id="' + modal.id + '"' +
                         ' data-xmodal-x="' + modal.count + '"></div>' :
                     '';
 
             // HTML for the modal container
             output.container._pre +=
-                '<div class="' + [xmodal.strings.base, xmodal.strings.version, modal.className].join(' ') + '"' +
+                '<div class="' + [xmodal.strings.base, xmodal.strings.version, modal.classNames].join(' ') + '"' +
                     ' id="' + modal.id + '" data-xmodal-x="' + modal.count + '">';
 
             output.container.post_ = '</div>';
@@ -588,17 +608,23 @@ if (typeof jQuery == 'undefined') {
             this.id = _opts.id =
                 (_opts.id) ? _opts.id : 'xmodal' + this.count;
 
-            // we can use 'className', 'classNames' or 'classes'
-            this.className = this.classNames = this.classes =
-                _opts.className || _opts.classNames || _opts.classes || '' ;
+            _opts.classNames = _opts.classNames || _opts.className || _opts.classes || '' ;
 
             // don't allow dismissal of dialog with 'esc' or 'enter' keys
             // if the corresponding property is false;
-            if ( !isFalse(_opts.enter) ) { this.className += ' enter' }
-            if ( !isFalse(_opts.esc) ) { this.className += ' esc' }
+            if ( !isFalse(_opts.enter) ) { _opts.classNames += ' enter' }
+            if ( !isFalse(_opts.esc) ) { _opts.classNames += ' esc' }
+
+            // we can use 'className', 'classNames' or 'classes'
+            this.classNames = this.className = this.classes = _opts.classNames ;
 
             this.width = 600;
+            this.minWidth = 'inherit';
+            this.maxWidth = 'inherit';
+
             this.height = 400;
+            this.minHeight = 'inherit';
+            this.maxHeight = 'inherit';
 
             // support for 'preset' sizes
             if (_opts.kind || _opts.size){
@@ -757,7 +783,11 @@ if (typeof jQuery == 'undefined') {
                 'left': left_,
                 'right': (left_ !== 0) ? 'auto' : 0,
                 'width': modal.width,
+                'min-width': modal.minWidth,
+                'max-width': modal.maxWidth,
                 'height': modal.height,
+                'min-height': modal.minHeight,
+                'max-height': modal.maxHeight,
                 'z-index': ++xmodal.topZ
             });
 
@@ -1007,9 +1037,8 @@ if (typeof jQuery == 'undefined') {
                 isDefault: true
             };
             //this.buttons.cancel = false; // prevents default "Cancel" button from rendering
-            this.closeModal = xmodal.closeModal = opts.closeModal || true ; // alert messages should be dismissed by pressing the enter key
+            //this.closeModal = xmodal.closeModal = opts.closeModal || true ; // alert messages should be dismissed by pressing the enter key
             $.extend(true, this, opts);
-            console.log(this);
         };
         //
         // xmodal.message() arguments:
@@ -1097,7 +1126,7 @@ if (typeof jQuery == 'undefined') {
             // or maybe not since we alias some properties (like okLabel)
             opts = $.extend(true, {}, msg, opts);
 
-            opts.className = [(opts.className || opts.classNames || opts.classes || ''), 'xmodal-message'].join(' ');
+            opts.classNames = [(opts.classNames || opts.className || opts.classes || ''), 'xmodal-message'].join(' ');
 
             var modal = xmodal.open(opts);
 
@@ -1171,7 +1200,7 @@ if (typeof jQuery == 'undefined') {
             opts.animation = false;
             opts.closeBtn = false;
             opts.footer = false;
-            opts.className = [(opts.className || opts.classNames || opts.classes || ''), 'loader loading'].join(' ');
+            opts.classNames = [(opts.classNames || opts.className || opts.classes || ''), 'loader loading'].join(' ');
 
             var args = arguments.length;
 

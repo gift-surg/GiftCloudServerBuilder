@@ -485,12 +485,17 @@ if (typeof jQuery == 'undefined') {
                     $body.off(click_btn, '#' + button_id);
 
                     // bind onclick events to THESE buttons
-                    $body.on(click_btn, '#' + button_id, function () {
+                    $body.on(click_btn, '#' + button_id, function (e) {
+                        // stop if it's disabled
+                        if ($(this).hasClass('disabled')){
+                            e.stopImmediatePropagation();
+                            return false;
+                        }
                         var thisModal = xmodal.getModalObject(modal.id);
                         if ($.isFunction(button_action)) {
                             button_action(thisModal);
                         }
-                        if ($(this).is('.close:not(.disabled)')) {
+                        if ($(this).hasClass('close')) {
                             xmodal.close(thisModal.$modal);
                         }
                     });

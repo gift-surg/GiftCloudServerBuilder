@@ -727,6 +727,24 @@ public class FileList extends XNATCatalogTemplate {
                                 entries.add(e);
                             }
                         }
+                        if (entries.size() == 0 && filepath.endsWith("/")) {
+                        	//recursion is on by default
+                        	final boolean recursive=!(this.isQueryVariableFalse("recursive"));
+                        	final String dir=filepath;
+                            final CatalogUtils.CatEntryFilterI folderFilter=new CatalogUtils.CatEntryFilterI() {
+            					@Override
+            					public boolean accept(CatEntryI entry) {
+            						if(entry.getUri().startsWith(dir)){ 
+            							if(recursive || StringUtils.contains(entry.getUri().substring(dir.length()+1),"/"))
+            							{
+                							return (entryFilter == null || entryFilter.accept(entry));
+            							}
+            						}
+        							return false;
+            					}
+            				};
+                            entries.addAll(CatalogUtils.getEntriesByFilter(cat, folderFilter));
+                        }
                         if (entries.size() == 0 && filepath.endsWith("*")) {
                             StringBuilder regex = new StringBuilder(filepath);
                             int lastIndex = filepath.lastIndexOf("*");

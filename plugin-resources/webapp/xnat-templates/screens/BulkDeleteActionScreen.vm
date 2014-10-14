@@ -62,14 +62,17 @@
             if (removeFiles.checked) {
                 xModalConfirm({
                     content: "Submission will cause the permanent deletion of all meta-data and phsyical files for the selected items.",
-                    okAction: doDelete,
+                    okAction: function() {
+                        doDelete(_a);
+                    },
                     cancelAction: confirmCancel
-
                 });
             } else {
                 xModalConfirm({
                     content: "If you don't delete the project's associated files from the file system, the files may later be accessible if someone creates a project with the same ID as the project you're deleting. Please confirm that you want to leave the files on the physical file system after deleting the project meta-data.",
-                    okAction: doDelete,
+                    okAction: function() {
+                        doDelete(_a);
+                    },
                     cancelAction: confirmCancel
                 });
             }
@@ -80,11 +83,11 @@
         xModalMessage('Operation cancelled', 'The selected items will not be deleted.');
     }
 
-    function doDelete() {
+    function doDelete(raw) {
         var _items = new Array();
-        for (var cnAC = 0; cnAC < _a.length; cnAC++) {
-            var tO = _a[cnAC].data;
-            tO.label = _a[cnAC].label;
+        for (var cnAC = 0; cnAC < raw.length; cnAC++) {
+            var tO = raw[cnAC].data;
+            tO.label = raw[cnAC].label;
             _items.push(tO);
         }
         window.deleter = new RestDeleter(_items, {defaultHeight: 450, defaultWidth: 600});

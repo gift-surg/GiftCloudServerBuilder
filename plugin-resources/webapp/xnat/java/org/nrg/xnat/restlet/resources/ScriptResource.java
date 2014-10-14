@@ -46,10 +46,12 @@ public class ScriptResource extends AutomationResource {
 
         if (!user.isSiteAdmin()) {
             _log.warn(getRequestContext("User " + user.getLogin() + " attempted to access forbidden script trigger template resources"));
+            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only site admins can view or update script resources.");
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Only site admins can view or update script resources.");
         }
 
         if (request.getMethod().equals(Method.DELETE) && StringUtils.isBlank(_scriptId)) {
+            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, "You must specify a specific script ID to delete a script.");
             throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, "You must specify a specific script ID to delete a script.");
         }
 

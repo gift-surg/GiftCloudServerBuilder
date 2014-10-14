@@ -53,24 +53,43 @@
 	window.pdTree=new YAHOO.widget.TaskTreeView(pTree);
 	window.pdTree.draw();
 
-	function deleteEntries(){
-		var _a=window.pdTree.getCheckedNodes();	
-		if(_a.length==0){
+    function deleteEntries() {
+        var _a = window.pdTree.getCheckedNodes();
+        if (_a.length == 0) {
             xModalMessage('Delete Action', 'Please select at least one item to delete.');
-		}else{
-			var _items=new Array();
-			for(var cnAC=0;cnAC<_a.length;cnAC++){
-				## We don't need to delete anything for the select all node, so skip it.
-				if(_a[cnAC].label === "Select All"){ continue; }
-				var tO=_a[cnAC].data;
-				tO.label=_a[cnAC].label;
-				_items.push(tO);
-			}
-			this.cancel = function(){ window.deleter.popup.hide(); }
-			window.deleter=new RestDeleter(_items,{defaultHeight:450,defaultWidth:600,cancelAction:this.cancel});
-			window.deleter.init();
-		}
-	}
+        } else {
+            var removeFiles = document.getElementById("removeFiles");
+            if (removeFiles.checked) {
+                xModalConfirm({
+                    content: "Submission will cause the permanent deletion of all meta-data and phsyical files for the selected items.",
+                    okAction: doDelete,
+                    cancelAction: confirmCancel
+
+                });
+            } else {
+                xModalConfirm({
+                    content: "If you don't delete the project's associated files from the file system, the files may later be accessible if someone creates a project with the same ID as the project you're deleting. Please confirm that you want to leave the files on the physical file system after deleting the project meta-data.",
+                    okAction: doDelete,
+                    cancelAction: confirmCancel
+                });
+            }
+        }
+    }
+
+    function confirmCancel() {
+        xModalMessage('Operation cancelled', 'The selected items will not be deleted.');
+    }
+
+    function doDelete() {
+        var _items = new Array();
+        for (var cnAC = 0; cnAC < _a.length; cnAC++) {
+            var tO = _a[cnAC].data;
+            tO.label = _a[cnAC].label;
+            _items.push(tO);
+        }
+        window.deleter = new RestDeleter(_items, {defaultHeight: 450, defaultWidth: 600});
+        window.deleter.init();
+    }
 </script>
 
 <table align="center">
@@ -95,19 +114,12 @@
 
 
 <script>
- function validateForm(){
-   var removeFiles = document.getElementById("removeFiles");
-   if (removeFiles.checked){
-      return confirm("Submission will cause the permanent deletion of all meta-data and phsyical files for the selected items.");
-   }
- }
+    var breadcrumbs = document.getElementById('breadcrumbs');
+    if (breadcrumbs != null) {
+        var bread = "<a href='$link.setPage('Index.vm')'>Home</a>";
+        bread = bread + "&nbsp;>&nbsp;Delete";
 
-  var breadcrumbs=document.getElementById('breadcrumbs');
-  if (breadcrumbs!=null){
-    var bread = "<a href='$link.setPage('Index.vm')'>Home</a>";
-    bread = bread + "&nbsp;>&nbsp;Delete";
-    
-    breadcrumbs.innerHTML=bread;
-  }
+        breadcrumbs.innerHTML = bread;
+    }
 </script>
 #end

@@ -38,28 +38,50 @@
   .ygtvcheck2 { background: url($content.getURI("scripts/yui/build/treeview/assets/img/check/check2.gif")) 0 0 no-repeat; width:16px; cursor:pointer }
 </style>
 <script type="text/javascript">
-    var pTree=document.getElementById("projectDeleteTree");
-    window.pdTree=new YAHOO.widget.TaskTreeView(pTree);
+    var pTree = document.getElementById("projectDeleteTree");
+    window.pdTree = new YAHOO.widget.TaskTreeView(pTree);
     window.pdTree.draw();
-    
-    function deleteEntries(){
-      var _a=window.pdTree.getCheckedNodes();	
-      if(_a.length==0){
-          xModalMessage('Delete Action','Please select at least one item to delete.');
-      }else{
-        var _items=new Array();
-        for(var cnAC=0;cnAC<_a.length;cnAC++){
-          var tO=_a[cnAC].data;
-          tO.label=_a[cnAC].label;
-          _items.push(tO);
+
+    function deleteEntries() {
+        var _a = window.pdTree.getCheckedNodes();
+        if (_a.length == 0) {
+            xModalMessage('Delete Action', 'Please select at least one item to delete.');
+        } else {
+            var removeFiles = document.getElementById("removeFiles");
+            if (removeFiles.checked) {
+                xModalConfirm({
+                    content: "Submission will cause the permanent deletion of all meta-data and phsyical files for the selected items.",
+                    okAction: doDelete,
+                    cancelAction: confirmCancel
+
+                });
+            } else {
+                xModalConfirm({
+                    content: "If you don't delete the project's associated files from the file system, the files may later be accessible if someone creates a project with the same ID as the project you're deleting. Please confirm that you want to leave the files on the physical file system after deleting the project meta-data.",
+                    okAction: doDelete,
+                    cancelAction: confirmCancel
+                });
+            }
         }
-        window.deleter=new RestDeleter(_items,{defaultHeight:450,defaultWidth:600});
+    }
+
+    function confirmCancel() {
+        xModalMessage('Operation cancelled', 'The selected items will not be deleted.');
+    }
+
+    function doDelete() {
+        var _items = new Array();
+        for (var cnAC = 0; cnAC < _a.length; cnAC++) {
+            var tO = _a[cnAC].data;
+            tO.label = _a[cnAC].label;
+            _items.push(tO);
+        }
+        window.deleter = new RestDeleter(_items, {defaultHeight: 450, defaultWidth: 600});
         window.deleter.init();
-      }
     }
 </script>
 
-<table align="center">
+    <table align="center">
  <tr>
   <td><input type="checkbox" value="true" name="removeFiles" id="removeFiles" checked defaultchecked/> <label for="removeFiles">Remove Files from File System</label></td>
  </tr>
@@ -82,20 +104,13 @@
 
 
 <script>
- function validateForm(){
-   var removeFiles = document.getElementById("removeFiles");
-   if (removeFiles.checked){
-      return confirm("Submission will cause the permanent deletion of all meta-data and phsyical files for the selected items.");
-   }
- }
+    var breadcrumbs = document.getElementById('breadcrumbs');
+    if (breadcrumbs != null) {
+        var bread = "<a href='$link.setPage('Index.vm')'>Home</a>";
+        bread = bread + "&nbsp;>&nbsp;<a href='$link.setPage('BrowseProjects.vm')'>Studies</a>";
+        bread = bread + "&nbsp;>&nbsp;<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$om.getId()")'>$om.getDisplayName()</a>";
+        bread = bread + "&nbsp;>&nbsp;Delete";
 
-  var breadcrumbs=document.getElementById('breadcrumbs');
-  if (breadcrumbs!=null){
-    var bread = "<a href='$link.setPage('Index.vm')'>Home</a>";
-    bread = bread + "&nbsp;>&nbsp;<a href='$link.setPage('BrowseProjects.vm')'>Studies</a>";
-    bread = bread + "&nbsp;>&nbsp;<a href='$link.setAction("DisplayItemAction").addPathInfo("search_element","xnat:projectData").addPathInfo("search_field","xnat:projectData.ID").addPathInfo("search_value","$om.getId()")'>$om.getDisplayName()</a>";
-    bread = bread + "&nbsp;>&nbsp;Delete";
-    
-    breadcrumbs.innerHTML=bread;
-  }
+        breadcrumbs.innerHTML = bread;
+    }
 </script>

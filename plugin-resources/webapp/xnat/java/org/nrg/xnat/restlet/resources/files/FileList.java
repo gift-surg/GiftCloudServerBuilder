@@ -377,7 +377,6 @@ public class FileList extends XNATCatalogTemplate {
                     }
 
                     if (resource instanceof XnatResourcecatalog) {
-
                         Collection<CatEntryI> entries = new ArrayList<CatEntryI>();
 
                         final XnatResourcecatalog catResource = (XnatResourcecatalog) resource;
@@ -395,6 +394,17 @@ public class FileList extends XNATCatalogTemplate {
                             if (e != null) {
                                 entries.add(e);
                             }
+                        }
+
+                        if (entries.size() == 0 && filepath.endsWith("/")) {
+                            final CatalogUtils.CatEntryFilterI folderFilter=new CatalogUtils.CatEntryFilterI() {
+            					@Override
+            					public boolean accept(CatEntryI entry) {
+            						return entry.getUri().startsWith(filepath);
+            					}
+            				};
+            				
+                            entries.addAll(CatalogUtils.getEntriesByFilter(cat, folderFilter));
                         }
 
                         if (entries.size() == 0 && filepath.endsWith("*")) {
@@ -938,10 +948,36 @@ public class FileList extends XNATCatalogTemplate {
                     }
                 }
 
+                if (entry == null && filepath.endsWith("/")) {
+                	//if no exact matches, look for a folder
+                	String baseURI = getBaseURI();
 
-                if (entry == null) {
+                	//recursion is on by default
+                	final boolean recursive=!(this.isQueryVariableFalse("recursive"));
+                	final String dir=filepath;
+                    final CatalogUtils.CatEntryFilterI folderFilter=new CatalogUtils.CatEntryFilterI() {
+    					@Override
+    					public boolean accept(CatEntryI entry) {
+    						if(entry.getUri().startsWith(dir)){ 
+    							if(recursive || StringUtils.contains(entry.getUri().substring(dir.length()+1),"/"))
+    							{
+        							return (entryFilter == null || entryFilter.accept(entry));
+    							}
+    						}
+							return false;
+    					}
+    				};
+    				
+    				
+    				//If there are no matching entries, I'm not sure if this should throw a 404, or return an empty list. 
+    				if(filepath.endsWith("/")){
+    					table.rows().addAll(CatalogUtils.getEntryDetails(cat, parentPath, baseURI + "/resources/" + catResource.getXnatAbstractresourceId() + "/files", catResource, false, folderFilter, proj, locator));
+    				}else{
+                        getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find catalog entry for given uri.");
+                        return new StringRepresentation("");
+    				}
+                }else if (entry == null) {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unable to find catalog entry for given uri.");
-
                     return new StringRepresentation("");
                 } else {
                     if (FileUtils.IsAbsolutePath(entry.getUri())) {

@@ -1754,6 +1754,7 @@ SchemaElement root=SchemaElement.GetElement(elementName);
 		            } catch (Throwable e) {
 		                logger.error("",e);
 		            }
+                    user.getGroups().remove(g.getId());
 		        }
 		        
 		        UserGroup ug=UserGroupManager.GetGroup(g.getId());

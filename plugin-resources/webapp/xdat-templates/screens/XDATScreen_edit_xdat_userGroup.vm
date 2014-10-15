@@ -39,6 +39,9 @@ $page.setVlinkColor($ui.vlink)
                 #if($ug.getId() && $item.getStringProperty("xdat:userGroup/displayName"))
                 ##display name is used in the generation of the ID, so it can't be changed once created
                     $!item.getStringProperty("xdat:userGroup/displayName") <input id="xdat:userGroup/displayName" type="hidden" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
+                    <script>
+                        XNAT.app.usedNames=[];
+                    </script>
                 #else
                     <input id="xdat:userGroup/displayName" class="required max256" data-regex="^[A-Za-z0-9 _]+$" type="text" name="xdat:userGroup/displayName" value="$!item.getStringProperty("xdat:userGroup/displayName")"/>
                     <script>

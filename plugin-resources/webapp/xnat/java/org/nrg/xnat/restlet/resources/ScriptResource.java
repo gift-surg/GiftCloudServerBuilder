@@ -88,7 +88,13 @@ public class ScriptResource extends AutomationResource {
             try {
                 // They're requesting a specific script, so return that to them.
                 final Script script = getScript();
-                return new StringRepresentation(MAPPER.writeValueAsString(script), mediaType);
+                // have to check if it's null, or else it will return a StringRepresentation containing the word null instead of a 404
+                if (script != null) {
+                    return new StringRepresentation(MAPPER.writeValueAsString(script), mediaType);
+                }
+                else {
+                    return null;
+                }
             } catch (JsonProcessingException e) {
                 throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "An error occurred marshalling the script data to JSON", e);
             } catch (IOException e) {

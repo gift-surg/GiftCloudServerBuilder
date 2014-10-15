@@ -135,7 +135,7 @@ $page.setVlinkColor($ui.vlink)
 	<tr class='body highlight'>
 		<td>Project</td>
 		<td title="Read" class="checkbox"><label><INPUT type="checkbox" class='' value="1" CHECKED DISABLED /></label><INPUT class='' type="hidden" name="xnat:projectData_xnat:projectData/ID_$!{pValue}_R" value="1"  /></td>
-		<td title="Create/Edit" class="checkbox"><label><INPUT type="checkbox" class='edit project' name="xnat:projectData_xnat:projectData/ID_$!{pValue}_E" value="1" #if($pi.getEdit())CHECKED #end /></label></td>
+		<td>&nbsp;</td>
         <td>&nbsp;</td>
 	</tr>
 	

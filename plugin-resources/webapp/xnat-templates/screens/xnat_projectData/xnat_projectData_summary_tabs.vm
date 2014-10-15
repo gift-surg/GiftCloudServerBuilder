@@ -11,7 +11,7 @@ width:1px;
       <li class="selected"><a href="#tab1"><em>Details<span class="spacer"></span></em></a></li>
 #set($canReadSubjects=$data.getSession().getAttribute("user").canRead("xnat:subjectData/project","$project.getId()"))
 #if($canReadSubjects)
-		  #if($data.getSession().getAttribute("user").canCreate($project))
+		  #if($data.getSession().getAttribute("user").canDelete($project))
 					<li><a href="#tab3"><em>Access<span class="spacer"></span></em></a></li>
 					<li><a href="#othermgmt"><em>Manage<span class="spacer"></span></em></a></li>
 					<li><a href="#tab4"><em>Pipelines<span class="spacer"></span></em></a></li>

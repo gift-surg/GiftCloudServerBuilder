@@ -56,9 +56,7 @@ public class ProjectUserListResource extends SecureResource {
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, message);
             } else {
                 int projectId = (Integer) projectData;
-                boolean canCreate = false;
-                try { canCreate = user.canCreate(proj); } catch (Exception e) {}
-                if (!(canCreate || user.isSiteAdmin() || user.isOwner(proj.getId()) || isWhitelisted(projectId))) {
+                if (!(user.isSiteAdmin() || user.isOwner(proj.getId()) || isWhitelisted(projectId))) {
                     logger.error("Unauthorized Access to project-level user resources. User: " + userName);
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Access Denied: Only project owners and site managers can access user resources.");
                 }

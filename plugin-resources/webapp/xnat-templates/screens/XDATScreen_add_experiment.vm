@@ -28,9 +28,20 @@ $page.addAttribute("onLoad", "document.form1.destination.focus();")
             </p>
             <p id="selected_subject" class="selected">
                 <b class="label">$subjectDisplayName: </b>
-                <span class="selected_label" title="$part_id"><b>$part_id</b></span>
+                <span class="selected_label" title="$part_id"><b></b></span>
                 <input type="hidden" id="part_id" name="part_id" value="$part_id">
             </p>
+
+            <script type="text/javascript">
+                // REALLY stupid hack to get the subject LABEL
+                // HOW DO YOU GET THIS THROUGH VELOCITY?
+                (function(){
+                    var subject_id = '$part_id';
+                    jq.getJSON(serverRoot + '/data/archive/subjects/' + subject_id + '?format=json', function(obj){
+                        jq('#selected_subject').find('.selected_label b').text(obj.items[0]['data_fields']['label']);
+                    })
+                })();
+            </script>
 
         ## if we ONLY know the project
         #elseif($project)

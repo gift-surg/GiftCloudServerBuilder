@@ -315,12 +315,21 @@ function jqObj(el){
 }
 
 
-// returns single-digit number as a string with leading zero
-// up to 1000
-function zeroPad (x) {
-    var y = parseInt(x,10) ; // make sure it's a number
-    return (y < 10) ? '0'+y : ''+y ; // make it a string again
+// returns number as a string with leading zeros (or other character)
+// thanks to - http://stackoverflow.com/a/10073788
+// revised here - http://jsfiddle.net/0owo4zkw/1/
+function zeroPad( num, size, fill ) {
+    // only whole numbers
+    if (parseInt(num, 10) !== +num) { return '' }
+    num  = num + '';    // make sure 'num' is a string
+    size = size || 2;   // defaults to 2-digit number
+    fill = fill || '0'; // default fill character is '0'
+    return (num.length >= size) ? num : new Array(size - num.length + 1).join(fill) + num;
 }
+//function zeroPad (x) {
+//    var y = parseInt(x,10) ; // make sure it's a number
+//    return (y < 10) ? '0'+y : ''+y ; // make it a string again
+//}
 
 
 // feed an array of values to make sure ALL of them are numbers
@@ -356,25 +365,26 @@ function hasNumber(_array){
 
 // feed this function a date (and optionally a format) and
 // it'll spit out month number and name (full or abbreviated), day, and year
-function SplitDate(_date, _format) {
+function SplitDate(_date, _format, _mos) {
 
     var mm_pos, dd_pos, yyyy_pos, example;
 
     this.val = _date = (typeof _date != 'undefined' && ('' + _date).length) ? _date : '0000-00-00'; // save it to a variable before removing the spaces
 
-    _date = _date.replace(/\s+/g, ''); // removing spaces?
-    _date = _date.replace(/_/g, ''); // removing underscores?
+    // removing spaces and underscores - probably a better regex for this
+    _date = _date.replace(/\s+/g,'').replace(/_/g,'');
 
-    _format = _format || '';
-    _format = _format.toLowerCase();
+    _format = (_format) ? _format.toLowerCase() : '' ;
 
-    var months = {
+    // pass in an object containing long and short month names to override
+    // default (English) names (don't forget '13' for 'invalid' values)
+    var months = _mos || {
         '01': ['January', 'Jan'], '02': ['February', 'Feb'], '03': ['March', 'Mar'], '04': ['April', 'Apr'], '05': ['May', 'May'], '06': ['June', 'Jun'], '07': ['July', 'Jul'],
         '08': ['August', 'Aug'], '09': ['September', 'Sep'], '10': ['October', 'Oct'], '11': ['November', 'Nov'], '12': ['December', 'Dec'], '13': ['invalid', 'invalid']
     };
 
     // accepts either dashes, slashes or periods as a delimeter
-    // but there must be SOME delimeter
+    // but there MUST be one of these as a delimeter
     if (_date.indexOf('-') !== -1) {
         this.arr = _date.split('-');
     }

@@ -50,7 +50,7 @@
             var removeFiles = document.getElementById("removeFiles");
             if (removeFiles.checked) {
                 xModalConfirm({
-                    content: "Submission will cause the permanent deletion of all meta-data and phsyical files for the selected items.",
+                    content: "Submission will cause the permanent deletion of all meta-data and physical files for the selected items.",
                     okAction: function() {
                         doDelete(_a);
                     },

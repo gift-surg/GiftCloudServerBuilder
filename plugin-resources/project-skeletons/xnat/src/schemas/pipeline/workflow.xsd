@@ -141,7 +141,12 @@
 					</xs:element>
 					<xs:element name="notify" type="xs:string" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
-							<xs:documentation>Email id to which notification is to be sent</xs:documentation>
+							<xs:documentation>Email ID to which notification is to be sent</xs:documentation>
+							<xs:appinfo>
+								<xdat:field uniqueComposite="NOTIFY">
+									<xdat:relation uniqueComposite="NOTIFY"/>
+								</xdat:field>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="dataType" type="xs:string">

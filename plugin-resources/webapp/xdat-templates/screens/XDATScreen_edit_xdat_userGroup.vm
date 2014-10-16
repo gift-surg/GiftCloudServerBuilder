@@ -155,7 +155,7 @@ $page.setVlinkColor($ui.vlink)
 	<tr class='header'>
 		<th>Imaging Sessions</th>
 		<th><label><INPUT type="checkbox" class='read imageSession' data-related="imageSession" /><b>Read</b></label></th>
-		<th><label><INPUT type="checkbox" class='edit' data-related="imageSession" /><b>Edit</b></label></th>
+		<th><label><INPUT type="checkbox" class='edit' data-related="imageSession" /><b>Create/Edit</b></label></th>
 		<th><label><INPUT type="checkbox" class='delete' data-related="imageSession" /><b>Delete</b></label></th>
 	</tr>
 	#foreach ($elementManager in $allElements)

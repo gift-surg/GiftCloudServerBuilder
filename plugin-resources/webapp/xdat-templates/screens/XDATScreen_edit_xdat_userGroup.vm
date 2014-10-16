@@ -182,7 +182,7 @@ $page.setVlinkColor($ui.vlink)
 	<tr class='header'>
 		<th>Image Assessments</th>
 		<th><label><INPUT type="checkbox" class='read imageAssessor' data-related="imageAssessor" /> <b>Read</b> </label></th>
-		<th><label><INPUT type="checkbox" class='edit' data-related="imageAssessor" /> <b>Edit</b> </label></th>
+		<th><label><INPUT type="checkbox" class='edit' data-related="imageAssessor" /> <b>Create/Edit</b> </label></th>
 		<th><label><INPUT type="checkbox" class='delete' data-related="imageAssessor" /> <b>Delete</b> </label></th>
 	</tr>
 	#foreach ($elementManager in $allElements)
@@ -209,7 +209,7 @@ $page.setVlinkColor($ui.vlink)
 	<tr class='header'>
 		<th>Other Assessments</th>
 		<th><label><INPUT type="checkbox" class='read other' data-related="other" /> <b>Read</b> </label></th>
-		<th><label><INPUT type="checkbox" class='edit' data-related="other" /> <b>Edit</b> </label></th>
+		<th><label><INPUT type="checkbox" class='edit' data-related="other" /> <b>Create/Edit</b> </label></th>
 		<th><label><INPUT type="checkbox" class='delete' data-related="other" /> <b>Delete</b> </label></th>
 	</tr>
     #foreach ($elementManager in $allElements)

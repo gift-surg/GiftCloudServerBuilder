@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 public class XnatPipelineLauncher {
     private static final Logger logger = LoggerFactory.getLogger(XnatPipelineLauncher.class);
+    private static final Logger launchLogger = LoggerFactory.getLogger("org.nrg.pipeline.launch");
 
     public static final String SCHEDULE = "schedule";
     public static final boolean DEFAULT_RUN_PIPELINE_IN_PROCESS = false;
@@ -216,6 +217,9 @@ public class XnatPipelineLauncher {
             if (recordWorkflowEntries && workflowPrimaryKey !=null) {
             	parameters.add("-workFlowPrimaryKey "+workflowPrimaryKey);
             }
+            if (launchLogger.isInfoEnabled()) {
+                launchLogger.info("Launching pipeline in-process with parameters: " + depasswordifize(convertArgumentListToCommandLine(parameters)));
+            }
             XNATPipelineLauncher launcher = new XNATPipelineLauncher(parameters);
             success = launcher.run();
         } catch (Exception exception) {
@@ -262,9 +266,10 @@ public class XnatPipelineLauncher {
             	command += " -workFlowPrimaryKey "+workflowPrimaryKey+" ";
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Launching pipeline with command: " + depasswordifize(command));
+            if (launchLogger.isInfoEnabled()) {
+                launchLogger.info("Launching pipeline with command: " + depasswordifize(command));
             }
+
             ProcessLauncher processLauncher = new ProcessLauncher();
             processLauncher.setCommand(command);
             processLauncher.start();

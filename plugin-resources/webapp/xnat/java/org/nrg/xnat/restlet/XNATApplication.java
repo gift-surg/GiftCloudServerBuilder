@@ -101,6 +101,11 @@ public class XNATApplication extends Application {
         attachURI(router, ("/archive" + uri).intern(), clazz);
     }
 
+    private void attachArchiveURI(final Router router, final String uri, final Class<? extends Resource> clazz, Integer matchingMode) {
+        attachURI(router, uri.intern(), clazz, matchingMode);
+        attachURI(router, ("/archive" + uri).intern(), clazz, matchingMode);
+    }
+
     private void attachURIs(final Router router, final Class<? extends Resource> clazz, final String... uris) {
         for (final String uri : uris) {
             attachURI(router, uri, clazz);
@@ -175,7 +180,7 @@ public class XNATApplication extends Application {
         attachArchiveURI(router, "/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/reconstructions/{RECON_ID}", ReconResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/accessibility", ProjectAccessibilityResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/accessibility/{ACCESS_LEVEL}", ProjectAccessibilityResource.class);
-        attachArchiveURI(router, "/projects/{PROJECT_ID}", ProjectResource.class);
+        attachArchiveURI(router, "/projects/{PROJECT_ID}", ProjectResource.class, Template.MODE_EQUALS);
         attachArchiveURI(router, "/projects", ProjectListResource.class);
         attachArchiveURI(router, "/projects/{PROJECT_ID}/scan_types", ScanTypeListing.class);
         attachArchiveURI(router, "/scan_types", ScanTypeListing.class);

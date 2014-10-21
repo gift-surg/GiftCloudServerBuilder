@@ -53,7 +53,7 @@ public class InactiveAccount extends VelocitySecureScreen {
                     !TurbineUtils.HasPassedParameter("a", data) && !TurbineUtils.HasPassedParameter("s", data)) {
                 context.put("login", TurbineUtils.getUser(data).getUsername());
                 context.put("topMessage", "Your account has been disabled due to inactivity.<br>" +
-                        "Enter your email address to resend the verification email.");
+                        "Enter your email address to send a reactivation email.");
             } else {
                 XDATUser user = (XDATUser) data.getSession().getAttribute("user");
 

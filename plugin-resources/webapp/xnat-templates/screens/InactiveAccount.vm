@@ -103,7 +103,11 @@ $page.setBgColor($ui.bgcolor)
                     else {
                         xmodal.closeAll();
                     }
-                    window.location = serverRoot + '/app/template/Login.vm';
+                    jQuery.ajax({
+                        type: 'GET',
+                        async: false,
+                        url: '$link.setAction("LogoutUser")'
+                    }).done(window.location = serverRoot + '/app/template/Login.vm');
                 };
                 xmodal.message(msg)
             });
@@ -128,6 +132,10 @@ $page.setBgColor($ui.bgcolor)
                     msg.content = 'An unexpected error has occurred. Please contact your administrator.';
                     xmodal.message(msg);
                 }
+                jQuery.ajax({
+                    type: 'GET',
+                    url: '$link.setAction("LogoutUser")'
+                }).done();
             });
         }
 

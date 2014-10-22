@@ -10,32 +10,22 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Date;
-
+import com.google.common.collect.Lists;
 import org.nrg.action.ActionException;
 import org.nrg.xdat.om.ArcProject;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
-import org.nrg.xdat.security.SecurityManager;
-import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFT;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.PoolDBUtils;
-import org.nrg.xft.db.ViewManager;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.exception.InvalidPermissionException;
-import org.nrg.xft.search.CriteriaCollection;
-import org.nrg.xft.search.QueryOrganizer;
 import org.nrg.xft.utils.StringUtils;
 import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
-import org.nrg.xnat.restlet.resources.SecureResource.FilteredResourceHandlerI;
 import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
@@ -44,12 +34,14 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import java.util.Date;
+import java.util.List;
 
 public class ProjectResource extends ItemResource {
     private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
@@ -57,8 +49,12 @@ public class ProjectResource extends ItemResource {
     public XnatProjectdata proj = null;
     String pID = null;
 
-    public ProjectResource(Context context, Request request, Response response) {
+    public ProjectResource(Context context, Request request, Response response) throws ResourceException {
         super(context, request, response);
+
+        if (!validateCleanUrl(request, response)) {
+            throw new ResourceException(response.getStatus());
+        }
 
         pID = (String) getParameter(request, "PROJECT_ID");
         if (pID != null) {
@@ -273,8 +269,7 @@ public class ProjectResource extends ItemResource {
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User account doesn't have permission to edit this project.");
                 }
             } catch (ActionException e) {
-    			this.getResponse().setStatus(e.getStatus(),e.getMessage());
-    			return;
+    			getResponse().setStatus(e.getStatus(),e.getMessage());
     		} catch (InvalidPermissionException e) {
                 getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -311,7 +306,7 @@ public class ProjectResource extends ItemResource {
     			}
     		} catch (Exception e) {
     			logger.error("",e);
-    			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+    			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     			return null;
     		}
         } else {

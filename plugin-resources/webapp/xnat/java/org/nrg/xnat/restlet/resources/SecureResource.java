@@ -100,12 +100,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.FileRepresentation;
-import org.restlet.resource.OutputRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
+import org.restlet.resource.*;
 import org.restlet.util.Series;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -1465,7 +1460,31 @@ public abstract class SecureResource extends Resource {
         
         return handlers.get(_package);
     }
-    
+
+    /**
+     * Checks whether the resource URL is "clean", that is, has no remaining part (any string past the part of the URL
+     * that matched the restlet URL) that is not a query string or URL fragment. For example, for the project resource
+     * restlet, you can go to /data/projects/projectId/foo/bar. The "/projects/projectId" part of the URL will match the
+     * mapped URL for that restlet and the remaining part is then "/foo/bar". If there is any remaining part, it's then
+     * checked to see if that part is actually the beginning of query-string parameters by checking whether it starts
+     * with the '?' character or if it's part of a URI fragment by checking whether it starts with the '#' character. If
+     * the remaining part contains neither query-string parameters or a URI fragment, this method then sets the request
+     * status code to 400 (bad request) and throws an exception.
+     *
+     * @param request  The restlet request.
+     * @param response The restlet response.
+     *
+     * @return Returns <b>true</b> if the URL is clean, <b>false</b> otherwise.
+     */
+    protected boolean validateCleanUrl(final Request request, final Response response) {
+        final String remaining = request.getResourceRef().getRemainingPart();
+        if (StringUtils.isNotBlank(remaining) && !(remaining.startsWith("?") || remaining.startsWith("#"))) {
+            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No extra path information is permitted for this operation.");
+            return false;
+        }
+        return true;
+    }
+
     public static interface FilteredResourceHandlerI{
     	public boolean canHandle(SecureResource resource);
     	public Representation handle(SecureResource resource, Variant variant) throws Exception;

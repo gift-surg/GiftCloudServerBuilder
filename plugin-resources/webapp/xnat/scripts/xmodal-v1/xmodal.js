@@ -232,11 +232,20 @@ if (typeof jQuery == 'undefined') {
 
 
         $body.on('focus', 'a, button, :input, [tabindex]', function(e){
+            if (!xmodal.modals._ids.length) { return }
             var $top = $(xmodal.dialog.top);
-            if (!$top) { return }
+            // if (!$top) { return }
             if (!$(this).closest($top).length){
-                e.stopPropagation();
-                $top.focus();
+                if (!e) { e = window.event }
+                if (e.stopPropagation){
+                    e.stopPropagation();
+                }
+                else {
+                    e.cancelBubble = true;
+                }
+                setTimeout(function(){
+                    $top.focus();
+                }, 10);
             }
         });
 
@@ -462,19 +471,23 @@ if (typeof jQuery == 'undefined') {
                     // 'button' and the name of this button's property
                     // are automatically added to the class attribute
                     var classNames = [_prop];
-                    if (button.link) {
-                        classNames.push('link');
-                    }
-                    else {
-                        classNames.push('button');
-                    }
+
                     if ( button.classNames ) { classNames.push(button.classNames) }
                     if ( isTrue(button.close) ) { classNames.push('close') }
                     if ( isTrue(button.isDefault) || isTrue(button.default) ) { classNames.push('default') }
 
-                    html += '' +
-                        '<a tabindex="0" href="javascript:" id="' + button_id + '"' +
-                        ' class="' + classNames.join(' ') + '">' + button.label + '</a> ';
+                    if (button.link) {
+                        classNames.push('link');
+                        html += '' +
+                            '<a tabindex="0" id="' + button_id + '" href="javascript:"' +
+                            ' class="' + classNames.join(' ') + '">' + button.label + '</a> ';
+                    }
+                    else {
+                        classNames.push('button');
+                        html += '' +
+                            '<button tabindex="0" id="' + button_id + '"' +
+                            ' class="' + classNames.join(' ') + '">' + button.label + '</button> ';
+                    }
 
                     var button_ = modal.buttons[_prop];
                     var button_action = button_.action;

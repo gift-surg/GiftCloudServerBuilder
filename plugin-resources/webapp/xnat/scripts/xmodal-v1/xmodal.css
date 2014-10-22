@@ -76,8 +76,9 @@ div.xmodal.v1 .footer .content { display: table-cell ; padding-left: 15px ; vert
 div.xmodal.v1 .footer .buttons { display: table-cell ; padding-right: 15px ; vertical-align: middle ; text-align: right ; }
 div.xmodal.v1 .footer .buttons .link { display: inline-block; padding: 10px; text-decoration: underline; }
 div.xmodal.v1 .footer .button {
-    display: inline-block ; height: 24px ; margin-left: 10px ; padding: 1px 15px !important ; float: right ;
-    line-height: 24px ; vertical-align: middle ; font-size: 13px ; font-weight: normal ; text-decoration: none !important ; }
+    display: inline-block ; margin-left: 10px ; padding: 1px 15px !important ; float: right ;
+    line-height: 23px ; vertical-align: middle ; font-size: 13px ; font-weight: normal ; text-decoration: none !important ; }
+div.xmodal.v1 .footer a.button { height: 24px ; line-height: 24px; } /* set height only for <a> buttons */
 div.xmodal.v1 .footer .button,
 div.xmodal.v1 .footer .button.cancel.default {
     color: #303030 ; background: #e0e0e0 center center repeat-x ; border: 1px solid #808080 ; border-radius: 3px ;

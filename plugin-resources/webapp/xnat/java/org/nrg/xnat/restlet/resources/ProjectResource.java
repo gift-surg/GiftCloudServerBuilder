@@ -52,9 +52,10 @@ public class ProjectResource extends ItemResource {
     public ProjectResource(Context context, Request request, Response response) throws ResourceException {
         super(context, request, response);
 
-        if (!validateCleanUrl(request, response)) {
-            throw new ResourceException(response.getStatus());
-        }
+        // This was part of a fix for XNAT-3453, but it breaks other non-standard REST ways of setting project properties.
+        // if (!validateCleanUrl(request, response)) {
+        //     throw new ResourceException(response.getStatus());
+        // }
 
         pID = (String) getParameter(request, "PROJECT_ID");
         if (pID != null) {

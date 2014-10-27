@@ -6,7 +6,7 @@
  */
 
 var xmodal = xmodal || {};
-xmodal.version = '1.0.1';
+xmodal.version = '1.0.2';
 
 if (typeof jQuery == 'undefined') {
     throw new Error('jQuery is required for the xmodal plugin.');
@@ -676,7 +676,7 @@ if (typeof jQuery == 'undefined') {
             this.title = 'Message';
             this.closeBtn = true;
             this.maximize = false;
-            //this.padding = _opts.padding; // amount of padding - in pixels
+            this.padding = _opts.padding || 20; // amount of padding - in pixels
             this.template = false; // don't use a template by default (set a value if a condition below is met)
 
             if (_opts.template){
@@ -1275,36 +1275,3 @@ if (typeof jQuery == 'undefined') {
 
 
 })();
-
-
-
-// will need to map old parameters to new for backwards compatibility
-
-// example of (old) xmodal object with all settings
-/*
-xmodal.defaultsOld = {
-    //id: 'unique_id_for_this_modal', // id to give to new xmodal 'window' - if omitted, will be generated dynamically
-    kind: 'fixed',  // options: 'dialog','fixed','large','med','small','custom' - defaults to 'fixed'
-    width: 600, // optional - width in px - used for 'fixed','custom','static' - defaults to 600
-    height: 400, // optional - height in px - used for 'fixed','custom','static' - defaults to 400
-    scroll: 'yes', // optional - does content need to scroll? - defaults to yes, any other value prevents scrolling
-    title: 'Message', // text for title bar - you should really customize this, but will show "Message" if omitted
-    content: ' ', // REQUIRED - 'Put the content here. Alternatively, pull content from a variable or an existing element.', // use 'static' (or 'existing') to put existing content in a modal (use for forms)
-    footer: 'show', // optional - defaults to 'show' if omitted - use 'hide' to supress footer
-    footerButtons: 'show' , // optional - defaults to 'show' if omitted - use 'hide' to supress buttons
-    footerContent: ' ', // optional - defaults to '' (empty string) if omitted
-    footerHeight: 52, // optional - footer height in px - defaults to 52 if omitted
-    footerBackground: '#f0f0f0', // optional - footer background color - defaults to #f0f0f0
-    footerBorder: '#e0e0e0', // optional - footer top border color - defaults to #e0e0e0
-    ok: 'show', // optional - show the 'ok' button? defaults to 'show' - use 'hide' to suppress ok button
-    okLabel: 'OK', // optional - label for the 'ok' button - defaults to 'OK'
-    okAction: function(){}, // optional - if omitted, will do nothing (empty function)
-    okClose: 'yes', // optional - modal closes by default when clicking 'ok' - use 'no' if not closing on 'ok' click (useful to open an xmodal from an xmodal)
-    cancel: 'show', // optional - defaults to 'show' - use 'hide' to suppress cancel button
-    cancelLabel: 'Cancel', // optional - label for 'cancel' button - defaults to 'Cancel'
-    cancelAction: function(){}, // optional - if omitted, will do nothing (empty function)
-    cancelClose: 'yes', // optional - modal closes by default when clicking 'cancel' button - use 'no' to not close
-    defaultButton: 'ok' // optional - defaults to 'ok - 'ok' or 'cancel' - which button is the default?
-    // if you want more than 2 buttons, you'll need to use the 'existing' value for the 'content' property and include the proper markup
-};
-*/

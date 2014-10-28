@@ -10,13 +10,9 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.nrg.action.ActionException;
-import org.nrg.framework.utilities.Reflection;
 import org.nrg.xdat.om.XdatStoredSearch;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
@@ -46,10 +42,11 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
-import com.google.common.collect.Lists;
+import java.util.*;
 
 public class ProjectListResource extends QueryOrganizerResource {
 	private static final String ACCESSIBLE = "accessible";
+    private static final List<String> PERMISSIONS = Arrays.asList(SecurityManager.ACTIVATE, SecurityManager.CREATE, SecurityManager.DELETE, SecurityManager.EDIT, SecurityManager.READ);
 	XFTTable table = null;
 
 	public ProjectListResource(Context context, Request request, Response response) {
@@ -120,7 +117,6 @@ public class ProjectListResource extends QueryOrganizerResource {
 			}
 		} catch (ActionException e) {
 			this.getResponse().setStatus(e.getStatus(),e.getMessage());
-			return;
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			e.printStackTrace();
@@ -155,11 +151,11 @@ public class ProjectListResource extends QueryOrganizerResource {
 	static{
 		_defaultHandlers.add(new DefaultProjectHandler());
 		_defaultHandlers.add(new FilteredProjects());
+        _defaultHandlers.add(new PermissionsProjectHandler());
 	}
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		DisplaySearch ds;
 		Representation rep1 = super.getRepresentation(variant);
 		if (rep1 != null)
 			return rep1;
@@ -445,6 +441,47 @@ public class ProjectListResource extends QueryOrganizerResource {
     	
     }
     
+    public static class PermissionsProjectHandler implements FilteredResourceHandlerI {
+
+		@Override
+		public boolean canHandle(SecureResource resource) {
+            return resource.containsQueryVariable("permissions");
+		}
+
+		@Override
+		public Representation handle(SecureResource resource, Variant variant) throws Exception {
+            final ArrayList<String> columns = new ArrayList<String>();
+            columns.add("id");
+            columns.add("secondary_id");
+
+            final XFTTable table = new XFTTable();
+            table.initTable(columns);
+
+            final String permissions = resource.getQueryVariable("permissions");
+            if (StringUtils.IsEmpty(permissions)) {
+                throw new Exception("You must specify a value for the permissions parameter.");
+            } else if (!PERMISSIONS.contains(permissions)) {
+                throw new Exception("You must specify one of the following values for the permissions parameter: " + Joiner.on(", ").join(PERMISSIONS));
+            }
+
+            final String dataType = resource.getQueryVariable("dataType");
+
+            final Hashtable<Object, Object> projects = resource.user.getCachedItemValuesHash("xnat:projectData", null, false, "xnat:projectData/ID", "xnat:projectData/secondary_ID");
+            for (final Object key : projects.keySet()) {
+                final String projectId = (String) key;
+                // If no data type is specified, we check both MR and PET session data permissions. This is basically
+                // tailored for checking for projects to which the user can upload imaging data.
+                final boolean canEdit = StringUtils.IsEmpty(dataType) ?
+                        resource.user.canAction("xnat:mrSessionData/project", projectId, permissions) || resource.user.canAction("xnat:petSessionData/project", projectId, permissions) :
+                        resource.user.canAction(dataType + "/project", projectId, permissions);
+                if (canEdit) {
+                    table.insertRowItems(key, projects.get(key));
+                }
+            }
+            return resource.representTable(table, variant.getMediaType(), null);
+        }
+    }
+
     public static class DefaultProjectHandler implements FilteredResourceHandlerI{
 
 		@Override

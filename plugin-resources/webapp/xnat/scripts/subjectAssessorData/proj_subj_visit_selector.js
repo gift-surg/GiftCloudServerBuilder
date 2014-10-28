@@ -41,7 +41,7 @@ function ProjectSubjectVisitSelector(_defaultProject, _defaultSubject) {
         params += "&member=true";
 
         //noinspection JSUnresolvedVariable
-        YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/data/projects?format=json&timestamp=' + (new Date()).getTime() + params, this.initCallback, null, this);
+        YAHOO.util.Connect.asyncRequest('GET', serverRoot + '/data/projects?format=json&permissions=edit&timestamp=' + (new Date()).getTime() + params, this.initCallback, null, this);
     };
 
     this.initFailure = function (o) {

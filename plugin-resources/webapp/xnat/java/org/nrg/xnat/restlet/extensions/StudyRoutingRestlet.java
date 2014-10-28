@@ -167,7 +167,12 @@ public class StudyRoutingRestlet extends SecureResource {
             _routingService.closeAll();
         } else {
             try {
-                if (!user.canAction("xnat:mrSessionData/project", _projectId, SecurityManager.EDIT)) {
+                Map<String, String> routing = _routingService.findStudyRouting(_studyInstanceUid);
+                if (routing == null) {
+                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Couldn't find a routing for the study instance UID: " + _studyInstanceUid);
+                    return;
+                }
+                if (!user.canAction("xnat:mrSessionData/project", routing.get(StudyRoutingService.PROJECT), SecurityManager.EDIT)) {
                     getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You do not have sufficient privileges to delete study routings for this project.");
                     return;
                 }

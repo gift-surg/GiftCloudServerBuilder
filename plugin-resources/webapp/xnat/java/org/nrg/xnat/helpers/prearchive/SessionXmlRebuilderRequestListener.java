@@ -24,6 +24,7 @@ import java.sql.SQLException;
 
 public class SessionXmlRebuilderRequestListener {
 
+    @SuppressWarnings("unused")
     public void onSessionXmlRebuilderRequest(final SessionXmlRebuilderRequest sessionXmlRebuilderRequest) throws Exception {
         try {
             XDATUser user = sessionXmlRebuilderRequest.getUser();
@@ -44,7 +45,7 @@ public class SessionXmlRebuilderRequestListener {
                     // but we still want to autoarchive sessions that just came from RECEIVING STATE
                     final FinishImageUpload uploader = new FinishImageUpload(null, user, new PrearcImporterA.PrearcSession(sessionData.getProject(), sessionData.getTimestamp(), sessionData.getFolderName(), null, user), null, false, true, false);
                     if (receiving || !uploader.isAutoArchive()) {
-                        log.debug("Processing queue entry for {} in project {} to archive {}", new Object[] { user.getUsername(), sessionData.getProject(), sessionData.getExternalUrl() });
+                        log.debug("Processing queue entry for {} in project {} to archive {}", user.getUsername(), sessionData.getProject(), sessionData.getExternalUrl());
                         uploader.call();
                     }
                 }

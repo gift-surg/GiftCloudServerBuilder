@@ -268,6 +268,7 @@ public abstract class SecureResource extends Resource {
 
 
     private Form _body;
+    private MediaType _mediaType;
 
     /**
      * This method is used internally to get the Body form.  It should remain private so that all access to parameters are guaranteed to be properly escaped.
@@ -278,12 +279,17 @@ public abstract class SecureResource extends Resource {
         if (_body == null) {
             Representation entity = getRequest().getEntity();
 
-	    if (entity !=null && RequestUtil.isMultiPartFormData(entity) && entity.getSize()>0) {
+            if (entity !=null && RequestUtil.isMultiPartFormData(entity) && entity.getSize()>0) {
+                _mediaType = entity.getMediaType();
                 _body = new Form(entity);
             }
         }
 
         return _body;
+    }
+
+    protected MediaType getMediaType() {
+        return _mediaType;
     }
 
     private static Map<String, String> convertFormToMap(Form q) {

@@ -12,19 +12,13 @@ package org.nrg.xnat.archive;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nrg.action.ClientException;
 import org.nrg.action.ServerException;
-import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatDcmentryI;
-import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.model.XnatAbstractresourceI;
 import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatResourcecatalogI;
 import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.security.XDATUser;
@@ -34,8 +28,6 @@ import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
 import org.nrg.xnat.helpers.merge.MergeUtils;
 import org.nrg.xnat.restlet.actions.PrearcImporterA.PrearcSession;
 import org.nrg.xnat.turbine.utils.XNATUtils;
-import org.nrg.xnat.utils.CatalogUtils;
-import org.nrg.xnat.utils.CatalogUtils.CatEntryFilterI;
 import org.xml.sax.SAXException;
 
 import com.google.common.collect.Lists;
@@ -162,7 +154,7 @@ public final class PrearcSessionValidator extends PrearcSessionArchiver  {
 
 		
 		try {
-			validateSesssion();
+			validateSession();
 		} catch (ServerException e1) {
 			fail(13,e1.getMessage());//this is some sort of schema validation exception
 		}

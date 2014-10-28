@@ -57,12 +57,8 @@ public class PrearchiveBatchRebuild extends BatchPrearchiveActionsA {
                 sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
 
                 if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.QUEUED_BUILDING)) {
-                    SessionData session = new SessionData();
-                    session.setTimestamp(s.getTimestamp());
-                    session.setProject(s.getProject());
-                    session.setFolderName(s.getFolderName());
-
-                    SessionXmlRebuilderRequest request = new SessionXmlRebuilderRequest(user, session, sessionDir);
+                    SessionData sessionData = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
+                    SessionXmlRebuilderRequest request = new SessionXmlRebuilderRequest(user, sessionData, sessionDir);
                     XDAT.sendJmsRequest(request);
                 }
             } catch (Exception exception) {

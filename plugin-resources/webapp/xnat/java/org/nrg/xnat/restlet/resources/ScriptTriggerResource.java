@@ -141,12 +141,12 @@ public class ScriptTriggerResource extends AutomationResource {
         }
 
         ArrayList<String> columns = new ArrayList<String>();
-        columns.add("Trigger ID");
-        columns.add("Scope");
-        columns.add("Entity ID");
-        columns.add("Event");
-        columns.add("Script ID");
-        columns.add("Description");
+        columns.add("triggerId");
+        columns.add("scope");
+        columns.add("entityId");
+        columns.add("event");
+        columns.add("scriptId");
+        columns.add("description");
 
         XFTTable table = new XFTTable();
         table.initTable(columns);

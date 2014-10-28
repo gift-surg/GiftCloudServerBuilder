@@ -10,15 +10,7 @@
  */
 package org.nrg.xnat.archive;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,18 +21,8 @@ import org.nrg.status.ListenerUtils;
 import org.nrg.status.StatusProducer;
 import org.nrg.status.StatusProducerI;
 import org.nrg.xdat.base.BaseElement;
-import org.nrg.xdat.model.CatCatalogI;
-import org.nrg.xdat.model.CatDcmentryI;
-import org.nrg.xdat.model.CatEntryI;
-import org.nrg.xdat.model.XnatAbstractresourceI;
-import org.nrg.xdat.model.XnatImagescandataI;
-import org.nrg.xdat.model.XnatResourcecatalogI;
-import org.nrg.xdat.om.WrkWorkflowdata;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatResourcecatalog;
-import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.model.*;
+import org.nrg.xdat.om.*;
 import org.nrg.xdat.om.base.BaseXnatExperimentdata.UnknownPrimaryProjectException;
 import org.nrg.xdat.om.base.BaseXnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
@@ -60,9 +42,6 @@ import org.nrg.xft.security.UserI;
 import org.nrg.xft.utils.FileUtils;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xft.utils.ValidationUtils.ValidationResults;
-import org.nrg.xnat.archive.PrearcSessionValidator.Conflict;
-import org.nrg.xnat.archive.PrearcSessionValidator.Failure;
-import org.nrg.xnat.archive.PrearcSessionValidator.Warning;
 import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 import org.nrg.xnat.helpers.merge.MergePrearcToArchiveSession;
 import org.nrg.xnat.helpers.merge.MergeSessionsA.SaveHandlerI;
@@ -82,7 +61,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
 
@@ -539,7 +525,7 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			
 			try {
 				processing("validating loaded data");
-				validateSesssion();
+				validateSession();
 
 				final File arcSessionDir = getArcSessionDir();
 
@@ -853,24 +839,30 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	public interface PostArchiveAction {
 		public Boolean execute(XDATUser user, XnatImagesessiondata src, Map<String,Object> params);
 	}
-	
-	private void postArchive(XDATUser user, XnatImagesessiondata src, Map<String,Object> params){
-		List<Class<?>> classes;
-	     try {
-	    	 classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.postArchive");
 
-	    	 if(classes!=null && classes.size()>0){
-				 for(Class<?> clazz: classes){
-					 PostArchiveAction action=(PostArchiveAction)clazz.newInstance();
-					 action.execute(user,src,params);
-				 }
-			 }
-	     } catch (Exception exception) {
-	         throw new RuntimeException(exception);
-	     }
-	}
+    private void postArchive(XDATUser user, XnatImagesessiondata src, Map<String, Object> params) {
+        try {
+            List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.postArchive");
 
-	public void validateSesssion() throws ServerException{
+            if (classes != null && classes.size() > 0) {
+                for (Class<?> clazz : classes) {
+                    if (PostArchiveAction.class.isAssignableFrom(clazz)) {
+                        PostArchiveAction action = (PostArchiveAction) clazz.newInstance();
+                        Boolean result = action.execute(user, src, params);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Ran post-archive action class: " + clazz.getSimpleName() + ". Result was " + (result == null ? "false" : result.toString()));
+                        }
+                    } else if (logger.isInfoEnabled()) {
+                        logger.info("Found class in postArchive action package that's not a valid post-archive action class: " + clazz.getSimpleName());
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+	public void validateSession() throws ServerException{
 		try {
 			if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
 		} catch (Exception e) {

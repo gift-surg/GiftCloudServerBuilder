@@ -64,6 +64,12 @@
 
             padding: 20, // amount of padding (in pixels) around the body content
 
+            css: { // or 'style' - jQuery CSS object - custom style for modal body
+                'background': 'blue',
+                'color': 'white',
+                'font-family': 'Comic Sans'
+            },
+
             animation: 'fade' || 'slide' || false, // choose ONE ('fade' is default)
             speed: 100, // duration of animation. may also use 'duration' property
 

@@ -814,11 +814,16 @@ if (typeof jQuery == 'undefined') {
                 modal.$modal.find('.body').addClass('scroll');
             }
 
+            if (modal.style) { modal.css = modal.style }
+            if (modal.css) {
+                modal.$modal.find('.body > .inner').css(modal.css);
+            }
+
             if ($.isFunction(modal.beforeShow)) {
                 modal.beforeShow(modal);
             }
 
-            modal.$modal.find('.body .inner').fadeIn(modal.speed);
+            modal.$modal.find('.body > .inner').fadeIn(modal.speed);
 
             function afterRender($modal) {
 

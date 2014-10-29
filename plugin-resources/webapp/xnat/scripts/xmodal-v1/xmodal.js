@@ -436,6 +436,7 @@ if (typeof jQuery == 'undefined') {
                 buttons.cancel = newDefaultButton();
                 buttons.cancel.label = _opts.cancelLabel || 'Cancel';
                 buttons.cancel.action = _opts.cancelAction || $.noop;
+                buttons.cancel.close = ( !isFalse(_opts.cancelClose) );
             }
 
             return buttons;
@@ -1259,7 +1260,7 @@ if (typeof jQuery == 'undefined') {
             //var $top_loader = $loaders.last();
             //var id = _id || $top_loader.attr('id');
             //xmodal.loading.count--;
-            var $loader = (_id) ? $('#'+_id) : $('div.xmodal.loading.open.top');
+            var $loader = (_id) ? jqObj(_id) : $('div.xmodal.loading.open.top');
             xmodal.close($loader);
         };
         //////////////////////////////////////////////////

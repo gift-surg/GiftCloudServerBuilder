@@ -9,6 +9,7 @@
 
     var examples = {
 
+
         minimal: {
             // renders a 600x400 modal dialog
             // with a title bar
@@ -16,6 +17,29 @@
             content: 'Content for the xmodal dialog.',
             okClose: true
         },
+
+
+        shortcuts: {
+
+            // shortcuts for footer options
+            footerContent: 'Custom content for the left side of the footer.',
+            footerHeight: 50, // footer height in pixels
+            footerBackground: '#f0f0f0',
+            footerBorder: '#e0e0e0',
+            footerButtons: true,
+
+            // shortcuts for 'OK' and 'Cancel' buttons
+            //ok: true, // OPTIONAL - set to false to suppress (default) 'OK' button
+            okLabel: 'Go',
+            okAction: function(){ doStuff() },
+            okClose: true, // close the dialog when 'ok' is clicked?
+            //cancel: false, // OPTIONAL - set to false to suppress 'Cancel' button
+            cancelLabel: 'Stop',
+            cancelAction: function(){ doOtherStuffInstead() },
+            cancelClose: false
+
+        },
+
 
         everything: {
 
@@ -58,7 +82,7 @@
             template: $('#template-id'), // jQuery object, selector, or id
             //
             content: 'This is a sentence that will show up in the body of the dialog.',
-            // can also grab HTML from the DOM $('#content-id').html() - watch for duplicate IDs
+            // can also grab HTML from the DOM $('#content-id').html() - but watch for duplicate IDs
 
             // 'footer' property is OPTIONAL
             // set footer: false to prevent rendering
@@ -121,9 +145,23 @@
             // do something after the dialog is fully rendered
             afterShow: function( obj ){
                 obj.$modal.find('input.email').focus().select();
+            },
+
+            // do something after the dialog closes
+            afterClose: function ( obj ){
+                doSomethingAfterTheDialogCloses();
             }
 
+        },
+
+
+        alternates: {
+            // alternate property names
+            duration: 200, // same as 'speed'
+            modal: true, // same as 'mask' (should this dialog be modal?)
+            draggable: true // same as, but overridden by 'isDraggable'
         }
+
     };
 
     //////////////////////////////////////////////////

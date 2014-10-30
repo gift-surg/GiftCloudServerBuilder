@@ -57,9 +57,8 @@ import com.google.common.collect.Lists;
 
 public class PrearcUtils {
 	private final static Logger logger = LoggerFactory.getLogger(PrearcUtils.class);
-	public static final String COMMON = "Unassigned";
-
-	public static final String ROLE_SITE_ADMIN = "Administrator";
+	public static final String ROLE_SITE_ADMIN = XDATUser.ROLE_SITE_ADMIN;
+    public static final String COMMON = XDATUser.COMMON;
 	public static final String PROJECT_SECURITY_TASK = "xnat:mrSessionData/project";
 
 	public static final String APPEND = "append";
@@ -88,7 +87,7 @@ public class PrearcUtils {
 		public static boolean potentiallyReady(PrearcStatus status) {
 			return (status==null || status.equals(READY));			    
 		}
-	};
+	}
 
 	private static Logger logger() { return LoggerFactory.getLogger(PrearcUtils.class); }
 	
@@ -129,7 +128,7 @@ public class PrearcUtils {
 				}
 			}
 			// if the user is an admin also add unassigned projects
-			if (user.checkRole(ROLE_SITE_ADMIN)) {
+			if (user.checkRole(XDATUser.ROLE_SITE_ADMIN)) {
 				projects.add(null);
 			}
 		}

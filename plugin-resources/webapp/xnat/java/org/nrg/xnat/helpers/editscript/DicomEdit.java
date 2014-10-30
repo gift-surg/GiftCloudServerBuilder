@@ -16,7 +16,6 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTTable;
 import org.nrg.xnat.helpers.merge.AnonUtils;
-import org.nrg.xnat.helpers.prearchive.PrearcUtils;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import org.restlet.Context;
@@ -437,8 +436,8 @@ public final class DicomEdit extends SecureResource {
 					return null;
 				}
 				else {
-					String project_id = this.d == null ? null : this.d.getId();
-					if (hasAccessTo(project_id, user)) {
+					String projectId = this.d == null ? null : this.d.getId();
+					if (user.hasAccessTo(projectId)) {
 						return c.call();
 					}
 					else {
@@ -453,10 +452,6 @@ public final class DicomEdit extends SecureResource {
 				resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Resource type must be either script or status.");
 				return null;
 			}
-		}
-		
-		boolean hasAccessTo(String project, XDATUser user) throws Exception {
-			return a == Access.ALL || PrearcUtils.getProjects(user,null).contains(project);
 		}
 	}
 

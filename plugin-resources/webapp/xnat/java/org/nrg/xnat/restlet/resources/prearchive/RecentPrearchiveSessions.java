@@ -121,7 +121,7 @@ public class RecentPrearchiveSessions extends SecureResource {
 
 			ArrayList<ArrayList<Object>> rows = new ArrayList<ArrayList<Object>>();
 			for (SessionData s: mostRecent) {
-				if (PrearcUtils.getProjects(user,null).contains(s.getProject())){
+				if (user.hasAccessTo(s.getProject())){
 					ArrayList<Object> row= new ArrayList<Object>();					
 					for (DatabaseSession v : DatabaseSession.values()) {
 						// replace internal url with the external one that doesn't have

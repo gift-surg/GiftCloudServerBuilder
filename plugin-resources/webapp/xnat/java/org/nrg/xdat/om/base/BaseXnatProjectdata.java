@@ -893,14 +893,22 @@ public class BaseXnatProjectdata extends AutoXnatProjectdata  implements Archiva
 
         	if(!matched){
         		XnatAbstractprotocol protocol = this.getProtocolByDataType(key);
-        		XdatStoredSearch xss=null;
-        		if(protocol!=null){
-            		xss=protocol.getDefaultSearch((XnatProjectdata)this);
-        		}else{
-            		xss=this.getDefaultSearch(key);
-        		}
-        		xss.setId("@" + key);
-        		searches.add(xss);
+				try {
+					if (ElementSecurity.IsBrowseableElement(key)) {
+						XdatStoredSearch xss = null;
+						if (protocol != null) {
+							xss = protocol.getDefaultSearch((XnatProjectdata) this);
+						} else {
+							xss = this.getDefaultSearch(key);
+						}
+						xss.setId("@" + key);
+						searches.add(xss);
+					} else {
+						logger.error("Erroneous data (rows=" + counts.get(key) + ") of type '" + key + "' in project '" + this.getId() + "'.");
+					}
+				} catch (Exception e) {
+					logger.error("Error while accessing data (rows=" + counts.get(key) + ") of type '" + key + "' in project '" + this.getId() + "'.", e);
+				}
         	}
     	}
 

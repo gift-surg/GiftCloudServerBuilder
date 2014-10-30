@@ -467,6 +467,8 @@ if (typeof jQuery == 'undefined') {
                     // use false, null or '' to remove a default 'ok' or 'cancel' button
                     if (!$.isPlainObject(_value)) return;
                     var button = this;
+                    var disabled = '';
+
                     button.classNames = button.classNames || button.className || button.classes;
                     var button_id = modal.id + '-' + _prop + '-button';
                     // 'button' and the name of this button's property
@@ -476,6 +478,10 @@ if (typeof jQuery == 'undefined') {
                     if ( button.classNames ) { classNames.push(button.classNames) }
                     if ( isTrue(button.close) ) { classNames.push('close') }
                     if ( isTrue(button.isDefault) || isTrue(button.default) ) { classNames.push('default') }
+                    if ( isTrue(button.disabled) ){
+                        classNames.push('disabled');
+                        disabled = 'disabled ';
+                    }
 
                     if (button.link) {
                         classNames.push('link');
@@ -486,8 +492,8 @@ if (typeof jQuery == 'undefined') {
                     else {
                         classNames.push('button');
                         html += '' +
-                            '<button tabindex="0" id="' + button_id + '"' +
-                            ' class="' + classNames.join(' ') + '">' + button.label + '</button> ';
+                            '<button ' + disabled + 'tabindex="0" id="' + button_id + '" ' +
+                            'class="' + classNames.join(' ') + '">' + button.label + '</button> ';
                     }
 
                     var button_ = modal.buttons[_prop];

@@ -471,13 +471,12 @@ public class ProjectListResource extends QueryOrganizerResource {
                 final String projectId = (String) key;
                 // If no data type is specified, we check both MR and PET session data permissions. This is basically
                 // tailored for checking for projects to which the user can upload imaging data.
-                final boolean canEdit = StringUtils.IsEmpty(dataType) ?
-                        resource.user.canAction("xnat:mrSessionData/project", projectId, permissions) || resource.user.canAction("xnat:petSessionData/project", projectId, permissions) :
-                        resource.user.canAction(dataType + "/project", projectId, permissions);
+                final boolean canEdit = StringUtils.IsEmpty(dataType) ? resource.user.hasAccessTo(projectId) : resource.user.canAction(dataType + "/project", projectId, permissions);
                 if (canEdit) {
-                    table.insertRowItems(key, projects.get(key));
+                    table.insertRowItems(projectId, projects.get(projectId));
                 }
             }
+            table.sort("id", "ASC");
             return resource.representTable(table, variant.getMediaType(), null);
         }
     }

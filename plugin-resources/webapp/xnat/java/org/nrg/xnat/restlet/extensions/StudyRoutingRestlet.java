@@ -98,6 +98,17 @@ public class StudyRoutingRestlet extends SecureResource {
                 _log.info("Request made for routing for study instance UID {}, but nothing was found for that value.", _studyInstanceUid);
                 return null;
             } else {
+                try {
+                    if (!user.hasAccessTo(getRoutingAttribute(routing, StudyRoutingService.PROJECT))) {
+                        getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You do not have sufficient privileges to view the routing for this study instance UID.");
+                        return null;
+                    }
+                } catch (Exception e) {
+                    final String message = "An error occurred trying to resolve privileges on the study routing for study instance UID: " + _studyInstanceUid;
+                    _log.error(message, e);
+                    getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, message);
+                    return null;
+                }
                 final XFTTable table = new XFTTable();
                 table.initTable(COLUMNS);
                 table.insertRowItems(_studyInstanceUid, getRoutingAttribute(routing, StudyRoutingService.PROJECT), getRoutingAttribute(routing, StudyRoutingService.SUBJECT), getRoutingAttribute(routing, StudyRoutingService.USER), getRoutingAttribute(routing, StudyRoutingService.CREATED), getRoutingAttribute(routing, StudyRoutingService.ACCESSED), getRoutingAttribute(routing, StudyRoutingService.LABEL));
@@ -116,9 +127,18 @@ public class StudyRoutingRestlet extends SecureResource {
                 }
                 for (final String studyInstanceUid : routings.keySet()) {
                     final Map<String, String> routing = routings.get(studyInstanceUid);
-                    table.insertRowItems(studyInstanceUid, getRoutingAttribute(routing, StudyRoutingService.PROJECT), getRoutingAttribute(routing, StudyRoutingService.SUBJECT), getRoutingAttribute(routing, StudyRoutingService.USER), getRoutingAttribute(routing, StudyRoutingService.CREATED), getRoutingAttribute(routing, StudyRoutingService.ACCESSED), getRoutingAttribute(routing, StudyRoutingService.LABEL));
+                    try {
+                        if (user.hasAccessTo(getRoutingAttribute(routing, StudyRoutingService.PROJECT))) {
+                            table.insertRowItems(studyInstanceUid, getRoutingAttribute(routing, StudyRoutingService.PROJECT), getRoutingAttribute(routing, StudyRoutingService.SUBJECT), getRoutingAttribute(routing, StudyRoutingService.USER), getRoutingAttribute(routing, StudyRoutingService.CREATED), getRoutingAttribute(routing, StudyRoutingService.ACCESSED), getRoutingAttribute(routing, StudyRoutingService.LABEL));
+                        }
+                    } catch (Exception e) {
+                        final String message = "An error occurred trying to resolve privileges on the study routing for study instance UID: " + _studyInstanceUid;
+                        _log.error(message, e);
+                        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, message);
+                        return null;
+                    }
                 }
-            } else  if (_log.isDebugEnabled()) {
+            } else if (_log.isDebugEnabled()) {
                 _log.debug("Request made for all system routings, found no results!");
             }
             return representTable(table, mediaType, null);

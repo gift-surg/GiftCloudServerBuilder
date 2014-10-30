@@ -136,7 +136,7 @@ public class ProjectGroupResource extends SecureResource {
 			return;
 		}else{
 			try {
-				if(user.isOwner(proj.getId())){
+				if(user.canDelete(proj)) {
 					SaveItemHelper.authorizedDelete(group.getItem(), user, newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, "Removed user group."));
 					group=null;
 				}else{
@@ -162,141 +162,140 @@ public class ProjectGroupResource extends SecureResource {
 		if(proj==null){
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}else{
-			if(user.isOwner(proj.getId())){
-				boolean isNew=false;
-				
-				Map<String,Object> props = Maps.newHashMap();
-				
-				props.putAll(getQueryVariablesAsMap());
-				
-				props.putAll(getBodyVariableMap());
-					
-				try {
-					//populate object from passed parameters
-					PopulateItem populator=new PopulateItem(props,user,XdatUsergroup.SCHEMA_ELEMENT_NAME,true,(group==null)?XFTItem.NewItem(XdatUsergroup.SCHEMA_ELEMENT_NAME,user):group.getItem());
-					XdatUsergroup tempGroup = new XdatUsergroup(populator.getItem());
-					
-					//tag must be for this project
-					if(! StringUtils.equals(proj.getId(), tempGroup.getTag())){
-						tempGroup.setTag(proj.getId());
-					}
-					
-					//display name is required
-					if(StringUtils.isEmpty(tempGroup.getDisplayname())){
-						getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Display name is required.");
-						return;
-					}
-					
-					//set ID to the standard value
-					if(StringUtils.isEmpty(tempGroup.getId())){
-						tempGroup.setId(proj.getId()+"_" + tempGroup.getDisplayname());
-					}
-					
-					
-					final List<ElementSecurity> elements = ElementSecurity.GetSecureElements();
-					
-					final UserGroup ug = new UserGroup(tempGroup.getId());
-					ug.init(tempGroup);
-					for (ElementSecurity es:elements)
-					{
-						final List<String> permissionItems = es.getPrimarySecurityFields();
-						for (String securityField:permissionItems)
-						{
-							final PermissionCriteria pc = new PermissionCriteria();
-							pc.setField(securityField);
-							pc.setFieldValue(ug.getTag());
-							final String s = es.getElementName() + "_" + securityField + "_" + ug.getTag();
-							if (props.get(s + "_R") != null)
-							{
-								pc.setRead(true);
-							} else {
-								pc.setRead(false);
-							}
-							if (props.get(s + "_E") != null)
-							{
-								pc.setRead(true);
-								pc.setEdit(true);
-								pc.setCreate(true);
-								pc.setActivate(true);
-							} else {
-								pc.setCreate(false);
-								pc.setEdit(false);
-								pc.setActivate(false);
-							}
-							if (props.get(s + "_D") != null)
-							{
-								pc.setRead(true);
-								pc.setDelete(true);
-							} else {
-								pc.setDelete(false);
-							}
-							
-							pc.setComparisonType("equals");
-							
-							final String wasSet=(String)props.get(s + "_wasSet");
-							
-							if((wasSet!=null && wasSet.equals("1")) || pc.getCreate() || pc.getRead() || pc.getEdit() || pc.getDelete() || pc.getActivate()){
-								tempGroup.addRootPermission(es.getElementName(),pc);
-								
-								if(StringUtils.equals(pc.getField(), es.getElementName()+"/project")){
-									//inherit project permissions to shared project permissions
-									if((wasSet!=null && wasSet.equals("1")) || pc.getRead()){
+			try {
+				if (user.canDelete(proj)) {
+					boolean isNew = false;
 
-										final PermissionCriteria share = new PermissionCriteria();
-										share.setField(es.getElementName()+"/sharing/share/project");
-										share.setFieldValue(ug.getTag());
-										share.setRead(pc.getRead());
-										share.setComparisonType("equals");
-										tempGroup.addRootPermission(es.getElementName(),share);
+					Map<String, Object> props = Maps.newHashMap();
+
+					props.putAll(getQueryVariablesAsMap());
+
+					props.putAll(getBodyVariableMap());
+
+					try {
+						//populate object from passed parameters
+						PopulateItem populator = new PopulateItem(props, user, XdatUsergroup.SCHEMA_ELEMENT_NAME, true, (group == null) ? XFTItem.NewItem(XdatUsergroup.SCHEMA_ELEMENT_NAME, user) : group.getItem());
+						XdatUsergroup tempGroup = new XdatUsergroup(populator.getItem());
+
+						//tag must be for this project
+						if (!StringUtils.equals(proj.getId(), tempGroup.getTag())) {
+							tempGroup.setTag(proj.getId());
+						}
+
+						//display name is required
+						if (StringUtils.isEmpty(tempGroup.getDisplayname())) {
+							getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Display name is required.");
+							return;
+						}
+
+						//set ID to the standard value
+						if (StringUtils.isEmpty(tempGroup.getId())) {
+							tempGroup.setId(proj.getId() + "_" + tempGroup.getDisplayname());
+						}
+
+
+						final List<ElementSecurity> elements = ElementSecurity.GetSecureElements();
+
+						final UserGroup ug = new UserGroup(tempGroup.getId());
+						ug.init(tempGroup);
+						for (ElementSecurity es : elements) {
+							final List<String> permissionItems = es.getPrimarySecurityFields();
+							for (String securityField : permissionItems) {
+								final PermissionCriteria pc = new PermissionCriteria();
+								pc.setField(securityField);
+								pc.setFieldValue(ug.getTag());
+								final String s = es.getElementName() + "_" + securityField + "_" + ug.getTag();
+								if (props.get(s + "_R") != null) {
+									pc.setRead(true);
+								} else {
+									pc.setRead(false);
+								}
+								if (props.get(s + "_E") != null && !StringUtils.equals(es.getElementName(), XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
+									pc.setRead(true);
+									pc.setEdit(true);
+									pc.setCreate(true);
+									pc.setActivate(true);
+								} else {
+									pc.setCreate(false);
+									pc.setEdit(false);
+									pc.setActivate(false);
+								}
+								if (props.get(s + "_D") != null && !StringUtils.equals(es.getElementName(), XnatProjectdata.SCHEMA_ELEMENT_NAME)) {
+									pc.setRead(true);
+									pc.setDelete(true);
+								} else {
+									pc.setDelete(false);
+								}
+
+								pc.setComparisonType("equals");
+
+								final String wasSet = (String) props.get(s + "_wasSet");
+
+								if ((wasSet != null && wasSet.equals("1")) || pc.getCreate() || pc.getRead() || pc.getEdit() || pc.getDelete() || pc.getActivate()) {
+									tempGroup.addRootPermission(es.getElementName(), pc);
+
+									if (StringUtils.equals(pc.getField(), es.getElementName() + "/project")) {
+										//inherit project permissions to shared project permissions
+										if ((wasSet != null && wasSet.equals("1")) || pc.getRead()) {
+
+											final PermissionCriteria share = new PermissionCriteria();
+											share.setField(es.getElementName() + "/sharing/share/project");
+											share.setFieldValue(ug.getTag());
+											share.setRead(pc.getRead());
+											share.setComparisonType("equals");
+											tempGroup.addRootPermission(es.getElementName(), share);
+										}
 									}
 								}
 							}
 						}
-					}
-					
-					//verify that the user isn't trying to gain access to other projects.
-					for(XdatElementAccess ea:tempGroup.getElementAccess()){
-						for(XdatFieldMappingSet set: ea.getPermissions_allowSet()){
-							try {
-								verifyGroupPermissions(set,proj.getId());
-							} catch (InvalidValueException e) {
-								getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-								return;
+
+						//verify that the user isn't trying to gain access to other projects.
+						for (XdatElementAccess ea : tempGroup.getElementAccess()) {
+							for (XdatFieldMappingSet set : ea.getPermissions_allowSet()) {
+								try {
+									verifyGroupPermissions(set, proj.getId());
+								} catch (InvalidValueException e) {
+									getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+									return;
+								}
 							}
 						}
+
+						if (group == null) {
+							//create new group
+							isNew = true;
+						}
+
+						group = tempGroup;
+
+						//because we've checked the values in the permissions, we can use the pre-authorized save method
+						SaveItemHelper.authorizedSave(tempGroup, user, false, true, newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, (isNew) ? "Added user group" : "Modified user group."));
+					} catch (Exception e) {
+						logger.error("", e);
+						getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+						return;
 					}
 
-					if(group==null){
-						//create new group
-						isNew=true;
+					try {
+						EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME, group.getId(), Event.UPDATE);
+						user.init();
+					} catch (Exception e1) {
+						logger.error("", e1);
 					}
-					
-					group=tempGroup;
-					
-					//because we've checked the values in the permissions, we can use the pre-authorized save method
-					SaveItemHelper.authorizedSave(tempGroup, user, false,true, newEventInstance(EventUtils.CATEGORY.PROJECT_ACCESS, (isNew)?"Added user group":"Modified user group."));
-				} catch (Exception e) {
-					logger.error("",e);
-					getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+
+					if (props.containsKey("src")) {
+						this.getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
+						this.getResponse().redirectSeeOther(XFT.GetSiteURL() + "/data/projects/" + group.getTag() + "?format=html");
+					} else {
+						returnDefaultRepresentation();
+					}
+				} else {
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 					return;
 				}
-				
-				try {
-					EventManager.Trigger(XdatUsergroup.SCHEMA_ELEMENT_NAME, group.getId(), Event.UPDATE);
-					user.init();
-				} catch (Exception e1) {
-					logger.error("", e1);
-				}
-
-				if(props.containsKey("src")){
-					this.getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-					this.getResponse().redirectSeeOther(XFT.GetSiteURL()+"/data/projects/"+group.getTag() + "?format=html");
-				}else{
-					returnDefaultRepresentation();
-				}
-			}else{
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-				return;
+			} catch (Exception e) {
+				logger.error("", e);
 			}
 		}
 	}

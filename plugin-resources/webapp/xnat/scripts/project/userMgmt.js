@@ -127,37 +127,36 @@ function UserManager(user_mgmt_div_id, pID, retrieveAllUsers){
 	this.handleGroupLoad=function(response){
 		this.groups= eval("(" + response.responseText +")").ResultSet.Result;
 		
-		if (XNAT.app.userIsOwner == true) {
-			var tmpUploadFrm='' +
-	            '<div id="grp_dialog" style="visibility:hidden">' +
+		var tmpUploadFrm='' +
+            '<div id="grp_dialog" style="visibility:hidden">' +
 
-	            '<div class="hd">Manage Groups</div>' +
-	            '<div class="bd" style="">' +
-	            '<div class="grp_a" style="padding:10px;overflow:auto;height:410px;">' +
+            '<div class="hd">Manage Groups</div>' +
+            '<div class="bd" style="">' +
+            '<div class="grp_a" style="padding:10px;overflow:auto;height:410px;">' +
 
-	            '<p>Current Groups: </p>' +
+            '<p>Current Groups: </p>' +
 
-	            '<table id="groups_box" class="xnat-table" style="margin:5px 0 10px;width:100%;">' +
-	            // GROUPS TABLE GOES HERE
-	            '</table>' +
+            '<table id="groups_box" class="xnat-table" style="margin:5px 0 10px;width:100%;">' +
+            // GROUPS TABLE GOES HERE
+            '</table>' +
 
-	            '<button id="create_group" ' +
-	            'onclick="window.location.href=\'' + serverRoot + '/app/template/XDATScreen_edit_xdat_userGroup.vm/tag/' + this.pID + '/src/project\'">' +
-	            'Create Custom User Group' +
-	            '</button>' +
-	            '</div>' +
-	            '</div>' +
-	            '</div>';
+            '<button id="create_group" ' +
+            'onclick="window.location.href=\'' + serverRoot + '/app/template/XDATScreen_edit_xdat_userGroup.vm/tag/' + this.pID + '/src/project\'">' +
+            'Create Custom User Group' +
+            '</button>' +
+	        '</div>' +
+	        '</div>' +
+	        '</div>';
 
-	        $("body").append(tmpUploadFrm);
+        $("body").append(tmpUploadFrm);
 
-			//initialize modal upload dialog
-			XNAT.app.grp_dialog=new YAHOO.widget.Dialog("grp_dialog", { fixedcenter:true, visible:false, width:"340px", height:"500px", modal:true, close:true, draggable:true });
-			XNAT.app.grp_dialog.cfg.queueProperty("buttons", [{ text:"Close", handler:{fn:function(){XNAT.app.grp_dialog.hide();}},isDefault:true}]);
+		//initialize modal upload dialog
+		XNAT.app.grp_dialog=new YAHOO.widget.Dialog("grp_dialog", { fixedcenter:true, visible:false, width:"340px", height:"500px", modal:true, close:true, draggable:true });
+		XNAT.app.grp_dialog.cfg.queueProperty("buttons", [{ text:"Close", handler:{fn:function(){XNAT.app.grp_dialog.hide();}},isDefault:true}]);
 
-			$("<button style='margin-top:10px;' id='' onclick='window.userManager.showGroups();return false;'>Manage Groups</button>").insertAfter("#user_invite_div");
-			$("<button style='margin-top:10px;' id='' onclick='window.location=\""+ serverRoot +"/app/template/ManageProjectFeatures.vm/project/" + pID + "\"'>Manage Features</button>").insertAfter("#user_invite_div");
-		}		
+		$("<button style='margin-top:10px;' id='' onclick='window.userManager.showGroups();return false;'>Manage Groups</button>").insertAfter("#user_invite_div");
+		$("<button style='margin-top:10px;' id='' onclick='window.location=\""+ serverRoot +"/app/template/ManageProjectFeatures.vm/project/" + pID + "\"'>Manage Features</button>").insertAfter("#user_invite_div");
+
 		this.loadUsers();
 		
 		

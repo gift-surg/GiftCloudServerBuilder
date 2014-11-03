@@ -437,7 +437,7 @@ public final class DicomEdit extends SecureResource {
 				}
 				else {
 					String projectId = this.d == null ? null : this.d.getId();
-					if (user.hasAccessTo(projectId)) {
+					if (a == Access.ALL || user.hasAccessTo(projectId)) {
 						return c.call();
 					}
 					else {

@@ -67,7 +67,7 @@ public class XnatLdapUserDetailsMapper extends LdapUserDetailsMapper {
         XDATUserDetails userDetails = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(user.getUsername(), XdatUserAuthService.LDAP, _authMethodId, email, lastname, firstname);
         
         try{
-        	XDATUser xdatUser = new XDATUser(user.getUsername());
+        	XDATUser xdatUser = new XDATUser(userDetails.getUsername());
 	        if( ((!(XDAT.verificationOn()))||xdatUser.isVerified()) && userDetails.getAuthorization().isEnabled() )
 	        {
 	        	return userDetails;

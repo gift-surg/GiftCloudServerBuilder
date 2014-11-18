@@ -103,8 +103,8 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 	public static List<PrearcSession> importToPrearc(StatusProducer parent,String format,Object listener,XDATUser user,FileWriterWrapperI fw,Map<String,Object> params,boolean allowSessionMerge, boolean overwriteFiles) throws ActionException{
 		//write file
 		try {
-			return ListenerUtils.addListeners(parent, PrearcImporterA.buildImporter(format,listener, user, fw, params,allowSessionMerge,overwriteFiles))
-				.call();
+			return (List<PrearcSession>) ListenerUtils.addListeners(parent, PrearcImporterA.buildImporter(format,listener, user, fw, params,allowSessionMerge,overwriteFiles))
+				.call(); // TODO - this is a quick hack, together with the catch (Exception) clause at the end -- D. Shakir
 		} catch (SecurityException e) {
 			throw new ServerException(e.getMessage(),e);
 		} catch (IllegalArgumentException e) {
@@ -119,6 +119,8 @@ public class SessionImporter extends ImporterHandlerA implements Callable<List<S
 			throw new ServerException(e.getMessage(),e);
 		} catch (PrearcImporterA.UnknownPrearcImporterException e) {
 			throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,e.getMessage(),e);
+		} catch (Exception e) {
+			throw new ServerException(e.getMessage(), e);
 		}
 	}
 

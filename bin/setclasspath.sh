@@ -7,9 +7,14 @@
 
 # Make sure prerequisite environment variables are set
 if [ -z "$JAVA_HOME" ]; then
-  echo "The JAVA_HOME environment variable is not defined"
-  echo "This environment variable is needed to run this program"
-  exit 1
+	if [[ "$OSTYPE" =~ ^darwin ]]; then
+		JAVA_HOME=`/usr/libexec/java_home`
+	fi
+	if [ -z "$JAVA_HOME" ]; then
+  	  	echo "The JAVA_HOME environment variable is not defined"
+  		echo "This environment variable is needed to run this program"
+  		exit 1
+	fi
 fi
 
 if [ ! -x "$JAVA_HOME"/bin/java -o ! -x "$JAVA_HOME"/bin/jdb -o ! -x "$JAVA_HOME"/bin/javac ]; then

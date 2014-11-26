@@ -33,6 +33,7 @@ public class URIManager {
 	public static final String SCAN_ID = "SCAN_ID";
 	public static final String ASSESSED_ID = "ASSESSED_ID";
 	public static final String SUBJECT_ID = "SUBJECT_ID";
+	public static final String PSEUDONYM_ID = "PSEUDONYM_ID";
 	public static final String EXPT_ID = "EXPT_ID";
 	public static final String EXPT_LABEL = "EXPT_LABEL";
 	public static final String VISIT_LABEL = "VISIT";
@@ -61,6 +62,7 @@ public class URIManager {
 		
 		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/experiments/{" + URIManager.EXPT_ID + "}".intern(),Template.MODE_EQUALS,ProjSubjExptURI.class);
 		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}".intern(),Template.MODE_EQUALS,ProjSubjURI.class);
+		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/pseudonyms/{" + URIManager.PSEUDONYM_ID + "}".intern(),Template.MODE_EQUALS,ProjSubjPseudonymURI.class);
 		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.EXPT_ID + "}".intern(),Template.MODE_EQUALS,ProjSubjExptURI.class);
 		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/assessors/{" + URIManager.EXPT_ID + "}".intern(),Template.MODE_EQUALS,ProjSubjAssExptURI.class);
 		add(TEMPLATE_TYPE.ARC,"/archive/projects/{" + URIManager.PROJECT_ID + "}/subjects/{" + URIManager.SUBJECT_ID + "}/experiments/{" + URIManager.ASSESSED_ID + "}/scans/{" + URIManager.SCAN_ID + "}".intern(),Template.MODE_EQUALS,ProjSubjAssScanURI.class);

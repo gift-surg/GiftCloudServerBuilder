@@ -45,6 +45,13 @@ public interface ResourceModifierBuilderI {
 	public abstract void setType(String type);
 
 	public abstract String getType();
+	
+	public abstract void setPseudonymizedsubject(XnatProjectdata project, ExtPseudonymizedsubjectdata subject);
 
+	public abstract ExtPseudonymizedsubjectdata getPseudonymizedsubject();
+	
+	public abstract void setPseudonym(ExtSubjectpseudonym pseudonym);
 
+	public abstract ExtSubjectpseudonym getPseudonym();
+	
 }

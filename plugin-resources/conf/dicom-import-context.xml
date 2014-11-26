@@ -17,7 +17,7 @@
 
     <context:property-placeholder location="WEB-INF/conf/services.properties,WEB-INF/conf/services-custom.properties" ignore-resource-not-found="true" ignore-unresolvable="true"/>
 
-	<bean name="dicomObjectIdentifier" class="org.nrg.dcm.id.ClassicDicomObjectIdentifier">
+	<bean name="dicomObjectIdentifier" class="org.nrg.dcm.id.PseudonymizedDicomObjectIdentifier">
 		<property name="userProvider" ref="receivedFileUserProvider" />
 	</bean>
 

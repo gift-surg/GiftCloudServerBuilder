@@ -157,8 +157,6 @@ public class FileMover {
 			builder.setSubject(sub.getPrimaryProject(false), sub);
 		}else if(arcURI instanceof ProjectURII){
 			builder.setProject(((ProjectURII)arcURI).getProject());
-		}else if(arcURI instanceof PseudonymURII){
-			builder.setPseudonym(((PseudonymURII)arcURI).getPseudonym());
 		}else{
 			throw new ClientException("Unsupported resource:"+arcURI.getUri());
 		}

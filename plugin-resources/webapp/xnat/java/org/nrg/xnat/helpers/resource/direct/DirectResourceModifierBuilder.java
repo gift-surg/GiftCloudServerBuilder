@@ -22,7 +22,6 @@ public class DirectResourceModifierBuilder implements ResourceModifierBuilderI {
 	private XnatExperimentdata expt;
 	private XnatSubjectdata subject;
 	private XnatProjectdata project;
-	private ExtSubjectpseudonym pseudonym;
 	
 	private String type;
 	
@@ -128,8 +127,6 @@ public class DirectResourceModifierBuilder implements ResourceModifierBuilderI {
 			}
 		
 			return new DirectAssessResourceImpl((XnatImageassessordata)assess,(XnatImagesessiondata)assessed,type,overwrite,user,ci);
-		}else if(pseudonym!=null){
-			return new DirectPseudonymResourceImpl(subject, pseudonym,overwrite,user,ci);
 		}else if(expt!=null){
 			return new DirectExptResourceImpl(project, expt,overwrite,user,ci);
 		}else if(subject!=null){
@@ -139,39 +136,5 @@ public class DirectResourceModifierBuilder implements ResourceModifierBuilderI {
 		}else{
 			throw new Exception("Unknown resource");
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI#setPseudonymizedsubject()
-	 */
-	@Override
-	public void setPseudonymizedsubject(XnatProjectdata project, ExtPseudonymizedsubjectdata subject) {
-		this.project = project;
-		this.subject = subject;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI#getPseudonymizedsubject()
-	 */
-	@Override
-	public ExtPseudonymizedsubjectdata getPseudonymizedsubject() {
-		return (this.subject instanceof ExtPseudonymizedsubjectdata) ? (ExtPseudonymizedsubjectdata)this.subject : null; // TODO ___ more elegant implementation ?
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI#setPseudonym()
-	 */
-	@Override
-	public void setPseudonym(ExtSubjectpseudonym pseudonym) {
-//		if (this.subject instanceof ExtPseudonymizedsubjectdata) TODO ___ checking subject instanceof ExtPseudonymizedsubjectdata
-		this.pseudonym = pseudonym;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierBuilderI#getPseudonym()
-	 */
-	@Override
-	public ExtSubjectpseudonym getPseudonym() {
-		return pseudonym;
 	}
 }

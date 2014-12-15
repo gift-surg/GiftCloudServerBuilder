@@ -20,11 +20,15 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
  */
 public class XDATScreen_report_xnat_investigatorData extends SecureReport {
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+
+	}
 
 }

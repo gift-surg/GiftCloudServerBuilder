@@ -16,7 +16,7 @@ public class DuplicateSessionLabelException extends ArchivingException {
 	private final static long serialVersionUID = 1L;
 	private final static Status status = Status.CLIENT_ERROR_FORBIDDEN;
 	private final static String format = "session label %s already used in project %s";
-	
+
 	public DuplicateSessionLabelException() {
 		super(status);
 	}

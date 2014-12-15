@@ -13,7 +13,7 @@ package org.nrg.pipeline.exception;
 
 @SuppressWarnings("serial")
 public class PipelineException extends Exception {
-    public PipelineException() {
-        super();
-    }
+	public PipelineException() {
+		super();
+	}
 }

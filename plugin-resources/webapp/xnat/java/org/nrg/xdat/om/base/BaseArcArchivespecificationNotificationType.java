@@ -20,28 +20,27 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseArcArchivespecificationNotificationType extends AutoArcArchivespecificationNotificationType {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseArcArchivespecificationNotificationType extends
+		AutoArcArchivespecificationNotificationType {
 
-	public BaseArcArchivespecificationNotificationType(ItemI item)
-	{
+	public BaseArcArchivespecificationNotificationType(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcArchivespecificationNotificationType(UserI user)
-	{
+	public BaseArcArchivespecificationNotificationType(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcArchivespecificationNotificationType(UserI user)
-	 **/
-	public BaseArcArchivespecificationNotificationType()
-	{}
+	 */
+	public BaseArcArchivespecificationNotificationType() {
+	}
 
-	public BaseArcArchivespecificationNotificationType(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseArcArchivespecificationNotificationType(Hashtable properties,
+			UserI user) {
+		super(properties, user);
 	}
 
 }

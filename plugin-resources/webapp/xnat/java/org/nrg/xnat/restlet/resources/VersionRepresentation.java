@@ -25,9 +25,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class VersionRepresentation extends Resource {
-	private final Logger logger = LoggerFactory.getLogger(VersionRepresentation.class);
+	private final Logger logger = LoggerFactory
+			.getLogger(VersionRepresentation.class);
 
-	public VersionRepresentation(Context context, Request request, Response response) {
+	public VersionRepresentation(Context context, Request request,
+			Response response) {
 		super(context, request, response);
 		this.getVariants().add(new Variant(MediaType.ALL));
 	}

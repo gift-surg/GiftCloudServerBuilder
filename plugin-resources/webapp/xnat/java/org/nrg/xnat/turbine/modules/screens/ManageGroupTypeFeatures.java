@@ -8,8 +8,9 @@ import org.nrg.xdat.turbine.modules.screens.AdminScreen;
 public class ManageGroupTypeFeatures extends AdminScreen {
 
 	@Override
-	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        context.put("features", Features.getAllFeatures());
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		context.put("features", Features.getAllFeatures());
 	}
 
 }

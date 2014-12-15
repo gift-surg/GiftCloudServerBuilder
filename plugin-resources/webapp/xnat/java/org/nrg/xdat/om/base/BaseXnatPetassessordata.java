@@ -21,34 +21,28 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseXnatPetassessordata extends AutoXnatPetassessordata {
 
-	public BaseXnatPetassessordata(ItemI item)
-	{
+	public BaseXnatPetassessordata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatPetassessordata(UserI user)
-	{
+	public BaseXnatPetassessordata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatPetassessordata(UserI user)
-	 **/
-	public BaseXnatPetassessordata()
-	{}
-
-	public BaseXnatPetassessordata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatPetassessordata() {
 	}
 
+	public BaseXnatPetassessordata(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
 
-
-    public XnatPetsessiondata getPetSessionData()
-    {
-        return (XnatPetsessiondata)this.getImageSessionData();
-    }
+	public XnatPetsessiondata getPetSessionData() {
+		return (XnatPetsessiondata) this.getImageSessionData();
+	}
 }

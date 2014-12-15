@@ -24,24 +24,24 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 public class UserFavoritesList extends SecureResource {
-	String dataType=null;
-	
+	String dataType = null;
+
 	public UserFavoritesList(Context context, Request request, Response response) {
 		super(context, request, response);
-		
-			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
-			
-			dataType=getQueryVariable("DATA_TYPE");
-		}
+
+		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+		this.getVariants().add(new Variant(MediaType.TEXT_XML));
+
+		dataType = getQueryVariable("DATA_TYPE");
+	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
 		XFTTable table = null;
-		if(dataType!=null){
-			try {	            
-				 table=FavEntries.GetFavoriteEntries(dataType, user);
+		if (dataType != null) {
+			try {
+				table = FavEntries.GetFavoriteEntries(dataType, user);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} catch (DBPoolException e) {
@@ -50,8 +50,8 @@ public class UserFavoritesList extends SecureResource {
 				e.printStackTrace();
 			}
 		}
-		
-		Hashtable<String,Object> params=new Hashtable<String,Object>();
+
+		Hashtable<String, Object> params = new Hashtable<String, Object>();
 		params.put("title", "User Favorites");
 
 		MediaType mt = overrideVariant(variant);

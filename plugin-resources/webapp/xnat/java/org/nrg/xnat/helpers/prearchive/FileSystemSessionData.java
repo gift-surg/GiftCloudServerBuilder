@@ -10,8 +10,10 @@
  */
 package org.nrg.xnat.helpers.prearchive;
 
-public final class FileSystemSessionData extends SessionDataDelegate implements SessionDataProducerI, SessionDataModifierI{
-	public FileSystemSessionData (String basePath) {
-		super(new FileSystemSessionTrawler(basePath), new FileSystemSessionDataModifier(basePath));
-	}	
+public final class FileSystemSessionData extends SessionDataDelegate implements
+		SessionDataProducerI, SessionDataModifierI {
+	public FileSystemSessionData(String basePath) {
+		super(new FileSystemSessionTrawler(basePath),
+				new FileSystemSessionDataModifier(basePath));
+	}
 }

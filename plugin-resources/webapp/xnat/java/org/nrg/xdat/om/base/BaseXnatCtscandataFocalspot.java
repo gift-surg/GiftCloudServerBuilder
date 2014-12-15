@@ -20,29 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatCtscandataFocalspot extends AutoXnatCtscandataFocalspot {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatCtscandataFocalspot extends
+		AutoXnatCtscandataFocalspot {
 
-	public BaseXnatCtscandataFocalspot(ItemI item)
-	{
+	public BaseXnatCtscandataFocalspot(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatCtscandataFocalspot(UserI user)
-	{
+	public BaseXnatCtscandataFocalspot(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatCtscandataFocalspot(UserI user)
-	 **/
-	public BaseXnatCtscandataFocalspot()
-	{}
+	 */
+	public BaseXnatCtscandataFocalspot() {
+	}
 
-	public BaseXnatCtscandataFocalspot(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatCtscandataFocalspot(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }
-

@@ -16,9 +16,9 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 
 public class Browse_protected_projects extends SecureScreen {
 
-    @Override
-    protected void doBuildTemplate(RunData arg0, Context arg1) throws Exception {
-        
-    }
+	@Override
+	protected void doBuildTemplate(RunData arg0, Context arg1) throws Exception {
+
+	}
 
 }

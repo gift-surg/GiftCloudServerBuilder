@@ -23,78 +23,86 @@ import java.util.NoSuchElementException;
 
 public class MergeUtils {
 
-	public static boolean compareResources(final XnatAbstractresourceI src, final XnatAbstractresourceI dest){
-		if(src instanceof XnatResourceseriesI){
-			return (((XnatResourceseriesI)src).getPath()+((XnatResourceseriesI)src).getPattern()).equals(((XnatResourceseriesI)src).getPath()+((XnatResourceseriesI)src).getPattern());
-		}else{
-			return ((XnatResourceI)src).getUri().equals(((XnatResourceI)dest).getUri());
+	public static boolean compareResources(final XnatAbstractresourceI src,
+			final XnatAbstractresourceI dest) {
+		if (src instanceof XnatResourceseriesI) {
+			return (((XnatResourceseriesI) src).getPath() + ((XnatResourceseriesI) src)
+					.getPattern()).equals(((XnatResourceseriesI) src).getPath()
+					+ ((XnatResourceseriesI) src).getPattern());
+		} else {
+			return ((XnatResourceI) src).getUri().equals(
+					((XnatResourceI) dest).getUri());
 		}
 	}
 
-	public static XnatImagescandataI getMatchingScanById(final String id, final List<XnatImagescandataI> list){
+	public static XnatImagescandataI getMatchingScanById(final String id,
+			final List<XnatImagescandataI> list) {
 		try {
-		return Iterables.find(list,new Predicate<XnatImagescandataI>(){
-			@Override
-			public boolean apply(XnatImagescandataI scan2) {
+			return Iterables.find(list, new Predicate<XnatImagescandataI>() {
+				@Override
+				public boolean apply(XnatImagescandataI scan2) {
 					return StringUtils.equals(id, scan2.getId());
-			}}
-		);
+				}
+			});
 		} catch (NoSuchElementException e) {
 			return null;
 		}
 	}
 
-	public static XnatImagescandataI getMatchingScan(final XnatImagescandataI scan, final List<XnatImagescandataI> list){
+	public static XnatImagescandataI getMatchingScan(
+			final XnatImagescandataI scan, final List<XnatImagescandataI> list) {
 		try {
-		return Iterables.find(list,new Predicate<XnatImagescandataI>(){
-			@Override
-			public boolean apply(XnatImagescandataI scan2) {
+			return Iterables.find(list, new Predicate<XnatImagescandataI>() {
+				@Override
+				public boolean apply(XnatImagescandataI scan2) {
 					return StringUtils.equals(scan.getId(), scan2.getId());
-			}}
-		);
+				}
+			});
 		} catch (NoSuchElementException e) {
 			return null;
 		}
 	}
 
-	public static XnatImagescandataI getMatchingScanByUID(final XnatImagescandataI scan, final List<XnatImagescandataI> list){
+	public static XnatImagescandataI getMatchingScanByUID(
+			final XnatImagescandataI scan, final List<XnatImagescandataI> list) {
 		try {
-		return Iterables.find(list,new Predicate<XnatImagescandataI>(){
-			@Override
-			public boolean apply(XnatImagescandataI scan2) {
+			return Iterables.find(list, new Predicate<XnatImagescandataI>() {
+				@Override
+				public boolean apply(XnatImagescandataI scan2) {
 					return StringUtils.equals(scan.getUid(), scan2.getUid());
-			}}
-		);
+				}
+			});
 		} catch (NoSuchElementException e) {
 			return null;
 		}
 	}
 
-	public static XnatAbstractresourceI getMatchingResource(final XnatAbstractresourceI res, List<XnatAbstractresourceI> list){
+	public static XnatAbstractresourceI getMatchingResource(
+			final XnatAbstractresourceI res, List<XnatAbstractresourceI> list) {
 		try {
-		return Iterables.find(list,new Predicate<XnatAbstractresourceI>(){
-			@Override
-			public boolean apply(XnatAbstractresourceI res2) {
-					return StringUtils.equals(res.getLabel(),res2.getLabel());
-			}}
-		);
+			return Iterables.find(list, new Predicate<XnatAbstractresourceI>() {
+				@Override
+				public boolean apply(XnatAbstractresourceI res2) {
+					return StringUtils.equals(res.getLabel(), res2.getLabel());
+				}
+			});
 		} catch (NoSuchElementException e) {
 			return null;
 		}
 	}
 
-	public static XnatAbstractresourceI getMatchingResourceByLabel(final String label, List<XnatAbstractresourceI> list){
+	public static XnatAbstractresourceI getMatchingResourceByLabel(
+			final String label, List<XnatAbstractresourceI> list) {
 		try {
-		return Iterables.find(list,new Predicate<XnatAbstractresourceI>(){
-			@Override
-			public boolean apply(XnatAbstractresourceI res2) {
-					return StringUtils.equals(label,res2.getLabel());
-			}}
-		);
+			return Iterables.find(list, new Predicate<XnatAbstractresourceI>() {
+				@Override
+				public boolean apply(XnatAbstractresourceI res2) {
+					return StringUtils.equals(label, res2.getLabel());
+				}
+			});
 		} catch (NoSuchElementException e) {
 			return null;
 		}
 	}
-	
-	
+
 }

@@ -26,36 +26,39 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 import java.util.Map;
 
-public class ResourcesExptAssessorURI  extends ResourceURIA implements ArchiveItemURI,AssessedURII,ResourceURII,AssessorURII{
-	private XnatImageassessordata expt=null;
-	private XnatImagesessiondata session=null; 
-	
+public class ResourcesExptAssessorURI extends ResourceURIA implements
+		ArchiveItemURI, AssessedURII, ResourceURII, AssessorURII {
+	private XnatImageassessordata expt = null;
+	private XnatImagesessiondata session = null;
+
 	public ResourcesExptAssessorURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
-	
-	protected void populate(){		
-		if(expt==null){
-			final String sessID= (String)props.get(URIManager.ASSESSED_ID);
-			
-			if(session==null){
-				session=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(sessID, null, false);
+
+	protected void populate() {
+		if (expt == null) {
+			final String sessID = (String) props.get(URIManager.ASSESSED_ID);
+
+			if (session == null) {
+				session = (XnatImagesessiondata) XnatExperimentdata
+						.getXnatExperimentdatasById(sessID, null, false);
 			}
-			
-			final String exptID= (String)props.get(URIManager.EXPT_ID);
-			
-			if(expt==null){
-				expt=(XnatImageassessordata)XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
+
+			final String exptID = (String) props.get(URIManager.EXPT_ID);
+
+			if (expt == null) {
+				expt = (XnatImageassessordata) XnatExperimentdata
+						.getXnatExperimentdatasById(exptID, null, false);
 			}
 		}
 	}
 
-	public XnatImagesessiondata getSession(){
+	public XnatImagesessiondata getSession() {
 		this.populate();
 		return this.session;
 	}
-	
-	public XnatImageassessordata getAssessor(){
+
+	public XnatImageassessordata getAssessor() {
 		this.populate();
 		return expt;
 	}
@@ -67,28 +70,32 @@ public class ResourcesExptAssessorURI  extends ResourceURIA implements ArchiveIt
 
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(getAssessor()!=null){
-			String type=(String)this.props.get(URIManager.TYPE);
-			
-			if(type==null){
-				type="out";
+		if (getAssessor() != null) {
+			String type = (String) this.props.get(URIManager.TYPE);
+
+			if (type == null) {
+				type = "out";
 			}
-			
-			if(type.equals("out")){
-				for(XnatAbstractresourceI res:this.getAssessor().getOut_file()){
-					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+
+			if (type.equals("out")) {
+				for (XnatAbstractresourceI res : this.getAssessor()
+						.getOut_file()) {
+					if (StringUtils.equals(res.getLabel(),
+							this.getResourceLabel())) {
 						return res;
 					}
 				}
-			}else if(type.equals("in")){
-				for(XnatAbstractresourceI res:this.getAssessor().getIn_file()){
-					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+			} else if (type.equals("in")) {
+				for (XnatAbstractresourceI res : this.getAssessor()
+						.getIn_file()) {
+					if (StringUtils.equals(res.getLabel(),
+							this.getResourceLabel())) {
 						return res;
 					}
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -96,6 +103,5 @@ public class ResourcesExptAssessorURI  extends ResourceURIA implements ArchiveIt
 	public XnatProjectdata getProject() {
 		return this.getAssessor().getProjectData();
 	}
-	
-	
+
 }

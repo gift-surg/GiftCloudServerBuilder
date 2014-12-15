@@ -29,32 +29,39 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-@XnatRestlet({"/services/scan-quality-labels", "/services/scan-quality-labels/{PROJECT_ID}"})
+@XnatRestlet({ "/services/scan-quality-labels",
+		"/services/scan-quality-labels/{PROJECT_ID}" })
 public class ScanQualityLabelRestlet extends SecureResource {
-    public static final String PARAM_PROJECT_ID = "PROJECT_ID";
+	public static final String PARAM_PROJECT_ID = "PROJECT_ID";
 
-    private static final Logger _log = LoggerFactory.getLogger(ScanQualityLabelRestlet.class);
-    private final String _projectId;
+	private static final Logger _log = LoggerFactory
+			.getLogger(ScanQualityLabelRestlet.class);
+	private final String _projectId;
 
-    public ScanQualityLabelRestlet(Context context, Request request, Response response) {
-        super(context, request, response);
-        this.getVariants().add(new Variant(MediaType.ALL));
-        _projectId = (String) getRequest().getAttributes().get(PARAM_PROJECT_ID);
-    }
+	public ScanQualityLabelRestlet(Context context, Request request,
+			Response response) {
+		super(context, request, response);
+		this.getVariants().add(new Variant(MediaType.ALL));
+		_projectId = (String) getRequest().getAttributes()
+				.get(PARAM_PROJECT_ID);
+	}
 
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        if (_log.isDebugEnabled()) {
-            _log.debug("Entering the scan quality label represent() method");
-        }
+	@Override
+	public Representation represent(Variant variant) throws ResourceException {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Entering the scan quality label represent() method");
+		}
 
-        try {
-            List<String> labels = ScanQualityUtils.getQualityLabels(_projectId, user);
-            JSONObject json = new JSONObject();
-            json.put(StringUtils.isBlank(_projectId) ? "site" : _projectId, labels);
-            return new JSONObjectRepresentation(MediaType.APPLICATION_JSON, json);
-        } catch (JSONException e) {
-            throw new ResourceException(e);
-        }
-    }
+		try {
+			List<String> labels = ScanQualityUtils.getQualityLabels(_projectId,
+					user);
+			JSONObject json = new JSONObject();
+			json.put(StringUtils.isBlank(_projectId) ? "site" : _projectId,
+					labels);
+			return new JSONObjectRepresentation(MediaType.APPLICATION_JSON,
+					json);
+		} catch (JSONException e) {
+			throw new ResourceException(e);
+		}
+	}
 }

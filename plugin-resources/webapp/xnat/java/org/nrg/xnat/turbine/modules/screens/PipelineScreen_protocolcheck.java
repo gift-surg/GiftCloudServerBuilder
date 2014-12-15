@@ -14,18 +14,18 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 
-public class PipelineScreen_protocolcheck extends DefaultPipelineScreen{
+public class PipelineScreen_protocolcheck extends DefaultPipelineScreen {
 
-	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(PipelineScreen_protocolcheck_add.class);
-	
-	 public void preProcessing(RunData data, Context context)   {
-	     super.preProcessing(data, context);
-  	 }
+	static org.apache.log4j.Logger logger = org.apache.log4j.Logger
+			.getLogger(PipelineScreen_protocolcheck_add.class);
 
-	
-	 public void finalProcessing(RunData data, Context context){
-	     	context.put("projectSettings", projectParameters);
-	 	   
-	 }
-		
+	public void preProcessing(RunData data, Context context) {
+		super.preProcessing(data, context);
+	}
+
+	public void finalProcessing(RunData data, Context context) {
+		context.put("projectSettings", projectParameters);
+
+	}
+
 }

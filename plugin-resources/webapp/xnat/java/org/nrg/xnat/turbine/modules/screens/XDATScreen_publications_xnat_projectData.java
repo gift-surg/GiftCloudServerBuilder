@@ -16,9 +16,9 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
 
 public class XDATScreen_publications_xnat_projectData extends SecureReport {
 
-    @Override
-    public void finalProcessing(RunData data, Context context) {
-        
-    }
+	@Override
+	public void finalProcessing(RunData data, Context context) {
+
+	}
 
 }

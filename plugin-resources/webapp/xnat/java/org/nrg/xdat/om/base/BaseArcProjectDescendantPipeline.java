@@ -20,35 +20,33 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseArcProjectDescendantPipeline extends AutoArcProjectDescendantPipeline {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseArcProjectDescendantPipeline extends
+		AutoArcProjectDescendantPipeline {
 
-	public BaseArcProjectDescendantPipeline(ItemI item)
-	{
+	public BaseArcProjectDescendantPipeline(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcProjectDescendantPipeline(UserI user)
-	{
+	public BaseArcProjectDescendantPipeline(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcProjectDescendantPipeline(UserI user)
-	 **/
-	public BaseArcProjectDescendantPipeline()
-	{}
-
-	public BaseArcProjectDescendantPipeline(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseArcProjectDescendantPipeline() {
 	}
 
-    public boolean hasCustomwebpage() {
-        boolean rtn = false;
-        if (getCustomwebpage() !=null)
-            rtn = true;
-        return rtn;
-    }
+	public BaseArcProjectDescendantPipeline(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public boolean hasCustomwebpage() {
+		boolean rtn = false;
+		if (getCustomwebpage() != null)
+			rtn = true;
+		return rtn;
+	}
 
 }

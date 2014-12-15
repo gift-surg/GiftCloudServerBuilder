@@ -21,24 +21,25 @@ import javax.persistence.UniqueConstraint;
 
 @Auditable
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "name" }))
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "nrg")
 public class User extends AbstractHibernateEntity {
-    private static final long serialVersionUID = -163628363303918602L;
+	private static final long serialVersionUID = -163628363303918602L;
 
-    /**
-     * @param name Sets the name property.
-     */
-    public void setName(String name) {
-        _name = name;
-    }
+	/**
+	 * @param name
+	 *            Sets the name property.
+	 */
+	public void setName(String name) {
+		_name = name;
+	}
 
-    /**
-     * @return Returns the name property.
-     */
-    public String getName() {
-        return _name;
-    }
+	/**
+	 * @return Returns the name property.
+	 */
+	public String getName() {
+		return _name;
+	}
 
-    private String _name;
+	private String _name;
 }

@@ -16,63 +16,64 @@ import org.nrg.xnat.restlet.util.FileWriterWrapperI;
 import java.io.*;
 
 public class StoredFile implements FileWriterWrapperI, Serializable {
-    private static final long serialVersionUID = 42L;
-    private final File stored;
-    private final boolean overwrite;
-    private final String nestedPath;
-    private final boolean isReference;
-	
-	public StoredFile(final File f, final boolean allowOverwrite){
-		stored=f;
-		this.overwrite=allowOverwrite;
-        this.nestedPath = null;
-        this.isReference = false;
-	}
-	
-    public StoredFile(final File f, final boolean allowOverwrite, final String nestedPath, final boolean isReference) {
-		stored=f;
-		this.overwrite=allowOverwrite;
-        this.nestedPath = nestedPath;
-        this.isReference = isReference;
+	private static final long serialVersionUID = 42L;
+	private final File stored;
+	private final boolean overwrite;
+	private final String nestedPath;
+	private final boolean isReference;
+
+	public StoredFile(final File f, final boolean allowOverwrite) {
+		stored = f;
+		this.overwrite = allowOverwrite;
+		this.nestedPath = null;
+		this.isReference = false;
 	}
 
-    @Override
+	public StoredFile(final File f, final boolean allowOverwrite,
+			final String nestedPath, final boolean isReference) {
+		stored = f;
+		this.overwrite = allowOverwrite;
+		this.nestedPath = nestedPath;
+		this.isReference = isReference;
+	}
+
+	@Override
 	public void write(File f) throws IOException {
-		if(f.isDirectory()||stored.isDirectory()){
+		if (f.isDirectory() || stored.isDirectory()) {
 			if (isReference) {
-			org.nrg.xft.utils.FileUtils.MoveDir(stored, f, overwrite);
-		    }else{
-                org.nrg.xft.utils.FileUtils.CopyDir(stored, f, overwrite);
-            }
+				org.nrg.xft.utils.FileUtils.MoveDir(stored, f, overwrite);
+			} else {
+				org.nrg.xft.utils.FileUtils.CopyDir(stored, f, overwrite);
+			}
 		} else if (isReference) {
 			org.nrg.xft.utils.FileUtils.CopyFile(stored, f, overwrite);
 		} else {
 			org.nrg.xft.utils.FileUtils.MoveFile(stored, f, overwrite);
 		}
 	}
-	
-    @Override
+
+	@Override
 	public String getName() {
 		return stored.getName();
 	}
-	
-    @Override
-    public String getNestedPath() {
-        return nestedPath;
-    }
 
-    @Override
+	@Override
+	public String getNestedPath() {
+		return nestedPath;
+	}
+
+	@Override
 	public InputStream getInputStream() throws IOException {
 		return new FileInputStream(stored);
 	}
-	
-    @Override
+
+	@Override
 	public void delete() {
-		if(stored.exists()) {
-            FileUtils.deleteQuietly(stored);
-        }
+		if (stored.exists()) {
+			FileUtils.deleteQuietly(stored);
+		}
 	}
-	
+
 	@Override
 	public UPLOAD_TYPE getType() {
 		return UPLOAD_TYPE.OTHER;

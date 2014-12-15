@@ -27,99 +27,110 @@ import org.nrg.pipeline.xmlbeans.ParametersDocument.Parameters;
 import org.nrg.xdat.om.XnatMrsessiondata;
 import org.nrg.xdat.turbine.utils.TurbineUtils;
 
-public class FreesurferLauncher extends PipelineLauncher{
-    ArrayList<String> mprageScans = null;
-    static org.apache.log4j.Logger logger = Logger.getLogger(FreesurferLauncher.class);
+public class FreesurferLauncher extends PipelineLauncher {
+	ArrayList<String> mprageScans = null;
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(FreesurferLauncher.class);
 
-    public FreesurferLauncher(ArrayList<String> mprs) {
-        mprageScans = mprs;
-    }
+	public FreesurferLauncher(ArrayList<String> mprs) {
+		mprageScans = mprs;
+	}
 
-    public FreesurferLauncher(RunData data, XnatMrsessiondata mr) {
-        mprageScans = getCheckBoxSelections(data,mr,"MPRAGE");
-    }
+	public FreesurferLauncher(RunData data, XnatMrsessiondata mr) {
+		mprageScans = getCheckBoxSelections(data, mr, "MPRAGE");
+	}
 
-    public boolean launch(RunData data, Context context) {
-        return false;
-    }
+	public boolean launch(RunData data, Context context) {
+		return false;
+	}
 
+	public boolean launch(RunData data, Context context, XnatMrsessiondata mr) {
+		try {
+			XnatPipelineLauncher xnatPipelineLauncher = XnatPipelineLauncher
+					.GetLauncher(data, context, mr);
 
-    public boolean launch(RunData data, Context context, XnatMrsessiondata mr) {
-        try {
-            XnatPipelineLauncher xnatPipelineLauncher = XnatPipelineLauncher.GetLauncher(data, context, mr);
+			String pipelineName = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+					.GetPassedParameter("freesurfer_pipelinename", data));
+			String cmdPrefix = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+					.GetPassedParameter("cmdprefix", data));
 
-            String pipelineName = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("freesurfer_pipelinename",data));
-            String cmdPrefix = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("cmdprefix",data));
+			xnatPipelineLauncher.setPipelineName(pipelineName);
+			xnatPipelineLauncher.setSupressNotification(true);
 
-            xnatPipelineLauncher.setPipelineName(pipelineName);
-            xnatPipelineLauncher.setSupressNotification(true);
+			String buildDir = PipelineFileUtils.getBuildDir(mr.getProject(),
+					true);
+			buildDir += "fsrfer";
 
-            String buildDir = PipelineFileUtils.getBuildDir(mr.getProject(), true);
-            buildDir +=  "fsrfer"  ;
+			xnatPipelineLauncher.setBuildDir(buildDir);
+			xnatPipelineLauncher.setNeedsBuildDir(false);
 
-            xnatPipelineLauncher.setBuildDir(buildDir);
-            xnatPipelineLauncher.setNeedsBuildDir(false);
+			Parameters parameters = Parameters.Factory.newInstance();
 
-            Parameters parameters = Parameters.Factory.newInstance();
+			if (TurbineUtils.HasPassedParameter("custom_command", data)) {
+				ParameterData param = parameters.addNewParameter();
+				param.setName("custom_command");
+				param.addNewValues().setUnique(
+						((String) org.nrg.xdat.turbine.utils.TurbineUtils
+								.GetPassedParameter("custom_command", data)));
+			} else {
 
-            if (TurbineUtils.HasPassedParameter("custom_command", data)) {
-                ParameterData param = parameters.addNewParameter();
-                param.setName("custom_command");
-                param.addNewValues().setUnique(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("custom_command",data)));
-            }else {
+				ParameterData param = parameters.addNewParameter();
+				param.setName("sessionId");
+				param.addNewValues().setUnique(mr.getLabel());
 
-                ParameterData param = parameters.addNewParameter();
-                param.setName("sessionId");
-                param.addNewValues().setUnique(mr.getLabel());
+				param = parameters.addNewParameter();
+				param.setName("isDicom");
+				param.addNewValues().setUnique(
+						((String) org.nrg.xdat.turbine.utils.TurbineUtils
+								.GetPassedParameter("isDicom", data)));
 
-                param = parameters.addNewParameter();
-                param.setName("isDicom");
-                param.addNewValues().setUnique(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("isDicom",data)));
+				// Add MPRAGE list
+				param = parameters.addNewParameter();
+				param.setName("mprs");
+				Values values = param.addNewValues();
+				if (mprageScans.size() == 1) {
+					values.setUnique(mprageScans.get(0));
+				} else {
+					for (int i = 0; i < mprageScans.size(); i++) {
+						values.addList(mprageScans.get(i));
+					}
+				}
 
-                // Add MPRAGE list
-                param = parameters.addNewParameter();
-                param.setName("mprs");
-                Values values = param.addNewValues();
-                if (mprageScans.size() == 1) {
-                    values.setUnique(mprageScans.get(0));
-                }else {
-                    for (int i = 0; i < mprageScans.size(); i++) {
-                        values.addList(mprageScans.get(i));
-                    }
-                }
+				param = parameters.addNewParameter();
+				param.setName("useall_t1s");
+				if (TurbineUtils.HasPassedParameter("useall_t1s", data)) {
+					param.addNewValues().setUnique("1");
+				} else {
+					param.addNewValues().setUnique("0");
+				}
+			}
 
-                param = parameters.addNewParameter();
-                param.setName("useall_t1s");
-                if (TurbineUtils.HasPassedParameter("useall_t1s", data)) {
-                    param.addNewValues().setUnique("1");
-                }else {
-                    param.addNewValues().setUnique("0");
-                }
-            }
+			String emailsStr = TurbineUtils.getUser(data).getEmail() + ","
+					+ data.getParameters().get("emailField");
+			String[] emails = emailsStr.trim().split(",");
+			for (int i = 0; i < emails.length; i++) {
+				if (emails[i] != null && !emails[i].equals(""))
+					xnatPipelineLauncher.notify(emails[i]);
+			}
 
-            String emailsStr = TurbineUtils.getUser(data).getEmail() + "," + data.getParameters().get("emailField");
-            String[] emails = emailsStr.trim().split(",");
-            for (int i = 0 ; i < emails.length; i++) {
-                if (emails[i]!=null && !emails[i].equals(""))  xnatPipelineLauncher.notify(emails[i]);
-            }
+			String paramFileName = getName(pipelineName);
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+			String s = formatter.format(date);
 
-            String paramFileName = getName(pipelineName);
-            Date date = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            String s = formatter.format(date);
+			paramFileName += "_params_" + s + ".xml";
 
-            paramFileName += "_params_" + s + ".xml";
+			String paramFilePath = saveParameters(buildDir + File.separator
+					+ mr.getLabel(), paramFileName, parameters);
 
-            String paramFilePath = saveParameters(buildDir + File.separator + mr.getLabel(),paramFileName,parameters);
+			xnatPipelineLauncher.setParameterFile(paramFilePath);
 
-            xnatPipelineLauncher.setParameterFile(paramFilePath);
-
-            boolean rtn = xnatPipelineLauncher.launch(cmdPrefix);
-            return rtn;
-        }catch(Exception e) {
-            logger.error(e.getCause() + " " + e.getLocalizedMessage());
-            return false;
-        }
-    }
+			boolean rtn = xnatPipelineLauncher.launch(cmdPrefix);
+			return rtn;
+		} catch (Exception e) {
+			logger.error(e.getCause() + " " + e.getLocalizedMessage());
+			return false;
+		}
+	}
 
 }

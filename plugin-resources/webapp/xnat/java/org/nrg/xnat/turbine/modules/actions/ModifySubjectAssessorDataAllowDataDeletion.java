@@ -12,10 +12,12 @@ package org.nrg.xnat.turbine.modules.actions;
 
 import org.apache.log4j.Logger;
 
-public class ModifySubjectAssessorDataAllowDataDeletion extends ModifySubjectAssessorData{
-	static Logger logger = Logger.getLogger(ModifySubjectAssessorDataAllowDataDeletion.class);
+public class ModifySubjectAssessorDataAllowDataDeletion extends
+		ModifySubjectAssessorData {
+	static Logger logger = Logger
+			.getLogger(ModifySubjectAssessorDataAllowDataDeletion.class);
 
-    public boolean allowDataDeletion(){
-        return true;
-    }
+	public boolean allowDataDeletion() {
+		return true;
+	}
 }

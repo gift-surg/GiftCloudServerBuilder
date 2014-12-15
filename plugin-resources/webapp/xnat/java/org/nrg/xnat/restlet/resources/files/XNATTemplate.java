@@ -41,8 +41,8 @@ public class XNATTemplate extends SecureResource {
 	final org.apache.log4j.Logger logger = org.apache.log4j.Logger
 			.getLogger(XNATTemplate.class);
 
-	XnatProjectdata proj=null;
-	XnatSubjectdata sub=null;
+	XnatProjectdata proj = null;
+	XnatSubjectdata sub = null;
 
 	ArrayList<XnatExperimentdata> expts = new ArrayList<XnatExperimentdata>();
 
@@ -52,7 +52,7 @@ public class XNATTemplate extends SecureResource {
 
 	ArrayList<XnatExperimentdata> assesseds = new ArrayList<XnatExperimentdata>();
 
-	String type=null;
+	String type = null;
 
 	ItemI parent = null;
 
@@ -63,115 +63,130 @@ public class XNATTemplate extends SecureResource {
 	public XNATTemplate(Context context, Request request, Response response) {
 		super(context, request, response);
 
-			String pID= (String)getParameter(request,"PROJECT_ID");
-			if(pID!=null){
-				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
+		String pID = (String) getParameter(request, "PROJECT_ID");
+		if (pID != null) {
+			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
-				if(proj==null){
+			if (proj == null) {
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 						"Unable to identify project");
-					return;
-				}
+				return;
 			}
+		}
 
-			String subID= (String)getParameter(request,"SUBJECT_ID");
-			if(subID!=null){
-				if(this.proj!=null)
-				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
-						.getId(), subID,user, false);
+		String subID = (String) getParameter(request, "SUBJECT_ID");
+		if (subID != null) {
+			if (this.proj != null)
+				sub = XnatSubjectdata.GetSubjectByProjectIdentifier(
+						proj.getId(), subID, user, false);
 
-				if(sub==null){
+			if (sub == null) {
 				sub = XnatSubjectdata.getXnatSubjectdatasById(subID, user,
 						false);
-				if(sub!=null && (proj!=null && !sub.hasProject(proj.getId()))){
-				    sub=null;
-				}
-				}
-
-				if(sub==null){
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-						"Unable to identify subject");
-					return;
+				if (sub != null
+						&& (proj != null && !sub.hasProject(proj.getId()))) {
+					sub = null;
 				}
 			}
 
-		String assessid = (String) getParameter(request,
-				"ASSESSED_ID");
-			if(assessid!=null){
-			for(String s: StringUtils.CommaDelimitedStringToArrayList(assessid)){
-				XnatExperimentdata assessed = XnatImagesessiondata.getXnatImagesessiondatasById(
-					s, user, false);
+			if (sub == null) {
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+						"Unable to identify subject");
+				return;
+			}
+		}
 
-				if(assessed!=null && (proj!=null && !assessed.hasProject(proj.getId()))){
-				    assessed=null;
+		String assessid = (String) getParameter(request, "ASSESSED_ID");
+		if (assessid != null) {
+			for (String s : StringUtils
+					.CommaDelimitedStringToArrayList(assessid)) {
+				XnatExperimentdata assessed = XnatImagesessiondata
+						.getXnatImagesessiondatasById(s, user, false);
+
+				if (assessed != null
+						&& (proj != null && !assessed.hasProject(proj.getId()))) {
+					assessed = null;
 				}
 
-				if (assessed == null && proj!=null) {
+				if (assessed == null && proj != null) {
 					assessed = (XnatImagesessiondata) XnatImagesessiondata
-							.GetExptByProjectIdentifier(proj.getId(), s,
-									user, false);
+							.GetExptByProjectIdentifier(proj.getId(), s, user,
+									false);
 				}
 
-				if(assessed!=null){
+				if (assessed != null) {
 					try {
-						if(assessed.canRead(user))
+						if (assessed.canRead(user))
 							assesseds.add(assessed);
 					} catch (Exception e) {
 					}
 				}
 
-				if (assesseds.size() != 1 && !this.getRequest().getMethod().equals(Method.GET)) {
-						response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+				if (assesseds.size() != 1
+						&& !this.getRequest().getMethod().equals(Method.GET)) {
+					response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 							"Unable to identify image session");
 					return;
 				}
 			}
 		}
 
-			type= (String)getParameter(request,"TYPE");
+		type = (String) getParameter(request, "TYPE");
 
-			String exptID= (String)getParameter(request,"EXPT_ID");
-			if(exptID!=null){
-			for(String s: StringUtils.CommaDelimitedStringToArrayList(exptID)){
-				XnatExperimentdata expt = XnatExperimentdata.getXnatExperimentdatasById(s,
-						user, false);
+		String exptID = (String) getParameter(request, "EXPT_ID");
+		if (exptID != null) {
+			for (String s : StringUtils.CommaDelimitedStringToArrayList(exptID)) {
+				XnatExperimentdata expt = XnatExperimentdata
+						.getXnatExperimentdatasById(s, user, false);
 
-				if (expt == null && proj!=null) {
+				if (expt == null && proj != null) {
 					expt = (XnatExperimentdata) XnatExperimentdata
-							.GetExptByProjectIdentifier(proj.getId(), s,
-									user, false);
+							.GetExptByProjectIdentifier(proj.getId(), s, user,
+									false);
 				}
 
-				if (expt != null && assesseds.size()>0) {
-					if(type==null){
-						type="out";
+				if (expt != null && assesseds.size() > 0) {
+					if (type == null) {
+						type = "out";
 					}
 				}
 
-				if(expt!=null){
+				if (expt != null) {
 					try {
-						if(expt.canRead(user))expts.add(expt);
-					} catch (Exception e) {}
-				}else if(assesseds.size()>0){
-					for(XnatExperimentdata assessed:assesseds)
-						for(XnatImageassessordataI iad:((XnatImagesessiondata)assessed).getMinimalLoadAssessors()){
-							if(iad.getId().equals(s)
-									|| (iad.getLabel()!=null && iad.getLabel().equals(s))){
+						if (expt.canRead(user))
+							expts.add(expt);
+					} catch (Exception e) {
+					}
+				} else if (assesseds.size() > 0) {
+					for (XnatExperimentdata assessed : assesseds)
+						for (XnatImageassessordataI iad : ((XnatImagesessiondata) assessed)
+								.getMinimalLoadAssessors()) {
+							if (iad.getId().equals(s)
+									|| (iad.getLabel() != null && iad
+											.getLabel().equals(s))) {
 								try {
-									if(((XnatImageassessordata)iad).canRead(user))expts.add(((XnatImageassessordata)iad));
+									if (((XnatImageassessordata) iad)
+											.canRead(user))
+										expts.add(((XnatImageassessordata) iad));
 								} catch (Exception e) {
 								}
-							}else if(s.equals("*") || s.equals("ALL")){
+							} else if (s.equals("*") || s.equals("ALL")) {
 								try {
-									if(((XnatImageassessordata)iad).canRead(user))expts.add(((XnatImageassessordata)iad));
+									if (((XnatImageassessordata) iad)
+											.canRead(user))
+										expts.add(((XnatImageassessordata) iad));
 								} catch (Exception e) {
 								}
-							}else{
+							} else {
 								try {
-									GenericWrapperElement gwe = GenericWrapperElement.GetElement(s);
+									GenericWrapperElement gwe = GenericWrapperElement
+											.GetElement(s);
 
-									if(((XnatImageassessordata)iad).getItem().instanceOf(gwe.getFullXMLName())){
-										if(((XnatImageassessordata)iad).canRead(user))expts.add(((XnatImageassessordata)iad));
+									if (((XnatImageassessordata) iad).getItem()
+											.instanceOf(gwe.getFullXMLName())) {
+										if (((XnatImageassessordata) iad)
+												.canRead(user))
+											expts.add(((XnatImageassessordata) iad));
 									}
 								} catch (Exception e) {
 								}
@@ -180,91 +195,111 @@ public class XNATTemplate extends SecureResource {
 				}
 			}
 
-			if (expts.size() != 1 && !this.getRequest().getMethod().equals(Method.GET)) {
+			if (expts.size() != 1
+					&& !this.getRequest().getMethod().equals(Method.GET)) {
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 						"Unable to identify experiment");
-					return;
-				}
+				return;
 			}
+		}
 
-		String scanID= (String)getUrlEncodedParameter(request,"SCAN_ID");
-		if (scanID != null && this.assesseds.size()>0) {
-			
-			scanID=scanID.replace("[SLASH]", "/");//this is such an ugly hack.  If a slash is included in the scan type and thus in the URL, it breaks the GET command.  Even if it is properly escaped.  So, I'm adding this alternative encoding of slash to allow us to work around the issue.  Hopefully Spring MVC will eliminate it.
-			
+		String scanID = (String) getUrlEncodedParameter(request, "SCAN_ID");
+		if (scanID != null && this.assesseds.size() > 0) {
+
+			scanID = scanID.replace("[SLASH]", "/");// this is such an ugly
+													// hack. If a slash is
+													// included in the scan type
+													// and thus in the URL, it
+													// breaks the GET command.
+													// Even if it is properly
+													// escaped. So, I'm adding
+													// this alternative encoding
+													// of slash to allow us to
+													// work around the issue.
+													// Hopefully Spring MVC will
+													// eliminate it.
+
 			CriteriaCollection cc = new CriteriaCollection("OR");
-			for(XnatExperimentdata assessed:this.assesseds){
+			for (XnatExperimentdata assessed : this.assesseds) {
 				CriteriaCollection subcc = new CriteriaCollection("AND");
-				subcc.addClause("xnat:imageScanData/image_session_ID", assessed
-						.getId());
-				if(scanID.equals("*") || scanID.equals("ALL")){
+				subcc.addClause("xnat:imageScanData/image_session_ID",
+						assessed.getId());
+				if (scanID.equals("*") || scanID.equals("ALL")) {
 
-				}else if(scanID.indexOf(",")==-1){
+				} else if (scanID.indexOf(",") == -1) {
 					subcc.addClause("xnat:imageScanData/ID", scanID);
-				}else{
+				} else {
 					CriteriaCollection subsubcc = new CriteriaCollection("OR");
-					for(String s:StringUtils.CommaDelimitedStringToArrayList(scanID, true)){
+					for (String s : StringUtils
+							.CommaDelimitedStringToArrayList(scanID, true)) {
 						subsubcc.addClause("xnat:imageScanData/ID", s);
 					}
 					subcc.add(subsubcc);
 				}
 				cc.add(subcc);
-				
-				subcc = new CriteriaCollection("AND");
-				subcc.addClause("xnat:imageScanData/image_session_ID", assessed
-						.getId());
-				if(scanID.equals("*") || scanID.equals("ALL")){
 
-				}else if(scanID.indexOf(",")==-1){
-					if(scanID.equals("NULL")){
-						CriteriaCollection subsubcc = new CriteriaCollection("OR");
-						subsubcc.addClause("xnat:imageScanData/type",""," IS NULL ",true);
-						subsubcc.addClause("xnat:imageScanData/type","");
+				subcc = new CriteriaCollection("AND");
+				subcc.addClause("xnat:imageScanData/image_session_ID",
+						assessed.getId());
+				if (scanID.equals("*") || scanID.equals("ALL")) {
+
+				} else if (scanID.indexOf(",") == -1) {
+					if (scanID.equals("NULL")) {
+						CriteriaCollection subsubcc = new CriteriaCollection(
+								"OR");
+						subsubcc.addClause("xnat:imageScanData/type", "",
+								" IS NULL ", true);
+						subsubcc.addClause("xnat:imageScanData/type", "");
 						subcc.add(subsubcc);
-					}else{
-						subcc.addClause("xnat:imageScanData/type", scanID.replace("[COMMA]", ","));
+					} else {
+						subcc.addClause("xnat:imageScanData/type",
+								scanID.replace("[COMMA]", ","));
 					}
-				}else{
+				} else {
 					CriteriaCollection subsubcc = new CriteriaCollection("OR");
-					for(String s:StringUtils.CommaDelimitedStringToArrayList(scanID, true)){
-						if(s.equals("NULL")){
-							subsubcc.addClause("xnat:imageScanData/type",""," IS NULL ",true);
-							subsubcc.addClause("xnat:imageScanData/type","");
-						}else{
-							subsubcc.addClause("xnat:imageScanData/type", s.replace("[COMMA]", ","));
-				}
+					for (String s : StringUtils
+							.CommaDelimitedStringToArrayList(scanID, true)) {
+						if (s.equals("NULL")) {
+							subsubcc.addClause("xnat:imageScanData/type", "",
+									" IS NULL ", true);
+							subsubcc.addClause("xnat:imageScanData/type", "");
+						} else {
+							subsubcc.addClause("xnat:imageScanData/type",
+									s.replace("[COMMA]", ","));
+						}
 					}
 					subcc.add(subsubcc);
 				}
 				cc.add(subcc);
 			}
 
-			scans = XnatImagescandata
-					.getXnatImagescandatasByField(cc, user,
-							completeDocument);
+			scans = XnatImagescandata.getXnatImagescandatasByField(cc, user,
+					completeDocument);
 
-			if (scans.size() != 1 && !this.getRequest().getMethod().equals(Method.GET)) {
+			if (scans.size() != 1
+					&& !this.getRequest().getMethod().equals(Method.GET)) {
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 						"Unable to identify scan");
-					return;
-				}
+				return;
 			}
+		}
 
-		String reconID= (String)getUrlEncodedParameter(request,"RECON_ID");
-		if (reconID != null && assesseds.size()>0) {
+		String reconID = (String) getUrlEncodedParameter(request, "RECON_ID");
+		if (reconID != null && assesseds.size() > 0) {
 			CriteriaCollection cc = new CriteriaCollection("OR");
 
-			for(XnatExperimentdata assessed:this.assesseds){
+			for (XnatExperimentdata assessed : this.assesseds) {
 				CriteriaCollection subcc = new CriteriaCollection("AND");
 				subcc.addClause("xnat:reconstructedImageData/image_session_ID",
 						assessed.getId());
-				if(reconID.equals("*") || reconID.equals("ALL")){
+				if (reconID.equals("*") || reconID.equals("ALL")) {
 
-				}else if(reconID.indexOf(",")==-1){
+				} else if (reconID.indexOf(",") == -1) {
 					subcc.addClause("xnat:reconstructedImageData/ID", reconID);
-				}else{
+				} else {
 					CriteriaCollection subsubcc = new CriteriaCollection("OR");
-					for(String s:StringUtils.CommaDelimitedStringToArrayList(reconID, true)){
+					for (String s : StringUtils
+							.CommaDelimitedStringToArrayList(reconID, true)) {
 						subsubcc.addClause("xnat:reconstructedImageData/ID", s);
 					}
 					subcc.add(subsubcc);
@@ -274,25 +309,35 @@ public class XNATTemplate extends SecureResource {
 				subcc = new CriteriaCollection("AND");
 				subcc.addClause("xnat:reconstructedImageData/image_session_ID",
 						assessed.getId());
-				if(reconID.equals("*") || reconID.equals("ALL")){
+				if (reconID.equals("*") || reconID.equals("ALL")) {
 
-				}else if(reconID.indexOf(",")==-1){
-					if(reconID.equals("NULL")){
-						CriteriaCollection subsubcc = new CriteriaCollection("OR");
-						subsubcc.addClause("xnat:reconstructedImageData/type",""," IS NULL ",true);
-						subsubcc.addClause("xnat:reconstructedImageData/type","");
+				} else if (reconID.indexOf(",") == -1) {
+					if (reconID.equals("NULL")) {
+						CriteriaCollection subsubcc = new CriteriaCollection(
+								"OR");
+						subsubcc.addClause("xnat:reconstructedImageData/type",
+								"", " IS NULL ", true);
+						subsubcc.addClause("xnat:reconstructedImageData/type",
+								"");
 						subcc.add(subsubcc);
-					}else{
-						subcc.addClause("xnat:reconstructedImageData/type", reconID);
+					} else {
+						subcc.addClause("xnat:reconstructedImageData/type",
+								reconID);
 					}
-				}else{
+				} else {
 					CriteriaCollection subsubcc = new CriteriaCollection("OR");
-					for(String s:StringUtils.CommaDelimitedStringToArrayList(reconID, true)){
-						if(s.equals("NULL")){
-							subsubcc.addClause("xnat:reconstructedImageData/type",""," IS NULL ",true);
-							subsubcc.addClause("xnat:reconstructedImageData/type","");
-						}else{
-							subsubcc.addClause("xnat:reconstructedImageData/type", s.replace("[COMMA]", ","));
+					for (String s : StringUtils
+							.CommaDelimitedStringToArrayList(reconID, true)) {
+						if (s.equals("NULL")) {
+							subsubcc.addClause(
+									"xnat:reconstructedImageData/type", "",
+									" IS NULL ", true);
+							subsubcc.addClause(
+									"xnat:reconstructedImageData/type", "");
+						} else {
+							subsubcc.addClause(
+									"xnat:reconstructedImageData/type",
+									s.replace("[COMMA]", ","));
 						}
 					}
 					subcc.add(subsubcc);
@@ -304,92 +349,99 @@ public class XNATTemplate extends SecureResource {
 					.getXnatReconstructedimagedatasByField(cc, user,
 							completeDocument);
 			if (recons.size() > 0) {
-					if(type==null){
-						type="out";
-					}
-				}
-
-			if (recons.size() != 1 && !this.getRequest().getMethod().equals(Method.GET)) {
-				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
-						"Unable to identify reconstruction");
-					return;
+				if (type == null) {
+					type = "out";
 				}
 			}
 
+			if (recons.size() != 1
+					&& !this.getRequest().getMethod().equals(Method.GET)) {
+				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+						"Unable to identify reconstruction");
+				return;
+			}
+		}
+
 	}
 
-	public boolean allowMultipleMatches(){
-		if(this instanceof FileList && this.getRequest().getMethod().equals(Method.GET)){
+	public boolean allowMultipleMatches() {
+		if (this instanceof FileList
+				&& this.getRequest().getMethod().equals(Method.GET)) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public ItemI getSecurityItem(){
-		if(this.security!=null)return security;
-		
-		XnatExperimentdata assessed=null;
-		if(this.assesseds.size()==1)assessed=assesseds.get(0);
 
-		if (recons.size()>0) {
+	public ItemI getSecurityItem() {
+		if (this.security != null)
+			return security;
+
+		XnatExperimentdata assessed = null;
+		if (this.assesseds.size() == 1)
+			assessed = assesseds.get(0);
+
+		if (recons.size() > 0) {
 			return assessed;
-		} else if (scans.size()>0) {
+		} else if (scans.size() > 0) {
 			return assessed;
-		} else if (expts.size()>0) {
-//			experiment
+		} else if (expts.size() > 0) {
+			// experiment
 			return expts.get(0);
-		}else if(sub!=null){
+		} else if (sub != null) {
 			return sub;
-		}else if(proj!=null){
+		} else if (proj != null) {
 			return proj;
-		}else{
+		} else {
 			return null;
 		}
 	}
 
-	public boolean insertCatalag(XnatResourcecatalog catResource,EventMetaI ci)
+	public boolean insertCatalag(XnatResourcecatalog catResource, EventMetaI ci)
 			throws InvalidArchiveStructure, Exception {
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
 				XNATRestConstants.PREARCHIVE_TIMESTAMP);
-        String uploadID = formatter.format(Calendar.getInstance().getTime());
-		String resourceFolder=catResource.getLabel();
+		String uploadID = formatter.format(Calendar.getInstance().getTime());
+		String resourceFolder = catResource.getLabel();
 
-		XnatExperimentdata assessed=null;
-		if(this.assesseds.size()==1)assessed=assesseds.get(0);
+		XnatExperimentdata assessed = null;
+		if (this.assesseds.size() == 1)
+			assessed = assesseds.get(0);
 
-		if (recons.size()>0) {
-			//reconstruction
+		if (recons.size() > 0) {
+			// reconstruction
 			if (assessed == null) {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 						"Invalid session id.");
-				//MATCHED
+				// MATCHED
 				return false;
 			}
 
-			XnatReconstructedimagedata recon=recons.get(0);
+			XnatReconstructedimagedata recon = recons.get(0);
 
-			if(recon.getId()!=null && !recon.getId().equals("")){
-				uploadID=recon.getId();
+			if (recon.getId() != null && !recon.getId().equals("")) {
+				uploadID = recon.getId();
 			}
 
 			XnatImagesessiondata session = (XnatImagesessiondata) assessed;
-			String dest_path = FileUtils.AppendRootPath(session
-					.getCurrentSessionFolder(true), "PROCESSED/" + uploadID
-					+ "/");
+			String dest_path = FileUtils.AppendRootPath(
+					session.getCurrentSessionFolder(true), "PROCESSED/"
+							+ uploadID + "/");
 
 			CatCatalogBean cat = new CatCatalogBean();
-			if(catResource.getLabel()!=null){
+			if (catResource.getLabel() != null) {
 				cat.setId(catResource.getLabel());
-			}else{
+			} else {
 				cat.setId(uploadID);
 			}
 
-			File dest=null;
-			if(resourceFolder==null){
-				dest = new File(new File(dest_path),cat.getId() + "_catalog.xml");
-			}else{
-				dest = new File(new File(dest_path,resourceFolder),cat.getId() + "_catalog.xml");
+			File dest = null;
+			if (resourceFolder == null) {
+				dest = new File(new File(dest_path), cat.getId()
+						+ "_catalog.xml");
+			} else {
+				dest = new File(new File(dest_path, resourceFolder),
+						cat.getId() + "_catalog.xml");
 			}
 			dest.getParentFile().mkdirs();
 
@@ -398,53 +450,56 @@ public class XNATTemplate extends SecureResource {
 				cat.toXML(fw, true);
 				fw.close();
 			} catch (IOException e) {
-				logger.error("",e);
+				logger.error("", e);
 			}
 
 			catResource.setUri(dest.getAbsolutePath());
 
-			if(type!=null){
-				if(type.equals("in")){
+			if (type != null) {
+				if (type.equals("in")) {
 					recon.setIn_file(catResource);
-				}else{
+				} else {
 					recon.setOut_file(catResource);
 				}
-			}else{
+			} else {
 				recon.setOut_file(catResource);
 			}
 
-			SaveItemHelper.authorizedSave(recon,user, false, false,ci);
+			SaveItemHelper.authorizedSave(recon, user, false, false, ci);
 			return true;
-		} else if (scans.size()>0) {
-			XnatImagescandata scan=scans.get(0);
-			//scan
+		} else if (scans.size() > 0) {
+			XnatImagescandata scan = scans.get(0);
+			// scan
 			if (assessed == null) {
 				this.getResponse().setStatus(Status.CLIENT_ERROR_GONE,
 						"Invalid session id.");
-				//MATCHED
+				// MATCHED
 				return false;
 			}
 
-			if(scan.getId()!=null && !scan.getId().equals("")){
-				uploadID=scan.getId();
+			if (scan.getId() != null && !scan.getId().equals("")) {
+				uploadID = scan.getId();
 			}
 
 			XnatImagesessiondata session = (XnatImagesessiondata) assessed;
-			String dest_path = FileUtils.AppendRootPath(session
-					.getCurrentSessionFolder(true), "SCANS/" + uploadID + "/");
+			String dest_path = FileUtils.AppendRootPath(
+					session.getCurrentSessionFolder(true), "SCANS/" + uploadID
+							+ "/");
 
 			CatCatalogBean cat = new CatCatalogBean();
-			if(catResource.getLabel()!=null){
+			if (catResource.getLabel() != null) {
 				cat.setId(catResource.getLabel());
-			}else{
+			} else {
 				cat.setId(uploadID);
 			}
 
-			File dest=null;
-			if(resourceFolder==null){
-				dest = new File(new File(dest_path),cat.getId() + "_catalog.xml");
-			}else{
-				dest = new File(new File(dest_path,resourceFolder),cat.getId() + "_catalog.xml");
+			File dest = null;
+			if (resourceFolder == null) {
+				dest = new File(new File(dest_path), cat.getId()
+						+ "_catalog.xml");
+			} else {
+				dest = new File(new File(dest_path, resourceFolder),
+						cat.getId() + "_catalog.xml");
 			}
 			dest.getParentFile().mkdirs();
 
@@ -453,55 +508,59 @@ public class XNATTemplate extends SecureResource {
 				cat.toXML(fw, true);
 				fw.close();
 			} catch (IOException e) {
-				logger.error("",e);
+				logger.error("", e);
 			}
 
 			catResource.setUri(dest.getAbsolutePath());
 
-			if(scan.getFile().size()==0){
-				if(catResource.getContent()==null && scan.getType()!=null){
+			if (scan.getFile().size() == 0) {
+				if (catResource.getContent() == null && scan.getType() != null) {
 					catResource.setContent("RAW");
 				}
 			}
 
 			scan.setFile(catResource);
 
-			SaveItemHelper.authorizedSave(scan,user, false, false,ci);
+			SaveItemHelper.authorizedSave(scan, user, false, false, ci);
 			return true;
-		} else if (expts.size()>0) {
-//			experiment
-			XnatExperimentdata expt=expts.get(0);
+		} else if (expts.size() > 0) {
+			// experiment
+			XnatExperimentdata expt = expts.get(0);
 			XnatExperimentdata session = null;
 
-			String dest_path=null;
-			if(expt.getItem().instanceOf("xnat:imageAssessorData")){
+			String dest_path = null;
+			if (expt.getItem().instanceOf("xnat:imageAssessorData")) {
 				session = (XnatImagesessiondata) assessed;
-				if(expt.getId()!=null && !expt.getId().equals("")){
-					uploadID=expt.getId();
+				if (expt.getId() != null && !expt.getId().equals("")) {
+					uploadID = expt.getId();
 				}
-				dest_path = FileUtils.AppendRootPath(((XnatImagesessiondata)session)
-						.getCurrentSessionFolder(true), "ASSESSORS/"
-						+ expt.getArchiveDirectoryName() + "/");
-			}else{
-				if(!expt.getItem().instanceOf("xnat:imageSessionData")){
+				dest_path = FileUtils.AppendRootPath(
+						((XnatImagesessiondata) session)
+								.getCurrentSessionFolder(true), "ASSESSORS/"
+								+ expt.getArchiveDirectoryName() + "/");
+			} else {
+				if (!expt.getItem().instanceOf("xnat:imageSessionData")) {
 					session = (XnatExperimentdata) expt;
 				} else {
 					session = (XnatImagesessiondata) expt;
 				}
-				dest_path = FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "RESOURCES/");
+				dest_path = FileUtils.AppendRootPath(
+						session.getCurrentSessionFolder(true), "RESOURCES/");
 			}
 			CatCatalogBean cat = new CatCatalogBean();
-			if(catResource.getLabel()!=null){
+			if (catResource.getLabel() != null) {
 				cat.setId(catResource.getLabel());
-			}else{
+			} else {
 				cat.setId(uploadID);
 			}
 
-			File dest=null;
-			if(resourceFolder==null){
-				dest = new File(new File(dest_path),cat.getId() + "_catalog.xml");
-			}else{
-				dest = new File(new File(dest_path,resourceFolder),cat.getId() + "_catalog.xml");
+			File dest = null;
+			if (resourceFolder == null) {
+				dest = new File(new File(dest_path), cat.getId()
+						+ "_catalog.xml");
+			} else {
+				dest = new File(new File(dest_path, resourceFolder),
+						cat.getId() + "_catalog.xml");
 			}
 			dest.getParentFile().mkdirs();
 
@@ -510,7 +569,7 @@ public class XNATTemplate extends SecureResource {
 				cat.toXML(fw, true);
 				fw.close();
 			} catch (IOException e) {
-				logger.error("",e);
+				logger.error("", e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 						e.getMessage());
 				return false;
@@ -518,44 +577,47 @@ public class XNATTemplate extends SecureResource {
 
 			catResource.setUri(dest.getAbsolutePath());
 
-			if(expt.getItem().instanceOf("xnat:imageAssessorData")){
-				XnatImageassessordata iad = (XnatImageassessordata)expt;
-				if(type!=null){
-					if(type.equals("in")){
+			if (expt.getItem().instanceOf("xnat:imageAssessorData")) {
+				XnatImageassessordata iad = (XnatImageassessordata) expt;
+				if (type != null) {
+					if (type.equals("in")) {
 						iad.setIn_file(catResource);
-					}else{
+					} else {
 						iad.setOut_file(catResource);
 					}
-				}else{
+				} else {
 					iad.setOut_file(catResource);
 				}
 
-				SaveItemHelper.authorizedSave(iad,user, false, false,ci);
+				SaveItemHelper.authorizedSave(iad, user, false, false, ci);
 
-			}else{
+			} else {
 				session.setResources_resource(catResource);
 
-				SaveItemHelper.authorizedSave(session,user, false, false,ci);
+				SaveItemHelper.authorizedSave(session, user, false, false, ci);
 			}
 			return true;
-		}else if(sub!=null){
-			String dest_path=null;
-			if(proj==null)proj=sub.getPrimaryProject(false);
+		} else if (sub != null) {
+			String dest_path = null;
+			if (proj == null)
+				proj = sub.getPrimaryProject(false);
 			dest_path = FileUtils.AppendRootPath(proj.getRootArchivePath(),
 					"subjects/" + sub.getArchiveDirectoryName() + "/");
 
 			CatCatalogBean cat = new CatCatalogBean();
-			if(catResource.getLabel()!=null){
+			if (catResource.getLabel() != null) {
 				cat.setId(catResource.getLabel());
-			}else{
+			} else {
 				cat.setId(uploadID);
 			}
 
-			File dest=null;
-			if(resourceFolder==null){
-				dest = new File(new File(dest_path),cat.getId() + "_catalog.xml");
-			}else{
-				dest = new File(new File(dest_path,resourceFolder),cat.getId() + "_catalog.xml");
+			File dest = null;
+			if (resourceFolder == null) {
+				dest = new File(new File(dest_path), cat.getId()
+						+ "_catalog.xml");
+			} else {
+				dest = new File(new File(dest_path, resourceFolder),
+						cat.getId() + "_catalog.xml");
 			}
 			dest.getParentFile().mkdirs();
 
@@ -564,7 +626,7 @@ public class XNATTemplate extends SecureResource {
 				cat.toXML(fw, true);
 				fw.close();
 			} catch (IOException e) {
-				logger.error("",e);
+				logger.error("", e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 						e.getMessage());
 				return false;
@@ -573,25 +635,27 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			sub.setResources_resource(catResource);
 
-			SaveItemHelper.authorizedSave(sub,user, false, false,ci);
+			SaveItemHelper.authorizedSave(sub, user, false, false, ci);
 			return true;
-		}else if(proj!=null){
-			String dest_path=null;
+		} else if (proj != null) {
+			String dest_path = null;
 			dest_path = FileUtils.AppendRootPath(proj.getRootArchivePath(),
 					"resources/");
 
 			CatCatalogBean cat = new CatCatalogBean();
-			if(catResource.getLabel()!=null){
+			if (catResource.getLabel() != null) {
 				cat.setId(catResource.getLabel());
-			}else{
+			} else {
 				cat.setId(uploadID);
 			}
 
-			File dest=null;
-			if(resourceFolder==null){
-				dest = new File(new File(dest_path),cat.getId() + "_catalog.xml");
-			}else{
-				dest = new File(new File(dest_path,resourceFolder),cat.getId() + "_catalog.xml");
+			File dest = null;
+			if (resourceFolder == null) {
+				dest = new File(new File(dest_path), cat.getId()
+						+ "_catalog.xml");
+			} else {
+				dest = new File(new File(dest_path, resourceFolder),
+						cat.getId() + "_catalog.xml");
 			}
 			dest.getParentFile().mkdirs();
 
@@ -600,7 +664,7 @@ public class XNATTemplate extends SecureResource {
 				cat.toXML(fw, true);
 				fw.close();
 			} catch (IOException e) {
-				logger.error("",e);
+				logger.error("", e);
 				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 						e.getMessage());
 				return false;
@@ -609,21 +673,26 @@ public class XNATTemplate extends SecureResource {
 			catResource.setUri(dest.getAbsolutePath());
 			proj.setResources_resource(catResource);
 
-			SaveItemHelper.authorizedSave(proj,user, false, false,ci);
+			SaveItemHelper.authorizedSave(proj, user, false, false, ci);
 			return true;
 		}
 		return true;
 	}
-	
-	public void checkResourceIDs(ArrayList<String> resourceIDs) throws Exception{
-		if(resourceIDs!=null){
+
+	public void checkResourceIDs(ArrayList<String> resourceIDs)
+			throws Exception {
+		if (resourceIDs != null) {
 			for (String resourceID : resourceIDs) {
-				if(resourceID!=null){
-					if(resourceID.contains("'")){
-						throw new Exception("Possible SQL Injection attempt. ' is not allowed in resource labels: " + resourceID);
-					}else{
-						if(PoolDBUtils.HackCheck(resourceID)){
-							throw new Exception("Possible SQL Injection attempt: " + resourceID);
+				if (resourceID != null) {
+					if (resourceID.contains("'")) {
+						throw new Exception(
+								"Possible SQL Injection attempt. ' is not allowed in resource labels: "
+										+ resourceID);
+					} else {
+						if (PoolDBUtils.HackCheck(resourceID)) {
+							throw new Exception(
+									"Possible SQL Injection attempt: "
+											+ resourceID);
 						}
 					}
 				}
@@ -632,113 +701,111 @@ public class XNATTemplate extends SecureResource {
 	}
 
 	public XFTTable loadCatalogs(ArrayList<String> resourceIDs,
-			boolean includeURI,boolean allowAll) throws Exception {
+			boolean includeURI, boolean allowAll) throws Exception {
 		checkResourceIDs(resourceIDs);
-		
+
 		StringBuffer query = new StringBuffer();
 		String starterFields = "SELECT xnat_abstractresource_id,abst.label,xme.element_name ";
 
-		if (recons.size()>0) {
+		if (recons.size() > 0) {
 			security = this.assesseds.get(0);
 			parent = recons.get(0);
-				if (type!=null && type.equals("in")) {
-					xmlPath = "xnat:reconstructedImageData/in/file";
-					query.append(starterFields);
-					query.append(", 'reconstructions'::TEXT AS category, recon.id::TEXT AS cat_id");
-					query.append(", recon.type::TEXT AS cat_desc");
-					if (includeURI) {
-						query.append(",'/experiments/' || recon.image_session_id");
-						query.append(" || '/reconstructions/' || recon.id || '/in'");
-						query.append(" || '/resources/' || abst.xnat_abstractresource_id AS resource_path");
-					}
-					query.append(" FROM recon_in_resource map ");
-					query.append(" LEFT JOIN xnat_reconstructedimagedata recon ON map.xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=recon.xnat_reconstructedimagedata_id ");
-					query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
-					query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
-					query.append(" WHERE (");
-					int sC=0;
-					for(XnatReconstructedimagedata recon:recons){
-						if(sC++>0)query.append(" OR ");
-						query.append("xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=");
-						query.append(recon.getXnatReconstructedimagedataId());
-					}
-					query.append(") ");
-					if (resourceIDs != null && resourceIDs.size() > 0) {
-						int c = 0;
-						query.append(" AND ( ");
-						for (String resourceID : resourceIDs) {
-							if (c++ > 0)
-								query.append(" OR ");
-							if (org.apache.commons.lang.StringUtils
-									.isNumeric(resourceID)) {
-								query
-										.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
-								query.append(resourceID);
-								query.append(" OR abst.label='");
-								query.append(resourceID);
-								query.append("')");
-							} else if(resourceID.equalsIgnoreCase("NULL")){
-								query.append(" abst.label IS NULL");
-							}
-							else{
-								query.append(" abst.label='");
-								query.append(resourceID);
-								query.append("'");
-							}
-						}
-						query.append(")");
-					}
-				} else {
-					xmlPath = "xnat:reconstructedImageData/out/file";
-					query.append(starterFields);
-					query.append(", 'reconstructions'::TEXT AS category, recon.id::TEXT AS cat_id");
-					query.append(", recon.type::TEXT AS cat_desc");
-					if (includeURI) {
-						query.append(",'/experiments/' || recon.image_session_id");
-						query.append(" || '/reconstructions/' || recon.id || '/out'");
-						query.append(" || '/resources/' || abst.xnat_abstractresource_id AS resource_path");
-					}
-					query.append(" FROM recon_out_resource map ");
-					query.append(" LEFT JOIN xnat_reconstructedimagedata recon ON map.xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=recon.xnat_reconstructedimagedata_id ");
-					query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
-					query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
-
-					query.append(" WHERE (");
-					int sC=0;
-					for(XnatReconstructedimagedata recon:recons){
-						if(sC++>0)query.append(" OR ");
-						query.append("xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=");
-						query.append(recon.getXnatReconstructedimagedataId());
-					}
-					query.append(") ");
-
-					if (resourceIDs != null && resourceIDs.size() > 0) {
-						int c = 0;
-						query.append(" AND ( ");
-						for (String resourceID : resourceIDs) {
-							if (c++ > 0)
-								query.append(" OR ");
-							if (org.apache.commons.lang.StringUtils
-									.isNumeric(resourceID)) {
-								query
-										.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
-								query.append(resourceID);
-								query.append(" OR abst.label='");
-								query.append(resourceID);
-								query.append("')");
-							} else if(resourceID.equalsIgnoreCase("NULL")){
-								query.append(" abst.label IS NULL");
-							}
-							else{
-								query.append(" abst.label='");
-								query.append(resourceID);
-								query.append("'");
-							}
-						}
-						query.append(")");
-					}
+			if (type != null && type.equals("in")) {
+				xmlPath = "xnat:reconstructedImageData/in/file";
+				query.append(starterFields);
+				query.append(", 'reconstructions'::TEXT AS category, recon.id::TEXT AS cat_id");
+				query.append(", recon.type::TEXT AS cat_desc");
+				if (includeURI) {
+					query.append(",'/experiments/' || recon.image_session_id");
+					query.append(" || '/reconstructions/' || recon.id || '/in'");
+					query.append(" || '/resources/' || abst.xnat_abstractresource_id AS resource_path");
 				}
-		} else if (scans.size()>0) {
+				query.append(" FROM recon_in_resource map ");
+				query.append(" LEFT JOIN xnat_reconstructedimagedata recon ON map.xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=recon.xnat_reconstructedimagedata_id ");
+				query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
+				query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
+				query.append(" WHERE (");
+				int sC = 0;
+				for (XnatReconstructedimagedata recon : recons) {
+					if (sC++ > 0)
+						query.append(" OR ");
+					query.append("xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=");
+					query.append(recon.getXnatReconstructedimagedataId());
+				}
+				query.append(") ");
+				if (resourceIDs != null && resourceIDs.size() > 0) {
+					int c = 0;
+					query.append(" AND ( ");
+					for (String resourceID : resourceIDs) {
+						if (c++ > 0)
+							query.append(" OR ");
+						if (org.apache.commons.lang.StringUtils
+								.isNumeric(resourceID)) {
+							query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+							query.append(resourceID);
+							query.append(" OR abst.label='");
+							query.append(resourceID);
+							query.append("')");
+						} else if (resourceID.equalsIgnoreCase("NULL")) {
+							query.append(" abst.label IS NULL");
+						} else {
+							query.append(" abst.label='");
+							query.append(resourceID);
+							query.append("'");
+						}
+					}
+					query.append(")");
+				}
+			} else {
+				xmlPath = "xnat:reconstructedImageData/out/file";
+				query.append(starterFields);
+				query.append(", 'reconstructions'::TEXT AS category, recon.id::TEXT AS cat_id");
+				query.append(", recon.type::TEXT AS cat_desc");
+				if (includeURI) {
+					query.append(",'/experiments/' || recon.image_session_id");
+					query.append(" || '/reconstructions/' || recon.id || '/out'");
+					query.append(" || '/resources/' || abst.xnat_abstractresource_id AS resource_path");
+				}
+				query.append(" FROM recon_out_resource map ");
+				query.append(" LEFT JOIN xnat_reconstructedimagedata recon ON map.xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=recon.xnat_reconstructedimagedata_id ");
+				query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
+				query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
+
+				query.append(" WHERE (");
+				int sC = 0;
+				for (XnatReconstructedimagedata recon : recons) {
+					if (sC++ > 0)
+						query.append(" OR ");
+					query.append("xnat_reconstructedimagedata_xnat_reconstructedimagedata_id=");
+					query.append(recon.getXnatReconstructedimagedataId());
+				}
+				query.append(") ");
+
+				if (resourceIDs != null && resourceIDs.size() > 0) {
+					int c = 0;
+					query.append(" AND ( ");
+					for (String resourceID : resourceIDs) {
+						if (c++ > 0)
+							query.append(" OR ");
+						if (org.apache.commons.lang.StringUtils
+								.isNumeric(resourceID)) {
+							query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+							query.append(resourceID);
+							query.append(" OR abst.label='");
+							query.append(resourceID);
+							query.append("')");
+						} else if (resourceID.equalsIgnoreCase("NULL")) {
+							query.append(" abst.label IS NULL");
+						} else {
+							query.append(" abst.label='");
+							query.append(resourceID);
+							query.append("'");
+						}
+					}
+					query.append(")");
+				}
+			}
+		} else if (scans.size() > 0) {
 			security = this.assesseds.get(0);
 			parent = scans.get(0);
 			xmlPath = "xnat:imageScanData/file";
@@ -753,9 +820,10 @@ public class XNATTemplate extends SecureResource {
 			query.append(" FROM xnat_abstractresource abst LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 			query.append(" LEFT JOIN xnat_imagescandata scan ON abst.xnat_imagescandata_xnat_imagescandata_id=scan.xnat_imagescandata_id");
 			query.append(" WHERE (");
-			int sC=0;
-			for(XnatImagescandata scan:scans){
-				if(sC++>0)query.append(" OR ");
+			int sC = 0;
+			for (XnatImagescandata scan : scans) {
+				if (sC++ > 0)
+					query.append(" OR ");
 				query.append("xnat_imagescandata_xnat_imagescandata_id=");
 				query.append(scan.getXnatImagescandataId());
 			}
@@ -773,10 +841,9 @@ public class XNATTemplate extends SecureResource {
 						query.append(" OR abst.label='");
 						query.append(resourceID);
 						query.append("')");
-					} else if(resourceID.equalsIgnoreCase("NULL")){
+					} else if (resourceID.equalsIgnoreCase("NULL")) {
 						query.append(" abst.label IS NULL");
-					}
-					else{
+					} else {
 						query.append(" abst.label='");
 						query.append(resourceID);
 						query.append("'");
@@ -784,12 +851,12 @@ public class XNATTemplate extends SecureResource {
 				}
 				query.append(")");
 			}
-		} else if (expts.size()>0) {
+		} else if (expts.size() > 0) {
 			security = this.expts.get(0);
 			parent = this.expts.get(0);
-			if (assesseds.size()>0) {
+			if (assesseds.size() > 0) {
 				security = this.assesseds.get(0);
-				if (type!=null && type.equals("in")) {
+				if (type != null && type.equals("in")) {
 					xmlPath = "xnat:imageAssessorData/in/file";
 					query.append(starterFields);
 					query.append(", 'assessors'::TEXT AS category, expt.id::TEXT AS cat_id");
@@ -809,9 +876,10 @@ public class XNATTemplate extends SecureResource {
 					query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
 					query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 					query.append(" WHERE (");
-					int sC=0;
-					for(XnatExperimentdata expt:expts){
-						if(sC++>0)query.append(" OR ");
+					int sC = 0;
+					for (XnatExperimentdata expt : expts) {
+						if (sC++ > 0)
+							query.append(" OR ");
 						query.append("map.xnat_imageassessordata_id='");
 						query.append(expt.getId());
 						query.append("'");
@@ -825,16 +893,14 @@ public class XNATTemplate extends SecureResource {
 								query.append(" OR ");
 							if (org.apache.commons.lang.StringUtils
 									.isNumeric(resourceID)) {
-								query
-										.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+								query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
 								query.append(resourceID);
 								query.append(" OR abst.label='");
 								query.append(resourceID);
 								query.append("')");
-							} else if(resourceID.equalsIgnoreCase("NULL")){
+							} else if (resourceID.equalsIgnoreCase("NULL")) {
 								query.append(" abst.label IS NULL");
-							}
-							else{
+							} else {
 								query.append(" abst.label='");
 								query.append(resourceID);
 								query.append("'");
@@ -862,9 +928,10 @@ public class XNATTemplate extends SecureResource {
 					query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
 					query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 					query.append(" WHERE (");
-					int sC=0;
-					for(XnatExperimentdata expt:expts){
-						if(sC++>0)query.append(" OR ");
+					int sC = 0;
+					for (XnatExperimentdata expt : expts) {
+						if (sC++ > 0)
+							query.append(" OR ");
 						query.append("map.xnat_imageassessordata_id='");
 						query.append(expt.getId());
 						query.append("'");
@@ -878,16 +945,14 @@ public class XNATTemplate extends SecureResource {
 								query.append(" OR ");
 							if (org.apache.commons.lang.StringUtils
 									.isNumeric(resourceID)) {
-								query
-										.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+								query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
 								query.append(resourceID);
 								query.append(" OR abst.label='");
 								query.append(resourceID);
 								query.append("')");
-							} else if(resourceID.equalsIgnoreCase("NULL")){
+							} else if (resourceID.equalsIgnoreCase("NULL")) {
 								query.append(" abst.label IS NULL");
-							}
-							else{
+							} else {
 								query.append(" abst.label='");
 								query.append(resourceID);
 								query.append("'");
@@ -897,7 +962,8 @@ public class XNATTemplate extends SecureResource {
 					}
 				}
 
-			} else if ((allowAll) && (this.isQueryVariableTrue("all") || resourceIDs != null)) {
+			} else if ((allowAll)
+					&& (this.isQueryVariableTrue("all") || resourceIDs != null)) {
 				xmlPath = "xnat:experimentData/resources/resource";
 				// resources
 
@@ -912,9 +978,10 @@ public class XNATTemplate extends SecureResource {
 				query.append(" JOIN xnat_abstractresource abst ON res_map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
 				query.append(" JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 				query.append(" WHERE (");
-				int sC=0;
-				for(XnatExperimentdata expt:expts){
-					if(sC++>0)query.append(" OR ");
+				int sC = 0;
+				for (XnatExperimentdata expt : expts) {
+					if (sC++ > 0)
+						query.append(" OR ");
 					query.append("res_map.xnat_experimentdata_id='");
 					query.append(expt.getId());
 					query.append("'");
@@ -932,9 +999,10 @@ public class XNATTemplate extends SecureResource {
 				query.append(" JOIN xnat_abstractresource abst ON isd.xnat_imagescandata_id=abst.xnat_imagescandata_xnat_imagescandata_id");
 				query.append(" JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 				query.append(" WHERE (");
-				sC=0;
-				for(XnatExperimentdata expt:expts){
-					if(sC++>0)query.append(" OR ");
+				sC = 0;
+				for (XnatExperimentdata expt : expts) {
+					if (sC++ > 0)
+						query.append(" OR ");
 					query.append("isd.image_session_id='");
 					query.append(expt.getId());
 					query.append("'");
@@ -953,9 +1021,10 @@ public class XNATTemplate extends SecureResource {
 				query.append(" JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
 				query.append(" JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 				query.append(" WHERE (");
-				sC=0;
-				for(XnatExperimentdata expt:expts){
-					if(sC++>0)query.append(" OR ");
+				sC = 0;
+				for (XnatExperimentdata expt : expts) {
+					if (sC++ > 0)
+						query.append(" OR ");
 					query.append("image_session_id='");
 					query.append(expt.getId());
 					query.append("'");
@@ -975,9 +1044,10 @@ public class XNATTemplate extends SecureResource {
 				query.append(" JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 				query.append(" LEFT JOIN xdat_element_security xes ON xme.element_name=xes.element_name");
 				query.append(" WHERE (");
-				sC=0;
-				for(XnatExperimentdata expt:expts){
-					if(sC++>0)query.append(" OR ");
+				sC = 0;
+				for (XnatExperimentdata expt : expts) {
+					if (sC++ > 0)
+						query.append(" OR ");
 					query.append("imagesession_id='");
 					query.append(expt.getId());
 					query.append("'");
@@ -997,9 +1067,10 @@ public class XNATTemplate extends SecureResource {
 				query.append(" JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 				query.append(" LEFT JOIN xdat_element_security xes ON xme.element_name=xes.element_name");
 				query.append(" WHERE (");
-				sC=0;
-				for(XnatExperimentdata expt:expts){
-					if(sC++>0)query.append(" OR ");
+				sC = 0;
+				for (XnatExperimentdata expt : expts) {
+					if (sC++ > 0)
+						query.append(" OR ");
 					query.append("imagesession_id='");
 					query.append(expt.getId());
 					query.append("'");
@@ -1020,10 +1091,9 @@ public class XNATTemplate extends SecureResource {
 							query.append(" OR label='");
 							query.append(resourceID);
 							query.append("')");
-						} else if(resourceID.equalsIgnoreCase("NULL")){
+						} else if (resourceID.equalsIgnoreCase("NULL")) {
 							query.append(" label IS NULL");
-						}
-						else{
+						} else {
 							query.append(" label='");
 							query.append(resourceID);
 							query.append("'");
@@ -1045,9 +1115,10 @@ public class XNATTemplate extends SecureResource {
 				query.append(" LEFT JOIN xnat_abstractresource abst ON map.xnat_abstractresource_xnat_abstractresource_id=abst.xnat_abstractresource_id");
 				query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 				query.append(" WHERE (");
-				int sC=0;
-				for(XnatExperimentdata expt:expts){
-					if(sC++>0)query.append(" OR ");
+				int sC = 0;
+				for (XnatExperimentdata expt : expts) {
+					if (sC++ > 0)
+						query.append(" OR ");
 					query.append("xnat_experimentdata_id='");
 					query.append(expt.getId());
 					query.append("'");
@@ -1061,16 +1132,14 @@ public class XNATTemplate extends SecureResource {
 							query.append(" OR ");
 						if (org.apache.commons.lang.StringUtils
 								.isNumeric(resourceID)) {
-							query
-									.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+							query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
 							query.append(resourceID);
 							query.append(" OR abst.label='");
 							query.append(resourceID);
 							query.append("')");
-						} else if(resourceID.equalsIgnoreCase("NULL")){
+						} else if (resourceID.equalsIgnoreCase("NULL")) {
 							query.append(" abst.label IS NULL");
-						}
-						else{
+						} else {
 							query.append(" abst.label='");
 							query.append(resourceID);
 							query.append("'");
@@ -1085,8 +1154,7 @@ public class XNATTemplate extends SecureResource {
 			xmlPath = "xnat:subjectData/resources/resource";
 			// resources
 			query.append(starterFields);
-			query
-					.append(", 'resources'::TEXT AS category, NULL::TEXT AS cat_id");
+			query.append(", 'resources'::TEXT AS category, NULL::TEXT AS cat_id");
 			query.append(", ' '::TEXT AS cat_desc");
 			if (includeURI) {
 				query.append(",'/projects/' || sub.project");
@@ -1108,16 +1176,14 @@ public class XNATTemplate extends SecureResource {
 						query.append(" OR ");
 					if (org.apache.commons.lang.StringUtils
 							.isNumeric(resourceID)) {
-						query
-								.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+						query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
 						query.append(resourceID);
 						query.append(" OR abst.label='");
 						query.append(resourceID);
 						query.append("')");
-					} else if(resourceID.equalsIgnoreCase("NULL")){
+					} else if (resourceID.equalsIgnoreCase("NULL")) {
 						query.append(" abst.label IS NULL");
-					}
-					else{
+					} else {
 						query.append(" abst.label='");
 						query.append(resourceID);
 						query.append("'");
@@ -1131,8 +1197,7 @@ public class XNATTemplate extends SecureResource {
 			xmlPath = "xnat:projectData/resources/resource";
 			// resources
 			query.append(starterFields);
-			query
-					.append(", 'resources'::TEXT AS category, NULL::TEXT AS cat_id");
+			query.append(", 'resources'::TEXT AS category, NULL::TEXT AS cat_id");
 			query.append(", ' '::TEXT AS cat_desc");
 			if (includeURI) {
 				query.append(",'/projects/' || map.xnat_projectdata_id");
@@ -1152,16 +1217,14 @@ public class XNATTemplate extends SecureResource {
 						query.append(" OR ");
 					if (org.apache.commons.lang.StringUtils
 							.isNumeric(resourceID)) {
-						query
-								.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
+						query.append(" (map.xnat_abstractresource_xnat_abstractresource_id=");
 						query.append(resourceID);
 						query.append(" OR abst.label='");
 						query.append(resourceID);
 						query.append("')");
-					} else if(resourceID.equalsIgnoreCase("NULL")){
+					} else if (resourceID.equalsIgnoreCase("NULL")) {
 						query.append(" abst.label IS NULL");
-					}
-					else{
+					} else {
 						query.append(" abst.label='");
 						query.append(resourceID);
 						query.append("'");
@@ -1171,12 +1234,10 @@ public class XNATTemplate extends SecureResource {
 			}
 		} else {
 			query.append(starterFields);
-			query
-					.append(", 'resources'::TEXT AS category, NULL::TEXT AS cat_id");
+			query.append(", 'resources'::TEXT AS category, NULL::TEXT AS cat_id");
 			query.append(", ' '::TEXT AS cat_desc");
 			query.append(" FROM xnat_abstractresource abst");
-			query
-					.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
+			query.append(" LEFT JOIN xdat_meta_element xme ON abst.extension=xme.xdat_meta_element_id");
 			query.append(" WHERE xnat_abstractresource_id IS NULL");
 		}
 

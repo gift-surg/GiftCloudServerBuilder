@@ -19,7 +19,6 @@ import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.utils.SaveItemHelper;
 
-
 /**
  * @author Timothy R. Olsen <olsent@wustl.edu>
  *
@@ -32,34 +31,36 @@ public class FixScanTypes {
 	private final XnatProjectdata proj;
 	private final boolean allowSave;
 	private final EventMetaI c;
-	
-	public FixScanTypes( final XnatExperimentdata expt, final XDATUser user, final XnatProjectdata proj, final Boolean allowSave, EventMetaI c){
-		this.expt=expt;
-		this.user=user;
-		this.proj=proj;
-		this.allowSave=allowSave;
-		this.c=c;
-	}
-	
-	public Boolean call() throws Exception{
-		if(expt instanceof XnatImagesessiondata){
-			((XnatImagesessiondata)expt).fixScanTypes();
-		}
-		
 
-		if(allowSave){
-			if(SaveItemHelper.authorizedSave(expt,user,false,false,c)){
+	public FixScanTypes(final XnatExperimentdata expt, final XDATUser user,
+			final XnatProjectdata proj, final Boolean allowSave, EventMetaI c) {
+		this.expt = expt;
+		this.user = user;
+		this.proj = proj;
+		this.allowSave = allowSave;
+		this.c = c;
+	}
+
+	public Boolean call() throws Exception {
+		if (expt instanceof XnatImagesessiondata) {
+			((XnatImagesessiondata) expt).fixScanTypes();
+		}
+
+		if (allowSave) {
+			if (SaveItemHelper.authorizedSave(expt, user, false, false, c)) {
 				MaterializedView.DeleteByUser(user);
 
-				if(this.proj.getArcSpecification().getQuarantineCode()!=null && this.proj.getArcSpecification().getQuarantineCode().equals(1)){
+				if (this.proj.getArcSpecification().getQuarantineCode() != null
+						&& this.proj.getArcSpecification().getQuarantineCode()
+								.equals(1)) {
 					expt.quarantine(user);
 				}
-				
+
 				return Boolean.TRUE;
-			}else{
+			} else {
 				return Boolean.FALSE;
 			}
-		}else{
+		} else {
 			return Boolean.TRUE;
 		}
 	}

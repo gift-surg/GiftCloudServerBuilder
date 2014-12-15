@@ -22,16 +22,17 @@ import java.io.OutputStreamWriter;
 
 public class JSONObjectRepresentation extends OutputRepresentation {
 	final JSONObject o;
-	
-	public JSONObjectRepresentation(MediaType mediaType,final JSONObject o) {
+
+	public JSONObjectRepresentation(MediaType mediaType, final JSONObject o) {
 		super(mediaType);
-		this.o=o;		
+		this.o = o;
 	}
 
 	@Override
 	public void write(OutputStream os) throws IOException {
 		try {
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+					os));
 			o.write(writer);
 			writer.flush();
 		} catch (JSONException e) {

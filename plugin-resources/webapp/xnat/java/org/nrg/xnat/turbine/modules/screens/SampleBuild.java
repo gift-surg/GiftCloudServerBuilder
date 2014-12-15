@@ -18,12 +18,16 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
 
 public class SampleBuild extends SecureReport {
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        XnatMrsessiondata mr = new XnatMrsessiondata(item);
-        context.put("mr", mr);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+		XnatMrsessiondata mr = new XnatMrsessiondata(item);
+		context.put("mr", mr);
+	}
 
 }

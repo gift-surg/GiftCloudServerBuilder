@@ -26,80 +26,95 @@ import java.util.*;
 
 public class PrearcBlankSession extends ImporterHandlerA {
 	static Logger logger = Logger.getLogger(PrearcBlankSession.class);
-	
+
 	private static final String PROJECT = "project";
-	private static final String SUID= "suid";
+	private static final String SUID = "suid";
 	private static final String SESSION = "session";
-	private static final String SUBJECT = "subject"; // optional, added to the prearchive table if it is present
-	
+	private static final String SUBJECT = "subject"; // optional, added to the
+														// prearchive table if
+														// it is present
+
 	private final XDATUser user;
-	private final FileWriterWrapperI fi; // never used, we only check if it is null
-	private final Map<String,Object> params;
-	
+	private final FileWriterWrapperI fi; // never used, we only check if it is
+											// null
+	private final Map<String, Object> params;
+
 	/**
-	 * Check that \"project\", \"session\" and \"suid\" are present.  
+	 * Check that \"project\", \"session\" and \"suid\" are present.
 	 * 
 	 * @param params
 	 * @param fi
 	 * @throws ClientException
 	 */
-	private void validate(Map<String,Object> params, FileWriterWrapperI fi) throws ClientException {
-		if (!params.containsKey(PROJECT) ||
-			!params.containsKey(SUID) || 
-			!params.containsKey(SESSION)) {
-			throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,"Cannot build a blank row for this session without the \"project\", \"session\" and \"suid\" parameters", new IllegalArgumentException());
+	private void validate(Map<String, Object> params, FileWriterWrapperI fi)
+			throws ClientException {
+		if (!params.containsKey(PROJECT) || !params.containsKey(SUID)
+				|| !params.containsKey(SESSION)) {
+			throw new ClientException(
+					Status.CLIENT_ERROR_BAD_REQUEST,
+					"Cannot build a blank row for this session without the \"project\", \"session\" and \"suid\" parameters",
+					new IllegalArgumentException());
 		}
 		if (fi != null) {
-			throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, "Cannot upload binary data while creating a blank row for this session", new IllegalArgumentException());
+			throw new ClientException(
+					Status.CLIENT_ERROR_BAD_REQUEST,
+					"Cannot upload binary data while creating a blank row for this session",
+					new IllegalArgumentException());
 		}
 	}
-	
+
 	/**
-	 * Helper class to create a blank row in the prearchive table  
+	 * Helper class to create a blank row in the prearchive table
+	 * 
 	 * @param uID2
 	 * @param u
 	 * @param fi
 	 * @param project_id
 	 * @param additionalValues
 	 */
-	public PrearcBlankSession(final Object uID2 ,  // ignored
-							   final XDATUser u, // ignored
-							   final FileWriterWrapperI fi,  // should be null, we are not expecting a file when creating a blank row
-							   Map<String,Object> params
-							   ){
-    	super((uID2==null)?u:uID2,u,fi,params);
-    	this.user=u;
-    	this.fi = fi;
-    	this.params = params;
+	public PrearcBlankSession(final Object uID2, // ignored
+			final XDATUser u, // ignored
+			final FileWriterWrapperI fi, // should be null, we are not expecting
+											// a file when creating a blank row
+			Map<String, Object> params) {
+		super((uID2 == null) ? u : uID2, u, fi, params);
+		this.user = u;
+		this.fi = fi;
+		this.params = params;
 	}
-	
+
 	@Override
-	public List<String> call() throws ClientException,ServerException{
+	public List<String> call() throws ClientException, ServerException {
 		this.validate(this.params, this.fi);
 		String project = (String) this.params.get(PROJECT);
 		String session = (String) this.params.get(SESSION);
 		String suid = (String) this.params.get(SUID);
-		
+
 		try {
-			SessionData blankSession = PrearcUtils.blankSession(project, session, suid);
-			Collection<SessionData> dupes = PrearcDatabase.getSessionByUID(suid);
+			SessionData blankSession = PrearcUtils.blankSession(project,
+					session, suid);
+			Collection<SessionData> dupes = PrearcDatabase
+					.getSessionByUID(suid);
 			if (dupes.size() != 0) {
-				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, "A session with Study Instance UID " + suid + " exists.", new IllegalArgumentException());
+				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST,
+						"A session with Study Instance UID " + suid
+								+ " exists.", new IllegalArgumentException());
 			}
 			blankSession.setStatus(PrearcStatus.RECEIVING);
 			if (this.params.containsKey(SUBJECT)) {
-				blankSession.setSubject((String)this.params.get(SUBJECT)); 
+				blankSession.setSubject((String) this.params.get(SUBJECT));
 			}
 			PrearcDatabase.addSession(blankSession);
-			Map<String,Object> additionalValues = new HashMap<String,Object>();
+			Map<String, Object> additionalValues = new HashMap<String, Object>();
 			additionalValues.put(SUID, blankSession.getTag());
 			List<String> ret = new ArrayList<String>();
-			ret.add(PrearcUtils.buildURI(blankSession.getProject(), blankSession.getTimestamp(), blankSession.getFolderName()));
+			ret.add(PrearcUtils.buildURI(blankSession.getProject(),
+					blankSession.getTimestamp(), blankSession.getFolderName()));
 			return ret;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("Unable to create blank session", e);
-			throw new ClientException(Status.SERVER_ERROR_INTERNAL,e.getMessage(), new IllegalArgumentException());
+			throw new ClientException(Status.SERVER_ERROR_INTERNAL,
+					e.getMessage(), new IllegalArgumentException());
 		}
 	}
 }

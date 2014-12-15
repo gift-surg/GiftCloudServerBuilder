@@ -20,28 +20,25 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseXnatStudyprotocol extends AutoXnatStudyprotocol {
 
-	public BaseXnatStudyprotocol(ItemI item)
-	{
+	public BaseXnatStudyprotocol(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatStudyprotocol(UserI user)
-	{
+	public BaseXnatStudyprotocol(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatStudyprotocol(UserI user)
-	 **/
-	public BaseXnatStudyprotocol()
-	{}
+	 */
+	public BaseXnatStudyprotocol() {
+	}
 
-	public BaseXnatStudyprotocol(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatStudyprotocol(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

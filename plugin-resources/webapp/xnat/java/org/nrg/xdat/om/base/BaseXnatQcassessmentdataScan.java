@@ -21,31 +21,29 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatQcassessmentdataScan extends AutoXnatQcassessmentdataScan implements ScanAssessorScanI{
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatQcassessmentdataScan extends
+		AutoXnatQcassessmentdataScan implements ScanAssessorScanI {
 
-	public BaseXnatQcassessmentdataScan(ItemI item)
-	{
+	public BaseXnatQcassessmentdataScan(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatQcassessmentdataScan(UserI user)
-	{
+	public BaseXnatQcassessmentdataScan(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatQcassessmentdataScan(UserI user)
-	 **/
-	public BaseXnatQcassessmentdataScan()
-	{}
-
-	public BaseXnatQcassessmentdataScan(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatQcassessmentdataScan() {
 	}
-	
-	public String getSummary(){
+
+	public BaseXnatQcassessmentdataScan(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public String getSummary() {
 		return "Present";
 	}
 

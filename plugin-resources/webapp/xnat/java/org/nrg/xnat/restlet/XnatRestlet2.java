@@ -11,7 +11,9 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface XnatRestlet2 {
-    XnatRestletURI[] value();
+	XnatRestletURI[] value();
+
 	boolean required() default false;
-    boolean secure() default true;
+
+	boolean secure() default true;
 }

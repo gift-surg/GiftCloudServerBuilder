@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatSubjectvariablesdataVariable extends AutoXnatSubjectvariablesdataVariable {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatSubjectvariablesdataVariable extends
+		AutoXnatSubjectvariablesdataVariable {
 
-	public BaseXnatSubjectvariablesdataVariable(ItemI item)
-	{
+	public BaseXnatSubjectvariablesdataVariable(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatSubjectvariablesdataVariable(UserI user)
-	{
+	public BaseXnatSubjectvariablesdataVariable(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatSubjectvariablesdataVariable(UserI user)
-	 **/
-	public BaseXnatSubjectvariablesdataVariable()
-	{}
+	 */
+	public BaseXnatSubjectvariablesdataVariable() {
+	}
 
-	public BaseXnatSubjectvariablesdataVariable(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatSubjectvariablesdataVariable(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

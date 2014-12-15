@@ -19,18 +19,20 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class XDATScreen_upload_xnat_imageSessionData extends SecureReport {
-	static Logger logger = Logger.getLogger(XDATScreen_upload_xnat_imageSessionData.class);
+	static Logger logger = Logger
+			.getLogger(XDATScreen_upload_xnat_imageSessionData.class);
 
-    @Override
-    public void finalProcessing(RunData data, Context context) {
+	@Override
+	public void finalProcessing(RunData data, Context context) {
 
-        Date d = Calendar.getInstance().getTime();
-        
-        StringBuffer sb = new StringBuffer();
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("yyyyMMdd_hhmmss");
-        sb.append(formatter.format(d));
-        context.put("uploadID", sb.toString());
-        
-    }
+		Date d = Calendar.getInstance().getTime();
+
+		StringBuffer sb = new StringBuffer();
+		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
+				"yyyyMMdd_hhmmss");
+		sb.append(formatter.format(d));
+		context.put("uploadID", sb.toString());
+
+	}
 
 }

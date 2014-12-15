@@ -15,10 +15,14 @@ import java.util.Map;
  * @author Rick Herrick <rick.herrick@wustl.edu> on 10/28/2014.
  */
 @SuppressWarnings("unused")
-public class ClearStudyRoutingAction implements PrearcSessionArchiver.PostArchiveAction {
-    @Override
-    public Boolean execute(final XDATUser user, final XnatImagesessiondata src, final Map<String, Object> params) {
-        final String studyInstanceUid = src.getUid();
-        return StringUtils.isNotBlank(studyInstanceUid) && XDAT.getContextService().getBean(StudyRoutingService.class).close(studyInstanceUid);
-    }
+public class ClearStudyRoutingAction implements
+		PrearcSessionArchiver.PostArchiveAction {
+	@Override
+	public Boolean execute(final XDATUser user, final XnatImagesessiondata src,
+			final Map<String, Object> params) {
+		final String studyInstanceUid = src.getUid();
+		return StringUtils.isNotBlank(studyInstanceUid)
+				&& XDAT.getContextService().getBean(StudyRoutingService.class)
+						.close(studyInstanceUid);
+	}
 }

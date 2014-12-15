@@ -21,17 +21,22 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
  *
  */
 public class XDATScreen_report_xnat_subjectData extends SecureReport {
-	static Logger logger = Logger.getLogger(XDATScreen_report_xnat_mrSessionData.class);
+	static Logger logger = Logger
+			.getLogger(XDATScreen_report_xnat_mrSessionData.class);
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        try {
-            XnatSubjectdata sub = new XnatSubjectdata(item);
-            context.put("subject",sub);
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+		try {
+			XnatSubjectdata sub = new XnatSubjectdata(item);
+			context.put("subject", sub);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
 }

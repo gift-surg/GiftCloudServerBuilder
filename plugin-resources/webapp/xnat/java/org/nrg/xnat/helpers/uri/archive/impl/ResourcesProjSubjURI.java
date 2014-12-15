@@ -22,35 +22,39 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 import java.util.Map;
 
-public class ResourcesProjSubjURI extends ResourcesProjURI implements ResourceURII,ArchiveItemURI,SubjectURII{
-	private XnatSubjectdata subject=null;
-	
+public class ResourcesProjSubjURI extends ResourcesProjURI implements
+		ResourceURII, ArchiveItemURI, SubjectURII {
+	private XnatSubjectdata subject = null;
+
 	public ResourcesProjSubjURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
-	protected void populateSubject(){
+	protected void populateSubject() {
 		super.populateProject();
-		
-		if(subject==null){
-			final XnatProjectdata proj=getProject();
-			
-			final String subID= (String)props.get(URIManager.SUBJECT_ID);
-			
-			if(proj!=null){
-				subject=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,null, false);
+
+		if (subject == null) {
+			final XnatProjectdata proj = getProject();
+
+			final String subID = (String) props.get(URIManager.SUBJECT_ID);
+
+			if (proj != null) {
+				subject = XnatSubjectdata.GetSubjectByProjectIdentifier(
+						proj.getId(), subID, null, false);
 			}
-			
-			if(subject==null){
-				subject=XnatSubjectdata.getXnatSubjectdatasById(subID, null, false);
-				if(subject!=null && (proj!=null && !subject.hasProject(proj.getId()))){
-					subject=null;
+
+			if (subject == null) {
+				subject = XnatSubjectdata.getXnatSubjectdatasById(subID, null,
+						false);
+				if (subject != null
+						&& (proj != null && !subject.hasProject(proj.getId()))) {
+					subject = null;
 				}
 			}
 		}
 	}
-	
-	public XnatSubjectdata getSubject(){
+
+	public XnatSubjectdata getSubject() {
 		this.populateSubject();
 		return subject;
 	}
@@ -62,14 +66,15 @@ public class ResourcesProjSubjURI extends ResourcesProjURI implements ResourceUR
 
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(this.getSubject()!=null){
-			for(XnatAbstractresourceI res:this.getSubject().getResources_resource()){
-				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+		if (this.getSubject() != null) {
+			for (XnatAbstractresourceI res : this.getSubject()
+					.getResources_resource()) {
+				if (StringUtils.equals(res.getLabel(), this.getResourceLabel())) {
 					return res;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

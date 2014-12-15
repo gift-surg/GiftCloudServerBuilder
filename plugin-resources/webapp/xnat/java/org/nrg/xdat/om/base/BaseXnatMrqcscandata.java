@@ -16,7 +16,7 @@ import org.nrg.xft.security.UserI;
 
 import java.util.Hashtable;
 
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseXnatMrqcscandata extends AutoXnatMrqcscandata {
 	public BaseXnatMrqcscandata(ItemI item) {
 		super(item);

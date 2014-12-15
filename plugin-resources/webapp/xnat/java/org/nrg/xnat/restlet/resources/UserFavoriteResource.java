@@ -25,27 +25,27 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 public class UserFavoriteResource extends SecureResource {
-	String dataType=null;
-	String pID=null;
-	
-	public UserFavoriteResource(Context context, Request request, Response response) throws Exception {
-		super(context, request, response);
-		
-			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
-			
-			dataType= (String)getParameter(request,"DATA_TYPE");
-			pID= (String)getParameter(request,"PROJECT_ID");
+	String dataType = null;
+	String pID = null;
 
-			
-			if(dataType.contains("'")){
-				throw new Exception("Unexpected ' in data type name.");
-			}
-			
-			if(pID.contains("'")){
-				throw new Exception("Unexpected ' in project id.");
-			}
+	public UserFavoriteResource(Context context, Request request,
+			Response response) throws Exception {
+		super(context, request, response);
+
+		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+		this.getVariants().add(new Variant(MediaType.TEXT_XML));
+
+		dataType = (String) getParameter(request, "DATA_TYPE");
+		pID = (String) getParameter(request, "PROJECT_ID");
+
+		if (dataType.contains("'")) {
+			throw new Exception("Unexpected ' in data type name.");
+		}
+
+		if (pID.contains("'")) {
+			throw new Exception("Unexpected ' in project id.");
+		}
 	}
 
 	@Override
@@ -62,14 +62,14 @@ public class UserFavoriteResource extends SecureResource {
 	public boolean allowGet() {
 		return false;
 	}
-	
+
 	@Override
 	public void handlePut() {
-		if(pID==null || dataType==null){
+		if (pID == null || dataType == null) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-		}else{
+		} else {
 			try {
-				FavEntries favEntry=new FavEntries();
+				FavEntries favEntry = new FavEntries();
 				favEntry.setId(pID);
 				favEntry.setDataType(dataType);
 				favEntry.setUser(user);
@@ -83,14 +83,14 @@ public class UserFavoriteResource extends SecureResource {
 		returnDefaultRepresentation();
 	}
 
-	
 	@Override
 	public void handleDelete() {
-		if(pID==null || dataType==null || user==null){
+		if (pID == null || dataType == null || user == null) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-		}else{
+		} else {
 			try {
-				FavEntries favEntry=FavEntries.GetFavoriteEntries(dataType, pID, user);
+				FavEntries favEntry = FavEntries.GetFavoriteEntries(dataType,
+						pID, user);
 				favEntry.delete();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -102,11 +102,11 @@ public class UserFavoriteResource extends SecureResource {
 	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	
+	public Representation getRepresentation(Variant variant) {
 		XFTTable table = null;
-		if(dataType!=null){
-			try {	            
-				 table=FavEntries.GetFavoriteEntries(dataType, user);
+		if (dataType != null) {
+			try {
+				table = FavEntries.GetFavoriteEntries(dataType, user);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} catch (DBPoolException e) {
@@ -115,8 +115,8 @@ public class UserFavoriteResource extends SecureResource {
 				e.printStackTrace();
 			}
 		}
-		
-		Hashtable<String,Object> params=new Hashtable<String,Object>();
+
+		Hashtable<String, Object> params = new Hashtable<String, Object>();
 		params.put("title", "User Favorites");
 
 		MediaType mt = overrideVariant(variant);

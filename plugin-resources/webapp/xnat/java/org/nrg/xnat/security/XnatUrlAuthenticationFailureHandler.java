@@ -20,57 +20,58 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class XnatUrlAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler 
-{
-	private static final Log logger = LogFactory.getLog(XnatProviderManager.class);
+public class XnatUrlAuthenticationFailureHandler extends
+		SimpleUrlAuthenticationFailureHandler {
+	private static final Log logger = LogFactory
+			.getLog(XnatProviderManager.class);
 
 	private String newLdapAccountNotAutoEnabledFailureUrl;
-	
-	public XnatUrlAuthenticationFailureHandler(String defaultFailureUrl, String newLdapAccountNotAutoEnabledFailureUrl) 
-	{
+
+	public XnatUrlAuthenticationFailureHandler(String defaultFailureUrl,
+			String newLdapAccountNotAutoEnabledFailureUrl) {
 		super(defaultFailureUrl);
 		setNewLdapAccountNotAutoEnabledFailureUrl(newLdapAccountNotAutoEnabledFailureUrl);
 	}
 
-	public String getNewLdapAccountNotAutoEnabledFailureUrl()
-	{
+	public String getNewLdapAccountNotAutoEnabledFailureUrl() {
 		return newLdapAccountNotAutoEnabledFailureUrl;
 	}
 
-	public void setNewLdapAccountNotAutoEnabledFailureUrl(String newLdapAccountNotAutoEnabledFailureUrl) 
-	{
+	public void setNewLdapAccountNotAutoEnabledFailureUrl(
+			String newLdapAccountNotAutoEnabledFailureUrl) {
 		this.newLdapAccountNotAutoEnabledFailureUrl = newLdapAccountNotAutoEnabledFailureUrl;
 	}
-	
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-			throws IOException, ServletException
-	{
-		if( exception instanceof NewLdapAccountNotAutoEnabledException )
-		{
-			onAuthenticationFailureNewLdapAccountNotAutoEnabled( request, response, exception );
-		}
-		else
-		{
-			super.onAuthenticationFailure( request, response, exception );
+
+	public void onAuthenticationFailure(HttpServletRequest request,
+			HttpServletResponse response, AuthenticationException exception)
+			throws IOException, ServletException {
+		if (exception instanceof NewLdapAccountNotAutoEnabledException) {
+			onAuthenticationFailureNewLdapAccountNotAutoEnabled(request,
+					response, exception);
+		} else {
+			super.onAuthenticationFailure(request, response, exception);
 		}
 	}
-	
-	private void onAuthenticationFailureNewLdapAccountNotAutoEnabled(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-			throws IOException, ServletException
-	{
+
+	private void onAuthenticationFailureNewLdapAccountNotAutoEnabled(
+			HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException exception) throws IOException,
+			ServletException {
 		saveException(request, exception);
-		
-		if ( isUseForward() ) 
-		{
-		    logger.debug( "Forwarding to " + getNewLdapAccountNotAutoEnabledFailureUrl() );
-		
-		    request.getRequestDispatcher( getNewLdapAccountNotAutoEnabledFailureUrl() ).forward( request, response );
-		} 
-		else 
-		{
-		    logger.debug( "Redirecting to " + getNewLdapAccountNotAutoEnabledFailureUrl() );
-		    
-		    getRedirectStrategy().sendRedirect( request, response, getNewLdapAccountNotAutoEnabledFailureUrl() );
+
+		if (isUseForward()) {
+			logger.debug("Forwarding to "
+					+ getNewLdapAccountNotAutoEnabledFailureUrl());
+
+			request.getRequestDispatcher(
+					getNewLdapAccountNotAutoEnabledFailureUrl()).forward(
+					request, response);
+		} else {
+			logger.debug("Redirecting to "
+					+ getNewLdapAccountNotAutoEnabledFailureUrl());
+
+			getRedirectStrategy().sendRedirect(request, response,
+					getNewLdapAccountNotAutoEnabledFailureUrl());
 		}
 	}
 }

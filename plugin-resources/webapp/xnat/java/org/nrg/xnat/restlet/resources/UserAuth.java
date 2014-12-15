@@ -21,10 +21,10 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 public class UserAuth extends SecureResource {
-	
+
 	public UserAuth(Context context, Request request, Response response) {
 		super(context, request, response);
-		
+
 		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 	}
 
@@ -34,8 +34,10 @@ public class UserAuth extends SecureResource {
 	}
 
 	private Representation userAuthRepresentation() {
-		XDATUser loggedInUser = (XDATUser) getRequest().getAttributes().get(USER_ATTRIBUTE);
-		return new StringRepresentation(String.format("User '%s' is logged in.", loggedInUser.getUsername()),
+		XDATUser loggedInUser = (XDATUser) getRequest().getAttributes().get(
+				USER_ATTRIBUTE);
+		return new StringRepresentation(String.format(
+				"User '%s' is logged in.", loggedInUser.getUsername()),
 				MediaType.TEXT_PLAIN);
 	}
 
@@ -43,7 +45,7 @@ public class UserAuth extends SecureResource {
 	public boolean allowGet() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean allowDelete() {
 		return false;

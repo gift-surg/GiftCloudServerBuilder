@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatImagescandataShare extends AutoXnatImagescandataShare {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatImagescandataShare extends
+		AutoXnatImagescandataShare {
 
-	public BaseXnatImagescandataShare(ItemI item)
-	{
+	public BaseXnatImagescandataShare(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatImagescandataShare(UserI user)
-	{
+	public BaseXnatImagescandataShare(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatImagescandataShare(UserI user)
-	 **/
-	public BaseXnatImagescandataShare()
-	{}
+	 */
+	public BaseXnatImagescandataShare() {
+	}
 
-	public BaseXnatImagescandataShare(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatImagescandataShare(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

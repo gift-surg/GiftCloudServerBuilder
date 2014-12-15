@@ -31,86 +31,108 @@ public class DirectReconResourceImpl extends ResourceModifierA {
 	private final XnatReconstructedimagedata recon;
 	private final XnatImagesessiondata session;
 	private final String type;
-	
-	public DirectReconResourceImpl(final XnatReconstructedimagedata recon, final XnatImagesessiondata session, final String type,final boolean overwrite, final XDATUser user, final EventMetaI ci){
-		super(overwrite,user,ci);
-		this.recon=recon;
-		this.session=session;
-		this.type=type;
-		
-		if(session==null){
-			throw new NullPointerException("Must reference a valid imaging session");
+
+	public DirectReconResourceImpl(final XnatReconstructedimagedata recon,
+			final XnatImagesessiondata session, final String type,
+			final boolean overwrite, final XDATUser user, final EventMetaI ci) {
+		super(overwrite, user, ci);
+		this.recon = recon;
+		this.session = session;
+		this.type = type;
+
+		if (session == null) {
+			throw new NullPointerException(
+					"Must reference a valid imaging session");
 		}
-	}
-	
-	public XnatProjectdata getProject(){
-		return session.getProjectData();
-	}
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#buildDestinationPath()
-	 */
-	@Override
-	public String buildDestinationPath() throws InvalidArchiveStructure, UnknownPrimaryProjectException {
-		return FileUtils.AppendRootPath(session.getCurrentSessionFolder(true), "PROCESSED/" + recon.getId() +"/");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
+	public XnatProjectdata getProject() {
+		return session.getProjectData();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#
+	 * buildDestinationPath()
 	 */
 	@Override
-	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {		
-		if(type!=null){
-			if(type.equals("in")){
+	public String buildDestinationPath() throws InvalidArchiveStructure,
+			UnknownPrimaryProjectException {
+		return FileUtils.AppendRootPath(session.getCurrentSessionFolder(true),
+				"PROCESSED/" + recon.getId() + "/");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource
+	 * (org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
+	 */
+	@Override
+	public boolean addResource(XnatResource resource, final String type,
+			XDATUser user) throws Exception {
+		if (type != null) {
+			if (type.equals("in")) {
 				recon.setIn_file(resource);
-			}else{
+			} else {
 				recon.setOut_file(resource);
 			}
-		}else{
+		} else {
 			recon.setOut_file(resource);
 		}
-		
-		SaveItemHelper.authorizedSave(recon,user, false, false,ci);
+
+		SaveItemHelper.authorizedSave(recon, user, false, false, ci);
 		return true;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById(java.lang.Integer)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById
+	 * (java.lang.Integer)
 	 */
 	@Override
 	public XnatAbstractresourceI getResourceById(Integer i, final String type) {
-		for(XnatAbstractresourceI res: this.recon.getIn_file()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.recon.getIn_file()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		for(XnatAbstractresourceI res: this.recon.getOut_file()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.recon.getOut_file()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel
+	 * (java.lang.String)
 	 */
 	@Override
-	public XnatAbstractresourceI getResourceByLabel(String lbl, final String type) {
-		for(XnatAbstractresourceI res: this.recon.getIn_file()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+	public XnatAbstractresourceI getResourceByLabel(String lbl,
+			final String type) {
+		for (XnatAbstractresourceI res : this.recon.getIn_file()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		for(XnatAbstractresourceI res: this.recon.getOut_file()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+		for (XnatAbstractresourceI res : this.recon.getOut_file()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 }

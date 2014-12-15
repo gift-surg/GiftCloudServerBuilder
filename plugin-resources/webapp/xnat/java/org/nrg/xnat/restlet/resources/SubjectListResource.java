@@ -27,43 +27,44 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class SubjectListResource extends QueryOrganizerResource {
-	public SubjectListResource(Context context, Request request, Response response) {
+	public SubjectListResource(Context context, Request request,
+			Response response) {
 		super(context, request, response);
-		
+
 		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.SUBJECT_DATA,true));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(
+				XMLPathShortcuts.SUBJECT_DATA, true));
 	}
-	
-	
-	
+
 	@Override
 	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
-		ArrayList<String> al=new ArrayList<String>();
-		
+		ArrayList<String> al = new ArrayList<String>();
+
 		al.add("ID");
 		al.add("project");
 		al.add("label");
 		al.add("insert_date");
 		al.add("insert_user");
-		
+
 		return al;
 	}
 
-	public String getDefaultElementName(){
+	public String getDefaultElementName() {
 		return "xnat:subjectData";
 	}
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		Representation rep=super.getRepresentation(variant);
-		if(rep!=null)return rep;
-			
+		Representation rep = super.getRepresentation(variant);
+		if (rep != null)
+			return rep;
+
 		XFTTable table;
 		try {
-			QueryOrganizer qo = new QueryOrganizer(this.getRootElementName(), user,
-					ViewManager.ALL);
+			QueryOrganizer qo = new QueryOrganizer(this.getRootElementName(),
+					user, ViewManager.ALL);
 
 			this.populateQuery(qo);
 

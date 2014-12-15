@@ -18,9 +18,11 @@ import org.nrg.xdat.om.PipePipelinerepository;
 import org.nrg.xdat.turbine.modules.screens.AdminScreen;
 
 public class XDATScreen_manage_pipeline extends AdminScreen {
-	 
-	protected void doBuildTemplate(RunData data, Context context)     throws Exception {
-			PipePipelinerepository pipelineRepository = PipelineRepositoryManager.GetInstance();
-			context.put("repository", pipelineRepository);
+
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		PipePipelinerepository pipelineRepository = PipelineRepositoryManager
+				.GetInstance();
+		context.put("repository", pipelineRepository);
 	}
 }

@@ -28,64 +28,83 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
 public class DirectSubjResourceImpl extends ResourceModifierA {
 	private final XnatProjectdata proj;
 	private final XnatSubjectdata sub;
-	
-	public DirectSubjResourceImpl(final XnatProjectdata proj, final XnatSubjectdata sub,final boolean overwrite, final XDATUser user, final EventMetaI ci){
-		super(overwrite,user,ci);
-		this.proj=proj;
-		this.sub=sub;
+
+	public DirectSubjResourceImpl(final XnatProjectdata proj,
+			final XnatSubjectdata sub, final boolean overwrite,
+			final XDATUser user, final EventMetaI ci) {
+		super(overwrite, user, ci);
+		this.proj = proj;
+		this.sub = sub;
 	}
-	
-	public XnatProjectdata getProject(){
+
+	public XnatProjectdata getProject() {
 		return proj;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#buildDestinationPath()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#
+	 * buildDestinationPath()
 	 */
 	@Override
 	public String buildDestinationPath() throws InvalidArchiveStructure {
-		return FileUtils.AppendRootPath(proj.getRootArchivePath(), "subjects/" + sub.getArchiveDirectoryName() +"/");
+		return FileUtils.AppendRootPath(proj.getRootArchivePath(), "subjects/"
+				+ sub.getArchiveDirectoryName() + "/");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource
+	 * (org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
 	 */
 	@Override
-	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {		
-		XnatSubjectdata new_sub=sub.getLightCopy();
+	public boolean addResource(XnatResource resource, final String type,
+			XDATUser user) throws Exception {
+		XnatSubjectdata new_sub = sub.getLightCopy();
 		new_sub.setResources_resource(resource);
-		
-		SaveItemHelper.authorizedSave(new_sub,user, false, false,ci);
+
+		SaveItemHelper.authorizedSave(new_sub, user, false, false, ci);
 		return true;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById(java.lang.Integer)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById
+	 * (java.lang.Integer)
 	 */
 	@Override
 	public XnatAbstractresourceI getResourceById(Integer i, final String type) {
-		for(XnatAbstractresourceI res: this.sub.getResources_resource()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.sub.getResources_resource()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel
+	 * (java.lang.String)
 	 */
 	@Override
-	public XnatAbstractresourceI getResourceByLabel(String lbl, final String type) {
-		for(XnatAbstractresourceI res: this.sub.getResources_resource()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+	public XnatAbstractresourceI getResourceByLabel(String lbl,
+			final String type) {
+		for (XnatAbstractresourceI res : this.sub.getResources_resource()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 }

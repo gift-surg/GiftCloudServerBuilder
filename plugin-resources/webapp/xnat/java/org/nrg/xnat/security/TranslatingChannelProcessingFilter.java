@@ -25,17 +25,21 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 public class TranslatingChannelProcessingFilter extends ChannelProcessingFilter {
-    public void setRequiredChannel(String requiredChannel) {
-        if (_log.isDebugEnabled()) {
-            _log.debug("Setting the default pattern required channel to: " + requiredChannel);
-        }
+	public void setRequiredChannel(String requiredChannel) {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Setting the default pattern required channel to: "
+					+ requiredChannel);
+		}
 
-        UrlMatcher urlMatcher = new AntUrlPathMatcher();
-        LinkedHashMap<RequestKey, Collection<ConfigAttribute>> map = new LinkedHashMap<RequestKey, Collection<ConfigAttribute>>();
-        map.put(new RequestKey("/**"), ChannelAttributeFactory.createChannelAttributes(requiredChannel));
-        FilterInvocationSecurityMetadataSource metadataSource = new DefaultFilterInvocationSecurityMetadataSource(urlMatcher, map);
-        setSecurityMetadataSource(metadataSource);
-    }
+		UrlMatcher urlMatcher = new AntUrlPathMatcher();
+		LinkedHashMap<RequestKey, Collection<ConfigAttribute>> map = new LinkedHashMap<RequestKey, Collection<ConfigAttribute>>();
+		map.put(new RequestKey("/**"), ChannelAttributeFactory
+				.createChannelAttributes(requiredChannel));
+		FilterInvocationSecurityMetadataSource metadataSource = new DefaultFilterInvocationSecurityMetadataSource(
+				urlMatcher, map);
+		setSecurityMetadataSource(metadataSource);
+	}
 
-    private static final Log _log = LogFactory.getLog(TranslatingChannelProcessingFilter.class);
+	private static final Log _log = LogFactory
+			.getLog(TranslatingChannelProcessingFilter.class);
 }

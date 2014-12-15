@@ -40,142 +40,155 @@ import com.noelios.restlet.ext.servlet.ServletCall;
 import com.noelios.restlet.http.HttpRequest;
 
 public abstract class TurbineScreenRepresentation extends OutputRepresentation {
-	static org.apache.log4j.Logger logger = Logger.getLogger(TurbineScreenRepresentation.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(TurbineScreenRepresentation.class);
 	final RunData data;
 	final Request request;
 	final XDATUser user;
-	final Map<String,Object> params;
+	final Map<String, Object> params;
 
-	public TurbineScreenRepresentation(MediaType mediaType,Request request, XDATUser _user,Map<String,Object> params) throws TurbineException{
+	public TurbineScreenRepresentation(MediaType mediaType, Request request,
+			XDATUser _user, Map<String, Object> params) throws TurbineException {
 		super(mediaType);
-		this.request=request;
-		user=_user;
-		this.params=params;
-		HttpServletRequest _request = ((ServletCall)((HttpRequest) request).getHttpCall()).getRequest(); 
-		HttpServletResponse _response = ((ServletCall)((HttpRequest) request).getHttpCall()).getResponse(); 
-		
-		data = populateRunData(_request,_response,user,params);
+		this.request = request;
+		user = _user;
+		this.params = params;
+		HttpServletRequest _request = ((ServletCall) ((HttpRequest) request)
+				.getHttpCall()).getRequest();
+		HttpServletResponse _response = ((ServletCall) ((HttpRequest) request)
+				.getHttpCall()).getResponse();
+
+		data = populateRunData(_request, _response, user, params);
 	}
 
-	public TurbineScreenRepresentation(MediaType mediaType,Request request, XDATUser _user,Map<String,Object> params,Map<String,Object> additionalObjects) throws TurbineException{
+	public TurbineScreenRepresentation(MediaType mediaType, Request request,
+			XDATUser _user, Map<String, Object> params,
+			Map<String, Object> additionalObjects) throws TurbineException {
 		super(mediaType);
-		this.request=request;
-		user=_user;
-		this.params=params;
-		HttpServletRequest _request = ((ServletCall)((HttpRequest) request).getHttpCall()).getRequest(); 
-		HttpServletResponse _response = ((ServletCall)((HttpRequest) request).getHttpCall()).getResponse(); 
-		
-		data = populateRunData(_request,_response,user,params);
+		this.request = request;
+		user = _user;
+		this.params = params;
+		HttpServletRequest _request = ((ServletCall) ((HttpRequest) request)
+				.getHttpCall()).getRequest();
+		HttpServletResponse _response = ((ServletCall) ((HttpRequest) request)
+				.getHttpCall()).getResponse();
+
+		data = populateRunData(_request, _response, user, params);
 	}
 
 	@SuppressWarnings("deprecation")
-	public void turbineScreen(RunData data,OutputStream out)throws IOException,Exception{
+	public void turbineScreen(RunData data, OutputStream out)
+			throws IOException, Exception {
 		TemplateService templateService = TurbineTemplate.getService();
-        String defaultPage = (templateService == null)
-                ? null :templateService.getDefaultPageName(data);
+		String defaultPage = (templateService == null) ? null : templateService
+				.getDefaultPageName(data);
 
-        PrintWriter writer= new PrintWriter(out);
+		PrintWriter writer = new PrintWriter(out);
 
-        if(data instanceof RestletRunData){
-			((RestletRunData)data).hijackOutput(writer);
-		}else{
-			throw new RestletTurbineConfigurationException("Inproper Turbine configuration for RESTLET support.");
+		if (data instanceof RestletRunData) {
+			((RestletRunData) data).hijackOutput(writer);
+		} else {
+			throw new RestletTurbineConfigurationException(
+					"Inproper Turbine configuration for RESTLET support.");
 		}
 
-        PageLoader.getInstance().exec(data, defaultPage);
+		PageLoader.getInstance().exec(data, defaultPage);
 
-		//COPIED FROM org.apache.turbine.Turbine.doGet
-        if (data.isPageSet() && data.isOutSet() == false)
-        {
-            // Output the Page.
-            data.getPage().output(out);
-        }
+		// COPIED FROM org.apache.turbine.Turbine.doGet
+		if (data.isPageSet() && data.isOutSet() == false) {
+			// Output the Page.
+			data.getPage().output(out);
+		}
 
-        writer.flush();
-        writer.close();
+		writer.flush();
+		writer.close();
 	}
-	
-	public void setRunDataParameter(String key, String value)
-	{
+
+	public void setRunDataParameter(String key, String value) {
 		data.getParameters().setString(key, value);
 	}
-	
-	public static RunData populateRunData(HttpServletRequest request, HttpServletResponse response,XDATUser user,final Map<String,Object> params) throws TurbineException{
-//		RunDataService rundataService = null;
-//		rundataService = TurbineRunDataFacade.getService();
-//		if (rundataService == null)
-//		{
-//		    throw new TurbineException(
-//		            "No RunData Service configured!");
-//		}
-//		RunData data = rundataService.getRunData("restlet",request, response, XNATRestletServlet.REST_CONFIG);
+
+	public static RunData populateRunData(HttpServletRequest request,
+			HttpServletResponse response, XDATUser user,
+			final Map<String, Object> params) throws TurbineException {
+		// RunDataService rundataService = null;
+		// rundataService = TurbineRunDataFacade.getService();
+		// if (rundataService == null)
+		// {
+		// throw new TurbineException(
+		// "No RunData Service configured!");
+		// }
+		// RunData data = rundataService.getRunData("restlet",request, response,
+		// XNATRestletServlet.REST_CONFIG);
 
 		RestletRunData data = new RestletRunData();
-        data.setParameterParser(new org.apache.turbine.util.parser.DefaultParameterParser());
-        data.setCookieParser(new org.apache.turbine.util.parser.DefaultCookieParser());
+		data.setParameterParser(new org.apache.turbine.util.parser.DefaultParameterParser());
+		data.setCookieParser(new org.apache.turbine.util.parser.DefaultCookieParser());
 
-        // Set the request and response.
-        data.setRequest(request);
-        data.setResponse(response);
+		// Set the request and response.
+		data.setRequest(request);
+		data.setResponse(response);
 
-        // Set the servlet configuration.
-        data.setServletConfig(XNATRestletServlet.REST_CONFIG);
+		// Set the servlet configuration.
+		data.setServletConfig(XNATRestletServlet.REST_CONFIG);
 
-        // Set the ServerData.
-        data.setServerData(new ServerData(request));
-		
-		if(!XDAT.isAuthenticated()) {
+		// Set the ServerData.
+		data.setServerData(new ServerData(request));
+
+		if (!XDAT.isAuthenticated()) {
 			try {
 				XDAT.setUserDetails(new XDATUserDetails(user));
 			} catch (Exception e) {
-				logger.error("",e);
+				logger.error("", e);
 			}
 		}
-		
-		//RENAME script name /REST to /app
+
+		// RENAME script name /REST to /app
 		data.getServerData().setScriptName("/app");
-		
-		if(params!=null){
-			for(Map.Entry<String,Object> entry:params.entrySet()){
-				if(entry.getValue()!=null){
-					if(isPrimitiveWrapper(entry.getValue())){
-						data.getParameters().add(entry.getKey(), entry.getValue().toString());
-					}else{
+
+		if (params != null) {
+			for (Map.Entry<String, Object> entry : params.entrySet()) {
+				if (entry.getValue() != null) {
+					if (isPrimitiveWrapper(entry.getValue())) {
+						data.getParameters().add(entry.getKey(),
+								entry.getValue().toString());
+					} else {
 						data.passObject(entry.getKey(), entry.getValue());
 					}
 				}
 			}
 		}
-		
-						
+
 		return data;
 	}
-	
-	final static List<Class> types=Arrays.asList(new Class[]{Boolean.class,Character.class,Byte.class,Short.class,Integer.class,Long.class,Float.class,Double.class,String.class});
-	
-	public static boolean isPrimitiveWrapper(Object o){
+
+	final static List<Class> types = Arrays.asList(new Class[] { Boolean.class,
+			Character.class, Byte.class, Short.class, Integer.class,
+			Long.class, Float.class, Double.class, String.class });
+
+	public static boolean isPrimitiveWrapper(Object o) {
 		return types.contains(o.getClass());
 	}
-	
-	public class RestletTurbineConfigurationException extends Exception{
+
+	public class RestletTurbineConfigurationException extends Exception {
 		private static final long serialVersionUID = 1L;
 
-		public RestletTurbineConfigurationException(String msg){
+		public RestletTurbineConfigurationException(String msg) {
 			super(msg);
 		}
 	}
-	
+
 	@Override
 	public void write(OutputStream out) throws IOException {
 		try {
-	    	data.setScreenTemplate(getScreen());
-			turbineScreen(data,out);
+			data.setScreenTemplate(getScreen());
+			turbineScreen(data, out);
 		} catch (TurbineException e) {
-			logger.error("",e);
+			logger.error("", e);
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 		}
 	}
-	
+
 	public abstract String getScreen();
 }

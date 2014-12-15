@@ -16,13 +16,16 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
 
 public class XDATScreen_dcm_xnat_mrSessionData extends SecureReport {
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    @Override
-    public void finalProcessing(RunData data, Context context) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	@Override
+	public void finalProcessing(RunData data, Context context) {
 
-        
-    }
+	}
 
 }

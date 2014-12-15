@@ -37,69 +37,73 @@ import java.util.List;
 
 public class QuickSearch {
 
-    static org.apache.log4j.Logger logger = Logger.getLogger(StoreSubject.class);
-    public void execute(HttpServletRequest req, HttpServletResponse response) throws IOException{
-        String xmlString = req.getParameter("search");
-        XDATUser user = XDAT.getUserDetails();
-        if (user!=null){
-            StringReader sr = new StringReader(xmlString);
-            InputSource is = new InputSource(sr);
-            XnatSubjectdata subject=null;
-            
-            boolean successful=false;
-            SAXReader reader = new SAXReader(user);
-            try {
-                
-                StringBuffer sb = new StringBuffer();
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(StoreSubject.class);
 
-                sb.append("<matchingExperiments xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+	public void execute(HttpServletRequest req, HttpServletResponse response)
+			throws IOException {
+		String xmlString = req.getParameter("search");
+		XDATUser user = XDAT.getUserDetails();
+		if (user != null) {
+			StringReader sr = new StringReader(xmlString);
+			InputSource is = new InputSource(sr);
+			XnatSubjectdata subject = null;
 
-                XFTItem item = reader.parse(is);
-                
-                XdatStoredSearch xss = new XdatStoredSearch(item);
-                ItemSearch search= xss.getItemSearch(user);
-                ItemCollection items =search.exec(false);
-                Iterator iter = items.iterator();
-                while(iter.hasNext())
-                {
-                    XFTItem hash = (XFTItem)iter.next();
-                    XnatExperimentdata expt = (XnatExperimentdata)BaseElement.GetGeneratedItem(hash);
-                    
-                    sb.append("<Experiment" +
-                            " ID=\"" + expt.getId() + "\"" +
-                            " project=\"" + expt.getProject() + "\"" +
-                            " label=\"" + expt.getLabel() + "\"" +
-                            " insert_date=\"" + expt.getInsertDate() + "\"" +
-                            " insert_user=\"" + expt.getInsertUser().getLogin() + "\"" +
-                            " xsi:type=\"" + expt.getXSIType() + "\"" + 
-                            ">");
+			boolean successful = false;
+			SAXReader reader = new SAXReader(user);
+			try {
 
-                    sb.append("<projects>");
-                    List<XnatExperimentdataShareI> projects = expt.getSharing_share();
-                    for (XnatExperimentdataShareI project : projects){
-                        sb.append("<project label=\"" + project.getLabel()+"\">");
-                        sb.append(project.getProject());
-                        sb.append("</project>");
-                    }
-                    sb.append("</projects>");
-                    sb.append("</Experiment>");
-                }
-                sb.append("</matchingExperiments>");
+				StringBuffer sb = new StringBuffer();
 
-                response.setContentType("text/xml");
-                response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write(sb.toString());
-            } catch (SAXException e) {
-                logger.error("",e);
-            } catch (XFTInitException e) {
-                logger.error("",e);
-            } catch (ElementNotFoundException e) {
-                logger.error("",e);
-            } catch (FieldNotFoundException e) {
-                logger.error("",e);
-            } catch (Exception e) {
-                logger.error("",e);
-            }
-        }
-    }
+				sb.append("<matchingExperiments xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+
+				XFTItem item = reader.parse(is);
+
+				XdatStoredSearch xss = new XdatStoredSearch(item);
+				ItemSearch search = xss.getItemSearch(user);
+				ItemCollection items = search.exec(false);
+				Iterator iter = items.iterator();
+				while (iter.hasNext()) {
+					XFTItem hash = (XFTItem) iter.next();
+					XnatExperimentdata expt = (XnatExperimentdata) BaseElement
+							.GetGeneratedItem(hash);
+
+					sb.append("<Experiment" + " ID=\"" + expt.getId() + "\""
+							+ " project=\"" + expt.getProject() + "\""
+							+ " label=\"" + expt.getLabel() + "\""
+							+ " insert_date=\"" + expt.getInsertDate() + "\""
+							+ " insert_user=\""
+							+ expt.getInsertUser().getLogin() + "\""
+							+ " xsi:type=\"" + expt.getXSIType() + "\"" + ">");
+
+					sb.append("<projects>");
+					List<XnatExperimentdataShareI> projects = expt
+							.getSharing_share();
+					for (XnatExperimentdataShareI project : projects) {
+						sb.append("<project label=\"" + project.getLabel()
+								+ "\">");
+						sb.append(project.getProject());
+						sb.append("</project>");
+					}
+					sb.append("</projects>");
+					sb.append("</Experiment>");
+				}
+				sb.append("</matchingExperiments>");
+
+				response.setContentType("text/xml");
+				response.setHeader("Cache-Control", "no-cache");
+				response.getWriter().write(sb.toString());
+			} catch (SAXException e) {
+				logger.error("", e);
+			} catch (XFTInitException e) {
+				logger.error("", e);
+			} catch (ElementNotFoundException e) {
+				logger.error("", e);
+			} catch (FieldNotFoundException e) {
+				logger.error("", e);
+			} catch (Exception e) {
+				logger.error("", e);
+			}
+		}
+	}
 }

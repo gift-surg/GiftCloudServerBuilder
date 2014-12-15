@@ -25,36 +25,40 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class ExptReconURI extends ArchiveURI implements ArchiveItemURI,AssessedURII,ReconURII{
-	private XnatReconstructedimagedata recon=null;
-	private XnatImagesessiondata session=null; 
-	
+public class ExptReconURI extends ArchiveURI implements ArchiveItemURI,
+		AssessedURII, ReconURII {
+	private XnatReconstructedimagedata recon = null;
+	private XnatImagesessiondata session = null;
+
 	public ExptReconURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
 	protected void populate() {
-		if(recon==null){
-			final String exptID= (String)props.get(URIManager.ASSESSED_ID);
-			
-			if(session==null){
-				session=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
+		if (recon == null) {
+			final String exptID = (String) props.get(URIManager.ASSESSED_ID);
+
+			if (session == null) {
+				session = (XnatImagesessiondata) XnatExperimentdata
+						.getXnatExperimentdatasById(exptID, null, false);
 			}
-			
-			final String reconID= (String)props.get(URIManager.RECON_ID);
-			
-			if(recon==null&& reconID!=null){
-				recon=(XnatReconstructedimagedata)XnatReconstructedimagedata.getXnatReconstructedimagedatasById(reconID, null, false);
+
+			final String reconID = (String) props.get(URIManager.RECON_ID);
+
+			if (recon == null && reconID != null) {
+				recon = (XnatReconstructedimagedata) XnatReconstructedimagedata
+						.getXnatReconstructedimagedatasById(reconID, null,
+								false);
 			}
 		}
 	}
 
-	public XnatImagesessiondata getSession(){
+	public XnatImagesessiondata getSession() {
 		this.populate();
 		return this.session;
 	}
 
-	public XnatReconstructedimagedata getRecon(){
+	public XnatReconstructedimagedata getRecon() {
 		this.populate();
 		return this.recon;
 	}
@@ -65,8 +69,8 @@ public class ExptReconURI extends ArchiveURI implements ArchiveItemURI,AssessedU
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatReconstructedimagedata expt=getRecon();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatReconstructedimagedata expt = getRecon();
 		res.addAll(expt.getOut_file());
 		return res;
 	}

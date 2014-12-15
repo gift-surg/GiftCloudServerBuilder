@@ -20,28 +20,25 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseArcProperty extends AutoArcProperty {
 
-	public BaseArcProperty(ItemI item)
-	{
+	public BaseArcProperty(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcProperty(UserI user)
-	{
+	public BaseArcProperty(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcProperty(UserI user)
-	 **/
-	public BaseArcProperty()
-	{}
+	 */
+	public BaseArcProperty() {
+	}
 
-	public BaseArcProperty(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseArcProperty(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

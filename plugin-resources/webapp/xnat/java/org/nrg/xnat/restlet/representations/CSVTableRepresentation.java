@@ -23,33 +23,37 @@ import java.util.Map;
 
 public class CSVTableRepresentation extends OutputRepresentation {
 	XFTTable table = null;
-	Hashtable<String,Object> tableProperties = null;
-	Map<String,Map<String,String>> cp=new Hashtable<String,Map<String,String>>();
-	
-	public CSVTableRepresentation(XFTTable table,MediaType mediaType) {
+	Hashtable<String, Object> tableProperties = null;
+	Map<String, Map<String, String>> cp = new Hashtable<String, Map<String, String>>();
+
+	public CSVTableRepresentation(XFTTable table, MediaType mediaType) {
 		super(mediaType);
-		this.table=table;
+		this.table = table;
 	}
-	
-	public CSVTableRepresentation(XFTTable table,Hashtable<String,Object> metaFields,MediaType mediaType) {
+
+	public CSVTableRepresentation(XFTTable table,
+			Hashtable<String, Object> metaFields, MediaType mediaType) {
 		super(mediaType);
-		this.table=table;
-		this.tableProperties=metaFields;
+		this.table = table;
+		this.tableProperties = metaFields;
 	}
-	
-	public CSVTableRepresentation(XFTTable table,Map<String,Map<String,String>> columnProperties,Hashtable<String,Object> metaFields,MediaType mediaType) {
+
+	public CSVTableRepresentation(XFTTable table,
+			Map<String, Map<String, String>> columnProperties,
+			Hashtable<String, Object> metaFields, MediaType mediaType) {
 		super(mediaType);
-		this.table=table;
-		this.tableProperties=metaFields;
-		if(columnProperties!=null)this.cp=columnProperties;
+		this.table = table;
+		this.tableProperties = metaFields;
+		if (columnProperties != null)
+			this.cp = columnProperties;
 	}
 
 	@Override
 	public void write(OutputStream os) throws IOException {
 		OutputStreamWriter sw = new OutputStreamWriter(os);
 		BufferedWriter writer = new BufferedWriter(sw);
-		table.toCSV(writer,this.cp,null);
-	    writer.flush();
-	    
+		table.toCSV(writer, this.cp, null);
+		writer.flush();
+
 	}
 }

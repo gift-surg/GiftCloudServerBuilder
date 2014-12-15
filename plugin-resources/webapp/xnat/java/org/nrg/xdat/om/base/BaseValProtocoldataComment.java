@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseValProtocoldataComment extends AutoValProtocoldataComment {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseValProtocoldataComment extends
+		AutoValProtocoldataComment {
 
-	public BaseValProtocoldataComment(ItemI item)
-	{
+	public BaseValProtocoldataComment(ItemI item) {
 		super(item);
 	}
 
-	public BaseValProtocoldataComment(UserI user)
-	{
+	public BaseValProtocoldataComment(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseValProtocoldataComment(UserI user)
-	 **/
-	public BaseValProtocoldataComment()
-	{}
+	 */
+	public BaseValProtocoldataComment() {
+	}
 
-	public BaseValProtocoldataComment(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseValProtocoldataComment(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

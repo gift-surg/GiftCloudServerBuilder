@@ -64,7 +64,8 @@ public class TestXnatMrscandataGetManualQC {
 
 	@Test
 	public void shouldNotReturnWhenEmptyQCScans() {
-		when(assessor.getScans_scan()).thenReturn(new ArrayList<XnatQcscandataI>());
+		when(assessor.getScans_scan()).thenReturn(
+				new ArrayList<XnatQcscandataI>());
 
 		assertNull(scan.getManualQC());
 	}

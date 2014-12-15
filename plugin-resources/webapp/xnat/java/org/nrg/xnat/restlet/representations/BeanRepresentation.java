@@ -21,33 +21,34 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 public class BeanRepresentation extends OutputRepresentation {
-	static org.apache.log4j.Logger logger = Logger.getLogger(ItemXMLRepresentation.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(ItemXMLRepresentation.class);
 	BaseElement cat = null;
-	boolean includeSchemaLocations=true;
-	
-	public BeanRepresentation(BaseElement i,MediaType mt,boolean includeSchemaLocations) {
+	boolean includeSchemaLocations = true;
+
+	public BeanRepresentation(BaseElement i, MediaType mt,
+			boolean includeSchemaLocations) {
 		super(mt);
-		cat=i;	
-		this.includeSchemaLocations=includeSchemaLocations;
+		cat = i;
+		this.includeSchemaLocations = includeSchemaLocations;
 	}
 
-	public BeanRepresentation(BaseElement i,MediaType mt) {
+	public BeanRepresentation(BaseElement i, MediaType mt) {
 		super(mt);
-		cat=i;	
+		cat = i;
 	}
-	
+
 	@Override
 	public void write(OutputStream out) throws IOException {
-			try {
-				PrintWriter pw = new PrintWriter(out);
-				cat.toXML(pw, false);
-				pw.close();
-			} catch (IllegalArgumentException e) {
-				logger.error("",e);
-			} catch (TransformerFactoryConfigurationError e) {
-				logger.error("",e);
-			}
+		try {
+			PrintWriter pw = new PrintWriter(out);
+			cat.toXML(pw, false);
+			pw.close();
+		} catch (IllegalArgumentException e) {
+			logger.error("", e);
+		} catch (TransformerFactoryConfigurationError e) {
+			logger.error("", e);
+		}
 	}
 
-	
 }

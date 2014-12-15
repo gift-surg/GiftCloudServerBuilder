@@ -36,12 +36,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 @SuppressWarnings("unchecked")
-public abstract class PrearcImporterA extends StatusProducer implements Callable<Iterable<PrearcSession>>{
+public abstract class PrearcImporterA extends StatusProducer implements
+		Callable<Iterable<PrearcSession>> {
 	@SuppressWarnings("serial")
 	public static class UnknownPrearcImporterException extends Exception {
 		public UnknownPrearcImporterException(String string,
 				IllegalArgumentException illegalArgumentException) {
-			super(string,illegalArgumentException);
+			super(string, illegalArgumentException);
 		}
 	}
 
@@ -49,92 +50,126 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 
 	public static final String ECAT = "ECAT";
 	public static final String DICOM = "DICOM";
-	
-	public static final String PREARC_IMPORTER_ATTR= "prearc-importer";
 
-	static String DEFAULT_HANDLER=DICOM;
-	final static Map<String,Class<? extends PrearcImporterA>> PREARC_IMPORTERS=new HashMap<String,Class<? extends PrearcImporterA>>();
+	public static final String PREARC_IMPORTER_ATTR = "prearc-importer";
+
+	static String DEFAULT_HANDLER = DICOM;
+	final static Map<String, Class<? extends PrearcImporterA>> PREARC_IMPORTERS = new HashMap<String, Class<? extends PrearcImporterA>>();
 
 	private static final String PROP_OBJECT_IDENTIFIER = "org.nrg.PrearcImporter.impl";
 	private static final String SESSION_BUILDER_PROPERTIES = "prearc-importer.properties";
 	private static final String CLASS_NAME = "className";
-	private static final String[] PROP_OBJECT_FIELDS = new String[]{CLASS_NAME};
-	static{
-		//EXAMPLE PROPERTIES FILE 
-		//org.nrg.PrearcImporter=NIFTI
-		//org.nrg.PrearcImporter.impl.NIFTI.className=org.nrg.prearc.importers.CustomNiftiImporter
+	private static final String[] PROP_OBJECT_FIELDS = new String[] { CLASS_NAME };
+	static {
+		// EXAMPLE PROPERTIES FILE
+		// org.nrg.PrearcImporter=NIFTI
+		// org.nrg.PrearcImporter.impl.NIFTI.className=org.nrg.prearc.importers.CustomNiftiImporter
 		try {
-			PREARC_IMPORTERS.putAll((new PropertiesHelper<PrearcImporterA>()).buildClassesFromProps(SESSION_BUILDER_PROPERTIES, PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS, CLASS_NAME));
-			
-			if(!PREARC_IMPORTERS.containsKey(DICOM))PREARC_IMPORTERS.put(DICOM, PrearcImporterHelper.class);
-			if(!PREARC_IMPORTERS.containsKey(ECAT))PREARC_IMPORTERS.put(ECAT, PrearcImporterHelper.class);
+			PREARC_IMPORTERS.putAll((new PropertiesHelper<PrearcImporterA>())
+					.buildClassesFromProps(SESSION_BUILDER_PROPERTIES,
+							PROP_OBJECT_IDENTIFIER, PROP_OBJECT_FIELDS,
+							CLASS_NAME));
+
+			if (!PREARC_IMPORTERS.containsKey(DICOM))
+				PREARC_IMPORTERS.put(DICOM, PrearcImporterHelper.class);
+			if (!PREARC_IMPORTERS.containsKey(ECAT))
+				PREARC_IMPORTERS.put(ECAT, PrearcImporterHelper.class);
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 		}
 	}
-	
-	public static <A extends PrearcImporterA> A buildImporter(String format,Object uID, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params,boolean allowSessionMerge, boolean overwriteFiles) throws ClientException, ServerException, SecurityException, NoSuchMethodException, UnknownPrearcImporterException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException{
-		if(StringUtils.isEmpty(format)){
-			format=DEFAULT_HANDLER;
+
+	public static <A extends PrearcImporterA> A buildImporter(String format,
+			Object uID, final XDATUser u, final FileWriterWrapperI fi,
+			Map<String, Object> params, boolean allowSessionMerge,
+			boolean overwriteFiles) throws ClientException, ServerException,
+			SecurityException, NoSuchMethodException,
+			UnknownPrearcImporterException, IllegalArgumentException,
+			InstantiationException, IllegalAccessException,
+			InvocationTargetException {
+		if (StringUtils.isEmpty(format)) {
+			format = DEFAULT_HANDLER;
 		}
-		
-		Class<A> importerImpl=(Class<A>)PREARC_IMPORTERS.get(format);
-		if(importerImpl==null){
-			throw new UnknownPrearcImporterException("Unknown prearc-importer implementation specified: " + format,new IllegalArgumentException());
+
+		Class<A> importerImpl = (Class<A>) PREARC_IMPORTERS.get(format);
+		if (importerImpl == null) {
+			throw new UnknownPrearcImporterException(
+					"Unknown prearc-importer implementation specified: "
+							+ format, new IllegalArgumentException());
 		}
-		
-		final Constructor<A> con=importerImpl.getConstructor(Object.class, XDATUser.class, FileWriterWrapperI.class, Map.class, boolean.class, boolean.class);
-		return con.newInstance(uID, u, fi, params,allowSessionMerge,overwriteFiles);
-		
+
+		final Constructor<A> con = importerImpl.getConstructor(Object.class,
+				XDATUser.class, FileWriterWrapperI.class, Map.class,
+				boolean.class, boolean.class);
+		return con.newInstance(uID, u, fi, params, allowSessionMerge,
+				overwriteFiles);
+
 	}
-	
+
 	/**
-	 * This method was added to allow other developers to manually add importers to the list, without adding a configuration file.  However, this would some how need to be done before the import is executed (maybe as a servlet?).
+	 * This method was added to allow other developers to manually add importers
+	 * to the list, without adding a configuration file. However, this would
+	 * some how need to be done before the import is executed (maybe as a
+	 * servlet?).
+	 * 
 	 * @return
 	 */
-	public static Map<String,Class<? extends PrearcImporterA>> getPrearcImporters(){
+	public static Map<String, Class<? extends PrearcImporterA>> getPrearcImporters() {
 		return PREARC_IMPORTERS;
 	}
-	
-	public PrearcImporterA(Object control, final XDATUser u, final FileWriterWrapperI fi, Map<String,Object> params, boolean overwrite, boolean allowDataDeletion) {
+
+	public PrearcImporterA(Object control, final XDATUser u,
+			final FileWriterWrapperI fi, Map<String, Object> params,
+			boolean overwrite, boolean allowDataDeletion) {
 		super(control);
 	}
-	
+
 	public abstract List<PrearcSession> call() throws ActionException;
-	
-	public static class PrearcSession{
+
+	public static class PrearcSession {
 		private final File sessionDir;
-		private final String project,timestamp,folderName;
-		private final Map<String,Object> additionalValues=new HashMap<String,Object>();
-		
-		public PrearcSession(final File sessionDir) throws InvalidPermissionException, Exception{
-			this.sessionDir=sessionDir;
-			final File sessionXML=new File(sessionDir.getAbsolutePath()+".xml");
-			
-			folderName=sessionDir.getName();
-			timestamp=sessionDir.getParentFile().getName();
-			
-			final XnatImagesessiondataBean isd=PrearcTableBuilder.parseSession(sessionXML);
-			project=isd.getProject();
+		private final String project, timestamp, folderName;
+		private final Map<String, Object> additionalValues = new HashMap<String, Object>();
+
+		public PrearcSession(final File sessionDir)
+				throws InvalidPermissionException, Exception {
+			this.sessionDir = sessionDir;
+			final File sessionXML = new File(sessionDir.getAbsolutePath()
+					+ ".xml");
+
+			folderName = sessionDir.getName();
+			timestamp = sessionDir.getParentFile().getName();
+
+			final XnatImagesessiondataBean isd = PrearcTableBuilder
+					.parseSession(sessionXML);
+			project = isd.getProject();
 		}
 
-		public PrearcSession(URIManager.PrearchiveURI parsedURI,final Map<String,Object> additionalValues,final XDATUser user) throws InvalidPermissionException, Exception{
-			this((String)parsedURI.getProps().get(URIManager.PROJECT_ID),
-					(String)parsedURI.getProps().get(PrearcUtils.PREARC_TIMESTAMP),
-					(String)parsedURI.getProps().get(PrearcUtils.PREARC_SESSION_FOLDER), additionalValues,user);
+		public PrearcSession(URIManager.PrearchiveURI parsedURI,
+				final Map<String, Object> additionalValues, final XDATUser user)
+				throws InvalidPermissionException, Exception {
+			this((String) parsedURI.getProps().get(URIManager.PROJECT_ID),
+					(String) parsedURI.getProps().get(
+							PrearcUtils.PREARC_TIMESTAMP), (String) parsedURI
+							.getProps().get(PrearcUtils.PREARC_SESSION_FOLDER),
+					additionalValues, user);
 		}
 
-		public PrearcSession(final String project, final String timestamp, final String folderName,final Map<String,Object> props, final XDATUser user) throws InvalidPermissionException, Exception{
-			this.folderName=folderName;
-			this.project=project;
-			this.timestamp=timestamp;
-			if(folderName==null || timestamp==null){
+		public PrearcSession(final String project, final String timestamp,
+				final String folderName, final Map<String, Object> props,
+				final XDATUser user) throws InvalidPermissionException,
+				Exception {
+			this.folderName = folderName;
+			this.project = project;
+			this.timestamp = timestamp;
+			if (folderName == null || timestamp == null) {
 				throw new IllegalArgumentException();
 			}
 			if (null != props) {
-			    this.additionalValues.putAll(props);
+				this.additionalValues.putAll(props);
 			}
-			this.sessionDir=PrearcUtils.getPrearcSessionDir(user, project, timestamp, folderName, true);
+			this.sessionDir = PrearcUtils.getPrearcSessionDir(user, project,
+					timestamp, folderName, true);
 		}
 
 		public File getSessionDir() {
@@ -160,9 +195,11 @@ public abstract class PrearcImporterA extends StatusProducer implements Callable
 		public String getUrl() {
 			return PrearcUtils.buildURI(project, timestamp, folderName);
 		}
-		
-		public SessionData getSessionData() throws Exception, SQLException, SessionException{
-			return PrearcDatabase.getSessionIfExists(folderName, timestamp, project);		
+
+		public SessionData getSessionData() throws Exception, SQLException,
+				SessionException {
+			return PrearcDatabase.getSessionIfExists(folderName, timestamp,
+					project);
 		}
 	}
 }

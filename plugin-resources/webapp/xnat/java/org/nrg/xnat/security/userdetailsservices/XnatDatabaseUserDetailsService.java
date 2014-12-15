@@ -19,13 +19,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 
-public class XnatDatabaseUserDetailsService extends JdbcDaoImpl implements UserDetailsService{
-	
+public class XnatDatabaseUserDetailsService extends JdbcDaoImpl implements
+		UserDetailsService {
+
 	public static final String DB_PROVIDER = "";
-	
+
 	@Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, PasswordExpiredException {
-		UserDetails user = (XDAT.getXdatUserAuthService()).getUserDetailsByNameAndAuth(username, XdatUserAuthService.LOCALDB, DB_PROVIDER);
-        return user;
-    }
+	public UserDetails loadUserByUsername(String username)
+			throws UsernameNotFoundException, DataAccessException,
+			PasswordExpiredException {
+		UserDetails user = (XDAT.getXdatUserAuthService())
+				.getUserDetailsByNameAndAuth(username,
+						XdatUserAuthService.LOCALDB, DB_PROVIDER);
+		return user;
+	}
 }

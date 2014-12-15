@@ -24,54 +24,58 @@ import java.util.List;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseArcProjectDescendant extends AutoArcProjectDescendant {
 
-	public BaseArcProjectDescendant(ItemI item)
-	{
+	public BaseArcProjectDescendant(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcProjectDescendant(UserI user)
-	{
+	public BaseArcProjectDescendant(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcProjectDescendant(UserI user)
-	 **/
-	public BaseArcProjectDescendant()
-	{}
-
-	public BaseArcProjectDescendant(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseArcProjectDescendant() {
 	}
 
-	
-	public int getPipelineIndex(String pipelinePath) throws PipelineNotFoundException {
+	public BaseArcProjectDescendant(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public int getPipelineIndex(String pipelinePath)
+			throws PipelineNotFoundException {
 		int i = -1;
 		List<ArcProjectDescendantPipelineI> pipelines = getPipeline();
-		for (int j = 0; j <pipelines.size(); j++) {
+		for (int j = 0; j < pipelines.size(); j++) {
 			if (pipelines.get(j).getLocation().equals(pipelinePath)) {
 				i = j;
 				break;
 			}
 		}
-		if (i == -1) throw new PipelineNotFoundException("Couldnt find pipelines located at " + pipelinePath + " for " + getXsitype());
+		if (i == -1)
+			throw new PipelineNotFoundException(
+					"Couldnt find pipelines located at " + pipelinePath
+							+ " for " + getXsitype());
 		return i;
 	}
 
-	public ArcProjectDescendantPipeline getPipeline(String pipelinePath) throws PipelineNotFoundException {
+	public ArcProjectDescendantPipeline getPipeline(String pipelinePath)
+			throws PipelineNotFoundException {
 		ArcProjectDescendantPipeline rtn = null;
 		List<ArcProjectDescendantPipelineI> pipelines = getPipeline();
-		for (int j = 0; j <pipelines.size(); j++) {
+		for (int j = 0; j < pipelines.size(); j++) {
 			if (pipelines.get(j).getLocation().equals(pipelinePath)) {
-				rtn = (ArcProjectDescendantPipeline)pipelines.get(j);
+				rtn = (ArcProjectDescendantPipeline) pipelines.get(j);
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("Couldnt find pipelines located at " + pipelinePath + " for " + getXsitype());
+		if (rtn == null)
+			throw new PipelineNotFoundException(
+					"Couldnt find pipelines located at " + pipelinePath
+							+ " for " + getXsitype());
 		return rtn;
 	}
 

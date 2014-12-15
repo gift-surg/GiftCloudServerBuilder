@@ -16,15 +16,19 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 import java.io.File;
 
 public class UserUtils {
- 	public static String getUserCacheUploadsPath(final XDATUser user){
-		return ArcSpecManager.GetInstance().getGlobalCachePath() + "USERS" + File.separator + user.getXdatUserId();
+	public static String getUserCacheUploadsPath(final XDATUser user) {
+		return ArcSpecManager.GetInstance().getGlobalCachePath() + "USERS"
+				+ File.separator + user.getXdatUserId();
 	}
-	
-	public static File getUserCacheFile(final XDATUser user, final String directory, final String file){
-		return new File(new File(getUserCacheUploadsPath(user),directory),file);
+
+	public static File getUserCacheFile(final XDATUser user,
+			final String directory, final String file) {
+		return new File(new File(getUserCacheUploadsPath(user), directory),
+				file);
 	}
-	
-	public static File getUserCacheFile(final XDATUser user, final String directory){
-		return new File(getUserCacheUploadsPath(user),directory);
+
+	public static File getUserCacheFile(final XDATUser user,
+			final String directory) {
+		return new File(getUserCacheUploadsPath(user), directory);
 	}
 }

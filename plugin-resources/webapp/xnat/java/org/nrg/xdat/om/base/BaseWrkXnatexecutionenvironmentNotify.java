@@ -20,28 +20,27 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseWrkXnatexecutionenvironmentNotify extends AutoWrkXnatexecutionenvironmentNotify {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseWrkXnatexecutionenvironmentNotify extends
+		AutoWrkXnatexecutionenvironmentNotify {
 
-	public BaseWrkXnatexecutionenvironmentNotify(ItemI item)
-	{
+	public BaseWrkXnatexecutionenvironmentNotify(ItemI item) {
 		super(item);
 	}
 
-	public BaseWrkXnatexecutionenvironmentNotify(UserI user)
-	{
+	public BaseWrkXnatexecutionenvironmentNotify(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseWrkXnatexecutionenvironmentNotify(UserI user)
-	 **/
-	public BaseWrkXnatexecutionenvironmentNotify()
-	{}
+	 */
+	public BaseWrkXnatexecutionenvironmentNotify() {
+	}
 
-	public BaseWrkXnatexecutionenvironmentNotify(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseWrkXnatexecutionenvironmentNotify(Hashtable properties,
+			UserI user) {
+		super(properties, user);
 	}
 
 }

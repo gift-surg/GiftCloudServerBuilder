@@ -17,7 +17,8 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 public class XDATScreen_search_wizard1 extends SecureScreen {
 
 	@Override
-	protected void doBuildTemplate(RunData data, Context context) throws Exception {
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
 
 	}
 }

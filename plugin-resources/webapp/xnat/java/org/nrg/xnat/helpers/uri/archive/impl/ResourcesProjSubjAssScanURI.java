@@ -26,9 +26,10 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class ResourcesProjSubjAssScanURI extends ResourcesProjSubjSessionURIA  implements AssessedURII,ResourceURII,ArchiveItemURI,ScanURII{
-	private XnatImagescandata scan=null;
-	
+public class ResourcesProjSubjAssScanURI extends ResourcesProjSubjSessionURIA
+		implements AssessedURII, ResourceURII, ArchiveItemURI, ScanURII {
+	private XnatImagescandata scan = null;
+
 	public ResourcesProjSubjAssScanURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
@@ -36,25 +37,27 @@ public class ResourcesProjSubjAssScanURI extends ResourcesProjSubjSessionURIA  i
 	protected void populateScan() {
 		super.populateSession();
 
-		if(scan==null){
-			final String scanID= (String)props.get(URIManager.SCAN_ID);
-			final XnatImagesessiondata session=this.getSession();
-			
-			if(scan==null&& scanID!=null){
-				if(scan==null && session!=null){
-					CriteriaCollection cc= new CriteriaCollection("AND");
+		if (scan == null) {
+			final String scanID = (String) props.get(URIManager.SCAN_ID);
+			final XnatImagesessiondata session = this.getSession();
+
+			if (scan == null && scanID != null) {
+				if (scan == null && session != null) {
+					CriteriaCollection cc = new CriteriaCollection("AND");
 					cc.addClause("xnat:imageScanData/ID", scanID);
-					cc.addClause("xnat:imageScanData/image_session_ID", session.getId());
-					ArrayList<XnatImagescandata> scans=XnatImagescandata.getXnatImagescandatasByField(cc, null, false);
-					if(scans.size()>0){
-						scan=scans.get(0);
+					cc.addClause("xnat:imageScanData/image_session_ID",
+							session.getId());
+					ArrayList<XnatImagescandata> scans = XnatImagescandata
+							.getXnatImagescandatasByField(cc, null, false);
+					if (scans.size() > 0) {
+						scan = scans.get(0);
 					}
 				}
 			}
 		}
 	}
 
-	public XnatImagescandata getScan(){
+	public XnatImagescandata getScan() {
 		this.populateScan();
 		return this.scan;
 	}
@@ -64,17 +67,16 @@ public class ResourcesProjSubjAssScanURI extends ResourcesProjSubjSessionURIA  i
 		return getSession();
 	}
 
-
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(this.getScan()!=null){
-			for(XnatAbstractresourceI res:this.getScan().getFile()){
-				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+		if (this.getScan() != null) {
+			for (XnatAbstractresourceI res : this.getScan().getFile()) {
+				if (StringUtils.equals(res.getLabel(), this.getResourceLabel())) {
 					return res;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

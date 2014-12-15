@@ -46,112 +46,131 @@ import java.util.*;
 
 public class ProjectListResource extends QueryOrganizerResource {
 	private static final String ACCESSIBLE = "accessible";
-    private static final List<String> PERMISSIONS = Arrays.asList(SecurityManager.ACTIVATE, SecurityManager.CREATE, SecurityManager.DELETE, SecurityManager.EDIT, SecurityManager.READ);
+	private static final List<String> PERMISSIONS = Arrays.asList(
+			SecurityManager.ACTIVATE, SecurityManager.CREATE,
+			SecurityManager.DELETE, SecurityManager.EDIT, SecurityManager.READ);
 	XFTTable table = null;
 
-	public ProjectListResource(Context context, Request request, Response response) {
+	public ProjectListResource(Context context, Request request,
+			Response response) {
 		super(context, request, response);
-		
-			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 
-			this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.PROJECT_DATA,true));
-	
+		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+		this.getVariants().add(new Variant(MediaType.TEXT_XML));
+
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(
+				XMLPathShortcuts.PROJECT_DATA, true));
+
 	}
-	
-	
 
 	@Override
 	public boolean allowPost() {
 		return true;
 	}
 
-
-
 	@Override
 	public void handlePost() {
 		XFTItem item;
 		try {
-			item=this.loadItem("xnat:projectData",true);
+			item = this.loadItem("xnat:projectData", true);
 
-			if(item==null){
-				String xsiType=this.getQueryVariable("xsiType");
-				if(xsiType!=null){
-					item=XFTItem.NewItem(xsiType, user);
+			if (item == null) {
+				String xsiType = this.getQueryVariable("xsiType");
+				if (xsiType != null) {
+					item = XFTItem.NewItem(xsiType, user);
 				}
 			}
 
-			if(item==null){
-				this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
+			if (item == null) {
+				this.getResponse().setStatus(
+						Status.CLIENT_ERROR_EXPECTATION_FAILED,
+						"Need POST Contents");
 				return;
 			}
 
-			boolean allowDataDeletion =false;
-			if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equalsIgnoreCase("true")){
-				allowDataDeletion =true;
+			boolean allowDataDeletion = false;
+			if (this.getQueryVariable("allowDataDeletion") != null
+					&& this.getQueryVariable("allowDataDeletion")
+							.equalsIgnoreCase("true")) {
+				allowDataDeletion = true;
 			}
 
-			if(item.instanceOf("xnat:projectData")){
+			if (item.instanceOf("xnat:projectData")) {
 				XnatProjectdata project = new XnatProjectdata(item);
 
-				if(StringUtils.IsEmpty(project.getId())){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Requires XNAT ProjectData ID");
+				if (StringUtils.IsEmpty(project.getId())) {
+					this.getResponse().setStatus(
+							Status.CLIENT_ERROR_EXPECTATION_FAILED,
+							"Requires XNAT ProjectData ID");
 					return;
 				}
 
-				if(!StringUtils.IsAlphaNumericUnderscore(project.getId())){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Invalid character in project ID.");
+				if (!StringUtils.IsAlphaNumericUnderscore(project.getId())) {
+					this.getResponse().setStatus(
+							Status.CLIENT_ERROR_EXPECTATION_FAILED,
+							"Invalid character in project ID.");
 					return;
 				}
 
-				if(item.getCurrentDBVersion()==null){
-					if(XFT.getBooleanProperty("UI.allow-non-admin-project-creation", true) || user.isSiteAdmin()){
-						this.returnSuccessfulCreateFromList(BaseXnatProjectdata.createProject(project, user, allowDataDeletion,false,newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),getQueryVariable("accessibility")));
-					}else{
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"User account doesn't have permission to edit this project.");
-                    }
-				}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Project already exists.");
+				if (item.getCurrentDBVersion() == null) {
+					if (XFT.getBooleanProperty(
+							"UI.allow-non-admin-project-creation", true)
+							|| user.isSiteAdmin()) {
+						this.returnSuccessfulCreateFromList(BaseXnatProjectdata
+								.createProject(
+										project,
+										user,
+										allowDataDeletion,
+										false,
+										newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN),
+										getQueryVariable("accessibility")));
+					} else {
+						this.getResponse()
+								.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+										"User account doesn't have permission to edit this project.");
+					}
+				} else {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,
+							"Project already exists.");
 				}
 			}
 		} catch (ActionException e) {
-			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			this.getResponse().setStatus(e.getStatus(), e.getMessage());
 		} catch (Exception e) {
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			e.printStackTrace();
 		}
 	}
 
-
 	@Override
 	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
-		ArrayList<String> al=new ArrayList<String>();
+		ArrayList<String> al = new ArrayList<String>();
 		al.add("ID");
 		al.add("secondary_ID");
 		al.add("name");
 		al.add("description");
 		al.add("pi_firstname");
 		al.add("pi_lastname");
-		
+
 		return al;
 	}
 
-	public String getDefaultElementName(){
+	public String getDefaultElementName() {
 		return "xnat:projectData";
 	}
-
 
 	@Override
 	public boolean allowGet() {
 		return true;
 	}
 
-	public final static List<FilteredResourceHandlerI> _defaultHandlers=Lists.newArrayList();
-	static{
+	public final static List<FilteredResourceHandlerI> _defaultHandlers = Lists
+			.newArrayList();
+	static {
 		_defaultHandlers.add(new DefaultProjectHandler());
 		_defaultHandlers.add(new FilteredProjects());
-        _defaultHandlers.add(new PermissionsProjectHandler());
+		_defaultHandlers.add(new PermissionsProjectHandler());
 	}
 
 	@Override
@@ -159,34 +178,36 @@ public class ProjectListResource extends QueryOrganizerResource {
 		Representation rep1 = super.getRepresentation(variant);
 		if (rep1 != null)
 			return rep1;
-		
-		FilteredResourceHandlerI handler=null;
-        try {
-			for(FilteredResourceHandlerI filter:getHandlers("org.nrg.xnat.restlet.projectsList.extensions",_defaultHandlers)){
-				if(filter.canHandle(this)){
-					handler=filter;
+
+		FilteredResourceHandlerI handler = null;
+		try {
+			for (FilteredResourceHandlerI filter : getHandlers(
+					"org.nrg.xnat.restlet.projectsList.extensions",
+					_defaultHandlers)) {
+				if (filter.canHandle(this)) {
+					handler = filter;
 				}
 			}
 		} catch (InstantiationException e1) {
-			logger.error("",e1);
+			logger.error("", e1);
 		} catch (IllegalAccessException e1) {
-			logger.error("",e1);
+			logger.error("", e1);
 		}
-		
+
 		try {
-			if(handler!=null){
-				return handler.handle(this,variant);
-			}else{
+			if (handler != null) {
+				return handler.handle(this, variant);
+			} else {
 				return null;
 			}
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			return null;
 		}
 	}
-    
-    public static class FilteredProjects implements FilteredResourceHandlerI{
+
+	public static class FilteredProjects implements FilteredResourceHandlerI {
 
 		@Override
 		public boolean canHandle(SecureResource resource) {
@@ -198,16 +219,17 @@ public class ProjectListResource extends QueryOrganizerResource {
 					|| resource.containsQueryVariable("activeSince")
 					|| resource.containsQueryVariable("recent")
 					|| resource.containsQueryVariable("favorite")
-					|| resource.containsQueryVariable("admin")
-					|| (resource.requested_format != null && resource.requested_format.equals("search_xml")));
+					|| resource.containsQueryVariable("admin") || (resource.requested_format != null && resource.requested_format
+					.equals("search_xml")));
 		}
 
 		@Override
-		public Representation handle(SecureResource resource, Variant variant) throws Exception {
+		public Representation handle(SecureResource resource, Variant variant)
+				throws Exception {
 
 			DisplaySearch ds = new DisplaySearch();
-			XDATUser user=resource.user;
-			XFTTable table=null;
+			XDATUser user = resource.user;
+			XFTTable table = null;
 			try {
 				ds.setUser(user);
 				ds.setRootElement("xnat:projectData");
@@ -221,12 +243,15 @@ public class ProjectListResource extends QueryOrganizerResource {
 				ds.addDisplayField("xnat:projectData", "PROJECT_ACCESS_IMG");
 				ds.addDisplayField("xnat:projectData", "INSERT_DATE");
 				ds.addDisplayField("xnat:projectData", "INSERT_USER");
-				ds.addDisplayField("xnat:projectData", "USER_ROLE", "Role", user.getXdatUserId());
-				ds.addDisplayField("xnat:projectData", "LAST_ACCESSED", "Last Accessed", user.getXdatUserId());
+				ds.addDisplayField("xnat:projectData", "USER_ROLE", "Role",
+						user.getXdatUserId());
+				ds.addDisplayField("xnat:projectData", "LAST_ACCESSED",
+						"Last Accessed", user.getXdatUserId());
 
 				if (resource.isQueryVariableTrue("prearc_code")) {
 					ds.addDisplayField("xnat:projectData", "PROJ_QUARANTINE");
-					ds.addDisplayField("xnat:projectData", "PROJ_PREARCHIVE_CODE");
+					ds.addDisplayField("xnat:projectData",
+							"PROJ_PREARCHIVE_CODE");
 				}
 
 				CriteriaCollection allCC = new CriteriaCollection("AND");
@@ -235,16 +260,19 @@ public class ProjectListResource extends QueryOrganizerResource {
 				String access = resource.getQueryVariable(ACCESSIBLE);
 				if (access != null) {
 					if (access.equalsIgnoreCase("true")) {
-						if (user.getGroup("ALL_DATA_ACCESS") == null && user.getGroup("ALL_DATA_ADMIN") == null) {
+						if (user.getGroup("ALL_DATA_ACCESS") == null
+								&& user.getGroup("ALL_DATA_ADMIN") == null) {
 							CriteriaCollection cc = new CriteriaCollection("OR");
 							DisplayCriteria dc = new DisplayCriteria();
-							dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
+							dc.setSearchFieldByDisplayField("xnat:projectData",
+									"PROJECT_USERS");
 							dc.setComparisonType(" LIKE ");
 							dc.setValue("% " + user.getLogin() + " %", false);
 							cc.add(dc);
 
 							dc = new DisplayCriteria();
-							dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_ACCESS");
+							dc.setSearchFieldByDisplayField("xnat:projectData",
+									"PROJECT_ACCESS");
 							dc.setValue("public", false);
 							cc.add(dc);
 
@@ -253,13 +281,15 @@ public class ProjectListResource extends QueryOrganizerResource {
 					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_USERS");
 						dc.setComparisonType(" NOT LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
 
 						dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_USERS");
 						dc.setComparisonType(" IS ");
 						dc.setValue(" NULL ", false);
 						dc.setOverrideDataFormatting(true);
@@ -274,7 +304,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 					if (owner.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_OWNERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_OWNERS");
 						dc.setComparisonType(" LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
@@ -283,7 +314,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_USERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_USERS");
 						dc.setComparisonType(" NOT LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
@@ -296,7 +328,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 						if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
 							CriteriaCollection cc = new CriteriaCollection("OR");
 							DisplayCriteria dc = new DisplayCriteria();
-							dc.setSearchFieldByDisplayField("xnat:projectData", "ID");
+							dc.setSearchFieldByDisplayField("xnat:projectData",
+									"ID");
 							dc.setComparisonType(" IS NOT ");
 							dc.setValue(" NULL ", false);
 							dc.setOverrideDataFormatting(true);
@@ -311,7 +344,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 					if (member.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_MEMBERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_MEMBERS");
 						dc.setComparisonType(" LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
@@ -320,7 +354,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_MEMBERS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_MEMBERS");
 						dc.setComparisonType(" NOT LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
@@ -334,7 +369,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 					if (collaborator.equalsIgnoreCase("true")) {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_COLLABS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_COLLABS");
 						dc.setComparisonType(" LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
@@ -343,7 +379,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 					} else {
 						CriteriaCollection cc = new CriteriaCollection("OR");
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_COLLABS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_COLLABS");
 						dc.setComparisonType(" NOT LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						cc.add(dc);
@@ -358,12 +395,14 @@ public class ProjectListResource extends QueryOrganizerResource {
 						Date d = DateUtils.parseDateTime(activeSince);
 
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_LAST_WORKFLOW");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_LAST_WORKFLOW");
 						dc.setComparisonType(">");
 						dc.setValue(d, false);
 						orCC.add(dc);
 					} catch (RuntimeException e) {
-						resource.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+						resource.getResponse().setStatus(
+								Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
 
@@ -371,12 +410,14 @@ public class ProjectListResource extends QueryOrganizerResource {
 				if (recent != null) {
 					try {
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_LAST_ACCESS");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_LAST_ACCESS");
 						dc.setComparisonType(" LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						orCC.addCriteria(dc);
 					} catch (RuntimeException e) {
-						resource.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+						resource.getResponse().setStatus(
+								Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
 
@@ -384,12 +425,14 @@ public class ProjectListResource extends QueryOrganizerResource {
 				if (favorite != null) {
 					try {
 						DisplayCriteria dc = new DisplayCriteria();
-						dc.setSearchFieldByDisplayField("xnat:projectData", "PROJECT_FAV");
+						dc.setSearchFieldByDisplayField("xnat:projectData",
+								"PROJECT_FAV");
 						dc.setComparisonType(" LIKE ");
 						dc.setValue("% " + user.getLogin() + " %", false);
 						orCC.addCriteria(dc);
 					} catch (RuntimeException e) {
-						resource.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+						resource.getResponse().setStatus(
+								Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 					}
 				}
 
@@ -401,7 +444,8 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				ds.setSortBy("SECONDARY_ID");
 
-				if (resource.requested_format == null || !resource.requested_format.equals("search_xml")) {
+				if (resource.requested_format == null
+						|| !resource.requested_format.equals("search_xml")) {
 					table = (XFTTable) ds.execute(user.getLogin());
 				}
 			} catch (IllegalAccessException e) {
@@ -420,16 +464,19 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 			MediaType mt = resource.overrideVariant(variant);
 
-			if (resource.requested_format != null && resource.requested_format.equals("search_xml")) {
+			if (resource.requested_format != null
+					&& resource.requested_format.equals("search_xml")) {
 
 				XdatStoredSearch xss = ds.convertToStoredSearch("");
 
 				if (xss != null) {
-					ItemXMLRepresentation rep = new ItemXMLRepresentation(xss.getItem(), MediaType.TEXT_XML);
+					ItemXMLRepresentation rep = new ItemXMLRepresentation(
+							xss.getItem(), MediaType.TEXT_XML);
 					rep.setAllowDBAccess(false);
 					return rep;
 				} else {
-					resource.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+					resource.getResponse().setStatus(
+							Status.SERVER_ERROR_INTERNAL);
 					return new StringRepresentation("", MediaType.TEXT_XML);
 				}
 			} else {
@@ -438,50 +485,63 @@ public class ProjectListResource extends QueryOrganizerResource {
 				return resource.representTable(table, mt, params);
 			}
 		}
-    	
-    }
-    
-    public static class PermissionsProjectHandler implements FilteredResourceHandlerI {
+
+	}
+
+	public static class PermissionsProjectHandler implements
+			FilteredResourceHandlerI {
 
 		@Override
 		public boolean canHandle(SecureResource resource) {
-            return resource.containsQueryVariable("permissions");
+			return resource.containsQueryVariable("permissions");
 		}
 
 		@Override
-		public Representation handle(SecureResource resource, Variant variant) throws Exception {
-            final ArrayList<String> columns = new ArrayList<String>();
-            columns.add("id");
-            columns.add("secondary_id");
+		public Representation handle(SecureResource resource, Variant variant)
+				throws Exception {
+			final ArrayList<String> columns = new ArrayList<String>();
+			columns.add("id");
+			columns.add("secondary_id");
 
-            final XFTTable table = new XFTTable();
-            table.initTable(columns);
+			final XFTTable table = new XFTTable();
+			table.initTable(columns);
 
-            final String permissions = resource.getQueryVariable("permissions");
-            if (StringUtils.IsEmpty(permissions)) {
-                throw new Exception("You must specify a value for the permissions parameter.");
-            } else if (!PERMISSIONS.contains(permissions)) {
-                throw new Exception("You must specify one of the following values for the permissions parameter: " + Joiner.on(", ").join(PERMISSIONS));
-            }
+			final String permissions = resource.getQueryVariable("permissions");
+			if (StringUtils.IsEmpty(permissions)) {
+				throw new Exception(
+						"You must specify a value for the permissions parameter.");
+			} else if (!PERMISSIONS.contains(permissions)) {
+				throw new Exception(
+						"You must specify one of the following values for the permissions parameter: "
+								+ Joiner.on(", ").join(PERMISSIONS));
+			}
 
-            final String dataType = resource.getQueryVariable("dataType");
+			final String dataType = resource.getQueryVariable("dataType");
 
-            final Hashtable<Object, Object> projects = resource.user.getCachedItemValuesHash("xnat:projectData", null, false, "xnat:projectData/ID", "xnat:projectData/secondary_ID");
-            for (final Object key : projects.keySet()) {
-                final String projectId = (String) key;
-                // If no data type is specified, we check both MR and PET session data permissions. This is basically
-                // tailored for checking for projects to which the user can upload imaging data.
-                final boolean canEdit = StringUtils.IsEmpty(dataType) ? resource.user.hasAccessTo(projectId) : resource.user.canAction(dataType + "/project", projectId, permissions);
-                if (canEdit) {
-                    table.insertRowItems(projectId, projects.get(projectId));
-                }
-            }
-            table.sort("id", "ASC");
-            return resource.representTable(table, variant.getMediaType(), null);
-        }
-    }
+			final Hashtable<Object, Object> projects = resource.user
+					.getCachedItemValuesHash("xnat:projectData", null, false,
+							"xnat:projectData/ID",
+							"xnat:projectData/secondary_ID");
+			for (final Object key : projects.keySet()) {
+				final String projectId = (String) key;
+				// If no data type is specified, we check both MR and PET
+				// session data permissions. This is basically
+				// tailored for checking for projects to which the user can
+				// upload imaging data.
+				final boolean canEdit = StringUtils.IsEmpty(dataType) ? resource.user
+						.hasAccessTo(projectId) : resource.user.canAction(
+						dataType + "/project", projectId, permissions);
+				if (canEdit) {
+					table.insertRowItems(projectId, projects.get(projectId));
+				}
+			}
+			table.sort("id", "ASC");
+			return resource.representTable(table, variant.getMediaType(), null);
+		}
+	}
 
-    public static class DefaultProjectHandler implements FilteredResourceHandlerI{
+	public static class DefaultProjectHandler implements
+			FilteredResourceHandlerI {
 
 		@Override
 		public boolean canHandle(SecureResource resource) {
@@ -489,22 +549,30 @@ public class ProjectListResource extends QueryOrganizerResource {
 		}
 
 		@Override
-		public Representation handle(SecureResource resource, Variant variant) throws Exception {
-			ProjectListResource projResource=(ProjectListResource)resource;
+		public Representation handle(SecureResource resource, Variant variant)
+				throws Exception {
+			ProjectListResource projResource = (ProjectListResource) resource;
 			XFTTable table;
-			XDATUser user=resource.user;
+			XDATUser user = resource.user;
 			try {
 				final String re = projResource.getRootElementName();
 
-				final QueryOrganizer qo = new QueryOrganizer(re, user, ViewManager.ALL);
+				final QueryOrganizer qo = new QueryOrganizer(re, user,
+						ViewManager.ALL);
 
 				projResource.populateQuery(qo);
 
-				if (resource.containsQueryVariable("restrict") && user.getGroup("ALL_DATA_ADMIN") == null) {
-					final String restriction = resource.getQueryVariable("restrict");
-					if (restriction.equals(SecurityManager.EDIT) || restriction.equals(SecurityManager.DELETE)) {
-						final List<Object> ps = user.getAllowedValues("xnat:projectData", "xnat:projectData/ID", restriction);
-						final CriteriaCollection cc = new CriteriaCollection("OR");
+				if (resource.containsQueryVariable("restrict")
+						&& user.getGroup("ALL_DATA_ADMIN") == null) {
+					final String restriction = resource
+							.getQueryVariable("restrict");
+					if (restriction.equals(SecurityManager.EDIT)
+							|| restriction.equals(SecurityManager.DELETE)) {
+						final List<Object> ps = user.getAllowedValues(
+								"xnat:projectData", "xnat:projectData/ID",
+								restriction);
+						final CriteriaCollection cc = new CriteriaCollection(
+								"OR");
 						for (Object p : ps) {
 							cc.addClause("xnat:projectData/ID", p);
 						}
@@ -514,9 +582,11 @@ public class ProjectListResource extends QueryOrganizerResource {
 
 				final String query = qo.buildQuery();
 
-				table = XFTTable.Execute(query, user.getDBName(), resource.userName);
+				table = XFTTable.Execute(query, user.getDBName(),
+						resource.userName);
 
-				table = projResource.formatHeaders(table, qo, re + "/ID", "/data/projects/");
+				table = projResource.formatHeaders(table, qo, re + "/ID",
+						"/data/projects/");
 			} catch (IllegalAccessException e) {
 				logger.error("", e);
 				resource.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -533,6 +603,6 @@ public class ProjectListResource extends QueryOrganizerResource {
 				params.put("totalRecords", table.size());
 			return resource.representTable(table, mt, params);
 		}
-    	
-    }
+
+	}
 }

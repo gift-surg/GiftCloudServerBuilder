@@ -10,7 +10,6 @@
  */
 package org.nrg.xnat.exceptions;
 
-
 /**
  * @author Timothy R. Olsen <olsent@wustl.edu>
  *

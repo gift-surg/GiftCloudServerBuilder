@@ -20,12 +20,17 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
  */
 public class PARManager extends SecureScreen {
 
-	/* (non-Javadoc)
-	 * @see org.apache.turbine.modules.screens.VelocitySecureScreen#doBuildTemplate(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.turbine.modules.screens.VelocitySecureScreen#doBuildTemplate
+	 * (org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
 	 */
 	@Override
-	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-		
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+
 	}
 
 }

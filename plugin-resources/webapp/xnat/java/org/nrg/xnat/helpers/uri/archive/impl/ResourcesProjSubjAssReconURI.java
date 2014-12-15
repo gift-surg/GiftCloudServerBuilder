@@ -23,9 +23,10 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 import java.util.Map;
 
-public class ResourcesProjSubjAssReconURI extends ResourcesProjSubjSessionURIA  implements AssessedURII,ResourceURII,ArchiveItemURI,ReconURII{
-	private XnatReconstructedimagedata recon=null;
-	
+public class ResourcesProjSubjAssReconURI extends ResourcesProjSubjSessionURIA
+		implements AssessedURII, ResourceURII, ArchiveItemURI, ReconURII {
+	private XnatReconstructedimagedata recon = null;
+
 	public ResourcesProjSubjAssReconURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
@@ -33,16 +34,18 @@ public class ResourcesProjSubjAssReconURI extends ResourcesProjSubjSessionURIA  
 	protected void populateRecon() {
 		super.populateSession();
 
-		if(recon==null){
-			final String reconID= (String)props.get(URIManager.RECON_ID);
-			
-			if(recon==null&& reconID!=null){
-				recon=(XnatReconstructedimagedata)XnatReconstructedimagedata.getXnatReconstructedimagedatasById(reconID, null, false);
+		if (recon == null) {
+			final String reconID = (String) props.get(URIManager.RECON_ID);
+
+			if (recon == null && reconID != null) {
+				recon = (XnatReconstructedimagedata) XnatReconstructedimagedata
+						.getXnatReconstructedimagedatasById(reconID, null,
+								false);
 			}
 		}
 	}
 
-	public XnatReconstructedimagedata getRecon(){
+	public XnatReconstructedimagedata getRecon() {
 		this.populateRecon();
 		return this.recon;
 	}
@@ -54,28 +57,30 @@ public class ResourcesProjSubjAssReconURI extends ResourcesProjSubjSessionURIA  
 
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(this.getRecon()!=null){
-			String type=(String)this.props.get(URIManager.TYPE);
-			
-			if(type==null){
-				type="out";
+		if (this.getRecon() != null) {
+			String type = (String) this.props.get(URIManager.TYPE);
+
+			if (type == null) {
+				type = "out";
 			}
-			
-			if(type.equals("out")){
-				for(XnatAbstractresourceI res:this.getRecon().getOut_file()){
-					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+
+			if (type.equals("out")) {
+				for (XnatAbstractresourceI res : this.getRecon().getOut_file()) {
+					if (StringUtils.equals(res.getLabel(),
+							this.getResourceLabel())) {
 						return res;
 					}
 				}
-			}else if(type.equals("in")){
-				for(XnatAbstractresourceI res:this.getRecon().getIn_file()){
-					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+			} else if (type.equals("in")) {
+				for (XnatAbstractresourceI res : this.getRecon().getIn_file()) {
+					if (StringUtils.equals(res.getLabel(),
+							this.getResourceLabel())) {
 						return res;
 					}
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

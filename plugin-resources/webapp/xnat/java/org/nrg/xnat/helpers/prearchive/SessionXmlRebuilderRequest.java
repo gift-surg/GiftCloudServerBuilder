@@ -17,27 +17,28 @@ import java.io.File;
 import java.io.Serializable;
 
 public class SessionXmlRebuilderRequest implements Serializable {
-    public SessionXmlRebuilderRequest(XDATUser user, SessionData sessionData, File sessionDir) {
-        _user = user;
-        _sessionData = sessionData;
-        _sessionDir = sessionDir;
-    }
+	public SessionXmlRebuilderRequest(XDATUser user, SessionData sessionData,
+			File sessionDir) {
+		_user = user;
+		_sessionData = sessionData;
+		_sessionDir = sessionDir;
+	}
 
-    public XDATUser getUser() {
-        return _user;
-    }
+	public XDATUser getUser() {
+		return _user;
+	}
 
-    public SessionData getSessionData() {
-        return _sessionData;
-    }
+	public SessionData getSessionData() {
+		return _sessionData;
+	}
 
-    public File getSessionDir() {
-        return _sessionDir;
-    }
+	public File getSessionDir() {
+		return _sessionDir;
+	}
 
-    private static final long serialVersionUID = -6953780271999788326L;
+	private static final long serialVersionUID = -6953780271999788326L;
 
-    private final XDATUser _user;
-    private final SessionData _sessionData;
-    private final File _sessionDir;
+	private final XDATUser _user;
+	private final SessionData _sessionData;
+	private final File _sessionDir;
 }

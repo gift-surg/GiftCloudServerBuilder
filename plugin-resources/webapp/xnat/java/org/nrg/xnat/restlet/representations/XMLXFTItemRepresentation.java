@@ -22,29 +22,31 @@ import java.io.OutputStreamWriter;
 import java.util.Hashtable;
 import java.util.Map;
 
-
 public class XMLXFTItemRepresentation extends OutputRepresentation {
 	XFTItem item;
-	Hashtable<String,Object> metaFields;
+	Hashtable<String, Object> metaFields;
 	boolean allowDBAccess;
 	boolean allowSchemaLocation;
-	
-	public XMLXFTItemRepresentation(XFTItem item,MediaType mediaType, Hashtable<String,Object> metaFields, boolean allowDBAccess, boolean allowSchemaLocation) {
+
+	public XMLXFTItemRepresentation(XFTItem item, MediaType mediaType,
+			Hashtable<String, Object> metaFields, boolean allowDBAccess,
+			boolean allowSchemaLocation) {
 		super(mediaType);
 		this.item = item;
 		this.allowDBAccess = allowDBAccess;
 		this.metaFields = metaFields;
 		this.allowSchemaLocation = allowSchemaLocation;
 	}
-	
+
 	@Override
 	public void write(OutputStream os) throws IOException {
 		OutputStreamWriter sw = new OutputStreamWriter(os);
 		BufferedWriter writer = new BufferedWriter(sw);
-		if (!allowSchemaLocation && metaFields!=null && metaFields.size()>0) {
+		if (!allowSchemaLocation && metaFields != null && metaFields.size() > 0) {
 			writer.write("<ResultSet");
-			if(metaFields!=null && metaFields.size()>0){
-				for(Map.Entry<String,Object> entry : this.metaFields.entrySet()){
+			if (metaFields != null && metaFields.size() > 0) {
+				for (Map.Entry<String, Object> entry : this.metaFields
+						.entrySet()) {
 					writer.write(" " + entry.getKey() + "=\"");
 					writer.write(entry.getValue().toString());
 					writer.write("\"");
@@ -53,14 +55,16 @@ public class XMLXFTItemRepresentation extends OutputRepresentation {
 			writer.write(">");
 		}
 		try {
-            SAXWriter swriter = new SAXWriter(writer,allowDBAccess);
-            swriter.setAllowSchemaLocation(allowSchemaLocation);
-            swriter.write(item);
-		}catch(Exception saxe) {
+			SAXWriter swriter = new SAXWriter(writer, allowDBAccess);
+			swriter.setAllowSchemaLocation(allowSchemaLocation);
+			swriter.write(item);
+		} catch (Exception saxe) {
 			saxe.printStackTrace();
 			throw new IOException("Encountered Exception " + saxe.getClass());
-		}finally {
-			if (!allowSchemaLocation && metaFields!=null && metaFields.size()>0)  writer.write("</ResultSet>");
+		} finally {
+			if (!allowSchemaLocation && metaFields != null
+					&& metaFields.size() > 0)
+				writer.write("</ResultSet>");
 			writer.flush();
 		}
 	}

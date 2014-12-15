@@ -28,88 +28,119 @@ import java.util.List;
 
 public class XnatArcSpecFilter extends GenericFilterBean {
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        final HttpServletRequest request = (HttpServletRequest) req;
-        final HttpServletResponse response = (HttpServletResponse) res;
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse res,
+			FilterChain chain) throws IOException, ServletException {
+		final HttpServletRequest request = (HttpServletRequest) req;
+		final HttpServletResponse response = (HttpServletResponse) res;
 
-        final ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
+		final ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
 
-        if (arcSpec != null && arcSpec.isComplete()) {
-            //If arc spec has already been set, do not redirect.
-            chain.doFilter(req, res);
-        } else {
-            final XDATUser user = (XDATUser) request.getSession().getAttribute("user");
-            final String uri = request.getRequestURI();
+		if (arcSpec != null && arcSpec.isComplete()) {
+			// If arc spec has already been set, do not redirect.
+			chain.doFilter(req, res);
+		} else {
+			final XDATUser user = (XDATUser) request.getSession().getAttribute(
+					"user");
+			final String uri = request.getRequestURI();
 
-            if (user == null) {
-                String header = request.getHeader("Authorization");
-                if (header != null && header.startsWith("Basic ") && !uri.contains(_initializationPath)) {
-                    //Users that authenticated using basic authentication receive an error message informing them that the arc spec is not set.
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Site has not yet been configured.");
-                    return;
-                }
-            }
+			if (user == null) {
+				String header = request.getHeader("Authorization");
+				if (header != null && header.startsWith("Basic ")
+						&& !uri.contains(_initializationPath)) {
+					// Users that authenticated using basic authentication
+					// receive an error message informing them that the arc spec
+					// is not set.
+					response.sendError(HttpServletResponse.SC_FORBIDDEN,
+							"Site has not yet been configured.");
+					return;
+				}
+			}
 
-            final String referer = request.getHeader("Referer");
+			final String referer = request.getHeader("Referer");
 
-            if (uri.contains(_initializationPath) || uri.endsWith(_configurationPath) || uri.endsWith(_nonAdminErrorPath) || isExemptedPath(uri)) {
-                //If you're already on the configuration page, error page, or expired password page, continue on without redirect.
-                chain.doFilter(req, res);
-            } else if (referer != null && (referer.endsWith(_configurationPath) || referer.endsWith(_nonAdminErrorPath) || isExemptedPath(referer)) && !uri.contains("/app/template") && !uri.contains("/app/screen") && !uri.endsWith(".vm") && !uri.equals("/")) {
-                //If you're on a request within the configuration page (or error page or expired password page), continue on without redirect. This checks that the referer is the configuration page and that
-                // the request is not for another page (preventing the user from navigating away from the Configuration page via the menu bar).
-                chain.doFilter(req, res);
-            } else {
-                try {
-                    if(user == null) {
-                	// user not authenticated, let another filter handle the redirect
-                	// (NB: I tried putting this check up with the basic auth check, 
-                	// but you get this weird redirect with 2 login pages on the same screen.  Seems to work here).
-                        chain.doFilter(req, res);
-                    } else if (user.checkRole("Administrator")) {
-                        //Otherwise, if the user has administrative permissions, direct the user to the configuration page.
-                        response.sendRedirect(TurbineUtils.GetFullServerPath() + _configurationPath);
-                    } else {
-                        //The arc spec is not set but the user does not have administrative permissions. Direct the user to an error page.
-                        response.sendRedirect(TurbineUtils.GetFullServerPath() + _nonAdminErrorPath);
-                    }
-                } catch (Exception e) {
-                    logger.error("Error checking user role in the Arc Spec Filter.", e);
-                    response.sendRedirect(TurbineUtils.GetFullServerPath() + _nonAdminErrorPath);
-                }
-            }
-        }
-    }
+			if (uri.contains(_initializationPath)
+					|| uri.endsWith(_configurationPath)
+					|| uri.endsWith(_nonAdminErrorPath) || isExemptedPath(uri)) {
+				// If you're already on the configuration page, error page, or
+				// expired password page, continue on without redirect.
+				chain.doFilter(req, res);
+			} else if (referer != null
+					&& (referer.endsWith(_configurationPath)
+							|| referer.endsWith(_nonAdminErrorPath) || isExemptedPath(referer))
+					&& !uri.contains("/app/template")
+					&& !uri.contains("/app/screen") && !uri.endsWith(".vm")
+					&& !uri.equals("/")) {
+				// If you're on a request within the configuration page (or
+				// error page or expired password page), continue on without
+				// redirect. This checks that the referer is the configuration
+				// page and that
+				// the request is not for another page (preventing the user from
+				// navigating away from the Configuration page via the menu
+				// bar).
+				chain.doFilter(req, res);
+			} else {
+				try {
+					if (user == null) {
+						// user not authenticated, let another filter handle the
+						// redirect
+						// (NB: I tried putting this check up with the basic
+						// auth check,
+						// but you get this weird redirect with 2 login pages on
+						// the same screen. Seems to work here).
+						chain.doFilter(req, res);
+					} else if (user.checkRole("Administrator")) {
+						// Otherwise, if the user has administrative
+						// permissions, direct the user to the configuration
+						// page.
+						response.sendRedirect(TurbineUtils.GetFullServerPath()
+								+ _configurationPath);
+					} else {
+						// The arc spec is not set but the user does not have
+						// administrative permissions. Direct the user to an
+						// error page.
+						response.sendRedirect(TurbineUtils.GetFullServerPath()
+								+ _nonAdminErrorPath);
+					}
+				} catch (Exception e) {
+					logger.error(
+							"Error checking user role in the Arc Spec Filter.",
+							e);
+					response.sendRedirect(TurbineUtils.GetFullServerPath()
+							+ _nonAdminErrorPath);
+				}
+			}
+		}
+	}
 
-    public void setInitializationPath(final String initializationPath) {
-        _initializationPath = initializationPath;
-    }
+	public void setInitializationPath(final String initializationPath) {
+		_initializationPath = initializationPath;
+	}
 
-    public void setConfigurationPath(String configurationPath) {
-        _configurationPath = configurationPath;
-    }
+	public void setConfigurationPath(String configurationPath) {
+		_configurationPath = configurationPath;
+	}
 
-    public void setNonAdminErrorPath(String nonAdminErrorPath) {
-        _nonAdminErrorPath = nonAdminErrorPath;
-    }
+	public void setNonAdminErrorPath(String nonAdminErrorPath) {
+		_nonAdminErrorPath = nonAdminErrorPath;
+	}
 
-    public void setExemptedPaths(List<String> exemptedPaths) {
-        _exemptedPaths.clear();
-        _exemptedPaths.addAll(exemptedPaths);
-    }
+	public void setExemptedPaths(List<String> exemptedPaths) {
+		_exemptedPaths.clear();
+		_exemptedPaths.addAll(exemptedPaths);
+	}
 
-    private boolean isExemptedPath(String path) {
-        for (final String exemptedPath : _exemptedPaths) {
-            if (path.endsWith(exemptedPath)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private boolean isExemptedPath(String path) {
+		for (final String exemptedPath : _exemptedPaths) {
+			if (path.endsWith(exemptedPath)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private String _initializationPath = "";
-    private String _configurationPath = "";
-    private String _nonAdminErrorPath = "";
-    private final List<String> _exemptedPaths = new ArrayList<String>();
+	private String _initializationPath = "";
+	private String _configurationPath = "";
+	private String _nonAdminErrorPath = "";
+	private final List<String> _exemptedPaths = new ArrayList<String>();
 }

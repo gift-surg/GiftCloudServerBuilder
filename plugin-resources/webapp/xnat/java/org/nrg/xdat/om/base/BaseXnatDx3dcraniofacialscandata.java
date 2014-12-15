@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatDx3dcraniofacialscandata extends AutoXnatDx3dcraniofacialscandata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatDx3dcraniofacialscandata extends
+		AutoXnatDx3dcraniofacialscandata {
 
-	public BaseXnatDx3dcraniofacialscandata(ItemI item)
-	{
+	public BaseXnatDx3dcraniofacialscandata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatDx3dcraniofacialscandata(UserI user)
-	{
+	public BaseXnatDx3dcraniofacialscandata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatDx3dcraniofacialscandata(UserI user)
-	 **/
-	public BaseXnatDx3dcraniofacialscandata()
-	{}
+	 */
+	public BaseXnatDx3dcraniofacialscandata() {
+	}
 
-	public BaseXnatDx3dcraniofacialscandata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatDx3dcraniofacialscandata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

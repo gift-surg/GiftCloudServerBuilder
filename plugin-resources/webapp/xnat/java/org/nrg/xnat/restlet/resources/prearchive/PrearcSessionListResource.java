@@ -31,7 +31,8 @@ import java.util.List;
 public final class PrearcSessionListResource extends SecureResource {
 
 	private static final String PROJECT_ATTR = "PROJECT_ID";
-	private final Logger logger = LoggerFactory.getLogger(PrearcSessionListResource.class);
+	private final Logger logger = LoggerFactory
+			.getLogger(PrearcSessionListResource.class);
 
 	private final String requestedProject;
 	private final Reference prearcRef;
@@ -41,126 +42,139 @@ public final class PrearcSessionListResource extends SecureResource {
 	 * @param request
 	 * @param response
 	 */
-	public PrearcSessionListResource(final Context context, final Request request, final Response response) {
+	public PrearcSessionListResource(final Context context,
+			final Request request, final Response response) {
 		super(context, request, response);
 
 		// Project is explicit in the request
-		requestedProject = (String)getParameter(request,PROJECT_ATTR);
+		requestedProject = (String) getParameter(request, PROJECT_ATTR);
 
 		prearcRef = request.getResourceRef();
-		
+
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
-		
-        if (request.getMethod() == Method.PUT && !user.isSiteAdmin()) {
-            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only administrators can request a rebuild of the prearchive.");
-        }
+
+		if (request.getMethod() == Method.PUT && !user.isSiteAdmin()) {
+			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+					"Only administrators can request a rebuild of the prearchive.");
+		}
 	}
-	
+
 	/**
 	 * Refresh all the sessions
 	 */
 	@Override
-	public boolean allowPut () {
+	public boolean allowPut() {
 		return true;
 	}
-	
-	public void handlePut () {
+
+	public void handlePut() {
 		try {
 			PrearcDatabase.refresh(true);
 		} catch (Exception e) {
 			logger.error("Unable to refresh sessions", e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+					e.getMessage());
 		}
 	}
-	
+
 	/**
-		 * (non-Javadoc)
+	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.restlet.resource.Resource#represent(org.restlet.resource.Variant)
+	 * @see org.restlet.resource.Resource#represent(org.restlet.resource.Variant)
 	 */
 	@Override
-	public Representation represent(final Variant variant) throws ResourceException {
+	public Representation represent(final Variant variant)
+			throws ResourceException {
 		final MediaType mt = overrideVariant(variant);
 
 		XFTTable table;
-		
-		if(this.getQueryVariable("tag")!=null){
-			final String tag=getQueryVariable("tag");
+
+		if (this.getQueryVariable("tag") != null) {
+			final String tag = getQueryVariable("tag");
 			try {
-				if(!user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Non admin user's can not query by tag");
+				if (!user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+							"Non admin user's can not query by tag");
 					return null;
 				}
-				
-				table=retrieveTable(tag);
+
+				table = retrieveTable(tag);
 			} catch (Exception e) {
 				logger.error("", e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+						e.getMessage());
 				return null;
 			}
-		}else{		
+		} else {
 			ArrayList<String> projects = null;
-			
+
 			try {
 				projects = PrearcUtils.getProjects(user, requestedProject);
 			} catch (Exception e) {
 				logger.error(" Unable to get list of projects", e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+						e.getMessage());
 				return null;
 			}
-			
-			String path=prearcRef.getBaseRef().toString();
-		
-			if(requestedProject!=null){
-				path = StringUtils.join(new String[]{path,"/",requestedProject});
+
+			String path = prearcRef.getBaseRef().toString();
+
+			if (requestedProject != null) {
+				path = StringUtils.join(new String[] { path, "/",
+						requestedProject });
 			}
-						
+
 			try {
 				table = this.retrieveTable(projects);
-			}
-			catch (SQLException e) {
+			} catch (SQLException e) {
 				logger.error("Unable to query prearchive table : ", e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+						e.getMessage());
 				return null;
 			} catch (SessionException e) {
 				logger.error("Unable to query prearchive table : ", e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+						e.getMessage());
 				return null;
 			} catch (Exception e) {
 				logger.error("Unable to query prearchive table : ", e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+						e.getMessage());
 				return null;
-			}	
+			}
 		}
 
-			
-		return this.representTable(table, mt, new Hashtable<String,Object>());
+		return this.representTable(table, mt, new Hashtable<String, Object>());
 	}
-	
-	public XFTTable retrieveTable(ArrayList<String> projects) throws Exception, SQLException, SessionException {
-		String [] _proj = new String[projects.size()];
-		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(projects.toArray(_proj)));
+
+	public XFTTable retrieveTable(ArrayList<String> projects) throws Exception,
+			SQLException, SessionException {
+		String[] _proj = new String[projects.size()];
+		final XFTTable table = PrearcUtils.convertArrayLtoTable(PrearcDatabase
+				.buildRows(projects.toArray(_proj)));
 		return table;
 	}
-	
-	public XFTTable retrieveTable(String tag) throws Exception, SQLException, SessionException {
-		final Collection<SessionData> matches=PrearcDatabase.getSessionByUID(tag);
 
-		final List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
-		
-		for(final SessionData s:matches){
+	public XFTTable retrieveTable(String tag) throws Exception, SQLException,
+			SessionException {
+		final Collection<SessionData> matches = PrearcDatabase
+				.getSessionByUID(tag);
+
+		final List<SessionDataTriple> ss = new ArrayList<SessionDataTriple>();
+
+		for (final SessionData s : matches) {
 			ss.add(s.getSessionDataTriple());
 		}
-		
-		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(ss));
-		
+
+		final XFTTable table = PrearcUtils.convertArrayLtoTable(PrearcDatabase
+				.buildRows(ss));
+
 		return table;
 	}
-	
-	public PrearcTableBuilderI getPrearcBuider(){
+
+	public PrearcTableBuilderI getPrearcBuider() {
 		return new PrearcTableBuilder();
 	}
 }

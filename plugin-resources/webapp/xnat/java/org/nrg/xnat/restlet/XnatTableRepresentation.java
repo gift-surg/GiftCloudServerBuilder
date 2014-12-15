@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface XnatTableRepresentation {
 	String mediaType();
+
 	String mediaTypeDescription();
-    boolean required() default false;
+
+	boolean required() default false;
 }

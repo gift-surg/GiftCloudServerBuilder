@@ -15,11 +15,11 @@ import org.nrg.xdat.bean.CatCatalogBean;
 import java.util.Hashtable;
 
 public class CatalogSet {
-    public CatCatalogBean catalog = null;
-    public Hashtable<String,Object> hash = null;
-    
-    public CatalogSet(CatCatalogBean c, Hashtable<String,Object> h){
-        catalog=c;
-        hash=h;
-    }
+	public CatCatalogBean catalog = null;
+	public Hashtable<String, Object> hash = null;
+
+	public CatalogSet(CatCatalogBean c, Hashtable<String, Object> h) {
+		catalog = c;
+		hash = h;
+	}
 }

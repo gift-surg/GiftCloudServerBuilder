@@ -54,373 +54,415 @@ import org.nrg.xdat.security.XDATUser;
 
 public class ExptFileUpload extends SecureAction {
 
-    private static final Logger logger = Logger.getLogger(ExptFileUpload.class);
+	private static final Logger logger = Logger.getLogger(ExptFileUpload.class);
 
-    @Override
-    public void doPerform(RunData data, Context context) throws Exception{        
-        ParameterParser params = data.getParameters();
-        HttpSession session = data.getSession();
-        String uploadID= null;
-        if (params.get("ID")!=null && !params.get("ID").equals("")){
-            uploadID=params.get("ID");
-            session.setAttribute(uploadID + "Upload", 0);
-            session.setAttribute(uploadID + "Extract", 0);
-            session.setAttribute(uploadID + "Analyze", 0);
-        }
-        if (uploadID!=null)session.setAttribute(uploadID + "Upload", 0);
-            try {
-                FileItem fi = params.getFileItem("image_archive");
-                if (fi != null) {
-                    String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
+	@Override
+	public void doPerform(RunData data, Context context) throws Exception {
+		ParameterParser params = data.getParameters();
+		HttpSession session = data.getSession();
+		String uploadID = null;
+		if (params.get("ID") != null && !params.get("ID").equals("")) {
+			uploadID = params.get("ID");
+			session.setAttribute(uploadID + "Upload", 0);
+			session.setAttribute(uploadID + "Extract", 0);
+			session.setAttribute(uploadID + "Analyze", 0);
+		}
+		if (uploadID != null)
+			session.setAttribute(uploadID + "Upload", 0);
+		try {
+			FileItem fi = params.getFileItem("image_archive");
+			if (fi != null) {
+				String cache_path = ArcSpecManager.GetInstance()
+						.getGlobalCachePath();
 
-                    if (!cache_path.endsWith(File.separator)) {
-                        cache_path += File.separator;
-                    }                    
-                    
-                    cache_path +="user_uploads" + File.separator + uploadID + File.separator;
-                    File dir = new File(cache_path);
-                    
-                    if (!dir.exists()){
-                        if (!dir.mkdirs()) {
-                            logger.warn("It appears that I failed to create the directory: " + dir.getAbsolutePath() + ". If there's some error later, this may be why.");
-                        }
-                    }
+				if (!cache_path.endsWith(File.separator)) {
+					cache_path += File.separator;
+				}
 
-                    String filename = fi.getName();
+				cache_path += "user_uploads" + File.separator + uploadID
+						+ File.separator;
+				File dir = new File(cache_path);
 
-                    int index = filename.lastIndexOf('\\');
-                    if (index < filename.lastIndexOf('/')) {
-                        index = filename.lastIndexOf('/');
-                    }
-                    if (index > 0) {
-                        filename = filename.substring(index+1);
-                    }
+				if (!dir.exists()) {
+					if (!dir.mkdirs()) {
+						logger.warn("It appears that I failed to create the directory: "
+								+ dir.getAbsolutePath()
+								+ ". If there's some error later, this may be why.");
+					}
+				}
 
-                    if (logger.isInfoEnabled()) {
-                        logger.info("Uploading file " + filename + " to folder " + dir.getAbsolutePath());
-                    }
+				String filename = fi.getName();
 
-                    String compression_method = ".zip";
-                    final String normalized = filename.toLowerCase();
-                    if (normalized.endsWith(".tar")) {
-                        compression_method = ".tar";
-                    } else if (normalized.endsWith(".tgz") || normalized.endsWith(".tar.gz")) {
-                        compression_method = ".tgz";
-                    } else if (filename.contains(".")) {
-                        compression_method = filename.substring(filename.lastIndexOf("."));
-                    }
+				int index = filename.lastIndexOf('\\');
+				if (index < filename.lastIndexOf('/')) {
+					index = filename.lastIndexOf('/');
+				}
+				if (index > 0) {
+					filename = filename.substring(index + 1);
+				}
 
-                    if (uploadID != null) {
-                        session.setAttribute(uploadID + "Upload", 100);
-                    }
+				if (logger.isInfoEnabled()) {
+					logger.info("Uploading file " + filename + " to folder "
+							+ dir.getAbsolutePath());
+				}
 
-                    if (compression_method.equalsIgnoreCase(".tar") ||
-                        compression_method.equalsIgnoreCase(".gz") ||
-                        compression_method.equalsIgnoreCase(".tgz") ||
-                        compression_method.equalsIgnoreCase(".zip") ||
-                        compression_method.equalsIgnoreCase(".zar")) {
+				String compression_method = ".zip";
+				final String normalized = filename.toLowerCase();
+				if (normalized.endsWith(".tar")) {
+					compression_method = ".tar";
+				} else if (normalized.endsWith(".tgz")
+						|| normalized.endsWith(".tar.gz")) {
+					compression_method = ".tgz";
+				} else if (filename.contains(".")) {
+					compression_method = filename.substring(filename
+							.lastIndexOf("."));
+				}
 
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Extracting file: " + filename);
-                        }
+				if (uploadID != null) {
+					session.setAttribute(uploadID + "Upload", 100);
+				}
 
-                        InputStream is = fi.getInputStream();
+				if (compression_method.equalsIgnoreCase(".tar")
+						|| compression_method.equalsIgnoreCase(".gz")
+						|| compression_method.equalsIgnoreCase(".tgz")
+						|| compression_method.equalsIgnoreCase(".zip")
+						|| compression_method.equalsIgnoreCase(".zar")) {
 
-                        ZipI zipper;
-                        if (compression_method.equalsIgnoreCase(".tar")) {
-                            zipper = new TarUtils();
-                        } else if (compression_method.equalsIgnoreCase(".tgz")) {
-                            zipper = new TarUtils();
-                            zipper.setCompressionMethod(ZipOutputStream.DEFLATED);
-                        } else {
-                            zipper = new ZipUtils();
-                        }
-                        
-                        try {
-                            zipper.extract(is, cache_path);
-                        } catch (Throwable e1) {
-                            error(e1,data);
-                            session.setAttribute(uploadID + "Extract", -1);
-                            session.setAttribute(uploadID + "Analyze", -1);
-                            return;
-                        }
-                    } else {
-                        //PLACE UPLOADED IMAGE INTO FOLDER
-                        File uploaded = new File(cache_path + filename) ;
-                        fi.write(uploaded);
-                    }
+					if (logger.isDebugEnabled()) {
+						logger.debug("Extracting file: " + filename);
+					}
 
-                    if (uploadID != null) {
-                        session.setAttribute(uploadID + "Extract", 100);
-                    }
+					InputStream is = fi.getInputStream();
 
-                    fi.delete();
+					ZipI zipper;
+					if (compression_method.equalsIgnoreCase(".tar")) {
+						zipper = new TarUtils();
+					} else if (compression_method.equalsIgnoreCase(".tgz")) {
+						zipper = new TarUtils();
+						zipper.setCompressionMethod(ZipOutputStream.DEFLATED);
+					} else {
+						zipper = new ZipUtils();
+					}
 
-                    String tag = (String)TurbineUtils.GetPassedParameter("tags", data);
-                    this.addTag(dir, tag);
-                    
-                    logger.debug("File Upload Complete.");
+					try {
+						zipper.extract(is, cache_path);
+					} catch (Throwable e1) {
+						error(e1, data);
+						session.setAttribute(uploadID + "Extract", -1);
+						session.setAttribute(uploadID + "Analyze", -1);
+						return;
+					}
+				} else {
+					// PLACE UPLOADED IMAGE INTO FOLDER
+					File uploaded = new File(cache_path + filename);
+					fi.write(uploaded);
+				}
 
-                    data.setMessage("File Uploaded.");
-                    context.put("search_element", TurbineUtils.GetPassedParameter("search_element",data));
-                    context.put("search_field", TurbineUtils.GetPassedParameter("search_field",data));
-                    context.put("search_value", TurbineUtils.GetPassedParameter("search_value",data));
-                    context.put("uploadID",uploadID);
-                    context.put("destination","ExptUploadConfirm.vm");
-                    data.setScreenTemplate("FileUploadSummary.vm");
-                }
-            } catch (FileNotFoundException e) {
-                error(e,data);
-                session.setAttribute(uploadID + "Upload", -1);
-                session.setAttribute(uploadID + "Extract", -1);
-                session.setAttribute(uploadID + "Analyze", -1);
-            } catch (IOException e) {
-                error(e,data);
-                session.setAttribute(uploadID + "Upload", -1);
-                session.setAttribute(uploadID + "Extract", -1);
-                session.setAttribute(uploadID + "Analyze", -1);
-            } catch (RuntimeException e) {
-                error(e,data);
-                session.setAttribute(uploadID + "Upload", -1);
-                session.setAttribute(uploadID + "Extract", -1);
-                session.setAttribute(uploadID + "Analyze", -1);
-            }
-    }
-    
-    public void addTag(File dir,String tag) {
-        
-        CatCatalogBean cat;
+				if (uploadID != null) {
+					session.setAttribute(uploadID + "Extract", 100);
+				}
 
-        if (dir.exists())
-        {
-            int counter=0;
-            
-            File[] listFiles = dir.listFiles();
-            for (final File listFile : listFiles) {
-                if (!listFile.isDirectory()) {
-                    if (listFile.getName().endsWith(".xml")) {
-                        if (listFile.exists()) {
-                            try {
-                                FileInputStream fis = new FileInputStream(listFile);
-                                XDATXMLReader reader = new XDATXMLReader();
-                                BaseElement base = reader.parse(fis);
+				fi.delete();
 
+				String tag = (String) TurbineUtils.GetPassedParameter("tags",
+						data);
+				this.addTag(dir, tag);
 
-                                if (base instanceof CatCatalogBean) {
-                                    cat = (CatCatalogBean) base;
+				logger.debug("File Upload Complete.");
 
-                                    CatCatalogTagBean tagBean = new CatCatalogTagBean();
-                                    tagBean.setTag(tag);
-                                    cat.addTags_tag(tagBean);
+				data.setMessage("File Uploaded.");
+				context.put("search_element",
+						TurbineUtils.GetPassedParameter("search_element", data));
+				context.put("search_field",
+						TurbineUtils.GetPassedParameter("search_field", data));
+				context.put("search_value",
+						TurbineUtils.GetPassedParameter("search_value", data));
+				context.put("uploadID", uploadID);
+				context.put("destination", "ExptUploadConfirm.vm");
+				data.setScreenTemplate("FileUploadSummary.vm");
+			}
+		} catch (FileNotFoundException e) {
+			error(e, data);
+			session.setAttribute(uploadID + "Upload", -1);
+			session.setAttribute(uploadID + "Extract", -1);
+			session.setAttribute(uploadID + "Analyze", -1);
+		} catch (IOException e) {
+			error(e, data);
+			session.setAttribute(uploadID + "Upload", -1);
+			session.setAttribute(uploadID + "Extract", -1);
+			session.setAttribute(uploadID + "Analyze", -1);
+		} catch (RuntimeException e) {
+			error(e, data);
+			session.setAttribute(uploadID + "Upload", -1);
+			session.setAttribute(uploadID + "Extract", -1);
+			session.setAttribute(uploadID + "Analyze", -1);
+		}
+	}
 
-                                    FileWriter fw = new FileWriter(listFile);
-                                    cat.toXML(fw, true);
-                                    fw.close();
+	public void addTag(File dir, String tag) {
 
-                                    counter++;
-                                }
-                            } catch (FileNotFoundException e) {
-                                logger.error("", e);
-                            } catch (IOException e) {
-                                logger.error("", e);
-                            } catch (SAXException e) {
-                                logger.error("", e);
-                            }
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < listFile.listFiles().length; j++) {
-                        if (!listFile.listFiles()[j].isDirectory()) {
-                            if (listFile.listFiles()[j].getName().endsWith(".xml")) {
-                                File xml = listFile.listFiles()[j];
-                                if (xml.exists()) {
-                                    try {
-                                        FileInputStream fis = new FileInputStream(xml);
-                                        XDATXMLReader reader = new XDATXMLReader();
-                                        BaseElement base = reader.parse(fis);
+		CatCatalogBean cat;
 
+		if (dir.exists()) {
+			int counter = 0;
 
-                                        if (base instanceof CatCatalogBean) {
-                                            counter++;
-                                        }
-                                    } catch (FileNotFoundException e) {
-                                        logger.error("", e);
-                                    } catch (IOException e) {
-                                        logger.error("", e);
-                                    } catch (SAXException e) {
-                                        logger.error("", e);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            
-            if (counter==0){
-            	cat = new CatCatalogBean();
-            	if (dir.exists())
-                {
-                    for (File f: dir.listFiles())
-                    {
-                    	XNATUtils.populateCatalogBean(cat, "", f);
-                    }
-                    
-                    if (tag != null){
-                        CatCatalogTagBean tagBean = new CatCatalogTagBean();
-                        tagBean.setTag(tag);
-                        cat.addTags_tag(tagBean);
-                    }
-                    
-                    try {
-						File catF = new File(dir,"generated_catalog.xml");
+			File[] listFiles = dir.listFiles();
+			for (final File listFile : listFiles) {
+				if (!listFile.isDirectory()) {
+					if (listFile.getName().endsWith(".xml")) {
+						if (listFile.exists()) {
+							try {
+								FileInputStream fis = new FileInputStream(
+										listFile);
+								XDATXMLReader reader = new XDATXMLReader();
+								BaseElement base = reader.parse(fis);
+
+								if (base instanceof CatCatalogBean) {
+									cat = (CatCatalogBean) base;
+
+									CatCatalogTagBean tagBean = new CatCatalogTagBean();
+									tagBean.setTag(tag);
+									cat.addTags_tag(tagBean);
+
+									FileWriter fw = new FileWriter(listFile);
+									cat.toXML(fw, true);
+									fw.close();
+
+									counter++;
+								}
+							} catch (FileNotFoundException e) {
+								logger.error("", e);
+							} catch (IOException e) {
+								logger.error("", e);
+							} catch (SAXException e) {
+								logger.error("", e);
+							}
+						}
+					}
+				} else {
+					for (int j = 0; j < listFile.listFiles().length; j++) {
+						if (!listFile.listFiles()[j].isDirectory()) {
+							if (listFile.listFiles()[j].getName().endsWith(
+									".xml")) {
+								File xml = listFile.listFiles()[j];
+								if (xml.exists()) {
+									try {
+										FileInputStream fis = new FileInputStream(
+												xml);
+										XDATXMLReader reader = new XDATXMLReader();
+										BaseElement base = reader.parse(fis);
+
+										if (base instanceof CatCatalogBean) {
+											counter++;
+										}
+									} catch (FileNotFoundException e) {
+										logger.error("", e);
+									} catch (IOException e) {
+										logger.error("", e);
+									} catch (SAXException e) {
+										logger.error("", e);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (counter == 0) {
+				cat = new CatCatalogBean();
+				if (dir.exists()) {
+					for (File f : dir.listFiles()) {
+						XNATUtils.populateCatalogBean(cat, "", f);
+					}
+
+					if (tag != null) {
+						CatCatalogTagBean tagBean = new CatCatalogTagBean();
+						tagBean.setTag(tag);
+						cat.addTags_tag(tagBean);
+					}
+
+					try {
+						File catF = new File(dir, "generated_catalog.xml");
 						FileWriter fw = new FileWriter(catF);
 						cat.toXML(fw, true);
 						fw.close();
 					} catch (IOException e) {
-						logger.error("",e);
+						logger.error("", e);
 					}
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    public void doFinalize(RunData data, Context context) throws Exception {
-        ItemI temp = TurbineUtils.GetItemBySearch(data,false);
-        XnatImagesessiondata tempMR = (XnatImagesessiondata) org.nrg.xdat.base.BaseElement.GetGeneratedItem(temp);
-        
-        String uploadID= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("uploadID",data));
+	public void doFinalize(RunData data, Context context) throws Exception {
+		ItemI temp = TurbineUtils.GetItemBySearch(data, false);
+		XnatImagesessiondata tempMR = (XnatImagesessiondata) org.nrg.xdat.base.BaseElement
+				.GetGeneratedItem(temp);
 
-        
-        String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
- 
-        
-        cache_path +="user_uploads" + File.separator + uploadID + File.separator;
-        File dir = new File(cache_path);
-        if (dir.exists())
-        {
-            int counter=0; 
+		String uploadID = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("uploadID", data));
 
-            String arcPath= tempMR.getRelativeArchivePath();
-            arcPath= FileUtils.AppendSlash(arcPath);
-            String destinationPath=arcPath + "/UPLOADS/" + uploadID + "/" ;
-            
-            File[] listFiles = dir.listFiles();
-            for (final File listFile : listFiles) {
-                if (!listFile.isDirectory()) {
-                    if (listFile.getName().endsWith(".xml") || listFile.getName().endsWith(".xcat")) {
-                        File xml = listFile;
-                        if (xml.exists()) {
-                            FileInputStream fis = new FileInputStream(xml);
-                            XDATXMLReader reader = new XDATXMLReader();
-                            try {
-                                BaseElement base = reader.parse(fis);
+		String cache_path = ArcSpecManager.GetInstance().getGlobalCachePath();
 
-                                if (base instanceof CatCatalogBean) {
-                                    CatCatalogBean cBean = (CatCatalogBean) base;
-                                    XnatResourcecatalog cat = new XnatResourcecatalog((UserI) TurbineUtils.getUser(data));
+		cache_path += "user_uploads" + File.separator + uploadID
+				+ File.separator;
+		File dir = new File(cache_path);
+		if (dir.exists()) {
+			int counter = 0;
 
-                                    if (cBean.getId() != null) {
-                                        cat.setLabel(cBean.getId());
-                                    } else {
-                                        cat.setLabel(Calendar.getInstance().getTime().toString());
-                                    }
+			String arcPath = tempMR.getRelativeArchivePath();
+			arcPath = FileUtils.AppendSlash(arcPath);
+			String destinationPath = arcPath + "/UPLOADS/" + uploadID + "/";
 
-                                    for (CatCatalogTagI tag : cBean.getTags_tag()) {
-                                        XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI) TurbineUtils.getUser(data));
+			File[] listFiles = dir.listFiles();
+			for (final File listFile : listFiles) {
+				if (!listFile.isDirectory()) {
+					if (listFile.getName().endsWith(".xml")
+							|| listFile.getName().endsWith(".xcat")) {
+						File xml = listFile;
+						if (xml.exists()) {
+							FileInputStream fis = new FileInputStream(xml);
+							XDATXMLReader reader = new XDATXMLReader();
+							try {
+								BaseElement base = reader.parse(fis);
 
-                                        t.setTag(tag.getTag());
+								if (base instanceof CatCatalogBean) {
+									CatCatalogBean cBean = (CatCatalogBean) base;
+									XnatResourcecatalog cat = new XnatResourcecatalog(
+											(UserI) TurbineUtils.getUser(data));
 
-                                        cat.setTags_tag(t);
-                                    }
+									if (cBean.getId() != null) {
+										cat.setLabel(cBean.getId());
+									} else {
+										cat.setLabel(Calendar.getInstance()
+												.getTime().toString());
+									}
 
-                                    cat.setUri(destinationPath + xml.getName());
-                                    tempMR.setResources_resource(cat);
-                                    counter++;
-                                }
-                            } catch (Throwable e) {
-                                logger.error("", e);
-                            }
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < listFile.listFiles().length; j++) {
-                        if (!listFile.listFiles()[j].isDirectory()) {
-                            if (listFile.listFiles()[j].getName().endsWith(".xml") || listFile.getName().endsWith(".xcat")) {
-                                File xml = listFile.listFiles()[j];
-                                if (xml.exists()) {
-                                    FileInputStream fis = new FileInputStream(xml);
-                                    XDATXMLReader reader = new XDATXMLReader();
-                                    try {
-                                        BaseElement base = reader.parse(fis);
+									for (CatCatalogTagI tag : cBean
+											.getTags_tag()) {
+										XnatAbstractresourceTag t = new XnatAbstractresourceTag(
+												(UserI) TurbineUtils
+														.getUser(data));
 
-                                        if (base instanceof CatCatalogBean) {
-                                            CatCatalogBean cBean = (CatCatalogBean) base;
-                                            XnatResourcecatalog cat = new XnatResourcecatalog((UserI) TurbineUtils.getUser(data));
+										t.setTag(tag.getTag());
 
-                                            if (cBean.getId() != null) {
-                                                cat.setLabel(cBean.getId());
-                                            } else {
-                                                cat.setLabel(Calendar.getInstance().getTime().toString());
-                                            }
+										cat.setTags_tag(t);
+									}
 
-                                            for (CatCatalogTagI tag : cBean.getTags_tag()) {
-                                                XnatAbstractresourceTag t = new XnatAbstractresourceTag((UserI) TurbineUtils.getUser(data));
+									cat.setUri(destinationPath + xml.getName());
+									tempMR.setResources_resource(cat);
+									counter++;
+								}
+							} catch (Throwable e) {
+								logger.error("", e);
+							}
+						}
+					}
+				} else {
+					for (int j = 0; j < listFile.listFiles().length; j++) {
+						if (!listFile.listFiles()[j].isDirectory()) {
+							if (listFile.listFiles()[j].getName().endsWith(
+									".xml")
+									|| listFile.getName().endsWith(".xcat")) {
+								File xml = listFile.listFiles()[j];
+								if (xml.exists()) {
+									FileInputStream fis = new FileInputStream(
+											xml);
+									XDATXMLReader reader = new XDATXMLReader();
+									try {
+										BaseElement base = reader.parse(fis);
 
-                                                t.setTag(tag.getTag());
+										if (base instanceof CatCatalogBean) {
+											CatCatalogBean cBean = (CatCatalogBean) base;
+											XnatResourcecatalog cat = new XnatResourcecatalog(
+													(UserI) TurbineUtils
+															.getUser(data));
 
-                                                cat.setTags_tag(t);
-                                            }
+											if (cBean.getId() != null) {
+												cat.setLabel(cBean.getId());
+											} else {
+												cat.setLabel(Calendar
+														.getInstance()
+														.getTime().toString());
+											}
 
-                                            cat.setUri(destinationPath + listFile.getName() + "/" + xml.getName());
-                                            tempMR.setResources_resource(cat);
-                                            counter++;
-                                        }
-                                    } catch (Throwable e) {
-                                        logger.error("", e);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (counter>0){
-            	PersistentWorkflowI wrk=WorkflowUtils.buildOpenWorkflow(TurbineUtils.getUser(data), tempMR.getItem(), newEventInstance(data, EventUtils.CATEGORY.DATA, EventUtils.ADDED_MISC_FILES));
-				EventMetaI c=wrk.buildEvent();
+											for (CatCatalogTagI tag : cBean
+													.getTags_tag()) {
+												XnatAbstractresourceTag t = new XnatAbstractresourceTag(
+														(UserI) TurbineUtils
+																.getUser(data));
 
-                try {
-	                File dest = new File(FileUtils.AppendRootPath(tempMR.getArchiveRootPath(),destinationPath));
-	                FileUtils.MoveDir(dir, dest, true);
-	                FileUtils.DeleteFile(dir);
-                
-                	SaveItemHelper.authorizedSave(tempMR,TurbineUtils.getUser(data),false,false,c);                    
-                	PersistentWorkflowUtils.complete(wrk, c);
-                    data.setMessage("Files successfully uploaded.");
-                } catch (Exception e) {
-                    PersistentWorkflowUtils.fail(wrk, c);
-                    error(e,data);
-                }
-                
-                if (tempMR.getProject()!=null){
-                    data.getParameters().setString("project", tempMR.getProject());
-                }
+												t.setTag(tag.getTag());
 
-// New code to refresh the file catalog
-                URIManager.DataURIA uri=UriParserUtils.parseURI("/archive/experiments/" + tempMR.getId());
-                ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
-                XDATUser user = TurbineUtils.getUser(data);
-                ResourceUtils.refreshResourceCatalog(resourceURI, user, this.newEventInstance(data, EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"), true, true, true, true);
-// End new code
+												cat.setTags_tag(t);
+											}
 
-                if (TurbineUtils.HasPassedParameter("destination", data)){
-                    this.redirectToReportScreen((String)TurbineUtils.GetPassedParameter("destination", data), tempMR.getItem(), data);
-                }else{
-                    this.redirectToReportScreen(tempMR.getItem(), data);
-                }
-            }
-        }
-    }
+											cat.setUri(destinationPath
+													+ listFile.getName() + "/"
+													+ xml.getName());
+											tempMR.setResources_resource(cat);
+											counter++;
+										}
+									} catch (Throwable e) {
+										logger.error("", e);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (counter > 0) {
+				PersistentWorkflowI wrk = WorkflowUtils.buildOpenWorkflow(
+						TurbineUtils.getUser(data),
+						tempMR.getItem(),
+						newEventInstance(data, EventUtils.CATEGORY.DATA,
+								EventUtils.ADDED_MISC_FILES));
+				EventMetaI c = wrk.buildEvent();
+
+				try {
+					File dest = new File(FileUtils.AppendRootPath(
+							tempMR.getArchiveRootPath(), destinationPath));
+					FileUtils.MoveDir(dir, dest, true);
+					FileUtils.DeleteFile(dir);
+
+					SaveItemHelper.authorizedSave(tempMR,
+							TurbineUtils.getUser(data), false, false, c);
+					PersistentWorkflowUtils.complete(wrk, c);
+					data.setMessage("Files successfully uploaded.");
+				} catch (Exception e) {
+					PersistentWorkflowUtils.fail(wrk, c);
+					error(e, data);
+				}
+
+				if (tempMR.getProject() != null) {
+					data.getParameters().setString("project",
+							tempMR.getProject());
+				}
+
+				// New code to refresh the file catalog
+				URIManager.DataURIA uri = UriParserUtils
+						.parseURI("/archive/experiments/" + tempMR.getId());
+				ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
+				XDATUser user = TurbineUtils.getUser(data);
+				ResourceUtils
+						.refreshResourceCatalog(resourceURI, user, this
+								.newEventInstance(data,
+										EventUtils.CATEGORY.DATA,
+										"Catalog(s) Refreshed"), true, true,
+								true, true);
+				// End new code
+
+				if (TurbineUtils.HasPassedParameter("destination", data)) {
+					this.redirectToReportScreen((String) TurbineUtils
+							.GetPassedParameter("destination", data), tempMR
+							.getItem(), data);
+				} else {
+					this.redirectToReportScreen(tempMR.getItem(), data);
+				}
+			}
+		}
+	}
 }

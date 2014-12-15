@@ -18,14 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class HibernateUserService extends AbstractHibernateEntityService<User, UserDAO> implements UserService {
+public class HibernateUserService extends
+		AbstractHibernateEntityService<User, UserDAO> implements UserService {
 
-    /**
-     * @see org.nrg.user.services.UserService#getUserByName(java.lang.String)
-     */
-    @Override
-    @Transactional
-    public User getUserByName(String name) {
-        return getDao().getUserByName(name);
-    }
+	/**
+	 * @see org.nrg.user.services.UserService#getUserByName(java.lang.String)
+	 */
+	@Override
+	@Transactional
+	public User getUserByName(String name) {
+		return getDao().getUserByName(name);
+	}
 }

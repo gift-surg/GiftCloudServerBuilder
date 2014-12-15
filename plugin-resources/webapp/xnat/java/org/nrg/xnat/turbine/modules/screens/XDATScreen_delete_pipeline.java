@@ -27,4 +27,3 @@ public class XDATScreen_delete_pipeline extends AdminEditScreenA {
 		// TODO Auto-generated method stub
 	}
 }
-

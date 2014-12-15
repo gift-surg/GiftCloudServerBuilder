@@ -16,26 +16,22 @@ import org.nrg.xft.security.UserI;
 
 import java.util.Hashtable;
 
-
-public class BaseXnatGenericdata extends AutoXnatGenericdata{
-	public BaseXnatGenericdata(ItemI item)
-	{
+public class BaseXnatGenericdata extends AutoXnatGenericdata {
+	public BaseXnatGenericdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatGenericdata(UserI user)
-	{
+	public BaseXnatGenericdata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatHdscandata(UserI user)
-	 **/
-	public BaseXnatGenericdata()
-	{}
+	 */
+	public BaseXnatGenericdata() {
+	}
 
-	public BaseXnatGenericdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatGenericdata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 }

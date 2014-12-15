@@ -11,5 +11,5 @@
 package org.nrg.xnat.helpers.prearchive;
 
 interface UriParserI<T> {
-	T readUri (String uri) throws java.util.MissingFormatArgumentException;
+	T readUri(String uri) throws java.util.MissingFormatArgumentException;
 }

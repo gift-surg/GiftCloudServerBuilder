@@ -32,100 +32,96 @@ import java.util.Map;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseXnatSubjectassessordata extends AutoXnatSubjectassessordata {
 
-	public BaseXnatSubjectassessordata(ItemI item)
-	{
+	public BaseXnatSubjectassessordata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatSubjectassessordata(UserI user)
-	{
+	public BaseXnatSubjectassessordata(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatSubjectassessordata()
-	{}
-
-	public BaseXnatSubjectassessordata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatSubjectassessordata() {
 	}
 
-    private XnatSubjectdata subject = null;
-	public XnatSubjectdata getSubjectData()
-	{
-	    if (subject==null)
-	    {
-            if (getSubjectId()!=null)
-            {
-                ArrayList al = XnatSubjectdata.getXnatSubjectdatasByField("xnat:subjectData/ID",this.getSubjectId(),this.getUser(),false);
-                if (al.size()>0)
-                {
-                    subject = (XnatSubjectdata)al.get(0);
-                }
-            }
-	    }
-	    return subject;
+	public BaseXnatSubjectassessordata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
+	private XnatSubjectdata subject = null;
 
-    public String getSubjectAge() {
-        if (this.getAge()!=null){
-            Double d = getAge();
-            NumberFormat formatter = NumberFormat.getInstance();
-            formatter.setGroupingUsed(false);
-            formatter.setMaximumFractionDigits(2);
-            formatter.setMinimumFractionDigits(2);
-            return formatter.format(d);
-        }
+	public XnatSubjectdata getSubjectData() {
+		if (subject == null) {
+			if (getSubjectId() != null) {
+				ArrayList al = XnatSubjectdata.getXnatSubjectdatasByField(
+						"xnat:subjectData/ID", this.getSubjectId(),
+						this.getUser(), false);
+				if (al.size() > 0) {
+					subject = (XnatSubjectdata) al.get(0);
+				}
+			}
+		}
+		return subject;
+	}
 
-        XnatSubjectdata s = this.getSubjectData();
-        if (s == null) {
-            return "--";
-        } else {
-            try {
-                Object o = this.getDate();
-                if (o instanceof String)
-                {
-                    Date expt_date = DateUtils.parseDateTime((String)o);
-                    return s.getAge(expt_date);
-                }else{
-                    Date expt_date = (Date) this.getDate();
-                    return s.getAge(expt_date);
-                }
-            } catch (Exception e) {
-                logger.error("", e);
-                if (s.getAge()!=null)
-                {
-                    return s.getAge().toString();
-                }else
-                    return "--";
+	public String getSubjectAge() {
+		if (this.getAge() != null) {
+			Double d = getAge();
+			NumberFormat formatter = NumberFormat.getInstance();
+			formatter.setGroupingUsed(false);
+			formatter.setMaximumFractionDigits(2);
+			formatter.setMinimumFractionDigits(2);
+			return formatter.format(d);
+		}
 
-            }
-        }
-    }
+		XnatSubjectdata s = this.getSubjectData();
+		if (s == null) {
+			return "--";
+		} else {
+			try {
+				Object o = this.getDate();
+				if (o instanceof String) {
+					Date expt_date = DateUtils.parseDateTime((String) o);
+					return s.getAge(expt_date);
+				} else {
+					Date expt_date = (Date) this.getDate();
+					return s.getAge(expt_date);
+				}
+			} catch (Exception e) {
+				logger.error("", e);
+				if (s.getAge() != null) {
+					return s.getAge().toString();
+				} else
+					return "--";
 
-	@Override
-	public void preSave() throws Exception{
-		super.preSave();
-
-		if(this.getSubjectData()==null){
-			throw new Exception("Unable to identify subject for:" + this.getSubjectId());
+			}
 		}
 	}
 
-	public void applyAnonymizationScript(final ProjectAnonymizer anonymizer) throws TransactionException{
-		if(this instanceof XnatImagesessiondata){
+	@Override
+	public void preSave() throws Exception {
+		super.preSave();
+
+		if (this.getSubjectData() == null) {
+			throw new Exception("Unable to identify subject for:"
+					+ this.getSubjectId());
+		}
+	}
+
+	public void applyAnonymizationScript(final ProjectAnonymizer anonymizer)
+			throws TransactionException {
+		if (this instanceof XnatImagesessiondata) {
 			final BaseXnatSubjectassessordata expt = this;
-			File tmpDir = new File(System.getProperty("java.io.tmpdir"), "anon_backup");
-			new CopyOp(new OperationI<Map<String,File>>() {
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"),
+					"anon_backup");
+			new CopyOp(new OperationI<Map<String, File>>() {
 				@Override
 				public void run(Map<String, File> a) throws Throwable {
 					anonymizer.call();
 				}
-			}, tmpDir,expt.getSessionDir()).run();
+			}, tmpDir, expt.getSessionDir()).run();
 		}
 	}
 }

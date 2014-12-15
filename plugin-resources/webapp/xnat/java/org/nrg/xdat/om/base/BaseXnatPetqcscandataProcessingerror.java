@@ -16,8 +16,9 @@ import org.nrg.xft.security.UserI;
 
 import java.util.Hashtable;
 
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatPetqcscandataProcessingerror extends AutoXnatPetqcscandataProcessingerror {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatPetqcscandataProcessingerror extends
+		AutoXnatPetqcscandataProcessingerror {
 	public BaseXnatPetqcscandataProcessingerror(ItemI item) {
 		super(item);
 	}

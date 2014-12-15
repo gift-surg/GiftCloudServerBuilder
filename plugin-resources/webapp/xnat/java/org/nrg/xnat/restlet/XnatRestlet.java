@@ -21,7 +21,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 @Retention(RUNTIME)
 public @interface XnatRestlet {
-    String[] value();
-    boolean required() default false;
-    boolean secure() default true;
+	String[] value();
+
+	boolean required() default false;
+
+	boolean secure() default true;
 }

@@ -9,10 +9,11 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 public class ManageProjectFeatures extends SecureScreen {
 
 	@Override
-	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-		context.put("project",TurbineUtils.GetPassedParameter("projects", data));
-        context.put("features", Features.getAllFeatures());
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		context.put("project",
+				TurbineUtils.GetPassedParameter("projects", data));
+		context.put("features", Features.getAllFeatures());
 	}
-
 
 }

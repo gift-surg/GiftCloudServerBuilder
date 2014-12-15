@@ -53,7 +53,8 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getColumnType()}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getColumnType()}.
 	 */
 	@Test
 	public final void testGetColumnType() {
@@ -61,7 +62,8 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getColumnName()}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getColumnName()}.
 	 */
 	@Test
 	public final void testGetColumnName() {
@@ -69,7 +71,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#eqSql(java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#eqSql(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testEqSql() {
@@ -77,7 +81,8 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#nullSql()}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#nullSql()}.
 	 */
 	@Test
 	public final void testNullSql() {
@@ -85,7 +90,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}
+	 * .
 	 */
 	@Test
 	public final void testSearchSqlSession() {
@@ -93,7 +100,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(java.lang.Object)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(java.lang.Object)}
+	 * .
 	 */
 	@Test
 	public final void testSearchSqlObject() {
@@ -101,7 +110,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session, java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testSearchSqlSessionString() {
@@ -109,7 +120,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(java.lang.String[])}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#searchSql(java.lang.String[])}
+	 * .
 	 */
 	@Test
 	public final void testSearchSqlStringArray() {
@@ -117,7 +130,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getColumnDefinition()}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getColumnDefinition()}
+	 * .
 	 */
 	@Test
 	public final void testGetColumnDefinition() {
@@ -125,7 +140,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#updateSessionSql(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#updateSessionSql(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)}
+	 * .
 	 */
 	@Test
 	public final void testUpdateSessionSql() {
@@ -133,7 +150,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#findSql(java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#findSql(java.lang.String, java.lang.String, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testFindSql() {
@@ -141,7 +160,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#findSessionSql(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#findSessionSql(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}
+	 * .
 	 */
 	@Test
 	public final void testFindSessionSqlSession() {
@@ -149,7 +170,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#findSessionSql(java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#findSessionSql(java.lang.String, java.lang.String, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testFindSessionSqlStringStringString() {
@@ -157,7 +180,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#countSessionSql(java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#countSessionSql(java.lang.String, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testCountSessionSqlStringString() {
@@ -165,7 +190,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#countSessionSql(java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#countSessionSql(java.lang.String, java.lang.String, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testCountSessionSqlStringStringString() {
@@ -173,7 +200,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#deleteSessionSql(java.lang.String, java.lang.String, java.lang.String)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#deleteSessionSql(java.lang.String, java.lang.String, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public final void testDeleteSessionSql() {
@@ -181,7 +210,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#allMatchesSql(java.lang.String[])}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#allMatchesSql(java.lang.String[])}
+	 * .
 	 */
 	@Test
 	public final void testAllMatchesSql() {
@@ -189,7 +220,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#singleQuote(java.lang.String[])}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#singleQuote(java.lang.String[])}
+	 * .
 	 */
 	@Test
 	public final void testSingleQuoteStringArray() {
@@ -197,7 +230,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#singleQuote(java.lang.Object)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#singleQuote(java.lang.Object)}
+	 * .
 	 */
 	@Test
 	public final void testSingleQuoteObject() {
@@ -205,7 +240,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#setInsertStatement(java.sql.PreparedStatement, org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#setInsertStatement(java.sql.PreparedStatement, org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}
+	 * .
 	 */
 	@Test
 	public final void testSetInsertStatement() {
@@ -213,7 +250,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getFromResult(java.sql.ResultSet)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#getFromResult(java.sql.ResultSet)}
+	 * .
 	 */
 	@Test
 	public final void testGetFromResult() {
@@ -221,7 +260,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#resultToString(java.sql.ResultSet)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#resultToString(java.sql.ResultSet)}
+	 * .
 	 */
 	@Test
 	public final void testResultToString() {
@@ -229,7 +270,8 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#createTableSql()}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#createTableSql()}.
 	 */
 	@Test
 	public final void testCreateTableSql() {
@@ -237,7 +279,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#fillSession(java.sql.ResultSet)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#fillSession(java.sql.ResultSet)}
+	 * .
 	 */
 	@Test
 	public final void testFillSession() {
@@ -245,7 +289,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#readSession(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#readSession(org.nrg.xnat.helpers.prearchive.PrearcTableBuilder.Session)}
+	 * .
 	 */
 	@Test
 	public final void testReadSession() {
@@ -253,7 +299,9 @@ public class DatabaseSessionTest {
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#writeSession(org.nrg.xnat.helpers.prearchive.SessionData, java.lang.Object)}.
+	 * Test method for
+	 * {@link org.nrg.xnat.helpers.prearchive.DatabaseSession#writeSession(org.nrg.xnat.helpers.prearchive.SessionData, java.lang.Object)}
+	 * .
 	 */
 	@Test
 	public final void testWriteSession() {

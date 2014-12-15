@@ -23,25 +23,29 @@ import java.util.Map;
 
 public class XMLTableRepresentation extends OutputRepresentation {
 	XFTTable table = null;
-	Hashtable<String,Object> tableProperties = null;
-	Map<String,Map<String,String>> cp=new Hashtable<String,Map<String,String>>();
-	
-	public XMLTableRepresentation(XFTTable table,MediaType mediaType) {
+	Hashtable<String, Object> tableProperties = null;
+	Map<String, Map<String, String>> cp = new Hashtable<String, Map<String, String>>();
+
+	public XMLTableRepresentation(XFTTable table, MediaType mediaType) {
 		super(mediaType);
-		this.table=table;
+		this.table = table;
 	}
-	
-	public XMLTableRepresentation(XFTTable table,Hashtable<String,Object> metaFields,MediaType mediaType) {
+
+	public XMLTableRepresentation(XFTTable table,
+			Hashtable<String, Object> metaFields, MediaType mediaType) {
 		super(mediaType);
-		this.table=table;
-		this.tableProperties=metaFields;
+		this.table = table;
+		this.tableProperties = metaFields;
 	}
-	
-	public XMLTableRepresentation(XFTTable table,Map<String,Map<String,String>> columnProperties,Hashtable<String,Object> metaFields,MediaType mediaType) {
+
+	public XMLTableRepresentation(XFTTable table,
+			Map<String, Map<String, String>> columnProperties,
+			Hashtable<String, Object> metaFields, MediaType mediaType) {
 		super(mediaType);
-		this.table=table;
-		this.tableProperties=metaFields;
-		if(columnProperties!=null)this.cp=columnProperties;
+		this.table = table;
+		this.tableProperties = metaFields;
+		if (columnProperties != null)
+			this.cp = columnProperties;
 	}
 
 	@Override
@@ -49,18 +53,19 @@ public class XMLTableRepresentation extends OutputRepresentation {
 		OutputStreamWriter sw = new OutputStreamWriter(os);
 		BufferedWriter writer = new BufferedWriter(sw);
 		writer.write("<ResultSet");
-		if(tableProperties!=null && tableProperties.size()>0){
-			for(Map.Entry<String,Object> entry : this.tableProperties.entrySet()){
+		if (tableProperties != null && tableProperties.size() > 0) {
+			for (Map.Entry<String, Object> entry : this.tableProperties
+					.entrySet()) {
 				writer.write(" " + entry.getKey() + "=\"");
 				writer.write(entry.getValue().toString());
 				writer.write("\"");
 			}
 		}
 		writer.write(">");
-		table.toXMLList(writer,this.cp,null);
+		table.toXMLList(writer, this.cp, null);
 		writer.write("</ResultSet>");
-	    writer.flush();
-	    
+		writer.flush();
+
 	}
 
 }

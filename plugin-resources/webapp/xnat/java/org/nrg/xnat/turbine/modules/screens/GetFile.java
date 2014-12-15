@@ -37,167 +37,180 @@ import java.util.Calendar;
 import java.util.Hashtable;
 
 public class GetFile extends RawScreen {
-    static org.apache.log4j.Logger logger = Logger.getLogger(GetFile.class);
+	static org.apache.log4j.Logger logger = Logger.getLogger(GetFile.class);
 
-    /**
-    * Set the content type to Xml. (see RawScreen)
-    *
-    * @param data Turbine information.
-    * @return content type.
-    */
-    public String getContentType(RunData data)
-    {
-        return "application/octet-stream";
-    };
+	/**
+	 * Set the content type to Xml. (see RawScreen)
+	 *
+	 * @param data
+	 *            Turbine information.
+	 * @return content type.
+	 */
+	public String getContentType(RunData data) {
+		return "application/octet-stream";
+	};
 
+	/**
+	 * Overrides & finalizes doOutput in RawScreen to serve the output stream
+	 * created in buildPDF.
+	 *
+	 * @param data
+	 *            RunData
+	 * @exception Exception
+	 *                , any old generic exception.
+	 */
+	protected final void doOutput(RunData data) {
+		long startTime = Calendar.getInstance().getTimeInMillis();
+		String search_element = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("search_element", data));
+		String search_field = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("search_field", data));
+		String search_value = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("search_value", data));
+		String key = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("key", data));
+		Integer fileId = ((Integer) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedInteger("file", data));
+		XDATUser user = null;
+		String log = "";
+		HttpSession httpSession = data.getRequest().getSession();
 
-    /**
-    * Overrides & finalizes doOutput in RawScreen to serve the output stream
- created in buildPDF.
-    *
-    * @param data RunData
-    * @exception Exception, any old generic exception.
-    */
-    protected final void doOutput(RunData data)
-    {
-        long startTime = Calendar.getInstance().getTimeInMillis();
-             String search_element = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_element",data));
-             String search_field = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_field",data));
-             String search_value = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
-             String key = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("key",data));
-             Integer fileId = ((Integer)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedInteger("file",data));
-             XDATUser user = null;
-             String log = "";
-             HttpSession httpSession = data.getRequest().getSession();
+		HttpServletResponse response = data.getResponse();
+		byte[] buf = new byte[FileUtils.LARGE_DOWNLOAD];
+		try {
+			if (TurbineUtils.getUser(data) != null) {
+				user = TurbineUtils.getUser(data);
+			}
 
-             HttpServletResponse response = data.getResponse();
-             byte[] buf = new byte[FileUtils.LARGE_DOWNLOAD];
-             try {
-                 if (TurbineUtils.getUser(data)!=null){
-                     user = TurbineUtils.getUser(data);
-                 }
+			if (user == null) {
+				try {
+					response.sendError(401);
+				} catch (IOException e1) {
+					logger.error("", e1);
+				}
+			}
 
-                 if (user==null){
-                     try {
-                         response.sendError(401);
-                     } catch (IOException e1) {
-                         logger.error("",e1);
-                     }
-                 }
+			AccessLogger.LogScreenAccess(data);
 
-                 AccessLogger.LogScreenAccess(data);
+			log += "," + (Calendar.getInstance().getTimeInMillis() - startTime);
+			startTime = Calendar.getInstance().getTimeInMillis();
 
-                 log +="," + (Calendar.getInstance().getTimeInMillis()-startTime);
-                 startTime = Calendar.getInstance().getTimeInMillis();
+			if (search_element != null && search_field != null
+					&& search_value != null && fileId != null) {
+				Object o = null;
 
-                 if (search_element!=null && search_field!=null && search_value!=null && fileId!=null)
-                 {
-                     Object o = null;
+				String innerKey = "";
+				if (key != null) {
+					innerKey = "/key/" + key;
+				}
+				innerKey += "/file/" + fileId;
+				final String identifier = search_element + ":" + search_field
+						+ ":" + search_value;
+				if (httpSession.getAttribute(identifier) != null) {
+					Hashtable<String, Object> hash = (Hashtable<String, Object>) httpSession
+							.getAttribute(identifier);
 
-                     String innerKey= "";
-                     if (key!=null){
-                         innerKey="/key/" + key;
-                     }
-                     innerKey+="/file/" + fileId;
-                     final String identifier = search_element + ":"+ search_field + ":"+ search_value;
-                     if (httpSession.getAttribute(identifier)!=null){
-                         Hashtable<String,Object> hash = (Hashtable<String,Object>)httpSession.getAttribute(identifier);
+					o = hash.get(innerKey);
+				} else {
+					CatalogSet catalogSet = XNATUtils.getCatalogBean(data,
+							TurbineUtils.GetItemBySearch(data));
 
-                         o = hash.get(innerKey);
-                     }else{
-                         CatalogSet catalogSet= XNATUtils.getCatalogBean(data, TurbineUtils.GetItemBySearch(data));
+					CatCatalogBean catalog = catalogSet.catalog;
+					data.getSession().setAttribute(identifier, catalogSet.hash);
 
-                         CatCatalogBean catalog = catalogSet.catalog;
-                         data.getSession().setAttribute(identifier, catalogSet.hash);
+					o = catalogSet.hash.get(innerKey);
+				}
 
+				if (o instanceof File) {
+					File f = (File) o;
+					if (f.exists()) {
+						TurbineUtils.setContentDisposition(data.getResponse(),
+								f.getName(), false);
+						java.io.FileInputStream in = new java.io.FileInputStream(
+								f);
+						logger.debug(f.getName()
+								+ log
+								+ ","
+								+ (Calendar.getInstance().getTimeInMillis() - startTime));
+						int len;
+						while ((len = in.read(buf)) > 0) {
+							data.getResponse().getOutputStream()
+									.write(buf, 0, len);
+						}
 
-                         o = catalogSet.hash.get(innerKey);
-                     }
+					}
+				} else if (o instanceof SRBFile) {
+					SRBFile f = (SRBFile) o;
+					if (f.exists()) {
+						TurbineUtils.setContentDisposition(data.getResponse(),
+								f.getName(), false);
 
-                     if (o instanceof File){
-                         File f = (File)o;
-                         if (f.exists()){
-                             TurbineUtils.setContentDisposition(data.getResponse(), f.getName(), false);
-                             java.io.FileInputStream in = new java.io.FileInputStream(f);
-                             logger.debug(f.getName() + log + "," + (Calendar.getInstance().getTimeInMillis()-startTime));
-                             int len;
-                             while ((len = in.read(buf)) > 0) {
-                                 data.getResponse().getOutputStream().write(buf, 0, len);
-                             }
+						byte[] tempBUF = new byte[FileUtils.LARGE_DOWNLOAD];
+						SRBFileInputStream is = new SRBFileInputStream(f);
+						// Transfer bytes from the file to the ZIP file
+						int len;
 
-                         }
-                     }else if (o instanceof SRBFile){
-                         SRBFile f = (SRBFile)o;
-                         if (f.exists()){
-                             TurbineUtils.setContentDisposition(data.getResponse(), f.getName(), false);
+						startTime = Calendar.getInstance().getTimeInMillis();
 
-                             byte[] tempBUF = new byte[FileUtils.LARGE_DOWNLOAD];
-                             SRBFileInputStream is = new SRBFileInputStream(f);
-                             // Transfer bytes from the file to the ZIP file
-                             int len;
+						while ((len = is.read(tempBUF)) > 0) {
+							data.getResponse().getOutputStream()
+									.write(tempBUF, 0, len);
+							data.getResponse().getOutputStream().flush();
+						}
 
-                             startTime = Calendar.getInstance().getTimeInMillis();
+					}
+				}
+			}
+		} catch (XFTInitException e) {
+			logger.error("", e);
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		} catch (ElementNotFoundException e) {
+			logger.error("", e);
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		} catch (DBPoolException e) {
+			logger.error("", e);
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		} catch (SQLException e) {
+			logger.error("", e);
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		} catch (FieldNotFoundException e) {
+			logger.error("", e);
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		} catch (FailedLoginException e) {
+			logger.error("", e);
+			try {
+				response.sendError(401);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+			try {
+				response.sendError(500);
+			} catch (IOException e1) {
+				logger.error("", e1);
+			}
+		}
 
-                             while ((len = is.read(tempBUF)) > 0) {
-                                 data.getResponse().getOutputStream().write(tempBUF, 0, len);
-                                 data.getResponse().getOutputStream().flush();
-                             }
-
-
-                         }
-                     }
-                 }
-             } catch (XFTInitException e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(500);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             } catch (ElementNotFoundException e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(500);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             } catch (DBPoolException e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(500);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             } catch (SQLException e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(500);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             } catch (FieldNotFoundException e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(500);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             } catch (FailedLoginException e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(401);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             } catch (Exception e) {
-                 logger.error("",e);
-                 try {
-                     response.sendError(500);
-                 } catch (IOException e1) {
-                     logger.error("",e1);
-                 }
-             }
-
-
-    }
- }
+	}
+}

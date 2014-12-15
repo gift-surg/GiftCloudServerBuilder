@@ -29,189 +29,200 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class XNATCatalogTemplate extends XNATTemplate {
-	XFTTable catalogs=null;
-	
-	ArrayList<String> resource_ids=null;
-	ArrayList<XnatAbstractresource> resources=new ArrayList<XnatAbstractresource>();
-		
-	public XNATCatalogTemplate(Context context, Request request,
-			Response response,boolean allowAll) {
-		super(context, request, response);
-		
-		String resourceID= (String)getParameter(request,"RESOURCE_ID");
+	XFTTable catalogs = null;
 
-		if(resourceID!=null){
-			resource_ids=new ArrayList<String>();
-			for(String s:StringUtils.CommaDelimitedStringToArrayList(resourceID, true)){
+	ArrayList<String> resource_ids = null;
+	ArrayList<XnatAbstractresource> resources = new ArrayList<XnatAbstractresource>();
+
+	public XNATCatalogTemplate(Context context, Request request,
+			Response response, boolean allowAll) {
+		super(context, request, response);
+
+		String resourceID = (String) getParameter(request, "RESOURCE_ID");
+
+		if (resourceID != null) {
+			resource_ids = new ArrayList<String>();
+			for (String s : StringUtils.CommaDelimitedStringToArrayList(
+					resourceID, true)) {
 				resource_ids.add(s);
-				}
 			}
-			
-			try {
-			catalogs=this.loadCatalogs(resource_ids,true,allowAll);
-			} catch (Exception e) {
-	            logger.error("",e);
-			}
+		}
+
+		try {
+			catalogs = this.loadCatalogs(resource_ids, true, allowAll);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
-	
-	
-	public String getBaseURI() throws ElementNotFoundException{
-		StringBuffer sb =new StringBuffer("/data");
-		if(proj!=null && sub!=null){
+
+	public String getBaseURI() throws ElementNotFoundException {
+		StringBuffer sb = new StringBuffer("/data");
+		if (proj != null && sub != null) {
 			sb.append("/projects/");
 			sb.append(proj.getId());
 			sb.append("/subjects/");
 			sb.append(sub.getId());
 		}
-		if(recons.size()>0){
+		if (recons.size() > 0) {
 			sb.append("/experiments/");
-			int aC=0;
-			for(XnatExperimentdata assessed:this.assesseds){
-				if(aC++>0)sb.append(",");
-			sb.append(assessed.getId());
+			int aC = 0;
+			for (XnatExperimentdata assessed : this.assesseds) {
+				if (aC++ > 0)
+					sb.append(",");
+				sb.append(assessed.getId());
 			}
 			sb.append("/reconstructions/");
-			int sC=0;
-			for(XnatReconstructedimagedata recon:recons){
-				if(sC++>0)sb.append(",");
-			sb.append(recon.getId());
+			int sC = 0;
+			for (XnatReconstructedimagedata recon : recons) {
+				if (sC++ > 0)
+					sb.append(",");
+				sb.append(recon.getId());
 			}
-			if(type!=null){
+			if (type != null) {
 				sb.append("/" + type);
 			}
-		}else if(scans.size()>0){
+		} else if (scans.size() > 0) {
 			sb.append("/experiments/");
-			int aC=0;
-			for(XnatExperimentdata assessed:this.assesseds){
-				if(aC++>0)sb.append(",");
-			sb.append(assessed.getId());
+			int aC = 0;
+			for (XnatExperimentdata assessed : this.assesseds) {
+				if (aC++ > 0)
+					sb.append(",");
+				sb.append(assessed.getId());
 			}
 			sb.append("/scans/");
-			int sC=0;
-			for(XnatImagescandata scan:scans){
-				if(sC++>0)sb.append(",");
-			sb.append(scan.getId());
+			int sC = 0;
+			for (XnatImagescandata scan : scans) {
+				if (sC++ > 0)
+					sb.append(",");
+				sb.append(scan.getId());
 			}
-		}else if(expts.size()>0){
-			if(assesseds.size()>0){
+		} else if (expts.size() > 0) {
+			if (assesseds.size() > 0) {
 				sb.append("/experiments/");
-				int aC=0;
-				for(XnatExperimentdata assessed:this.assesseds){
-					if(aC++>0)sb.append(",");
-				sb.append(assessed.getId());
+				int aC = 0;
+				for (XnatExperimentdata assessed : this.assesseds) {
+					if (aC++ > 0)
+						sb.append(",");
+					sb.append(assessed.getId());
 				}
 				sb.append("/assessors/");
-				int eC=0;
-				for(XnatExperimentdata expt:this.expts){
-					if(eC++>0)sb.append(",");
-				sb.append(expt.getId());
+				int eC = 0;
+				for (XnatExperimentdata expt : this.expts) {
+					if (eC++ > 0)
+						sb.append(",");
+					sb.append(expt.getId());
 				}
-				if(type!=null){
+				if (type != null) {
 					sb.append("/" + type);
 				}
-			}else{
+			} else {
 				sb.append("/experiments/");
-				int eC=0;
-				for(XnatExperimentdata expt:this.expts){
-					if(eC++>0)sb.append(",");
-				sb.append(expt.getId());
+				int eC = 0;
+				for (XnatExperimentdata expt : this.expts) {
+					if (eC++ > 0)
+						sb.append(",");
+					sb.append(expt.getId());
+				}
 			}
-			}
-		}else if(sub!=null){
-			
-		}else if(proj!=null){
+		} else if (sub != null) {
+
+		} else if (proj != null) {
 			sb.append("/projects/");
 			sb.append(proj.getId());
 		}
 		return sb.toString();
 	}
 
+	protected File getFileOnLocalFileSystem(String fullPath) {
+		File f = new File(fullPath);
+		if (!f.exists()) {
+			if (!fullPath.endsWith(".gz")) {
+				f = new File(fullPath + ".gz");
+				if (!f.exists()) {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		}
 
-
-    protected File getFileOnLocalFileSystem(String fullPath) {
-        File f = new File(fullPath);
-        if (!f.exists()){
-            if (!fullPath.endsWith(".gz")){
-            	f= new File(fullPath + ".gz");
-            	if (!f.exists()){
-            		return null;
-            	}
-            }else{
-                return null;
-            }
-        }
-        
-        return f;
-    }
-	
-    public XnatResourceInfo buildResourceInfo(EventMetaI ci){
-		final String description;
-	    if(this.getQueryVariable("description")!=null){
-	    	description=this.getQueryVariable("description");
-	    }else{
-	    	description=null;
-	    }
-	    
-	    final String format;
-	    if(this.getQueryVariable("format")!=null){
-	    	format=this.getQueryVariable("format");
-	    }else{
-	    	format=null;
-	    }
-	    
-	    final String content;
-	    if(this.getQueryVariable("content")!=null){
-	    	content=this.getQueryVariable("content");
-	    }else{
-	    	content=null;
-	    }
-	    
-	    String[] tags;
-	    if(this.getQueryVariables("tags")!=null){
-	    	tags = this.getQueryVariables("tags");
-	    }else{
-	    	tags=null;
-	    }
-        
-	    Date d=EventUtils.getEventDate(ci, false);
-		return XnatResourceInfo.buildResourceInfo(description, format, content, tags,user,d,d,EventUtils.getEventId(ci));
+		return f;
 	}
-			
-	protected ResourceModifierA buildResourceModifier(final boolean overwrite,EventMetaI ci) throws Exception{
-		XnatImagesessiondata assessed=null;
-			
-		if(this.assesseds.size()==1)assessed=(XnatImagesessiondata)assesseds.get(0);
-			
-		//this should allow dependency injection - TO
-		final ResourceModifierBuilderI builder=new DirectResourceModifierBuilder();
-		
-		if(recons.size()>0){
-			//reconstruction						
-			builder.setRecon(assessed,recons.get(0), type);
-		}else if(scans.size()>0){
-			//scan
+
+	public XnatResourceInfo buildResourceInfo(EventMetaI ci) {
+		final String description;
+		if (this.getQueryVariable("description") != null) {
+			description = this.getQueryVariable("description");
+		} else {
+			description = null;
+		}
+
+		final String format;
+		if (this.getQueryVariable("format") != null) {
+			format = this.getQueryVariable("format");
+		} else {
+			format = null;
+		}
+
+		final String content;
+		if (this.getQueryVariable("content") != null) {
+			content = this.getQueryVariable("content");
+		} else {
+			content = null;
+		}
+
+		String[] tags;
+		if (this.getQueryVariables("tags") != null) {
+			tags = this.getQueryVariables("tags");
+		} else {
+			tags = null;
+		}
+
+		Date d = EventUtils.getEventDate(ci, false);
+		return XnatResourceInfo.buildResourceInfo(description, format, content,
+				tags, user, d, d, EventUtils.getEventId(ci));
+	}
+
+	protected ResourceModifierA buildResourceModifier(final boolean overwrite,
+			EventMetaI ci) throws Exception {
+		XnatImagesessiondata assessed = null;
+
+		if (this.assesseds.size() == 1)
+			assessed = (XnatImagesessiondata) assesseds.get(0);
+
+		// this should allow dependency injection - TO
+		final ResourceModifierBuilderI builder = new DirectResourceModifierBuilder();
+
+		if (recons.size() > 0) {
+			// reconstruction
+			builder.setRecon(assessed, recons.get(0), type);
+		} else if (scans.size() > 0) {
+			// scan
 			builder.setScan(assessed, scans.get(0));
-		}else if(expts.size()>0){
-			final XnatExperimentdata expt=this.expts.get(0);
-//			experiment
-			
-			if(expt.getItem().instanceOf("xnat:imageAssessorData")){
-				if(assessed==null){
-					assessed=((XnatImageassessordata)expt).getImageSessionData();
+		} else if (expts.size() > 0) {
+			final XnatExperimentdata expt = this.expts.get(0);
+			// experiment
+
+			if (expt.getItem().instanceOf("xnat:imageAssessorData")) {
+				if (assessed == null) {
+					assessed = ((XnatImageassessordata) expt)
+							.getImageSessionData();
 				}
 
-				builder.setAssess((XnatImagesessiondata)assessed, (XnatImageassessordata)expt, type);
-			}else{
-				builder.setExpt((proj!=null)?proj:expt.getProjectData(), expt);
+				builder.setAssess((XnatImagesessiondata) assessed,
+						(XnatImageassessordata) expt, type);
+			} else {
+				builder.setExpt((proj != null) ? proj : expt.getProjectData(),
+						expt);
 			}
-		}else if(sub!=null){
+		} else if (sub != null) {
 			builder.setSubject(proj, sub);
-		}else if(proj!=null){
+		} else if (proj != null) {
 			builder.setProject(proj);
-			}else{
+		} else {
 			throw new Exception("Unknown resource");
 		}
-		
-		return builder.buildResourceModifier(overwrite,user,ci);
+
+		return builder.buildResourceModifier(overwrite, user, ci);
 	}
 }

@@ -33,11 +33,13 @@ import java.util.List;
  *
  */
 public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
-    static org.apache.log4j.Logger logger = Logger.getLogger(PrearchiveBatchDelete.class);
-    
-	public PrearchiveBatchDelete(Context context, Request request, Response response) {
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(PrearchiveBatchDelete.class);
+
+	public PrearchiveBatchDelete(Context context, Request request,
+			Response response) {
 		super(context, request, response);
-				
+
 	}
 
 	@Override
@@ -45,47 +47,54 @@ public class PrearchiveBatchDelete extends BatchPrearchiveActionsA {
 		try {
 			loadBodyVariables();
 
-			//maintain parameters
+			// maintain parameters
 			loadQueryVariables();
 		} catch (ClientException e) {
-			this.getResponse().setStatus(e.getStatus(),e);
+			this.getResponse().setStatus(e.getStatus(), e);
 			return;
 		}
-		
-		List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
-		
-		for(final String src:srcs){
-            File sessionDir;
+
+		List<SessionDataTriple> ss = new ArrayList<SessionDataTriple>();
+
+		for (final String src : srcs) {
+			File sessionDir;
 			try {
-				SessionDataTriple s=buildSessionDataTriple(src);
+				SessionDataTriple s = buildSessionDataTriple(src);
 				if (!PrearcUtils.canModify(user, s.getProject())) {
-					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Invalid permissions for new project.");
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+							"Invalid permissions for new project.");
 					return;
 				}
 				ss.add(s);
-                sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
+				sessionDir = PrearcUtils.getPrearcSessionDir(user,
+						s.getProject(), s.getTimestamp(), s.getFolderName(),
+						false);
 
-                if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.QUEUED_DELETING)) {
-                    SessionData session = new SessionData();
-                    session.setTimestamp(s.getTimestamp());
-                    session.setProject(s.getProject());
-                    session.setFolderName(s.getFolderName());
+				if (PrearcDatabase.setStatus(s.getFolderName(),
+						s.getTimestamp(), s.getProject(),
+						PrearcUtils.PrearcStatus.QUEUED_DELETING)) {
+					SessionData session = new SessionData();
+					session.setTimestamp(s.getTimestamp());
+					session.setProject(s.getProject());
+					session.setFolderName(s.getFolderName());
 
-                    DeleteSessionRequest request = new DeleteSessionRequest(user, session, sessionDir);
-                    XDAT.sendJmsRequest(request);
-                }
+					DeleteSessionRequest request = new DeleteSessionRequest(
+							user, session, sessionDir);
+					XDAT.sendJmsRequest(request);
+				}
 			} catch (Exception e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 				return;
 			}
 		}
-		
+
 		final Response response = getResponse();
 		try {
-			response.setEntity(updatedStatusRepresentation(ss,overrideVariant(getPreferredVariant())));
+			response.setEntity(updatedStatusRepresentation(ss,
+					overrideVariant(getPreferredVariant())));
 		} catch (Exception e) {
-			logger.error("",e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			logger.error("", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 			return;
 		}
 	}

@@ -19,32 +19,48 @@ import org.nrg.dcm.TextExtractor;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ClassicDicomObjectIdentifier extends CompositeDicomObjectIdentifier {
-    private static final ImmutableList<Extractor> aaExtractors, sessionExtractors, subjectExtractors;
-    static {
-        final ImmutableList.Builder<Extractor> aab = new ImmutableList.Builder<Extractor>();
-        aab.add(new ContainedAssignmentExtractor(Tag.PatientComments, "AA", Pattern.CASE_INSENSITIVE),
-                new ContainedAssignmentExtractor(Tag.StudyComments, "AA", Pattern.CASE_INSENSITIVE));
-        aaExtractors = aab.build();
+public class ClassicDicomObjectIdentifier extends
+		CompositeDicomObjectIdentifier {
+	private static final ImmutableList<Extractor> aaExtractors,
+			sessionExtractors, subjectExtractors;
+	static {
+		final ImmutableList.Builder<Extractor> aab = new ImmutableList.Builder<Extractor>();
+		aab.add(new ContainedAssignmentExtractor(Tag.PatientComments, "AA",
+				Pattern.CASE_INSENSITIVE), new ContainedAssignmentExtractor(
+				Tag.StudyComments, "AA", Pattern.CASE_INSENSITIVE));
+		aaExtractors = aab.build();
 
-        final ImmutableList.Builder<Extractor> sessb = new ImmutableList.Builder<Extractor>();
-        sessb.add(new ContainedAssignmentExtractor(Tag.PatientComments, "Session", Pattern.CASE_INSENSITIVE),
-                new ContainedAssignmentExtractor(Tag.StudyComments, "Session", Pattern.CASE_INSENSITIVE),
-                new TextExtractor(Tag.PatientID));
-        sessionExtractors = sessb.build();
+		final ImmutableList.Builder<Extractor> sessb = new ImmutableList.Builder<Extractor>();
+		sessb.add(new ContainedAssignmentExtractor(Tag.PatientComments,
+				"Session", Pattern.CASE_INSENSITIVE),
+				new ContainedAssignmentExtractor(Tag.StudyComments, "Session",
+						Pattern.CASE_INSENSITIVE), new TextExtractor(
+						Tag.PatientID));
+		sessionExtractors = sessb.build();
 
-        final ImmutableList.Builder<Extractor> subjb = new ImmutableList.Builder<Extractor>();
-        subjb.add(new ContainedAssignmentExtractor(Tag.PatientComments, "Subject", Pattern.CASE_INSENSITIVE),
-                new ContainedAssignmentExtractor(Tag.StudyComments, "Subject", Pattern.CASE_INSENSITIVE),
-                new TextExtractor(Tag.PatientName));
-        subjectExtractors = subjb.build();
-    }
+		final ImmutableList.Builder<Extractor> subjb = new ImmutableList.Builder<Extractor>();
+		subjb.add(new ContainedAssignmentExtractor(Tag.PatientComments,
+				"Subject", Pattern.CASE_INSENSITIVE),
+				new ContainedAssignmentExtractor(Tag.StudyComments, "Subject",
+						Pattern.CASE_INSENSITIVE), new TextExtractor(
+						Tag.PatientName));
+		subjectExtractors = subjb.build();
+	}
 
-    public static List<Extractor> getAAExtractors() { return aaExtractors; }
-    public static List<Extractor> getSessionExtractors() { return sessionExtractors; }
-    public static List<Extractor> getSubjectExtractors() { return subjectExtractors; }
+	public static List<Extractor> getAAExtractors() {
+		return aaExtractors;
+	}
 
-    public ClassicDicomObjectIdentifier() {
-        super(new Xnat15DicomProjectIdentifier(), subjectExtractors, sessionExtractors, aaExtractors);
-    }
+	public static List<Extractor> getSessionExtractors() {
+		return sessionExtractors;
+	}
+
+	public static List<Extractor> getSubjectExtractors() {
+		return subjectExtractors;
+	}
+
+	public ClassicDicomObjectIdentifier() {
+		super(new Xnat15DicomProjectIdentifier(), subjectExtractors,
+				sessionExtractors, aaExtractors);
+	}
 }

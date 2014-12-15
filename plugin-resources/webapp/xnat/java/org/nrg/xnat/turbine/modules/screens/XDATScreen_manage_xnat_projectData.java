@@ -26,40 +26,64 @@ import org.nrg.xnat.turbine.utils.ProjectAccessRequest;
 import java.sql.SQLException;
 import java.util.TreeMap;
 
-public class XDATScreen_manage_xnat_projectData  extends SecureReport {
-    public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(XDATScreen_report_xnat_projectData.class);
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        XnatProjectdata project = (XnatProjectdata)om;
-        XDATUser user = TurbineUtils.getUser(data);
-        try {
-            context.put("guest", project.getPublicAccessibility());
+public class XDATScreen_manage_xnat_projectData extends SecureReport {
+	public static org.apache.log4j.Logger logger = org.apache.log4j.Logger
+			.getLogger(XDATScreen_report_xnat_projectData.class);
 
-            PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, user, project.getXSIType(),project.getId(),PersistentWorkflowUtils.ADMIN_EXTERNAL_ID, EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN,EventUtils.TYPE.WEB_FORM, "Re-initialized project permissions"));
-                        
-            try {
-				if(project.initGroups()){
-					PersistentWorkflowUtils.complete(wrk,wrk.buildEvent());
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+		XnatProjectdata project = (XnatProjectdata) om;
+		XDATUser user = TurbineUtils.getUser(data);
+		try {
+			context.put("guest", project.getPublicAccessibility());
+
+			PersistentWorkflowI wrk = PersistentWorkflowUtils
+					.getOrCreateWorkflowData(null, user, project.getXSIType(),
+							project.getId(),
+							PersistentWorkflowUtils.ADMIN_EXTERNAL_ID,
+							EventUtils.newEventInstance(
+									EventUtils.CATEGORY.PROJECT_ADMIN,
+									EventUtils.TYPE.WEB_FORM,
+									"Re-initialized project permissions"));
+
+			try {
+				if (project.initGroups()) {
+					PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
 				}
 			} catch (Exception e) {
-            	PersistentWorkflowUtils.fail(wrk,wrk.buildEvent());
+				PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
 			}
-            
-            XFTTable table = XFTTable.Execute("select TRIM(email) AS email, lastname || ', ' || firstname AS user_name FROM xdat_user WHERE email IS NOT NULL ORDER BY LOWER(lastname);", project.getDBName(), user.getLogin());
-            context.put("allUsers", table.convertToMap("user_name", "email",new TreeMap<Object, Object>()));
-            
-            context.put("pars",ProjectAccessRequest.RequestPARs(" proj_id='" + project.getId() + "' AND approved IS NULL", user));
-            
-            context.put("ownerEmails", project.getGroupMembers(BaseXnatProjectdata.OWNER_GROUP));
-            context.put("membersEmails", project.getGroupMembers(BaseXnatProjectdata.MEMBER_GROUP));
-            context.put("collaboratorEmails", project.getGroupMembers(BaseXnatProjectdata.COLLABORATOR_GROUP));
 
-        } catch (SQLException e) {
-            logger.error("",e);
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-    }
+			XFTTable table = XFTTable
+					.Execute(
+							"select TRIM(email) AS email, lastname || ', ' || firstname AS user_name FROM xdat_user WHERE email IS NOT NULL ORDER BY LOWER(lastname);",
+							project.getDBName(), user.getLogin());
+			context.put("allUsers", table.convertToMap("user_name", "email",
+					new TreeMap<Object, Object>()));
+
+			context.put(
+					"pars",
+					ProjectAccessRequest.RequestPARs(
+							" proj_id='" + project.getId()
+									+ "' AND approved IS NULL", user));
+
+			context.put("ownerEmails",
+					project.getGroupMembers(BaseXnatProjectdata.OWNER_GROUP));
+			context.put("membersEmails",
+					project.getGroupMembers(BaseXnatProjectdata.MEMBER_GROUP));
+			context.put("collaboratorEmails", project
+					.getGroupMembers(BaseXnatProjectdata.COLLABORATOR_GROUP));
+
+		} catch (SQLException e) {
+			logger.error("", e);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
 }

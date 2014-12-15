@@ -25,22 +25,23 @@ public class XMLSetAttributeApp {
 
 	/**
 	 * @param args
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-	 * @throws SAXException 
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
 	 */
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+	public static void main(String[] args) throws ParserConfigurationException,
+			SAXException, IOException {
 		// TODO Auto-generated method stub
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory
+				.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.parse(new File("/tmp/test.xml"));
 		Element e = doc.getDocumentElement();
 		e.normalize();
 		e.setAttribute("proj", "newProj");
-		  // use specific Xerces class to write DOM-data to a file:
-	    XMLSerializer serializer = new XMLSerializer();
-	    serializer.setOutputCharStream(
-	      new java.io.FileWriter("/tmp/test.xml"));
-	    serializer.serialize(doc);
+		// use specific Xerces class to write DOM-data to a file:
+		XMLSerializer serializer = new XMLSerializer();
+		serializer.setOutputCharStream(new java.io.FileWriter("/tmp/test.xml"));
+		serializer.serialize(doc);
 	}
 }

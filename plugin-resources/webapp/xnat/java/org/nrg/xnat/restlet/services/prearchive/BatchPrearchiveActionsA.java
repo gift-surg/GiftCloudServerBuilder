@@ -46,27 +46,31 @@ public abstract class BatchPrearchiveActionsA extends SecureResource {
 		return true;
 	}
 
-	public BatchPrearchiveActionsA(Context context, Request request, Response response) {
+	public BatchPrearchiveActionsA(Context context, Request request,
+			Response response) {
 		super(context, request, response);
 	}
 
 	@Override
-	public void handleParam(String key,Object value) throws ClientException {
-		if(key.equals(SRC)){
-			srcs.add((String)value);
-		}
-		else if (key.equals(ASYNC)) {
+	public void handleParam(String key, Object value) throws ClientException {
+		if (key.equals(SRC)) {
+			srcs.add((String) value);
+		} else if (key.equals(ASYNC)) {
 			boolean isFalse = isFalse(value);
 			async = !isFalse;
-		}	
-	}				
+		}
+	}
 
-	protected SessionDataTriple buildSessionDataTriple(String uri) throws MalformedURLException {
+	protected SessionDataTriple buildSessionDataTriple(String uri)
+			throws MalformedURLException {
 		return SessionDataTriple.fromURI(uri);
 	}
-	
-	public Representation updatedStatusRepresentation(final Collection<SessionDataTriple> ss, final MediaType mt)	throws Exception, SQLException, SessionException {
-		final XFTTable table=PrearcUtils.convertArrayLtoTable(PrearcDatabase.buildRows(ss));
-		return this.representTable(table, mt, new Hashtable<String,Object>());
+
+	public Representation updatedStatusRepresentation(
+			final Collection<SessionDataTriple> ss, final MediaType mt)
+			throws Exception, SQLException, SessionException {
+		final XFTTable table = PrearcUtils.convertArrayLtoTable(PrearcDatabase
+				.buildRows(ss));
+		return this.representTable(table, mt, new Hashtable<String, Object>());
 	}
 }

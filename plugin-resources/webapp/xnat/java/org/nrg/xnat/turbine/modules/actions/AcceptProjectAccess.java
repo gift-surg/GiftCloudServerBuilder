@@ -30,42 +30,54 @@ public class AcceptProjectAccess extends SecureAction {
 		XDATUser user = TurbineUtils.getUser(data);
 		if (user == null) {
 			user = (XDATUser) context.get("user");
-        }
+		}
 		if (user.getUsername().equals("guest")) {
-			data.getParameters().add("nextPage", data.getTemplateInfo().getScreenTemplate());
+			data.getParameters().add("nextPage",
+					data.getTemplateInfo().getScreenTemplate());
 			if (!StringUtils.isBlank(data.getAction())) {
 				data.getParameters().add("nextAction", data.getAction());
-            } else {
-				data.getParameters().add("nextAction", Turbine.getConfiguration().getString("action.login"));
-            }
+			} else {
+				data.getParameters().add("nextAction",
+						Turbine.getConfiguration().getString("action.login"));
+			}
 
-			data.setScreenTemplate(Turbine.getConfiguration().getString("template.login"));
+			data.setScreenTemplate(Turbine.getConfiguration().getString(
+					"template.login"));
 			if (logger.isDebugEnabled()) {
-                logger.debug("Re-route to login:" + Turbine.getConfiguration().getString("template.login"));
-            }
+				logger.debug("Re-route to login:"
+						+ Turbine.getConfiguration()
+								.getString("template.login"));
+			}
 
 			return;
 		}
 
-        String parId = (String) TurbineUtils.GetPassedParameter("par", data);
-        String hash = (String) TurbineUtils.GetPassedParameter("hash", data);
-        ProjectAccessRequest par = ProjectAccessRequest.RequestPARByGUID(parId, user);
+		String parId = (String) TurbineUtils.GetPassedParameter("par", data);
+		String hash = (String) TurbineUtils.GetPassedParameter("hash", data);
+		ProjectAccessRequest par = ProjectAccessRequest.RequestPARByGUID(parId,
+				user);
 		if (par.getApproved() != null || par.getApprovalDate() != null) {
 			data.setMessage("Project Invitation already accepted by a different user.  Please request access to the project directly.");
 			data.setScreenTemplate("Index.vm");
-            logger.debug("PAR not approved or already accepted: " + par.getGuid());
-		} else if (StringUtils.isBlank(hash) || !hash.equals(par.getHashedEmail())) {
+			logger.debug("PAR not approved or already accepted: "
+					+ par.getGuid());
+		} else if (StringUtils.isBlank(hash)
+				|| !hash.equals(par.getHashedEmail())) {
 			data.setMessage("The link for this project access request is insecure or invalid. Please contact the system administrator to verify your email or project membership.");
 			data.setScreenTemplate("Index.vm");
-            logger.warn("PAR rejected as insecure, failed to match verification hash: " + par.getGuid() + " from email " + par.getEmail());
+			logger.warn("PAR rejected as insecure, failed to match verification hash: "
+					+ par.getGuid() + " from email " + par.getEmail());
 		} else {
-            List<String> processedProjects = par.process(user, true, getEventType(data), getReason(data), getComment(data));
-            if (processedProjects.size() > 0) {
-                context.put("accepted_pars", processedProjects);
-            }
-			redirectToReportScreen(XnatProjectdata.getProjectByIDorAlias(par.getProjectId(), user, false), data);
+			List<String> processedProjects = par.process(user, true,
+					getEventType(data), getReason(data), getComment(data));
+			if (processedProjects.size() > 0) {
+				context.put("accepted_pars", processedProjects);
+			}
+			redirectToReportScreen(XnatProjectdata.getProjectByIDorAlias(
+					par.getProjectId(), user, false), data);
 		}
 	}
 
-    private static final Logger logger = Logger.getLogger(AcceptProjectAccess.class);
+	private static final Logger logger = Logger
+			.getLogger(AcceptProjectAccess.class);
 }

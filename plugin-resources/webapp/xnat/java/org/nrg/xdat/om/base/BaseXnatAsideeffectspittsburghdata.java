@@ -20,29 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatAsideeffectspittsburghdata extends AutoXnatAsideeffectspittsburghdata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatAsideeffectspittsburghdata extends
+		AutoXnatAsideeffectspittsburghdata {
 
-	public BaseXnatAsideeffectspittsburghdata(ItemI item)
-	{
+	public BaseXnatAsideeffectspittsburghdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatAsideeffectspittsburghdata(UserI user)
-	{
+	public BaseXnatAsideeffectspittsburghdata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatAsideeffectspittsburghdata(UserI user)
-	 **/
-	public BaseXnatAsideeffectspittsburghdata()
-	{}
+	 */
+	public BaseXnatAsideeffectspittsburghdata() {
+	}
 
-	public BaseXnatAsideeffectspittsburghdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatAsideeffectspittsburghdata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }
-

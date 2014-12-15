@@ -21,45 +21,49 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatFielddefinitiongroup extends AutoXnatFielddefinitiongroup {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatFielddefinitiongroup extends
+		AutoXnatFielddefinitiongroup {
 
-	public BaseXnatFielddefinitiongroup(ItemI item)
-	{
+	public BaseXnatFielddefinitiongroup(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatFielddefinitiongroup(UserI user)
-	{
+	public BaseXnatFielddefinitiongroup(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatFielddefinitiongroup(UserI user)
-	 **/
-	public BaseXnatFielddefinitiongroup()
-	{}
-
-	public BaseXnatFielddefinitiongroup(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatFielddefinitiongroup() {
 	}
 
-	 private ArrayList<org.nrg.xdat.om.XnatFielddefinitiongroupField> _sorted_Fields_field =null;
+	public BaseXnatFielddefinitiongroup(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	private ArrayList<org.nrg.xdat.om.XnatFielddefinitiongroupField> _sorted_Fields_field = null;
 
 	/**
 	 * fields/field
-	 * @return Returns an ArrayList of org.nrg.xdat.om.XnatFielddefinitiongroupField
+	 * 
+	 * @return Returns an ArrayList of
+	 *         org.nrg.xdat.om.XnatFielddefinitiongroupField
 	 */
 	public ArrayList<org.nrg.xdat.om.XnatFielddefinitiongroupField> getFields_field() {
-		try{
-			if (_sorted_Fields_field==null){
-				_sorted_Fields_field=org.nrg.xdat.base.BaseElement.WrapItems(getChildItemCollection("fields/field").getItems("xnat:fieldDefinitionGroup_field/sequence"));
+		try {
+			if (_sorted_Fields_field == null) {
+				_sorted_Fields_field = org.nrg.xdat.base.BaseElement
+						.WrapItems(getChildItemCollection("fields/field")
+								.getItems(
+										"xnat:fieldDefinitionGroup_field/sequence"));
 				return _sorted_Fields_field;
-			}else {
+			} else {
 				return _sorted_Fields_field;
 			}
-		} catch (Exception e1) {return new ArrayList<org.nrg.xdat.om.XnatFielddefinitiongroupField>();}
+		} catch (Exception e1) {
+			return new ArrayList<org.nrg.xdat.om.XnatFielddefinitiongroupField>();
+		}
 	}
 }
-

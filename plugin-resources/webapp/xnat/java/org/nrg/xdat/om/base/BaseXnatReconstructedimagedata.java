@@ -29,158 +29,164 @@ import java.util.List;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatReconstructedimagedata extends AutoXnatReconstructedimagedata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatReconstructedimagedata extends
+		AutoXnatReconstructedimagedata {
 
-	public BaseXnatReconstructedimagedata(ItemI item)
-	{
+	public BaseXnatReconstructedimagedata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatReconstructedimagedata(UserI user)
-	{
+	public BaseXnatReconstructedimagedata(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatReconstructedimagedata()
-	{}
-
-	public BaseXnatReconstructedimagedata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatReconstructedimagedata() {
 	}
 
-    private XnatImagesessiondata mr = null;
+	public BaseXnatReconstructedimagedata(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
 
-    public XnatImagesessiondata getImageSessionData()
-    {
-        if (mr==null)
-        {
-            ArrayList al = XnatImagesessiondata.getXnatImagesessiondatasByField("xnat:imageSessionData/ID",this.getImageSessionId(),this.getUser(),false);
-            if (al.size()>0)
-            {
-                mr = (XnatImagesessiondata)al.get(0);
-            }
-        }
+	private XnatImagesessiondata mr = null;
 
-        return mr;
-    }
-    
-    public void setImageSessionData(XnatImagesessiondata ses){
-    	mr=ses;
-    }
+	public XnatImagesessiondata getImageSessionData() {
+		if (mr == null) {
+			ArrayList al = XnatImagesessiondata
+					.getXnatImagesessiondatasByField(
+							"xnat:imageSessionData/ID",
+							this.getImageSessionId(), this.getUser(), false);
+			if (al.size() > 0) {
+				mr = (XnatImagesessiondata) al.get(0);
+			}
+		}
 
-    public ArrayList getOutFileByContent(String content) {
+		return mr;
+	}
 
-        ArrayList files = new ArrayList();
+	public void setImageSessionData(XnatImagesessiondata ses) {
+		mr = ses;
+	}
 
-        List outFiles = getOut_file();
+	public ArrayList getOutFileByContent(String content) {
 
-        if (outFiles == null || outFiles.size() == 0) return files;
+		ArrayList files = new ArrayList();
 
-        for (int i = 0 ; i < outFiles.size(); i++) {
+		List outFiles = getOut_file();
 
-            XnatAbstractresource absrsc = (XnatAbstractresource) outFiles.get(i);
+		if (outFiles == null || outFiles.size() == 0)
+			return files;
 
-            String rcontent = null;
+		for (int i = 0; i < outFiles.size(); i++) {
 
-            if (absrsc instanceof XnatResource) {
+			XnatAbstractresource absrsc = (XnatAbstractresource) outFiles
+					.get(i);
 
-                XnatResource resource = (XnatResource)outFiles.get(i);
+			String rcontent = null;
 
-                rcontent = resource.getContent();
+			if (absrsc instanceof XnatResource) {
 
-            }
+				XnatResource resource = (XnatResource) outFiles.get(i);
 
-            if (rcontent != null && content != null && rcontent.equals(content)) {
+				rcontent = resource.getContent();
 
-                files.add(absrsc);
+			}
 
-            }
+			if (rcontent != null && content != null && rcontent.equals(content)) {
 
-        }
+				files.add(absrsc);
 
-        return files;
+			}
 
-   }
+		}
 
-    public ArrayList getComputationByName(String name) {
+		return files;
 
-        ArrayList rtn = new ArrayList();
+	}
 
-        List datums = this.getComputations_datum();
+	public ArrayList getComputationByName(String name) {
 
-        if (datums == null || datums.size() == 0) {
+		ArrayList rtn = new ArrayList();
 
-            return rtn;
+		List datums = this.getComputations_datum();
 
-        }
+		if (datums == null || datums.size() == 0) {
 
-        for (int i = 0; i < datums.size(); i++) {
+			return rtn;
 
-            XnatComputationdata aDatum = (XnatComputationdata)datums.get(i);
+		}
 
-            if (aDatum.getName().equals(name)) {
+		for (int i = 0; i < datums.size(); i++) {
 
-                rtn.add(datums.get(i));
+			XnatComputationdata aDatum = (XnatComputationdata) datums.get(i);
 
-            }
+			if (aDatum.getName().equals(name)) {
 
-        }
+				rtn.add(datums.get(i));
 
-        return rtn;
+			}
 
-    }
+		}
 
+		return rtn;
 
-	public File getExpectedSessionDir() throws InvalidArchiveStructure, UnknownPrimaryProjectException{
+	}
+
+	public File getExpectedSessionDir() throws InvalidArchiveStructure,
+			UnknownPrimaryProjectException {
 		return this.getImageSessionData().getExpectedSessionDir();
 	}
+
 	@Override
-	public void preSave() throws Exception{
+	public void preSave() throws Exception {
 		super.preSave();
-		if(this.getImageSessionData()==null){
-			throw new Exception("Unable to identify image session for:" + this.getImageSessionId());
+		if (this.getImageSessionData() == null) {
+			throw new Exception("Unable to identify image session for:"
+					+ this.getImageSessionId());
 		}
-		final String expectedPath=this.getExpectedSessionDir().getAbsolutePath().replace('\\', '/');
-		
+		final String expectedPath = this.getExpectedSessionDir()
+				.getAbsolutePath().replace('\\', '/');
+
 		validate(expectedPath);
 	}
-	
-	public void validate(String expectedPath) throws Exception{
-		
-		if(StringUtils.IsEmpty(this.getId())){
+
+	public void validate(String expectedPath) throws Exception {
+
+		if (StringUtils.IsEmpty(this.getId())) {
 			throw new IllegalArgumentException();
-		}	
-		
-		if(!StringUtils.IsAlphaNumericUnderscore(getId())){
-			throw new IllegalArgumentException("Identifiers cannot use special characters.");
 		}
-		
-		for(final XnatAbstractresourceI res: this.getOut_file()){
+
+		if (!StringUtils.IsAlphaNumericUnderscore(getId())) {
+			throw new IllegalArgumentException(
+					"Identifiers cannot use special characters.");
+		}
+
+		for (final XnatAbstractresourceI res : this.getOut_file()) {
 			final String uri;
-			if(res instanceof XnatResource){
-				uri=((XnatResource)res).getUri();
-			}else if(res instanceof XnatResourceseries){
-				uri=((XnatResourceseries)res).getPath();
-			}else{
+			if (res instanceof XnatResource) {
+				uri = ((XnatResource) res).getUri();
+			} else if (res instanceof XnatResourceseries) {
+				uri = ((XnatResourceseries) res).getPath();
+			} else {
 				continue;
 			}
-			
-			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
+
+			FileUtils.ValidateUriAgainstRoot(uri, expectedPath,
+					"URI references data outside of the project:" + uri);
 		}
-		
-		for(final XnatAbstractresourceI res: this.getIn_file()){
+
+		for (final XnatAbstractresourceI res : this.getIn_file()) {
 			final String uri;
-			if(res instanceof XnatResource){
-				uri=((XnatResource)res).getUri();
-			}else if(res instanceof XnatResourceseries){
-				uri=((XnatResourceseries)res).getPath();
-			}else{
+			if (res instanceof XnatResource) {
+				uri = ((XnatResource) res).getUri();
+			} else if (res instanceof XnatResourceseries) {
+				uri = ((XnatResourceseries) res).getPath();
+			} else {
 				continue;
-	}
-			
-			FileUtils.ValidateUriAgainstRoot(uri,expectedPath,"URI references data outside of the project:" + uri);
-}
+			}
+
+			FileUtils.ValidateUriAgainstRoot(uri, expectedPath,
+					"URI references data outside of the project:" + uri);
+		}
 	}
 }

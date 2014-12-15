@@ -25,45 +25,48 @@ import java.util.List;
 public class DownloadSessionsAction extends ListingAction {
 	static Logger logger = Logger.getLogger(DownloadSessionsAction.class);
 
-    @Override
-    public String getDestinationScreenName(RunData data) {
-        return "XDATScreen_download_sessions.vm";
-    }
+	@Override
+	public String getDestinationScreenName(RunData data) {
+		return "XDATScreen_download_sessions.vm";
+	}
 
-    
-    public void finalProcessing(RunData data,Context context) throws Exception {
-        DisplaySearch search = TurbineUtils.getSearch(data);
-        search.setPagingOn(false);
-        //Load search results into a table
-        org.nrg.xft.XFTTable table = (org.nrg.xft.XFTTable)search.execute(null,TurbineUtils.getUser(data).getLogin());
-        search.setPagingOn(true);
-        
-        XDATUser user = TurbineUtils.getUser(data);
-        if (user == null)
-        {
-            throw new Exception("Invalid User.");
-        }
-        
-        //exceptable display field ids for the session ID
-        List<String> sessionIDHeaders =Arrays.asList("session_id","expt_id","id");
-        
-        String sessionIDHeader=null;
-        for(String key:sessionIDHeaders){
-        	if(table.getColumnIndex(key)!=null){
-        		sessionIDHeader=key;
-        		break;
-        	}
-        }
-        
-        if(sessionIDHeader==null){
-        	logger.error("Missing expected display field for " + search.getRootElement().getFullXMLName() +" download feature (SESSION_ID, EXPT_ID, or ID)");
-        	throw new Exception("Missing expected ID display field.");
-        }
-        
-        table.resetRowCursor();
-        while (table.hasMoreRows()){
-            Hashtable row= table.nextRowHash();
-            data.getParameters().append("sessions", (String)row.get(sessionIDHeader));
-        }
-    }
+	public void finalProcessing(RunData data, Context context) throws Exception {
+		DisplaySearch search = TurbineUtils.getSearch(data);
+		search.setPagingOn(false);
+		// Load search results into a table
+		org.nrg.xft.XFTTable table = (org.nrg.xft.XFTTable) search.execute(
+				null, TurbineUtils.getUser(data).getLogin());
+		search.setPagingOn(true);
+
+		XDATUser user = TurbineUtils.getUser(data);
+		if (user == null) {
+			throw new Exception("Invalid User.");
+		}
+
+		// exceptable display field ids for the session ID
+		List<String> sessionIDHeaders = Arrays.asList("session_id", "expt_id",
+				"id");
+
+		String sessionIDHeader = null;
+		for (String key : sessionIDHeaders) {
+			if (table.getColumnIndex(key) != null) {
+				sessionIDHeader = key;
+				break;
+			}
+		}
+
+		if (sessionIDHeader == null) {
+			logger.error("Missing expected display field for "
+					+ search.getRootElement().getFullXMLName()
+					+ " download feature (SESSION_ID, EXPT_ID, or ID)");
+			throw new Exception("Missing expected ID display field.");
+		}
+
+		table.resetRowCursor();
+		while (table.hasMoreRows()) {
+			Hashtable row = table.nextRowHash();
+			data.getParameters().append("sessions",
+					(String) row.get(sessionIDHeader));
+		}
+	}
 }

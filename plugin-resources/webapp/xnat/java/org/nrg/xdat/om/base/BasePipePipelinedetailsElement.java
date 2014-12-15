@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BasePipePipelinedetailsElement extends AutoPipePipelinedetailsElement {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BasePipePipelinedetailsElement extends
+		AutoPipePipelinedetailsElement {
 
-	public BasePipePipelinedetailsElement(ItemI item)
-	{
+	public BasePipePipelinedetailsElement(ItemI item) {
 		super(item);
 	}
 
-	public BasePipePipelinedetailsElement(UserI user)
-	{
+	public BasePipePipelinedetailsElement(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BasePipePipelinedetailsElement(UserI user)
-	 **/
-	public BasePipePipelinedetailsElement()
-	{}
+	 */
+	public BasePipePipelinedetailsElement() {
+	}
 
-	public BasePipePipelinedetailsElement(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BasePipePipelinedetailsElement(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

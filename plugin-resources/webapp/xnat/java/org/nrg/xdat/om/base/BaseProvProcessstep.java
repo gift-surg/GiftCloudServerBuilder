@@ -20,25 +20,22 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseProvProcessstep extends AutoProvProcessstep {
 
-	public BaseProvProcessstep(ItemI item)
-	{
+	public BaseProvProcessstep(ItemI item) {
 		super(item);
 	}
 
-	public BaseProvProcessstep(UserI user)
-	{
+	public BaseProvProcessstep(UserI user) {
 		super(user);
 	}
 
-	public BaseProvProcessstep()
-	{}
+	public BaseProvProcessstep() {
+	}
 
-	public BaseProvProcessstep(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseProvProcessstep(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

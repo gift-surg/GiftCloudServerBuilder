@@ -22,8 +22,8 @@ import static org.junit.Assert.fail;
  * @author timo
  *
  */
-public class ItemPKEqualityTest extends BaseXDATTestCase{
-	
+public class ItemPKEqualityTest extends BaseXDATTestCase {
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -39,35 +39,39 @@ public class ItemPKEqualityTest extends BaseXDATTestCase{
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xft.compare.ItemPKEquality#doCheck(org.nrg.xft.XFTItem, org.nrg.xft.XFTItem)}.
+	 * Test method for
+	 * {@link org.nrg.xft.compare.ItemPKEquality#doCheck(org.nrg.xft.XFTItem, org.nrg.xft.XFTItem)}
+	 * .
 	 */
 	@Test
-	public void testDoCheck() throws Exception{
-		final XFTItem newI=XFTItem.NewItem("xnat:mrSessionData", user);
-		final XFTItem oldI=XFTItem.NewItem("xnat:mrSessionData", user);
-		
+	public void testDoCheck() throws Exception {
+		final XFTItem newI = XFTItem.NewItem("xnat:mrSessionData", user);
+		final XFTItem oldI = XFTItem.NewItem("xnat:mrSessionData", user);
+
 		newI.setProperty("ID", "DSCDSCDSC");
 		oldI.setProperty("ID", "DSCDSCDSC");
-		
-		final ItemEqualityI equalizer=new ItemPKEquality();
-		if(!equalizer.isEqualTo(newI, oldI)){
+
+		final ItemEqualityI equalizer = new ItemPKEquality();
+		if (!equalizer.isEqualTo(newI, oldI)) {
 			fail("These should be equal.");
 		}
 	}
 
 	/**
-	 * Test method for {@link org.nrg.xft.compare.ItemPKEquality#doCheck(org.nrg.xft.XFTItem, org.nrg.xft.XFTItem)}.
+	 * Test method for
+	 * {@link org.nrg.xft.compare.ItemPKEquality#doCheck(org.nrg.xft.XFTItem, org.nrg.xft.XFTItem)}
+	 * .
 	 */
 	@Test
-	public void testDoCheck2() throws Exception{
-		final XFTItem newI=XFTItem.NewItem("xnat:mrSessionData", user);
-		final XFTItem oldI=XFTItem.NewItem("xnat:mrSessionData", user);
-		
+	public void testDoCheck2() throws Exception {
+		final XFTItem newI = XFTItem.NewItem("xnat:mrSessionData", user);
+		final XFTItem oldI = XFTItem.NewItem("xnat:mrSessionData", user);
+
 		newI.setProperty("ID", "DSCDSCDsdfSC");
 		oldI.setProperty("ID", "DSCDSCDSC");
-		
-		final ItemEqualityI equalizer=new ItemPKEquality();
-		if(equalizer.isEqualTo(newI, oldI)){
+
+		final ItemEqualityI equalizer = new ItemPKEquality();
+		if (equalizer.isEqualTo(newI, oldI)) {
 			fail("These should not be equal.");
 		}
 	}

@@ -22,13 +22,15 @@ public class DataTypeSearch extends SecureScreen {
 	protected void doBuildTemplate(RunData data, Context context)
 			throws Exception {
 
-		if(TurbineUtils.HasPassedParameter("dataType",data)){
-			SchemaElement gwe = SchemaElement.GetElement((String)TurbineUtils.GetPassedParameter("dataType", data));
-			
-			context.put("dataType",TurbineUtils.GetPassedParameter("dataType", data));
-			context.put("schemaElement",gwe);
+		if (TurbineUtils.HasPassedParameter("dataType", data)) {
+			SchemaElement gwe = SchemaElement.GetElement((String) TurbineUtils
+					.GetPassedParameter("dataType", data));
+
+			context.put("dataType",
+					TurbineUtils.GetPassedParameter("dataType", data));
+			context.put("schemaElement", gwe);
 		}
-		
+
 		data.getTemplateInfo().setLayoutTemplate("/ScreenOnly.vm");
 	}
 

@@ -20,25 +20,23 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatAbstractdemographicdata extends AutoXnatAbstractdemographicdata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatAbstractdemographicdata extends
+		AutoXnatAbstractdemographicdata {
 
-	public BaseXnatAbstractdemographicdata(ItemI item)
-	{
+	public BaseXnatAbstractdemographicdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatAbstractdemographicdata(UserI user)
-	{
+	public BaseXnatAbstractdemographicdata(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatAbstractdemographicdata()
-	{}
+	public BaseXnatAbstractdemographicdata() {
+	}
 
-	public BaseXnatAbstractdemographicdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatAbstractdemographicdata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

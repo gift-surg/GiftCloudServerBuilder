@@ -30,39 +30,51 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
 /**
  * @author XDAT
  *
  */
-public class XDATScreen_edit_scr_screeningAssessment extends org.nrg.xnat.turbine.modules.screens.EditImageAssessorScreen {
-	static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(XDATScreen_edit_scr_screeningAssessment.class);
-	/* (non-Javadoc)
+public class XDATScreen_edit_scr_screeningAssessment extends
+		org.nrg.xnat.turbine.modules.screens.EditImageAssessorScreen {
+	static org.apache.log4j.Logger logger = org.apache.log4j.Logger
+			.getLogger(XDATScreen_edit_scr_screeningAssessment.class);
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#getElementName()
 	 */
 	public String getElementName() {
-	    return "scr:screeningAssessment";
+		return "scr:screeningAssessment";
 	}
-	
-	public ItemI getEmptyItem(RunData data) throws Exception
-	{
+
+	public ItemI getEmptyItem(RunData data) throws Exception {
 		final UserI user = TurbineUtils.getUser(data);
-		final ScrScreeningassessment screeningAssessment = new ScrScreeningassessment(XFTItem.NewItem(getElementName(), user));
+		final ScrScreeningassessment screeningAssessment = new ScrScreeningassessment(
+				XFTItem.NewItem(getElementName(), user));
 		final String search_element = TurbineUtils.GetSearchElement(data);
 		if (!StringUtils.isEmpty(search_element)) {
-			final GenericWrapperElement se = GenericWrapperElement.GetElement(search_element);
+			final GenericWrapperElement se = GenericWrapperElement
+					.GetElement(search_element);
 			if (se.instanceOf(XnatImagesessiondata.SCHEMA_ELEMENT_NAME)) {
-				final String search_value = data.getParameters().getString("search_value");
+				final String search_value = data.getParameters().getString(
+						"search_value");
 				if (!StringUtils.isEmpty(search_value)) {
-					XnatImagesessiondata imageSession = new XnatImagesessiondata(TurbineUtils.GetItemBySearch(data));
+					XnatImagesessiondata imageSession = new XnatImagesessiondata(
+							TurbineUtils.GetItemBySearch(data));
 					screeningAssessment.setImagesessionId(search_value);
 					screeningAssessment.setProject(imageSession.getProject());
 					screeningAssessment.setId(XnatExperimentdata.CreateNewID());
-			    	//screeningAssessment.setLabel(generateLabel(imageSession.getLabel()));
-				   	DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-					screeningAssessment.setDate(dateFormat.format(Calendar.getInstance().getTime()));
-					
-					for (XnatImagescandataI imageScan: imageSession.getScans_scan()){
-						ScrScreeningscandata scan = new ScrScreeningscandata(user);
+					// screeningAssessment.setLabel(generateLabel(imageSession.getLabel()));
+					DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+					screeningAssessment.setDate(dateFormat.format(Calendar
+							.getInstance().getTime()));
+
+					for (XnatImagescandataI imageScan : imageSession
+							.getScans_scan()) {
+						ScrScreeningscandata scan = new ScrScreeningscandata(
+								user);
 						scan.setImagescanId(imageScan.getId());
 						screeningAssessment.setScans_scan(scan);
 					}
@@ -71,53 +83,64 @@ public class XDATScreen_edit_scr_screeningAssessment extends org.nrg.xnat.turbin
 		}
 
 		return screeningAssessment.getItem();
-		
+
 	}
-	/* (non-Javadoc)
-	 * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
 	 */
 	public void finalProcessing(RunData data, Context context) {
-		
-	
+
 	}
-	
-	private static List<String> claimedIDs=new ArrayList<String>();
-	
-	private synchronized String generateLabel(String sessionLabel) throws Exception{
+
+	private static List<String> claimedIDs = new ArrayList<String>();
+
+	private synchronized String generateLabel(String sessionLabel)
+			throws Exception {
 		sessionLabel = cleanupLabel(sessionLabel);
 		String labelExtension = "_screen";
 		String labelExtensionEscaped = "\\" + labelExtension;
 		String column = "label";
 		String tableName = "xnat_experimentData";
 		int digits = 5;
-		String temp_id=null;
-		
-		XFTTable table = org.nrg.xft.search.TableSearch.Execute("SELECT " + column + " FROM " + tableName + " WHERE " + column + " LIKE '" + sessionLabel + labelExtensionEscaped + "%';", null, null);
-        ArrayList al =table.convertColumnToArrayList(column.toLowerCase());
-        
-        if (al.size()>0 || claimedIDs.size()>0){
-            int count =al.size()+1;
-            String full = org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
-            temp_id = sessionLabel+labelExtension+ full;
+		String temp_id = null;
 
-            while (al.contains(temp_id) || claimedIDs.contains(temp_id)){
-                count++;
-                full =org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
-                temp_id = sessionLabel+labelExtension+ full;
-            }
-            
-            claimedIDs.add(temp_id);
+		XFTTable table = org.nrg.xft.search.TableSearch.Execute("SELECT "
+				+ column + " FROM " + tableName + " WHERE " + column
+				+ " LIKE '" + sessionLabel + labelExtensionEscaped + "%';",
+				null, null);
+		ArrayList al = table.convertColumnToArrayList(column.toLowerCase());
 
-            return temp_id;
-        }else{
-            int count =1;
-            String full = org.apache.commons.lang.StringUtils.leftPad((new Integer(count)).toString(), digits, '0');
-            temp_id = sessionLabel+labelExtension+ full;
-            return temp_id;
-        }
+		if (al.size() > 0 || claimedIDs.size() > 0) {
+			int count = al.size() + 1;
+			String full = org.apache.commons.lang.StringUtils.leftPad(
+					(new Integer(count)).toString(), digits, '0');
+			temp_id = sessionLabel + labelExtension + full;
+
+			while (al.contains(temp_id) || claimedIDs.contains(temp_id)) {
+				count++;
+				full = org.apache.commons.lang.StringUtils.leftPad(
+						(new Integer(count)).toString(), digits, '0');
+				temp_id = sessionLabel + labelExtension + full;
+			}
+
+			claimedIDs.add(temp_id);
+
+			return temp_id;
+		} else {
+			int count = 1;
+			String full = org.apache.commons.lang.StringUtils.leftPad(
+					(new Integer(count)).toString(), digits, '0');
+			temp_id = sessionLabel + labelExtension + full;
+			return temp_id;
+		}
 	}
-	
-	private static String cleanupLabel(String sessionLabel){
+
+	private static String cleanupLabel(String sessionLabel) {
 		sessionLabel = StringUtils.replace(sessionLabel, " ", "");
 		sessionLabel = StringUtils.replace(sessionLabel, "-", "_");
 		sessionLabel = StringUtils.replace(sessionLabel, "\"", "");
@@ -126,5 +149,3 @@ public class XDATScreen_edit_scr_screeningAssessment extends org.nrg.xnat.turbin
 		return sessionLabel;
 	}
 }
-
-

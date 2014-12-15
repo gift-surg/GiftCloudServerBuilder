@@ -24,35 +24,44 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class XDATScreen_report_xnat_ctSessionData extends SecureReport {
-	private static final Logger logger = LoggerFactory.getLogger(XDATScreen_report_xnat_ctSessionData.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(XDATScreen_report_xnat_ctSessionData.class);
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        try {
-            XnatCtsessiondata ct = new XnatCtsessiondata(item);
-            context.put("ct", ct);
-            context.put("workflows", ct.getWorkflows());
-            if(!context.containsKey("project")){
-            	context.put("project", ct.getProject());
-            }
-            
-            for(XnatImagescandataI scan: ct.getSortedScans()){
-            	((XnatImagescandata)scan).setImageSessionData(ct);
-            }
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+		try {
+			XnatCtsessiondata ct = new XnatCtsessiondata(item);
+			context.put("ct", ct);
+			context.put("workflows", ct.getWorkflows());
+			if (!context.containsKey("project")) {
+				context.put("project", ct.getProject());
+			}
 
-    
-    /**
-     * Return null to use the default settings (which are configured in xdat:element_security).  Otherwise, true will force a pre-load of the item.
-     * @return Returns <b>true</b> if the object should be pre-loaded, <b>false</b> if not, <b>null</b> if the default value should be used.
-     */
-    @Override
-    public Boolean preLoad() {
-        return Boolean.FALSE;
-    }
+			for (XnatImagescandataI scan : ct.getSortedScans()) {
+				((XnatImagescandata) scan).setImageSessionData(ct);
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
+
+	/**
+	 * Return null to use the default settings (which are configured in
+	 * xdat:element_security). Otherwise, true will force a pre-load of the
+	 * item.
+	 * 
+	 * @return Returns <b>true</b> if the object should be pre-loaded,
+	 *         <b>false</b> if not, <b>null</b> if the default value should be
+	 *         used.
+	 */
+	@Override
+	public Boolean preLoad() {
+		return Boolean.FALSE;
+	}
 }

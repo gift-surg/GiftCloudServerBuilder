@@ -25,77 +25,85 @@ import java.io.File;
 
 public class QCImageCreator {
 
-    XnatMrsessiondata mrSession;
-    XDATUser user;
-    static Logger logger = Logger.getLogger(QCImageCreator.class);
-    
-    public QCImageCreator(XnatMrsessiondata mrSession, XDATUser user) {
-        this.mrSession = mrSession;
-        this.user = user;
-    }
-        
-    
-    public boolean createQCImagesForScans() throws Exception {
+	XnatMrsessiondata mrSession;
+	XDATUser user;
+	static Logger logger = Logger.getLogger(QCImageCreator.class);
 
-        XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(user);
-        xnatPipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
-        xnatPipelineLauncher.setAlwaysEmailAdmin(ArcSpecManager.GetInstance().getEmailspecifications_pipeline());
-        xnatPipelineLauncher.setWaitFor(true);
-        String pipelineName = "images/WebBasedQCImageCreator.xml";
-        xnatPipelineLauncher.setPipelineName(pipelineName);
-        xnatPipelineLauncher.setId(mrSession.getId());
-        xnatPipelineLauncher.setDataType(mrSession.getXSIType());
-        xnatPipelineLauncher.setExternalId(mrSession.getProject());
-        xnatPipelineLauncher.setLabel(mrSession.getLabel());
-        
-        xnatPipelineLauncher.setParameter("sessionLabel", mrSession.getLabel());
-        xnatPipelineLauncher.setParameter("xnat_project", mrSession.getProject());
-        xnatPipelineLauncher.setParameter("session", mrSession.getId() );
-        xnatPipelineLauncher.setParameter("notify", "0" );
-	    xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
-	    xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
-	    xnatPipelineLauncher.setParameter("useremail", user.getEmail());
-	    xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
+	public QCImageCreator(XnatMrsessiondata mrSession, XDATUser user) {
+		this.mrSession = mrSession;
+		this.user = user;
+	}
 
+	public boolean createQCImagesForScans() throws Exception {
 
-        return xnatPipelineLauncher.launch(null);
-    }
-    
-    public static String GetPathToQCThumbnailFile(XnatMrsessiondata mrSession, String mrScanId) {
-        PlexiViewerSpecForSession viewerSpec = PlexiSpecDocReader.GetInstance().getSpecDoc(mrSession.getSessionType());
-        return viewerSpec.getThumbnailArchiveLocation() + File.separator + mrSession.getId() +"_" + mrScanId + "_qc_t.gif";
-    }
+		XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(
+				user);
+		xnatPipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
+		xnatPipelineLauncher.setAlwaysEmailAdmin(ArcSpecManager.GetInstance()
+				.getEmailspecifications_pipeline());
+		xnatPipelineLauncher.setWaitFor(true);
+		String pipelineName = "images/WebBasedQCImageCreator.xml";
+		xnatPipelineLauncher.setPipelineName(pipelineName);
+		xnatPipelineLauncher.setId(mrSession.getId());
+		xnatPipelineLauncher.setDataType(mrSession.getXSIType());
+		xnatPipelineLauncher.setExternalId(mrSession.getProject());
+		xnatPipelineLauncher.setLabel(mrSession.getLabel());
 
-    public static String GetPathToQCFile(XnatMrsessiondata mrSession, String mrScanId) {
-        PlexiViewerSpecForSession viewerSpec = PlexiSpecDocReader.GetInstance().getSpecDoc(mrSession.getSessionType());
-        String rtn =  viewerSpec.getThumbnailArchiveLocation() + File.separator + mrSession.getId() +"_" + mrScanId + "_qc.gif";
-        return rtn;
-    }
-    
-    
-    public static String GetSnapshotPathForSession(String sessionArchivePath) {
-    	return sessionArchivePath + "SNAPSHOTS";
-    }
-    
-    
-    public static String getQCThumbnailPathForSession(String project) {
-    	String path = null;
-    	if (project!=null){
-            path= ArcSpecManager.GetInstance().getCachePathForProject(project);
-         }else{
-            path= ArcSpecManager.GetInstance().getGlobalCachePath();
-         }
-    	 String thumb_path = path +"Thumbnail/";
-    	return thumb_path;
-    }
-    
-    public static String getQCCachePathForSession(String project) {
-    	String path = null;
-    	if (project!=null){
-            path= ArcSpecManager.GetInstance().getCachePathForProject(project);
-         }else{
-            path= ArcSpecManager.GetInstance().getGlobalCachePath();
-         }
-         return path;
-    }
+		xnatPipelineLauncher.setParameter("sessionLabel", mrSession.getLabel());
+		xnatPipelineLauncher.setParameter("xnat_project",
+				mrSession.getProject());
+		xnatPipelineLauncher.setParameter("session", mrSession.getId());
+		xnatPipelineLauncher.setParameter("notify", "0");
+		xnatPipelineLauncher.setParameter("xnatserver",
+				TurbineUtils.GetSystemName());
+		xnatPipelineLauncher.setParameter("mailhost",
+				AdminUtils.getMailServer());
+		xnatPipelineLauncher.setParameter("useremail", user.getEmail());
+		xnatPipelineLauncher.setParameter("adminemail",
+				AdminUtils.getAdminEmailId());
+
+		return xnatPipelineLauncher.launch(null);
+	}
+
+	public static String GetPathToQCThumbnailFile(XnatMrsessiondata mrSession,
+			String mrScanId) {
+		PlexiViewerSpecForSession viewerSpec = PlexiSpecDocReader.GetInstance()
+				.getSpecDoc(mrSession.getSessionType());
+		return viewerSpec.getThumbnailArchiveLocation() + File.separator
+				+ mrSession.getId() + "_" + mrScanId + "_qc_t.gif";
+	}
+
+	public static String GetPathToQCFile(XnatMrsessiondata mrSession,
+			String mrScanId) {
+		PlexiViewerSpecForSession viewerSpec = PlexiSpecDocReader.GetInstance()
+				.getSpecDoc(mrSession.getSessionType());
+		String rtn = viewerSpec.getThumbnailArchiveLocation() + File.separator
+				+ mrSession.getId() + "_" + mrScanId + "_qc.gif";
+		return rtn;
+	}
+
+	public static String GetSnapshotPathForSession(String sessionArchivePath) {
+		return sessionArchivePath + "SNAPSHOTS";
+	}
+
+	public static String getQCThumbnailPathForSession(String project) {
+		String path = null;
+		if (project != null) {
+			path = ArcSpecManager.GetInstance().getCachePathForProject(project);
+		} else {
+			path = ArcSpecManager.GetInstance().getGlobalCachePath();
+		}
+		String thumb_path = path + "Thumbnail/";
+		return thumb_path;
+	}
+
+	public static String getQCCachePathForSession(String project) {
+		String path = null;
+		if (project != null) {
+			path = ArcSpecManager.GetInstance().getCachePathForProject(project);
+		} else {
+			path = ArcSpecManager.GetInstance().getGlobalCachePath();
+		}
+		return path;
+	}
 }

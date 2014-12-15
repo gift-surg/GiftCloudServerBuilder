@@ -20,25 +20,23 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatVolumetricregionSubregion extends AutoXnatVolumetricregionSubregion {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatVolumetricregionSubregion extends
+		AutoXnatVolumetricregionSubregion {
 
-	public BaseXnatVolumetricregionSubregion(ItemI item)
-	{
+	public BaseXnatVolumetricregionSubregion(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatVolumetricregionSubregion(UserI user)
-	{
+	public BaseXnatVolumetricregionSubregion(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatVolumetricregionSubregion()
-	{}
+	public BaseXnatVolumetricregionSubregion() {
+	}
 
-	public BaseXnatVolumetricregionSubregion(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatVolumetricregionSubregion(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

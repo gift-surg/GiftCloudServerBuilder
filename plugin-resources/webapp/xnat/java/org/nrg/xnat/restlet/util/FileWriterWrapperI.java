@@ -15,13 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface FileWriterWrapperI {
-	static enum UPLOAD_TYPE{INBODY,MULTIPART,OTHER};
+	static enum UPLOAD_TYPE {
+		INBODY, MULTIPART, OTHER
+	};
 
 	void write(File f) throws Exception;
 
 	String getName();
 
-    String getNestedPath();
+	String getNestedPath();
 
 	InputStream getInputStream() throws IOException;
 

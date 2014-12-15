@@ -29,183 +29,190 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseXnatAbstractresource extends AutoXnatAbstractresource {
 
-	public BaseXnatAbstractresource(ItemI item)
-	{
+	public BaseXnatAbstractresource(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatAbstractresource(UserI user)
-	{
+	public BaseXnatAbstractresource(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatAbstractresource(UserI user)
-	 **/
-	public BaseXnatAbstractresource()
-	{}
-
-	public BaseXnatAbstractresource(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatAbstractresource() {
 	}
 
-    /**
-     * Returns ArrayList of java.io.File objects
-     * @return
-     */
-    public abstract ArrayList<File> getCorrespondingFiles(String rootPath);
+	public BaseXnatAbstractresource(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
 
+	/**
+	 * Returns ArrayList of java.io.File objects
+	 * 
+	 * @return
+	 */
+	public abstract ArrayList<File> getCorrespondingFiles(String rootPath);
 
-    /**
-     * Returns ArrayList of java.lang.String objects
-     * @return
-     */
-    public abstract ArrayList getCorrespondingFileNames(String rootPath);
+	/**
+	 * Returns ArrayList of java.lang.String objects
+	 * 
+	 * @return
+	 */
+	public abstract ArrayList getCorrespondingFileNames(String rootPath);
 
+	Long size = null;
 
-    Long size = null;
-    public long getSize(String rootPath){
-        if (size ==null){
-            calculate(rootPath);
-        }
-        return size;
-    }
-    
-    public String getReadableFileStats() {
-        return CatalogUtils.formatFileStats(getLabel(), getFileCount(), getFileSize());
-    }
+	public long getSize(String rootPath) {
+		if (size == null) {
+			calculate(rootPath);
+		}
+		return size;
+	}
 
-    public String getReadableFileSize() {
-        Object fileSize = getFileSize();
-        if (fileSize == null) {
-            return "Empty";
-        }
-        return CatalogUtils.formatSize((Long) fileSize);
-    }
+	public String getReadableFileStats() {
+		return CatalogUtils.formatFileStats(getLabel(), getFileCount(),
+				getFileSize());
+	}
 
-    public void calculate(String rootPath){
-    	long sizeI = 0;
-        int countI = 0;
-        for (File f : this.getCorrespondingFiles(rootPath)) {
-            if (f.exists()){
-                countI++;
-                sizeI+=f.length();
-            }
-        }
+	public String getReadableFileSize() {
+		Object fileSize = getFileSize();
+		if (fileSize == null) {
+			return "Empty";
+		}
+		return CatalogUtils.formatSize((Long) fileSize);
+	}
 
-        size = sizeI;
-        count = countI;
-    }
+	public void calculate(String rootPath) {
+		long sizeI = 0;
+		int countI = 0;
+		for (File f : this.getCorrespondingFiles(rootPath)) {
+			if (f.exists()) {
+				countI++;
+				sizeI += f.length();
+			}
+		}
 
-    Integer count = null;
-    public Integer getCount(String rootPath){
-        if (count ==null){
-            calculate(rootPath);
-        }
-        return count;
-    }
+		size = sizeI;
+		count = countI;
+	}
 
-    /**
-     * Prepends this path to the enclosed URI or path variables.
-     * @param root
-     */
-    public abstract void prependPathsWith(String root);
+	Integer count = null;
 
-    /**
-     * Relatives this path from the first occurrence of the indexOf string.
-     * @param indexOf
-     */
-    public abstract void relativizePaths(String indexOf, boolean caseSensitive);
+	public Integer getCount(String rootPath) {
+		if (count == null) {
+			calculate(rootPath);
+		}
+		return count;
+	}
 
-    /**
-     * Appends this path to the enclosed URI or path variables.
-     * @param root
-     */
-    public abstract ArrayList<String> getUnresolvedPaths();
+	/**
+	 * Prepends this path to the enclosed URI or path variables.
+	 * 
+	 * @param root
+	 */
+	public abstract void prependPathsWith(String root);
 
-    public boolean isInRAWDirectory(){
-        boolean hasRAW= false;
-        for (String path : getUnresolvedPaths())
-        {
-            if (path.indexOf("RAW/")!=-1)
-            {
-                hasRAW=true;
-                break;
-            }
-            if (path.indexOf("SCANS/")!=-1)
-            {
-                hasRAW=true;
-                break;
-            }
-        }
-        return hasRAW;
-    }
+	/**
+	 * Relatives this path from the first occurrence of the indexOf string.
+	 * 
+	 * @param indexOf
+	 */
+	public abstract void relativizePaths(String indexOf, boolean caseSensitive);
 
-    /**
-     * Path to Files
-     * @return
-     */
-    public String getFullPath(String rootPath){
-        return "";
-    }
+	/**
+	 * Appends this path to the enclosed URI or path variables.
+	 * 
+	 * @param root
+	 */
+	public abstract ArrayList<String> getUnresolvedPaths();
 
-    public String getContent(){
-        return "";
-    }
+	public boolean isInRAWDirectory() {
+		boolean hasRAW = false;
+		for (String path : getUnresolvedPaths()) {
+			if (path.indexOf("RAW/") != -1) {
+				hasRAW = true;
+				break;
+			}
+			if (path.indexOf("SCANS/") != -1) {
+				hasRAW = true;
+				break;
+			}
+		}
+		return hasRAW;
+	}
 
-    public String getFormat(){
-        return "";
-    }
+	/**
+	 * Path to Files
+	 * 
+	 * @return
+	 */
+	public String getFullPath(String rootPath) {
+		return "";
+	}
 
-    public void deleteWithBackup(String rootPath, UserI user, EventMetaI c) throws Exception{
-    	deleteFromFileSystem(rootPath);
-    }
+	public String getContent() {
+		return "";
+	}
 
-    public void deleteFromFileSystem(String rootPath){
-        ArrayList<File> files = this.getCorrespondingFiles(rootPath);
-        for(File f: files){
-            try {
+	public String getFormat() {
+		return "";
+	}
+
+	public void deleteWithBackup(String rootPath, UserI user, EventMetaI c)
+			throws Exception {
+		deleteFromFileSystem(rootPath);
+	}
+
+	public void deleteFromFileSystem(String rootPath) {
+		ArrayList<File> files = this.getCorrespondingFiles(rootPath);
+		for (File f : files) {
+			try {
 				FileUtils.MoveToCache(f);
-				if(FileUtils.CountFiles(f.getParentFile(),true)==0){
+				if (FileUtils.CountFiles(f.getParentFile(), true) == 0) {
 					FileUtils.DeleteFile(f.getParentFile());
 				}
-		    } catch (FileNotFoundException e) {
-		    	e.printStackTrace();
-		    } catch (IOException e) {
-		    	e.printStackTrace();
-		    }
-        }
-    }
-    
-    public String getTagString(){
-    	StringBuffer sb =new StringBuffer();
-    	for(XnatAbstractresourceTagI tag:this.getTags_tag()){
-    		if(sb.length()>0){
-    			sb.append(",");
-    		}
-    		if(tag.getName()!=null){
-    			sb.append(tag.getName()).append("=");
-    		}
-    		sb.append(tag.getTag());
-    	}
-    	
-    	return sb.toString();
-    }
-    
-    private String base_URI=null;
-    public String getBaseURI(){return base_URI;}
-    public void setBaseURI(String b){
-    	if(b.startsWith("/REST") || b.startsWith("/data")){
-    		this.base_URI=b;
-    	}else{
-    		this.base_URI="/data" +b;
-    	}
-    }
-    
-    
-    public abstract void moveTo(File newSessionDir, String existingSessionDir,String rootPath,XDATUser user,EventMetaI ci) throws IOException,Exception;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public String getTagString() {
+		StringBuffer sb = new StringBuffer();
+		for (XnatAbstractresourceTagI tag : this.getTags_tag()) {
+			if (sb.length() > 0) {
+				sb.append(",");
+			}
+			if (tag.getName() != null) {
+				sb.append(tag.getName()).append("=");
+			}
+			sb.append(tag.getTag());
+		}
+
+		return sb.toString();
+	}
+
+	private String base_URI = null;
+
+	public String getBaseURI() {
+		return base_URI;
+	}
+
+	public void setBaseURI(String b) {
+		if (b.startsWith("/REST") || b.startsWith("/data")) {
+			this.base_URI = b;
+		} else {
+			this.base_URI = "/data" + b;
+		}
+	}
+
+	public abstract void moveTo(File newSessionDir, String existingSessionDir,
+			String rootPath, XDATUser user, EventMetaI ci) throws IOException,
+			Exception;
 }

@@ -25,52 +25,54 @@ import java.util.List;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseWrkXnatexecutionenvironment extends AutoWrkXnatexecutionenvironment {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseWrkXnatexecutionenvironment extends
+		AutoWrkXnatexecutionenvironment {
 
-	public BaseWrkXnatexecutionenvironment(ItemI item)
-	{
+	public BaseWrkXnatexecutionenvironment(ItemI item) {
 		super(item);
 	}
 
-	public BaseWrkXnatexecutionenvironment(UserI user)
-	{
+	public BaseWrkXnatexecutionenvironment(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseWrkXnatexecutionenvironment(UserI user)
-	 **/
-	public BaseWrkXnatexecutionenvironment()
-	{}
-
-	public BaseWrkXnatexecutionenvironment(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseWrkXnatexecutionenvironment() {
 	}
 
-    public XnatPipelineLauncher getLauncher(UserI user) {
-        XnatPipelineLauncher xnatLauncher = new XnatPipelineLauncher((XDATUser)user);
-        xnatLauncher.setPipelineName(getPipeline());
-        xnatLauncher.setStartAt(getStartat());
-        List parameters = getParameters_parameter();
-        for (int i = 0; i < parameters.size(); i++) {
-            WrkXnatexecutionenvironmentParameterI aParameter = (WrkXnatexecutionenvironmentParameterI)parameters.get(i);
-            xnatLauncher.setParameter(aParameter.getName(), aParameter.getParameter());
-        }
-        List notified = getNotify();
-        for (int i = 0; i < notified.size(); i++) {
-            String notifiedEmailId = (String)notified.get(i);
-            if (!notifiedEmailId.equals(user.getEmail()) && !notifiedEmailId.equals(AdminUtils.getAdminEmailId())) {
-                xnatLauncher.notify(notifiedEmailId);
-            }
-        }
-        xnatLauncher.setDataType(getDatatype());
-        xnatLauncher.setId(getId());
-        xnatLauncher.setSupressNotification(getSupressnotification());
-        if (this.getParameterfile_path() != null) {
-            xnatLauncher.setParameterFile(getParameterfile_path());
-        }
-        return xnatLauncher;
-    }
+	public BaseWrkXnatexecutionenvironment(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public XnatPipelineLauncher getLauncher(UserI user) {
+		XnatPipelineLauncher xnatLauncher = new XnatPipelineLauncher(
+				(XDATUser) user);
+		xnatLauncher.setPipelineName(getPipeline());
+		xnatLauncher.setStartAt(getStartat());
+		List parameters = getParameters_parameter();
+		for (int i = 0; i < parameters.size(); i++) {
+			WrkXnatexecutionenvironmentParameterI aParameter = (WrkXnatexecutionenvironmentParameterI) parameters
+					.get(i);
+			xnatLauncher.setParameter(aParameter.getName(),
+					aParameter.getParameter());
+		}
+		List notified = getNotify();
+		for (int i = 0; i < notified.size(); i++) {
+			String notifiedEmailId = (String) notified.get(i);
+			if (!notifiedEmailId.equals(user.getEmail())
+					&& !notifiedEmailId.equals(AdminUtils.getAdminEmailId())) {
+				xnatLauncher.notify(notifiedEmailId);
+			}
+		}
+		xnatLauncher.setDataType(getDatatype());
+		xnatLauncher.setId(getId());
+		xnatLauncher.setSupressNotification(getSupressnotification());
+		if (this.getParameterfile_path() != null) {
+			xnatLauncher.setParameterFile(getParameterfile_path());
+		}
+		return xnatLauncher;
+	}
 }

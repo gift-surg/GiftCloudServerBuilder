@@ -55,9 +55,10 @@ public class SecureResourceTestCase {
 
 		request = mock(HttpRequest.class);
 		when(request.getAttributes()).thenReturn(requestAttributes);
-		when(((HttpRequest)request).getHttpCall()).thenReturn(servletCall);
-		
-		// just prevent null pointers, might need to revisit when more fully testing
+		when(((HttpRequest) request).getHttpCall()).thenReturn(servletCall);
+
+		// just prevent null pointers, might need to revisit when more fully
+		// testing
 		when(request.getResourceRef()).thenReturn(new Reference());
 		when(request.getClientInfo()).thenReturn(new ClientInfo());
 	}

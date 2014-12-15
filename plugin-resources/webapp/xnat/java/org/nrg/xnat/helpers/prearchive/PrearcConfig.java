@@ -13,7 +13,7 @@ package org.nrg.xnat.helpers.prearchive;
 public final class PrearcConfig {
 
 	private boolean reloadPrearcDatabaseOnApplicationStartup;
-	
+
 	public boolean isReloadPrearcDatabaseOnApplicationStartup() {
 		return reloadPrearcDatabaseOnApplicationStartup;
 	}

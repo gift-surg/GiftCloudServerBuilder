@@ -35,54 +35,61 @@ import java.util.UUID;
 public class OnXnatLogin extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-	
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request,
 			HttpServletResponse response, Authentication authentication)
 			throws IOException, ServletException {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Request is to process authentication");
-        }
-        
-        try{
-        	SecurityContext securityContext = SecurityContextHolder.getContext();
-        	
-	        XDATUserDetails user= null;
-	        Object principal = securityContext.getAuthentication().getPrincipal();
-	        
-	        if(principal instanceof XDATUserDetails){
-	        	user = (XDATUserDetails)principal;
-	        }
-	        else if (principal instanceof String){
-	        	user = new XDATUserDetails((String)principal);
-	        }
-	        
-	        request.getSession().setAttribute("user", user);
-	      	java.util.Date today = java.util.Calendar.getInstance(java.util.TimeZone.getDefault()).getTime();
-	      	XFTItem item = XFTItem.NewItem("xdat:user_login",user);
-	      	item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
-	      	item.setProperty("xdat:user_login.login_date",today);
-	      	item.setProperty("xdat:user_login.ip_address", AccessLogger.GetRequestIp(request));
-	      	item.setProperty("xdat:user_login.session_id", request.getSession().getId());
-	      	SaveItemHelper.authorizedSave(item,null,true,false, EventUtils.DEFAULT_EVENT(user,null));
-	      	
-	      	request.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
-        }
-        catch(Exception e){
-        	logger.error(e);
-        }
-        super.onAuthenticationSuccess(request, response, authentication);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Request is to process authentication");
+		}
+
+		try {
+			SecurityContext securityContext = SecurityContextHolder
+					.getContext();
+
+			XDATUserDetails user = null;
+			Object principal = securityContext.getAuthentication()
+					.getPrincipal();
+
+			if (principal instanceof XDATUserDetails) {
+				user = (XDATUserDetails) principal;
+			} else if (principal instanceof String) {
+				user = new XDATUserDetails((String) principal);
+			}
+
+			request.getSession().setAttribute("user", user);
+			java.util.Date today = java.util.Calendar.getInstance(
+					java.util.TimeZone.getDefault()).getTime();
+			XFTItem item = XFTItem.NewItem("xdat:user_login", user);
+			item.setProperty("xdat:user_login.user_xdat_user_id", user.getID());
+			item.setProperty("xdat:user_login.login_date", today);
+			item.setProperty("xdat:user_login.ip_address",
+					AccessLogger.GetRequestIp(request));
+			item.setProperty("xdat:user_login.session_id", request.getSession()
+					.getId());
+			SaveItemHelper.authorizedSave(item, null, true, false,
+					EventUtils.DEFAULT_EVENT(user, null));
+
+			request.getSession().setAttribute("XNAT_CSRF",
+					UUID.randomUUID().toString());
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		super.onAuthenticationSuccess(request, response, authentication);
 	}
-    @Override
-    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response){
-        String loginLanding = "/app/template/Index.vm?login=true";
-        String url = getDefaultTargetUrl();
-        if("/".equals(url)){
-            setDefaultTargetUrl(loginLanding);
-            return loginLanding;
-        } else {
-            return super.determineTargetUrl(request, response);
-        }
-    }
+
+	@Override
+	protected String determineTargetUrl(HttpServletRequest request,
+			HttpServletResponse response) {
+		String loginLanding = "/app/template/Index.vm?login=true";
+		String url = getDefaultTargetUrl();
+		if ("/".equals(url)) {
+			setDefaultTargetUrl(loginLanding);
+			return loginLanding;
+		} else {
+			return super.determineTargetUrl(request, response);
+		}
+	}
 }

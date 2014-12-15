@@ -24,45 +24,67 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.SortedSet;
 
-public final class RoutedStudyDicomProjectIdentifier implements DicomProjectIdentifier {
-    private static final ImmutableSortedSet<Integer> tags = ImmutableSortedSet.of();
+public final class RoutedStudyDicomProjectIdentifier implements
+		DicomProjectIdentifier {
+	private static final ImmutableSortedSet<Integer> tags = ImmutableSortedSet
+			.of();
 
-    /* (non-Javadoc)
-     * @see org.nrg.dcm.id.DicomObjectFunction#getTags()
-     */
-    @Override
-    public SortedSet<Integer> getTags() { return tags; }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.dcm.id.DicomObjectFunction#getTags()
+	 */
+	@Override
+	public SortedSet<Integer> getTags() {
+		return tags;
+	}
 
-    /* (non-Javadoc)
-     * @see org.nrg.dcm.id.DicomProjectIdentifier#apply(org.nrg.xdat.security.XDATUser, org.dcm4che2.data.DicomObject)
-     */
-    @Override
-    public XnatProjectdata apply(final XDATUser user, final DicomObject dicom) {
-        final String studyInstanceUid = dicom.getString(Tag.StudyInstanceUID);
-        if (!StringUtils.isBlank(studyInstanceUid)) {
-            Map<String, String> routing = _service.findStudyRouting(studyInstanceUid);
-            if (routing != null) {
-                final XnatProjectdata project = XnatProjectdata.getProjectByIDorAlias(routing.get(StudyRoutingService.PROJECT), user, false);
-                if (project != null) {
-                    if (_log.isDebugEnabled()) {
-                        _log.debug("Found project assignment of " + project.getProject() + " for study instance UID " + studyInstanceUid);
-                    }
-                    return project;
-                } else {
-                    throw new RuntimeException("The study instance UID " + studyInstanceUid + " has a routing assignment for the project ID " + routing.get(StudyRoutingService.PROJECT) + ", but I couldn't find a project with that ID.");
-                }
-            } else if (_log.isDebugEnabled()) {
-                _log.debug("Found no project routing assignment for study instance UID " + studyInstanceUid);
-            }
-        } else if (_log.isWarnEnabled()) {
-            _log.warn("No study instance UID found for DICOM object! That's probably not good.");
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.dcm.id.DicomProjectIdentifier#apply(org.nrg.xdat.security.XDATUser
+	 * , org.dcm4che2.data.DicomObject)
+	 */
+	@Override
+	public XnatProjectdata apply(final XDATUser user, final DicomObject dicom) {
+		final String studyInstanceUid = dicom.getString(Tag.StudyInstanceUID);
+		if (!StringUtils.isBlank(studyInstanceUid)) {
+			Map<String, String> routing = _service
+					.findStudyRouting(studyInstanceUid);
+			if (routing != null) {
+				final XnatProjectdata project = XnatProjectdata
+						.getProjectByIDorAlias(
+								routing.get(StudyRoutingService.PROJECT), user,
+								false);
+				if (project != null) {
+					if (_log.isDebugEnabled()) {
+						_log.debug("Found project assignment of "
+								+ project.getProject()
+								+ " for study instance UID " + studyInstanceUid);
+					}
+					return project;
+				} else {
+					throw new RuntimeException("The study instance UID "
+							+ studyInstanceUid
+							+ " has a routing assignment for the project ID "
+							+ routing.get(StudyRoutingService.PROJECT)
+							+ ", but I couldn't find a project with that ID.");
+				}
+			} else if (_log.isDebugEnabled()) {
+				_log.debug("Found no project routing assignment for study instance UID "
+						+ studyInstanceUid);
+			}
+		} else if (_log.isWarnEnabled()) {
+			_log.warn("No study instance UID found for DICOM object! That's probably not good.");
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    private static final Logger _log = LoggerFactory.getLogger(RoutedStudyDicomProjectIdentifier.class);
+	private static final Logger _log = LoggerFactory
+			.getLogger(RoutedStudyDicomProjectIdentifier.class);
 
-    @Inject
-    private StudyRoutingService _service;
+	@Inject
+	private StudyRoutingService _service;
 }

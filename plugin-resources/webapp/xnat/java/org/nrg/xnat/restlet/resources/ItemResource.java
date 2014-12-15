@@ -18,7 +18,7 @@ public abstract class ItemResource extends SecureResource {
 
 	public ItemResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		
+
 	}
 
 }

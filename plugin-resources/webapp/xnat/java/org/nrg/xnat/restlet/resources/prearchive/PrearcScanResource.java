@@ -52,86 +52,93 @@ public class PrearcScanResource extends PrearcSessionResourceA {
 	static Logger logger = Logger.getLogger(PrearcScanResource.class);
 
 	protected final String scan_id;
-	
+
 	public PrearcScanResource(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		scan_id = (String)getParameter(request,SCAN_ID);
+		scan_id = (String) getParameter(request, SCAN_ID);
 	}
-
 
 	@Override
 	public boolean allowDelete() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean allowGet() {
 		return true;
 	}
-	
+
 	@Override
 	public void handleDelete() {
 		File sessionDIR;
 		File srcXML;
 		try {
 			try {
-				sessionDIR = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
-				srcXML=new File(sessionDIR.getAbsolutePath()+".xml");
+				sessionDIR = PrearcUtils.getPrearcSessionDir(user, project,
+						timestamp, session, false);
+				srcXML = new File(sessionDIR.getAbsolutePath() + ".xml");
 			} catch (InvalidPermissionException e) {
-				logger.error("",e);
-				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,e);
+				logger.error("", e);
+				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e);
 			} catch (Exception e) {
-				logger.error("",e);
+				logger.error("", e);
 				throw new ServerException(e);
 			}
-			
-			if(!srcXML.exists()){
-				throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unable to locate prearc resource.",new Exception());
+
+			if (!srcXML.exists()) {
+				throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,
+						"Unable to locate prearc resource.", new Exception());
 			}
-			
-			final XnatImagesessiondataBean om=PrearcTableBuilder.parseSession(srcXML);
-			
-			final List<XnatImagescandataBean> scans=om.getScans_scan();
-			XnatImagescandataBean scan=null;
-			for(int i=0;i<scans.size();i++){
-				if(StringUtils.equals(scans.get(i).getId(),scan_id)){
-					scan=scans.remove(i);
+
+			final XnatImagesessiondataBean om = PrearcTableBuilder
+					.parseSession(srcXML);
+
+			final List<XnatImagescandataBean> scans = om.getScans_scan();
+			XnatImagescandataBean scan = null;
+			for (int i = 0; i < scans.size(); i++) {
+				if (StringUtils.equals(scans.get(i).getId(), scan_id)) {
+					scan = scans.remove(i);
 					break;
 				}
 			}
-			
-			if(scan==null){
-				throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown scan " + scan_id, new Exception());
-			}else{
-				File scanDir=new File(new File(sessionDIR,"SCANS"),scan_id);
-				if(!scanDir.exists()){
-					throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown scan " + scan_id, new Exception());
-				}else{
+
+			if (scan == null) {
+				throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,
+						"Unknown scan " + scan_id, new Exception());
+			} else {
+				File scanDir = new File(new File(sessionDIR, "SCANS"), scan_id);
+				if (!scanDir.exists()) {
+					throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,
+							"Unknown scan " + scan_id, new Exception());
+				} else {
 					try {
 						FileUtils.MoveToCache(scanDir);
 					} catch (Exception e) {
-						logger.error("",e);
-						PrearcUtils.log(project,timestamp,session, e);
-						throw new ServerException(Status.SERVER_ERROR_INTERNAL,"Failed to delete files.",e);
+						logger.error("", e);
+						PrearcUtils.log(project, timestamp, session, e);
+						throw new ServerException(Status.SERVER_ERROR_INTERNAL,
+								"Failed to delete files.", e);
 					}
-					
-					om.setScans_scan((ArrayList)scans);
-					
-					FileWriter fw=null;
+
+					om.setScans_scan((ArrayList) scans);
+
+					FileWriter fw = null;
 					try {
 						fw = new FileWriter(srcXML);
 						om.toXML(fw);
-						
-						PrearcUtils.log(project,timestamp,session, new Exception("Deleted scan " + scan_id));
+
+						PrearcUtils.log(project, timestamp, session,
+								new Exception("Deleted scan " + scan_id));
 						this.getResponse().setStatus(Status.SUCCESS_OK);
-					}catch (Exception e){
-						logger.error("",e);
-						PrearcUtils.log(project,timestamp,session, e);
-						throw new ServerException(Status.SERVER_ERROR_INTERNAL,"Failed to update session xml.",e);
-					}finally{
+					} catch (Exception e) {
+						logger.error("", e);
+						PrearcUtils.log(project, timestamp, session, e);
+						throw new ServerException(Status.SERVER_ERROR_INTERNAL,
+								"Failed to update session xml.", e);
+					} finally {
 						try {
-							if(fw!=null){
+							if (fw != null) {
 								fw.close();
 							}
 						} catch (IOException e) {
@@ -140,70 +147,78 @@ public class PrearcScanResource extends PrearcSessionResourceA {
 				}
 			}
 		} catch (ClientException e) {
-			this.getResponse().setStatus(e.getStatus(),e);
+			this.getResponse().setStatus(e.getStatus(), e);
 		} catch (ServerException e) {
-			this.getResponse().setStatus(e.getStatus(),e);
+			this.getResponse().setStatus(e.getStatus(), e);
 		} catch (IOException e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 		} catch (SAXException e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 		}
-		
+
 	}
-	
+
 	@Override
-	public Representation represent(final Variant variant) throws ResourceException {
-		final MediaType mt=overrideVariant(variant);
-		
-		if (MediaType.APPLICATION_GNU_ZIP.equals(mt) || MediaType.APPLICATION_ZIP.equals(mt)) {
+	public Representation represent(final Variant variant)
+			throws ResourceException {
+		final MediaType mt = overrideVariant(variant);
+
+		if (MediaType.APPLICATION_GNU_ZIP.equals(mt)
+				|| MediaType.APPLICATION_ZIP.equals(mt)) {
 			try {
 				final File sessionDIR;
 				final File srcXML;
 				try {
-					sessionDIR = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
-					srcXML=new File(sessionDIR.getAbsolutePath()+".xml");
+					sessionDIR = PrearcUtils.getPrearcSessionDir(user, project,
+							timestamp, session, false);
+					srcXML = new File(sessionDIR.getAbsolutePath() + ".xml");
 				} catch (InvalidPermissionException e) {
-					logger.error("",e);
-					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,e);
+					logger.error("", e);
+					throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e);
 				} catch (Exception e) {
-					logger.error("",e);
+					logger.error("", e);
 					throw new ServerException(e);
 				}
-				
-				if(!srcXML.exists()){
-					throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unable to locate prearc resource.",new Exception());
+
+				if (!srcXML.exists()) {
+					throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,
+							"Unable to locate prearc resource.",
+							new Exception());
 				}
-				
-				final XnatImagesessiondataBean session=PrearcTableBuilder.parseSession(srcXML);
-				
-				File scandir=new File(new File(sessionDIR,"SCANS"),scan_id);
-				
+
+				final XnatImagesessiondataBean session = PrearcTableBuilder
+						.parseSession(srcXML);
+
+				File scandir = new File(new File(sessionDIR, "SCANS"), scan_id);
+
 				final ZipRepresentation zip;
-				try{
-					zip = new ZipRepresentation(mt, scandir.getName(),identifyCompression(null));
+				try {
+					zip = new ZipRepresentation(mt, scandir.getName(),
+							identifyCompression(null));
 				} catch (ActionException e) {
-					logger.error("",e);
+					logger.error("", e);
 					this.setResponseStatus(e);
 					return null;
 				}
 				zip.addFolder(scandir.getName(), scandir);
 				return zip;
 			} catch (ClientException e) {
-				this.getResponse().setStatus(e.getStatus(),e);
-			    return null;
+				this.getResponse().setStatus(e.getStatus(), e);
+				return null;
 			} catch (ServerException e) {
-				this.getResponse().setStatus(e.getStatus(),e);
-			    return null;
+				this.getResponse().setStatus(e.getStatus(), e);
+				return null;
 			} catch (IOException e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
-			    return null;
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+				return null;
 			} catch (SAXException e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
-			    return null;
-		    }
-        } else {
-            this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Requested type " + mt + " is not supported");
-            return null;
-        }
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+				return null;
+			}
+		} else {
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Requested type " + mt + " is not supported");
+			return null;
+		}
 	}
 }

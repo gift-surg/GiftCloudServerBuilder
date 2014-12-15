@@ -51,7 +51,8 @@ public class TestXnatImagesessiondataGetManualQC {
 	}
 
 	@Test
-	public void shouldReturnFirstManualQCWhenMultipleAssessors() throws Exception {
+	public void shouldReturnFirstManualQCWhenMultipleAssessors()
+			throws Exception {
 		sessionData.retVal = list();
 		sessionData.retVal.add(new XnatQcmanualassessordata());
 		sessionData.retVal.add(new XnatQcmanualassessordata());
@@ -79,7 +80,8 @@ public class TestXnatImagesessiondataGetManualQC {
 		String elementName;
 
 		@Override
-		public ArrayList<XnatImageassessordata> getMinimalLoadAssessors(String elementName) {
+		public ArrayList<XnatImageassessordata> getMinimalLoadAssessors(
+				String elementName) {
 			this.elementName = elementName;
 			return retVal;
 		}

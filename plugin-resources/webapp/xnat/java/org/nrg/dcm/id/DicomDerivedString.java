@@ -13,5 +13,6 @@ package org.nrg.dcm.id;
 import com.google.common.base.Function;
 import org.dcm4che2.data.DicomObject;
 
-public interface DicomDerivedString extends DicomObjectFunction,Function<DicomObject,String> {
+public interface DicomDerivedString extends DicomObjectFunction,
+		Function<DicomObject, String> {
 }

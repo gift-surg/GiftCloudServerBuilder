@@ -19,7 +19,7 @@ public class QuickSearch extends SecureScreen {
 	@Override
 	protected void doBuildTemplate(RunData data, Context context)
 			throws Exception {
-		
+
 	}
 
 }

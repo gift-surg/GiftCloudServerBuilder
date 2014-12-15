@@ -23,25 +23,27 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 import java.util.Map;
 
-public class ResourcesExptURI extends ResourceURIA implements ArchiveItemURI,ResourceURII,ExperimentURII{
-	private XnatExperimentdata expt=null;
-	
+public class ResourcesExptURI extends ResourceURIA implements ArchiveItemURI,
+		ResourceURII, ExperimentURII {
+	private XnatExperimentdata expt = null;
+
 	public ResourcesExptURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
-	protected void populate(){
-		if(expt==null){
-			
-			final String exptID= (String)props.get(URIManager.EXPT_ID);
-			
-			if(expt==null){
-				expt=XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
+	protected void populate() {
+		if (expt == null) {
+
+			final String exptID = (String) props.get(URIManager.EXPT_ID);
+
+			if (expt == null) {
+				expt = XnatExperimentdata.getXnatExperimentdatasById(exptID,
+						null, false);
 			}
 		}
 	}
-	
-	public XnatExperimentdata getExperiment(){
+
+	public XnatExperimentdata getExperiment() {
 		this.populate();
 		return expt;
 	}
@@ -53,14 +55,15 @@ public class ResourcesExptURI extends ResourceURIA implements ArchiveItemURI,Res
 
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(this.getExperiment()!=null){
-			for(XnatAbstractresourceI res:this.getExperiment().getResources_resource()){
-				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+		if (this.getExperiment() != null) {
+			for (XnatAbstractresourceI res : this.getExperiment()
+					.getResources_resource()) {
+				if (StringUtils.equals(res.getLabel(), this.getResourceLabel())) {
 					return res;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 

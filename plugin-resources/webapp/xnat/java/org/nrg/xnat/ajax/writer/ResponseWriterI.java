@@ -17,9 +17,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public interface  ResponseWriterI {
-	
-	public  void write(XFTTable table,  String title) throws IOException; 
-	
-	public   void setMetaFields(Hashtable<String, ArrayList<String>> meta) ;
+public interface ResponseWriterI {
+
+	public void write(XFTTable table, String title) throws IOException;
+
+	public void setMetaFields(Hashtable<String, ArrayList<String>> meta);
 }

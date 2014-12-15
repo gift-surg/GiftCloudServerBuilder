@@ -45,7 +45,8 @@ public class TestXnatImagescandataGetManualQC {
 		when(scan.session.getManualQC()).thenReturn(assessor);
 
 		qcList = new ArrayList<XnatQcscandataI>();
-		when(assessor.getScans_scan()).thenReturn((List<XnatQcscandataI>) qcList);
+		when(assessor.getScans_scan()).thenReturn(
+				(List<XnatQcscandataI>) qcList);
 	}
 
 	@Test
@@ -64,7 +65,8 @@ public class TestXnatImagescandataGetManualQC {
 
 	@Test
 	public void shouldNotReturnWhenEmptyQCScans() {
-		when(assessor.getScans_scan()).thenReturn(new ArrayList<XnatQcscandataI>());
+		when(assessor.getScans_scan()).thenReturn(
+				new ArrayList<XnatQcscandataI>());
 
 		assertNull(scan.getManualQC());
 	}

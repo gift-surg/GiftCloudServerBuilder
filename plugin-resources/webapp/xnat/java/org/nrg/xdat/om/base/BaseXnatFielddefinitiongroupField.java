@@ -20,35 +20,34 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatFielddefinitiongroupField extends AutoXnatFielddefinitiongroupField {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatFielddefinitiongroupField extends
+		AutoXnatFielddefinitiongroupField {
 
-	public BaseXnatFielddefinitiongroupField(ItemI item)
-	{
+	public BaseXnatFielddefinitiongroupField(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatFielddefinitiongroupField(UserI user)
-	{
+	public BaseXnatFielddefinitiongroupField(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatFielddefinitiongroupField(UserI user)
-	 **/
-	public BaseXnatFielddefinitiongroupField()
-	{}
-
-	public BaseXnatFielddefinitiongroupField(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatFielddefinitiongroupField() {
 	}
 
-    public String getCleanedXMLPath(){
-        String xmlPath = this.getXmlpath();
-        while(xmlPath.indexOf("[")>-1){
-            xmlPath= xmlPath.substring(0,xmlPath.indexOf("[")) + xmlPath.substring(xmlPath.indexOf("]")+1);
-        }
-        return xmlPath;
-    }
+	public BaseXnatFielddefinitiongroupField(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public String getCleanedXMLPath() {
+		String xmlPath = this.getXmlpath();
+		while (xmlPath.indexOf("[") > -1) {
+			xmlPath = xmlPath.substring(0, xmlPath.indexOf("["))
+					+ xmlPath.substring(xmlPath.indexOf("]") + 1);
+		}
+		return xmlPath;
+	}
 }

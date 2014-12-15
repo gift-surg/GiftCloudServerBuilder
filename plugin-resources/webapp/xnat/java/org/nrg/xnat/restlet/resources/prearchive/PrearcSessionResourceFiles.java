@@ -50,22 +50,21 @@ import java.util.List;
 public class PrearcSessionResourceFiles extends PrearcScanResourceList {
 	private static final String RESOURCE_ID = "RESOURCE_ID";
 	private final String resource_id;
-	
+
 	public PrearcSessionResourceFiles(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		resource_id = (String)SecureResource.getParameter(request,RESOURCE_ID);
+		resource_id = (String) SecureResource
+				.getParameter(request, RESOURCE_ID);
 	}
 
-
-	
-	final static ArrayList<String> columns=Lists.newArrayList("Name","Size","URI");
-
+	final static ArrayList<String> columns = Lists.newArrayList("Name", "Size",
+			"URI");
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		final MediaType mt=overrideVariant(variant);
-				
+		final MediaType mt = overrideVariant(variant);
+
 		final PrearcInfo info;
 		try {
 			info = retrieveSessionBean();
@@ -73,58 +72,76 @@ public class PrearcSessionResourceFiles extends PrearcScanResourceList {
 			setResponseStatus(e);
 			return null;
 		}
-		
-		final XnatImagescandataI scan=MergeUtils.getMatchingScanById(scan_id,(List<XnatImagescandataI>)info.session.getScans_scan());
-		
-		if(scan==null){
+
+		final XnatImagescandataI scan = MergeUtils.getMatchingScanById(scan_id,
+				(List<XnatImagescandataI>) info.session.getScans_scan());
+
+		if (scan == null) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
 		}
-		
-		final XnatResourcecatalogI res=(XnatResourcecatalogI)MergeUtils.getMatchingResourceByLabel(resource_id, scan.getFile());
-		
-		if(res==null){
+
+		final XnatResourcecatalogI res = (XnatResourcecatalogI) MergeUtils
+				.getMatchingResourceByLabel(resource_id, scan.getFile());
+
+		if (res == null) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
 		}
-		
-		final String rootPath=CatalogUtils.getCatalogFile(info.session.getPrearchivepath(), ((XnatResourcecatalogI)res)).getParentFile().getAbsolutePath();
-		
-		final CatCatalogI catalog=CatalogUtils.getCleanCatalog(info.session.getPrearchivepath(), res, false);
-		
-		if(StringUtils.isNotEmpty(filepath)){
-			final CatEntryI entry=CatalogUtils.getEntryByURI(catalog, filepath);
-			File f= CatalogUtils.getFile(entry, rootPath);
-			
-            if (mt.equals(MediaType.IMAGE_JPEG) && StringUtils.equals(resource_id, "DICOM") && Dcm2Jpg.isDicom(f)) {
-                try {
-                    return new InputRepresentation(new ByteArrayInputStream(Dcm2Jpg.convert(f)), mt);
-                } catch (IOException e) {
-                    getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to convert this file to jpeg : " + e.getMessage());
-                    return new StringRepresentation("");
-                }
-            }
-            
-			return representFile(f,mt);
-		}else{
-			boolean prettyPrint=this.isQueryVariableTrue("prettyPrint");
-			
-			final XFTTable table=new XFTTable();
-	        table.initTable(columns);
-	        for (final CatEntryI entry: CatalogUtils.getEntriesByFilter(catalog,null)) {
-	        	File f=CatalogUtils.getFile(entry, rootPath);
-	        	Object[] oarray = new Object[] { f.getName(), (prettyPrint)?CatalogUtils.formatSize(f.length()):f.length(), constructURI(entry.getUri())};
-	        	table.insertRow(oarray);
-	        }
-	        
-	        return representTable(table, mt, new Hashtable<String,Object>());
+
+		final String rootPath = CatalogUtils
+				.getCatalogFile(info.session.getPrearchivepath(),
+						((XnatResourcecatalogI) res)).getParentFile()
+				.getAbsolutePath();
+
+		final CatCatalogI catalog = CatalogUtils.getCleanCatalog(
+				info.session.getPrearchivepath(), res, false);
+
+		if (StringUtils.isNotEmpty(filepath)) {
+			final CatEntryI entry = CatalogUtils.getEntryByURI(catalog,
+					filepath);
+			File f = CatalogUtils.getFile(entry, rootPath);
+
+			if (mt.equals(MediaType.IMAGE_JPEG)
+					&& StringUtils.equals(resource_id, "DICOM")
+					&& Dcm2Jpg.isDicom(f)) {
+				try {
+					return new InputRepresentation(new ByteArrayInputStream(
+							Dcm2Jpg.convert(f)), mt);
+				} catch (IOException e) {
+					getResponse().setStatus(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Unable to convert this file to jpeg : "
+									+ e.getMessage());
+					return new StringRepresentation("");
+				}
+			}
+
+			return representFile(f, mt);
+		} else {
+			boolean prettyPrint = this.isQueryVariableTrue("prettyPrint");
+
+			final XFTTable table = new XFTTable();
+			table.initTable(columns);
+			for (final CatEntryI entry : CatalogUtils.getEntriesByFilter(
+					catalog, null)) {
+				File f = CatalogUtils.getFile(entry, rootPath);
+				Object[] oarray = new Object[] {
+						f.getName(),
+						(prettyPrint) ? CatalogUtils.formatSize(f.length()) : f
+								.length(), constructURI(entry.getUri()) };
+				table.insertRow(oarray);
+			}
+
+			return representTable(table, mt, new Hashtable<String, Object>());
 		}
-        
+
 	}
-			
-    private String constructURI(String resource) {
-    	String requestPart = this.getHttpServletRequest().getServletPath() + this.getHttpServletRequest().getPathInfo();
-    	return requestPart + "/" + resource;
-    	
-    }
+
+	private String constructURI(String resource) {
+		String requestPart = this.getHttpServletRequest().getServletPath()
+				+ this.getHttpServletRequest().getPathInfo();
+		return requestPart + "/" + resource;
+
+	}
 }

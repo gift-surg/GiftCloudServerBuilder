@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseArcPipelineparameterdata extends AutoArcPipelineparameterdata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseArcPipelineparameterdata extends
+		AutoArcPipelineparameterdata {
 
-	public BaseArcPipelineparameterdata(ItemI item)
-	{
+	public BaseArcPipelineparameterdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcPipelineparameterdata(UserI user)
-	{
+	public BaseArcPipelineparameterdata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcPipelineparameterdata(UserI user)
-	 **/
-	public BaseArcPipelineparameterdata()
-	{}
+	 */
+	public BaseArcPipelineparameterdata() {
+	}
 
-	public BaseArcPipelineparameterdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseArcPipelineparameterdata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

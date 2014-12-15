@@ -23,38 +23,43 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
  *
  */
 public class XDATScreen_report_xnat_mrSessionData extends SecureReport {
-	static Logger logger = Logger.getLogger(XDATScreen_report_xnat_mrSessionData.class);
+	static Logger logger = Logger
+			.getLogger(XDATScreen_report_xnat_mrSessionData.class);
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        try {
-            XnatMrsessiondata mr = new XnatMrsessiondata(item);
-            context.put("mr",mr);
-            
-            
-            context.put("workflows",mr.getWorkflows());
-            
-            if(context.get("project")==null){
-            	context.put("project", mr.getProject());
-            }
-            
-            for(XnatImagescandataI scan:mr.getSortedScans()){
-            	((XnatImagescandata)scan).setImageSessionData(mr);
-            }
-        } catch (Exception e) {
-            logger.error("",e);
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+		try {
+			XnatMrsessiondata mr = new XnatMrsessiondata(item);
+			context.put("mr", mr);
 
-    
-    /**
-     * Return null to use the defualt settings (which are configured in xdat:element_security).  Otherwise, true will force a pre-load of the item.
-     * @return
-     */
-    public Boolean preLoad()
-    {
-        return Boolean.FALSE;
-    }
+			context.put("workflows", mr.getWorkflows());
+
+			if (context.get("project") == null) {
+				context.put("project", mr.getProject());
+			}
+
+			for (XnatImagescandataI scan : mr.getSortedScans()) {
+				((XnatImagescandata) scan).setImageSessionData(mr);
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
+
+	/**
+	 * Return null to use the defualt settings (which are configured in
+	 * xdat:element_security). Otherwise, true will force a pre-load of the
+	 * item.
+	 * 
+	 * @return
+	 */
+	public Boolean preLoad() {
+		return Boolean.FALSE;
+	}
 }

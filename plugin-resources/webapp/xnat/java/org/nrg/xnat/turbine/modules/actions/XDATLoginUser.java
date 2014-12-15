@@ -21,40 +21,47 @@ import org.nrg.xdat.turbine.utils.TurbineUtils;
 public class XDATLoginUser extends
 		org.nrg.xdat.turbine.modules.actions.XDATLoginUser {
 
-	
-	public void doRedirect(RunData data, Context context,XDATUser user) throws Exception{
-		String nextPage = (String)TurbineUtils.GetPassedParameter("nextPage",data);
-		String nextAction = (String)TurbineUtils.GetPassedParameter("nextAction",data);
-		String par = (String)TurbineUtils.GetPassedParameter("par",data);
-		String rest = (String)TurbineUtils.GetPassedParameter("rest_uri",data);
+	public void doRedirect(RunData data, Context context, XDATUser user)
+			throws Exception {
+		String nextPage = (String) TurbineUtils.GetPassedParameter("nextPage",
+				data);
+		String nextAction = (String) TurbineUtils.GetPassedParameter(
+				"nextAction", data);
+		String par = (String) TurbineUtils.GetPassedParameter("par", data);
+		String rest = (String) TurbineUtils
+				.GetPassedParameter("rest_uri", data);
 		/*
-		 * If the setPage("template.vm") method has not
-		 * been used in the template to authenticate the
-		 * user (usually Login.vm), then the user will
-		 * be forwarded to the template that is specified
-		 * by the "template.home" property as listed in
-		 * TR.props for the webapp.
+		 * If the setPage("template.vm") method has not been used in the
+		 * template to authenticate the user (usually Login.vm), then the user
+		 * will be forwarded to the template that is specified by the
+		 * "template.home" property as listed in TR.props for the webapp.
 		 */
-		 if (!StringUtils.isEmpty(nextAction) && nextAction.indexOf("XDATLoginUser")==-1 && !nextAction.equals(org.apache.turbine.Turbine.getConfiguration().getString("action.login"))){
+		if (!StringUtils.isEmpty(nextAction)
+				&& nextAction.indexOf("XDATLoginUser") == -1
+				&& !nextAction.equals(org.apache.turbine.Turbine
+						.getConfiguration().getString("action.login"))) {
 			data.setAction(nextAction);
-            VelocityAction action = (VelocityAction) ActionLoader.getInstance().getInstance(nextAction);
-            action.doPerform(data, context);
-		 }else if (!StringUtils.isEmpty(par)){
-	         	AcceptProjectAccess action = new AcceptProjectAccess();
-	         	context.put("user", user);
-	         	action.doPerform(data, context);
-		 }else if (!StringUtils.isEmpty(rest)){
-	         	data.setRedirectURI(rest);
-	         	data.setStatusCode(302);
-	         	return;
-		 }else if (!StringUtils.isEmpty(nextPage) && !nextPage.equals(org.apache.turbine.Turbine.getConfiguration().getString("template.home")) ) {
+			VelocityAction action = (VelocityAction) ActionLoader.getInstance()
+					.getInstance(nextAction);
+			action.doPerform(data, context);
+		} else if (!StringUtils.isEmpty(par)) {
+			AcceptProjectAccess action = new AcceptProjectAccess();
+			context.put("user", user);
+			action.doPerform(data, context);
+		} else if (!StringUtils.isEmpty(rest)) {
+			data.setRedirectURI(rest);
+			data.setStatusCode(302);
+			return;
+		} else if (!StringUtils.isEmpty(nextPage)
+				&& !nextPage.equals(org.apache.turbine.Turbine
+						.getConfiguration().getString("template.home"))) {
 			data.setScreenTemplate(nextPage);
-		 }
+		}
 
-         if (data.getScreenTemplate().indexOf("Error.vm")!=-1)
-         {
-             data.setMessage("<b>Previous session expired.</b><br>If you have bookmarked this page, please redirect your bookmark to: " + TurbineUtils.GetFullServerPath());
-             data.setScreenTemplate("Index.vm");
-         }
+		if (data.getScreenTemplate().indexOf("Error.vm") != -1) {
+			data.setMessage("<b>Previous session expired.</b><br>If you have bookmarked this page, please redirect your bookmark to: "
+					+ TurbineUtils.GetFullServerPath());
+			data.setScreenTemplate("Index.vm");
+		}
 	}
 }

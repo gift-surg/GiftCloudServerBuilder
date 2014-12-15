@@ -25,46 +25,58 @@ import org.nrg.xft.XFTItem;
  */
 public class XDATScreen_edit_xnat_subjectData extends EditScreenA {
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#getElementName()
-     */
-    public String getElementName() {
-        return "xnat:subjectData";
-    }
-    
-    public ItemI getEmptyItem(RunData data) throws Exception
-	{
-	    String s = getElementName();
-		ItemI temp =  XFTItem.NewItem(s,TurbineUtils.getUser(data));
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#getElementName()
+	 */
+	public String getElementName() {
+		return "xnat:subjectData";
+	}
+
+	public ItemI getEmptyItem(RunData data) throws Exception {
+		String s = getElementName();
+		ItemI temp = XFTItem.NewItem(s, TurbineUtils.getUser(data));
 		return temp;
 	}
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        try {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.EditScreenA#finalProcessing(org.
+	 * apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+		try {
 
-            XnatSubjectdata subject = new XnatSubjectdata(item);
-            context.put("subject",subject);
-            if (TurbineUtils.HasPassedParameter("destination", data)){
-                context.put("destination", TurbineUtils.GetPassedParameter("destination", data));
-            }
-            
-            if (subject.getProperty("ID")==null)
-            {
-		context.put("page_title", "Enter a new "
-			+ DisplayManager.GetInstance().getSingularDisplayNameForSubject().toLowerCase());
-            }else{
-		context.put("page_title", "Edit an existing "
-			+ DisplayManager.GetInstance().getSingularDisplayNameForSubject().toLowerCase());
-            }
-            
-            if (((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data))!=null){
-                context.put("project", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data)));
-            }
-        } catch (Exception e) {
-        }
-    }
+			XnatSubjectdata subject = new XnatSubjectdata(item);
+			context.put("subject", subject);
+			if (TurbineUtils.HasPassedParameter("destination", data)) {
+				context.put("destination",
+						TurbineUtils.GetPassedParameter("destination", data));
+			}
+
+			if (subject.getProperty("ID") == null) {
+				context.put("page_title", "Enter a new "
+						+ DisplayManager.GetInstance()
+								.getSingularDisplayNameForSubject()
+								.toLowerCase());
+			} else {
+				context.put("page_title", "Edit an existing "
+						+ DisplayManager.GetInstance()
+								.getSingularDisplayNameForSubject()
+								.toLowerCase());
+			}
+
+			if (((String) org.nrg.xdat.turbine.utils.TurbineUtils
+					.GetPassedParameter("project", data)) != null) {
+				context.put("project",
+						((String) org.nrg.xdat.turbine.utils.TurbineUtils
+								.GetPassedParameter("project", data)));
+			}
+		} catch (Exception e) {
+		}
+	}
 
 }

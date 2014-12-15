@@ -14,5 +14,5 @@ import org.nrg.framework.orm.hibernate.BaseHibernateService;
 import org.nrg.user.entities.User;
 
 public interface UserService extends BaseHibernateService<User> {
-    abstract public User getUserByName(String name);
+	abstract public User getUserByName(String name);
 }

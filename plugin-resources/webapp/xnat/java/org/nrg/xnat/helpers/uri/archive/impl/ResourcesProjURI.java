@@ -22,20 +22,22 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 import java.util.Map;
 
-public class ResourcesProjURI extends ResourceURIA implements ArchiveItemURI,ResourceURII,ProjectURII{
+public class ResourcesProjURI extends ResourceURIA implements ArchiveItemURI,
+		ResourceURII, ProjectURII {
 	private XnatProjectdata project = null;
-	
+
 	public ResourcesProjURI(final Map<String, Object> props, final String uri) {
 		super(props, uri);
 	}
 
-	protected void populateProject(){
-		if(project==null){
-			project=XnatProjectdata.getProjectByIDorAlias(props.get(URIManager.PROJECT_ID).toString(), null, false);
+	protected void populateProject() {
+		if (project == null) {
+			project = XnatProjectdata.getProjectByIDorAlias(
+					props.get(URIManager.PROJECT_ID).toString(), null, false);
 		}
 	}
-	
-	public XnatProjectdata getProject(){
+
+	public XnatProjectdata getProject() {
 		this.populateProject();
 		return project;
 	}
@@ -45,17 +47,17 @@ public class ResourcesProjURI extends ResourceURIA implements ArchiveItemURI,Res
 		return getProject();
 	}
 
-
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(this.getProject()!=null){
-			for(XnatAbstractresourceI res:this.getProject().getResources_resource()){
-				if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+		if (this.getProject() != null) {
+			for (XnatAbstractresourceI res : this.getProject()
+					.getResources_resource()) {
+				if (StringUtils.equals(res.getLabel(), this.getResourceLabel())) {
 					return res;
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

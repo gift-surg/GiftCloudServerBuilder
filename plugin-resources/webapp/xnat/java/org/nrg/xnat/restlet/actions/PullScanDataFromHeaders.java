@@ -33,97 +33,112 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.Callable;
 
-
 /**
  * @author Timothy R. Olsen <olsent@wustl.edu>
  *
  */
 public class PullScanDataFromHeaders implements Callable<Boolean> {
 	static Logger logger = Logger.getLogger(PullScanDataFromHeaders.class);
-	
+
 	private final XnatImagescandata tempMR;
 	private final XDATUser user;
-	private final boolean allowDataDeletion,isInPrearchive;
+	private final boolean allowDataDeletion, isInPrearchive;
 	private final EventMetaI c;
-	
-	public PullScanDataFromHeaders(final XnatImagescandata scan, final XDATUser user, boolean allowDataDeletion,boolean isInPrearchive,EventMetaI c){
-		this.tempMR=scan;
-		this.user=user;
-		this.allowDataDeletion=allowDataDeletion;
-		this.isInPrearchive=isInPrearchive;
-		this.c=c;
+
+	public PullScanDataFromHeaders(final XnatImagescandata scan,
+			final XDATUser user, boolean allowDataDeletion,
+			boolean isInPrearchive, EventMetaI c) {
+		this.tempMR = scan;
+		this.user = user;
+		this.allowDataDeletion = allowDataDeletion;
+		this.isInPrearchive = isInPrearchive;
+		this.c = c;
 	}
 
 	/**
-	 * This method will pull header values from DICOM (or ECAT) and update the scan xml accordingly.  It assumes the files are already in the archive and properly referenced from the session xml.  This would usually be run after you've added the files via the REST API.
-	 * WARNINGS: 
-	 *    This method will not update session level parameters
-	 *    This method will fail if the scan directory contains more than one scan or session.
+	 * This method will pull header values from DICOM (or ECAT) and update the
+	 * scan xml accordingly. It assumes the files are already in the archive and
+	 * properly referenced from the session xml. This would usually be run after
+	 * you've added the files via the REST API. WARNINGS: This method will not
+	 * update session level parameters This method will fail if the scan
+	 * directory contains more than one scan or session.
 	 * 
-	 * @throws IOException: Error accessing files
-	 * @throws SAXException: Error parsing generated xml
+	 * @throws IOException
+	 *             : Error accessing files
+	 * @throws SAXException
+	 *             : Error parsing generated xml
 	 * @throws MultipleSessionException
 	 * @throws MultipleScanException
-     * @throws ValidationException: Scan invalid according to schema requirements (including xdat tags)
+	 * @throws ValidationException
+	 *             : Scan invalid according to schema requirements (including
+	 *             xdat tags)
 	 * @throws Exception
 	 */
-	public Boolean call() throws IOException,SAXException,MultipleScanException,ValidationException,Exception{
-		final File scanDir=new File(tempMR.deriveScanDir());
-        
-		//build timestamped file for SessionBuilder output.
-		final String timestamp=(new java.text.SimpleDateFormat(XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar.getInstance().getTime());
-		final File xml= new File(scanDir,tempMR.getId()+ "_"+ timestamp+".xml");
-		
-		//run DICOM builder
-		final XNATSessionBuilder builder= new XNATSessionBuilder(scanDir,xml,tempMR.getImageSessionData().getProject(),isInPrearchive);
+	public Boolean call() throws IOException, SAXException,
+			MultipleScanException, ValidationException, Exception {
+		final File scanDir = new File(tempMR.deriveScanDir());
+
+		// build timestamped file for SessionBuilder output.
+		final String timestamp = (new java.text.SimpleDateFormat(
+				XNATRestConstants.PREARCHIVE_TIMESTAMP)).format(Calendar
+				.getInstance().getTime());
+		final File xml = new File(scanDir, tempMR.getId() + "_" + timestamp
+				+ ".xml");
+
+		// run DICOM builder
+		final XNATSessionBuilder builder = new XNATSessionBuilder(scanDir, xml,
+				tempMR.getImageSessionData().getProject(), isInPrearchive);
 		builder.call();
-		
-	    if(!xml.exists() || xml.length()==0){
-	    	new Exception("Unable to locate DICOM or ECAT files");
-	    }
-	    
-		final SAXReader reader = new SAXReader(user);
-		final XFTItem temp2 = reader.parse(xml.getAbsolutePath());
-		final XnatImagesessiondata newmr = (XnatImagesessiondata)BaseElement.GetGeneratedItem(temp2);
-        XnatImagescandata newscan=null;
-        
-		
-    	if(newmr.getScans_scan().size()>1){
-    		throw new MultipleScanException();
-    	}else{
-    		newscan=(XnatImagescandata)newmr.getScans_scan().get(0);
-    	}
-             
-        newscan.copyValuesFrom(tempMR);
-        newscan.setImageSessionId(tempMR.getImageSessionId());
-        newscan.setId(tempMR.getId());
-        newscan.setXnatImagescandataId(tempMR.getXnatImagescandataId());
-    	
-	    if(!allowDataDeletion){
-    		while(newscan.getFile().size()>0)newscan.removeFile(0);
+
+		if (!xml.exists() || xml.length() == 0) {
+			new Exception("Unable to locate DICOM or ECAT files");
 		}
 
-        final ValidationResults vr = newmr.validate();        
-        
-        if (vr != null && !vr.isValid())
-        {
-            throw new ValidationException(vr.toString());
-        }else{
-        	final XnatImagesessiondata mr=tempMR.getImageSessionData();
-        	final XnatProjectdata proj = mr.getProjectData();
-        	if(SaveItemHelper.authorizedSave(newscan,user,false,allowDataDeletion,c)){
+		final SAXReader reader = new SAXReader(user);
+		final XFTItem temp2 = reader.parse(xml.getAbsolutePath());
+		final XnatImagesessiondata newmr = (XnatImagesessiondata) BaseElement
+				.GetGeneratedItem(temp2);
+		XnatImagescandata newscan = null;
+
+		if (newmr.getScans_scan().size() > 1) {
+			throw new MultipleScanException();
+		} else {
+			newscan = (XnatImagescandata) newmr.getScans_scan().get(0);
+		}
+
+		newscan.copyValuesFrom(tempMR);
+		newscan.setImageSessionId(tempMR.getImageSessionId());
+		newscan.setId(tempMR.getId());
+		newscan.setXnatImagescandataId(tempMR.getXnatImagescandataId());
+
+		if (!allowDataDeletion) {
+			while (newscan.getFile().size() > 0)
+				newscan.removeFile(0);
+		}
+
+		final ValidationResults vr = newmr.validate();
+
+		if (vr != null && !vr.isValid()) {
+			throw new ValidationException(vr.toString());
+		} else {
+			final XnatImagesessiondata mr = tempMR.getImageSessionData();
+			final XnatProjectdata proj = mr.getProjectData();
+			if (SaveItemHelper.authorizedSave(newscan, user, false,
+					allowDataDeletion, c)) {
 				try {
-				MaterializedView.DeleteByUser(user);
+					MaterializedView.DeleteByUser(user);
 
-				if(proj.getArcSpecification().getQuarantineCode()!=null && proj.getArcSpecification().getQuarantineCode().equals(1)){
-					mr.quarantine(user);
-				}
-					} catch (Exception e) {
-						logger.error("",e);
+					if (proj.getArcSpecification().getQuarantineCode() != null
+							&& proj.getArcSpecification().getQuarantineCode()
+									.equals(1)) {
+						mr.quarantine(user);
 					}
+				} catch (Exception e) {
+					logger.error("", e);
+				}
 			}
-        }
+		}
 
-        return Boolean.TRUE;
+		return Boolean.TRUE;
 	}
 }

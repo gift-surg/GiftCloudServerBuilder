@@ -20,7 +20,6 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
  */
 public class ViewerHelp extends SecureScreen {
 
-	public void doBuildTemplate(RunData data, Context context)
-	{
+	public void doBuildTemplate(RunData data, Context context) {
 	}
 }

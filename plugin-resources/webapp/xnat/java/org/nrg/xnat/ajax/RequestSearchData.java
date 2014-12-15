@@ -44,187 +44,190 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 public class RequestSearchData {
-    static org.apache.log4j.Logger logger = Logger.getLogger(RequestSearchData.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(RequestSearchData.class);
 
-    public void init(HttpServletRequest req, HttpServletResponse response,ServletConfig sc) throws IOException{
-        String xmlString = req.getParameter("search");
-        
-        HttpSession session = req.getSession();
-        XDATUser user = XDAT.getUserDetails();    
+	public void init(HttpServletRequest req, HttpServletResponse response,
+			ServletConfig sc) throws IOException {
+		String xmlString = req.getParameter("search");
 
-        if (user!=null){
-            StringReader sr = new StringReader(xmlString);
-            InputSource is = new InputSource(sr);
-            
-            RunDataService rundataService = null;
-            rundataService = TurbineRunDataFacade.getService();
-            try {
-                if (rundataService == null)
-                {
-                    throw new TurbineException(
-                            "No RunData Service configured!");
-                }
-                RunData data = rundataService.getRunData(req, response, sc);
-                Context context = TurbineVelocity.getContext(data);
+		HttpSession session = req.getSession();
+		XDATUser user = XDAT.getUserDetails();
 
-                String isNew =req.getParameter("isNew");
+		if (user != null) {
+			StringReader sr = new StringReader(xmlString);
+			InputSource is = new InputSource(sr);
 
-                boolean successful=false;
-                SAXReader reader = new SAXReader(user);
-                XFTItem item = reader.parse(is);
-                XdatStoredSearch search = new XdatStoredSearch(item);
-                
-                if(!user.canQuery(search.getRootElementName())){
-                    return;
-    			}
-                
-                DisplaySearch ds=null;
-                if (isNew!=null)
-                {
-                    ds = search.getDisplaySearch(user);
-                }else{
-                    ds = (DisplaySearch)session.getAttribute(search.getId() + "DS");
-                    if (ds==null){
-                        ds = search.getDisplaySearch(user);
-                    }
-                }
+			RunDataService rundataService = null;
+			rundataService = TurbineRunDataFacade.getService();
+			try {
+				if (rundataService == null) {
+					throw new TurbineException("No RunData Service configured!");
+				}
+				RunData data = rundataService.getRunData(req, response, sc);
+				Context context = TurbineVelocity.getContext(data);
 
-                String sortBy = req.getParameter("sortBy");
-                String sortOrder = req.getParameter("sortOrder");
-                if (sortBy != null){
-                    ds.setSortBy(sortBy);
-                    if(sortOrder != null)
-                    {
-                        ds.setSortOrder(sortOrder);
-                    }
-                }
-                
-                CookieParser cp = data.getCookies();
-                
-                Integer numToDisplay = null;
-                String num =req.getParameter("rows");
-                if (num!=null){
-                    numToDisplay=Integer.valueOf(num);
-                    if (cp.getIntObject("numToDisplay")!=null && numToDisplay.equals(cp.getIntObject("numToDisplay"))){
-                        numToDisplay=null;
-                    }
-                }                               
-                
-                if (numToDisplay != null)
-                {
-                    org.apache.turbine.util.uri.TurbineURI dui = new org.apache.turbine.util.uri.TurbineURI(data, "/");
-                    dui.removePathInfo();
-                    dui.setScriptName("/");
-                    cp.setCookiePath(dui);
-                    cp.set("numToDisplay", numToDisplay.toString(), 60*60*24*365);
-                }else
-                {
-                    if (cp.containsKey("numToDisplay"))
-                    {
-                        numToDisplay = cp.getIntObject("numToDisplay");
-                    }else{
-                        numToDisplay = new Integer(40);
-                    }
-                }
+				String isNew = req.getParameter("isNew");
 
-                ds.setRowsPerPage(numToDisplay.intValue());
-                ds.setPagingOn(true);
-                
-                try {
-                    ds.execute(new HTMLPresenter(TurbineUtils.GetContext(),false),TurbineUtils.getUser(data).getLogin());
-                    StringBuffer sb = new StringBuffer();
-                    sb.append("<results ");
-                    sb.append(" numPages=\"" + ds.getPages() +"\"");
-                    sb.append(" currentPage=\"" + ds.getCurrentPageNum() +"\"");
-                    sb.append(" totalRecords=\"" + ds.getNumRows() +"\"");
-                    sb.append(" numToDisplay=\"" + ds.getRowsPerPage() +"\"");
-                    sb.append(">");
-                   
-                    session.setAttribute(search.getId()+"DS", ds);
-                    
-                    sb.append("</results>");
+				boolean successful = false;
+				SAXReader reader = new SAXReader(user);
+				XFTItem item = reader.parse(is);
+				XdatStoredSearch search = new XdatStoredSearch(item);
 
-                    response.setContentType("text/xml");
-                    response.setHeader("Cache-Control", "no-cache");
-                    response.getWriter().write(sb.toString());
-                } catch (XFTInitException e) {
-                    logger.error("",e);
-                } catch (ElementNotFoundException e) {
-                    logger.error("",e);
-                } catch (DBPoolException e) {
-                    logger.error("",e);
-                } catch (SQLException e) {
-                    logger.error("",e);
-                } catch (IllegalAccessException e) {
-                    logger.error("",e);
-                } catch (Exception e) {
-                    logger.error("",e);
-                }
-            } catch (Throwable e) {
-                logger.error("",e);
-            }
-        }
-        
-        //System.out.print("Monitor Progress " + uploadID + "... ");
-    }
-    
+				if (!user.canQuery(search.getRootElementName())) {
+					return;
+				}
 
-    public void loadPage(HttpServletRequest req, HttpServletResponse response,ServletConfig sc) throws IOException{
-        String id = req.getParameter("search");
-        String pageS = req.getParameter("page");
-        
-        Integer page = null;
-        try {
-            page = Integer.parseInt(pageS);
-        } catch (NumberFormatException e1) {
-            logger.error("",e1);
-            page=new Integer(0);
-        }
-        
-        
-        HttpSession session = req.getSession();
-        XDATUser user = XDAT.getUserDetails();
-        
-        if (user!=null){
-            
-            RunDataService rundataService = null;
-            rundataService = TurbineRunDataFacade.getService();
-            try {
-                if (rundataService == null)
-                {
-                    throw new TurbineException(
-                            "No RunData Service configured!");
-                }
-                RunData data = rundataService.getRunData(req, response, sc);
-                Context context = TurbineVelocity.getContext(data);
-                
-                StringBuffer sb = new StringBuffer();
-                DisplaySearch ds = (DisplaySearch)session.getAttribute(id + "DS");
-                if (ds!=null){
-                    XFTTableI table = ds.getPage(page, new HTMLPresenter(TurbineUtils.GetContext(),false), user.getLogin());
+				DisplaySearch ds = null;
+				if (isNew != null) {
+					ds = search.getDisplaySearch(user);
+				} else {
+					ds = (DisplaySearch) session.getAttribute(search.getId()
+							+ "DS");
+					if (ds == null) {
+						ds = search.getDisplaySearch(user);
+					}
+				}
 
-                    if (table.size()>0){
-                        Hashtable tableProps = new Hashtable();
-                        tableProps.put("class","dataTable"); 
-//                        tableProps.put("bgColor","white"); 
-//                        tableProps.put("border","0"); 
-                        tableProps.put("cellPadding","0"); 
-                        tableProps.put("cellSpacing","0"); 
-//                        tableProps.put("width","95%"); 
-                        String tableS = table.toHTML(false,null,null,tableProps,(ds.getCurrentPageNum() * ds.getRowsPerPage())+ 1);
-                        sb.append(tableS);
-                    }
-                }
-                
-                response.setContentType("text/html");
-                response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write(sb.toString());
+				String sortBy = req.getParameter("sortBy");
+				String sortOrder = req.getParameter("sortOrder");
+				if (sortBy != null) {
+					ds.setSortBy(sortBy);
+					if (sortOrder != null) {
+						ds.setSortOrder(sortOrder);
+					}
+				}
 
-            } catch (Throwable e) {
-                logger.error("",e);
-            }
-        }
-        
-        //System.out.print("Monitor Progress " + uploadID + "... ");
-    }
+				CookieParser cp = data.getCookies();
+
+				Integer numToDisplay = null;
+				String num = req.getParameter("rows");
+				if (num != null) {
+					numToDisplay = Integer.valueOf(num);
+					if (cp.getIntObject("numToDisplay") != null
+							&& numToDisplay.equals(cp
+									.getIntObject("numToDisplay"))) {
+						numToDisplay = null;
+					}
+				}
+
+				if (numToDisplay != null) {
+					org.apache.turbine.util.uri.TurbineURI dui = new org.apache.turbine.util.uri.TurbineURI(
+							data, "/");
+					dui.removePathInfo();
+					dui.setScriptName("/");
+					cp.setCookiePath(dui);
+					cp.set("numToDisplay", numToDisplay.toString(),
+							60 * 60 * 24 * 365);
+				} else {
+					if (cp.containsKey("numToDisplay")) {
+						numToDisplay = cp.getIntObject("numToDisplay");
+					} else {
+						numToDisplay = new Integer(40);
+					}
+				}
+
+				ds.setRowsPerPage(numToDisplay.intValue());
+				ds.setPagingOn(true);
+
+				try {
+					ds.execute(new HTMLPresenter(TurbineUtils.GetContext(),
+							false), TurbineUtils.getUser(data).getLogin());
+					StringBuffer sb = new StringBuffer();
+					sb.append("<results ");
+					sb.append(" numPages=\"" + ds.getPages() + "\"");
+					sb.append(" currentPage=\"" + ds.getCurrentPageNum() + "\"");
+					sb.append(" totalRecords=\"" + ds.getNumRows() + "\"");
+					sb.append(" numToDisplay=\"" + ds.getRowsPerPage() + "\"");
+					sb.append(">");
+
+					session.setAttribute(search.getId() + "DS", ds);
+
+					sb.append("</results>");
+
+					response.setContentType("text/xml");
+					response.setHeader("Cache-Control", "no-cache");
+					response.getWriter().write(sb.toString());
+				} catch (XFTInitException e) {
+					logger.error("", e);
+				} catch (ElementNotFoundException e) {
+					logger.error("", e);
+				} catch (DBPoolException e) {
+					logger.error("", e);
+				} catch (SQLException e) {
+					logger.error("", e);
+				} catch (IllegalAccessException e) {
+					logger.error("", e);
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			} catch (Throwable e) {
+				logger.error("", e);
+			}
+		}
+
+		// System.out.print("Monitor Progress " + uploadID + "... ");
+	}
+
+	public void loadPage(HttpServletRequest req, HttpServletResponse response,
+			ServletConfig sc) throws IOException {
+		String id = req.getParameter("search");
+		String pageS = req.getParameter("page");
+
+		Integer page = null;
+		try {
+			page = Integer.parseInt(pageS);
+		} catch (NumberFormatException e1) {
+			logger.error("", e1);
+			page = new Integer(0);
+		}
+
+		HttpSession session = req.getSession();
+		XDATUser user = XDAT.getUserDetails();
+
+		if (user != null) {
+
+			RunDataService rundataService = null;
+			rundataService = TurbineRunDataFacade.getService();
+			try {
+				if (rundataService == null) {
+					throw new TurbineException("No RunData Service configured!");
+				}
+				RunData data = rundataService.getRunData(req, response, sc);
+				Context context = TurbineVelocity.getContext(data);
+
+				StringBuffer sb = new StringBuffer();
+				DisplaySearch ds = (DisplaySearch) session.getAttribute(id
+						+ "DS");
+				if (ds != null) {
+					XFTTableI table = ds.getPage(page, new HTMLPresenter(
+							TurbineUtils.GetContext(), false), user.getLogin());
+
+					if (table.size() > 0) {
+						Hashtable tableProps = new Hashtable();
+						tableProps.put("class", "dataTable");
+						// tableProps.put("bgColor","white");
+						// tableProps.put("border","0");
+						tableProps.put("cellPadding", "0");
+						tableProps.put("cellSpacing", "0");
+						// tableProps.put("width","95%");
+						String tableS = table
+								.toHTML(false, null, null, tableProps, (ds
+										.getCurrentPageNum() * ds
+										.getRowsPerPage()) + 1);
+						sb.append(tableS);
+					}
+				}
+
+				response.setContentType("text/html");
+				response.setHeader("Cache-Control", "no-cache");
+				response.getWriter().write(sb.toString());
+
+			} catch (Throwable e) {
+				logger.error("", e);
+			}
+		}
+
+		// System.out.print("Monitor Progress " + uploadID + "... ");
+	}
 }

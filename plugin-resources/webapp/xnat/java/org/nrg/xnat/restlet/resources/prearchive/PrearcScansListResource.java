@@ -26,25 +26,25 @@ import java.util.Hashtable;
 
 public class PrearcScansListResource extends PrearcSessionResourceA {
 	static Logger logger = Logger.getLogger(PrearcScansListResource.class);
-	
+
 	public PrearcScansListResource(Context context, Request request,
 			Response response) {
 		super(context, request, response);
 	}
-	
-	final static ArrayList<String> columns=new ArrayList<String>(){
+
+	final static ArrayList<String> columns = new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{
-		add("ID");
-		add("xsiType");
-		add("series_description");
-	}};
+		{
+			add("ID");
+			add("xsiType");
+			add("series_description");
+		}
+	};
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		MediaType mt=overrideVariant(variant);
-				
-		
+		MediaType mt = overrideVariant(variant);
+
 		PrearcInfo info;
 		try {
 			info = retrieveSessionBean();
@@ -52,17 +52,16 @@ public class PrearcScansListResource extends PrearcSessionResourceA {
 			setResponseStatus(e);
 			return null;
 		}
-		
-        XFTTable table=new XFTTable();
-        table.initTable(columns);
-        for (XnatImagescandataI scan : info.session.getScans_scan()) {
-        	Object[] oarray = new Object[] { scan.getId(), scan.getXSIType(), scan.getSeriesDescription()};
-        	table.insertRow(oarray);
-        }
-        
-        return representTable(table, mt, new Hashtable<String,Object>());
+
+		XFTTable table = new XFTTable();
+		table.initTable(columns);
+		for (XnatImagescandataI scan : info.session.getScans_scan()) {
+			Object[] oarray = new Object[] { scan.getId(), scan.getXSIType(),
+					scan.getSeriesDescription() };
+			table.insertRow(oarray);
+		}
+
+		return representTable(table, mt, new Hashtable<String, Object>());
 	}
-	
-	
 
 }

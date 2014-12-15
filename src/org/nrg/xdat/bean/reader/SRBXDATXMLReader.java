@@ -28,54 +28,58 @@ import edu.sdsc.grid.io.local.LocalFile;
 import edu.sdsc.grid.io.srb.SRBFileInputStream;
 import edu.sdsc.grid.io.srb.SRBFileSystem;
 
-public class SRBXDATXMLReader extends XDATXMLReader{
+public class SRBXDATXMLReader extends XDATXMLReader {
 
-    public SRBXDATXMLReader() {
-        super();
-    }
-    
-    public BaseElement parse(String fullPath) throws IOException, SAXException, URISyntaxException {
-        if (fullPath.startsWith("srb:")) {
-            String file = fullPath.substring(6);
-            SRBFileSystem srbFileSystem = XNATSrbConnection.getSRBFileSystem();
-            SRBFile srbFile = new SRBFile( srbFileSystem,file);
-            if (!srbFile.exists()) {
-                srbFile = new SRBFile( srbFileSystem, file +".gz");
-            }
-            if (srbFile.exists()) {
-                InputStream fis = new SRBFileInputStream(srbFile);
-                if (srbFile.getName().endsWith(".gz")) {
-                    fis = new GZIPInputStream(fis);
-                }
-                return parse(fis);
-            }else {
-                throw new IOException(file +  " File " + fullPath + " or " + fullPath +".gz" +  " not found");
-            }
-        }else {
-            File f = new File(fullPath);//OBTAINED path from the mr session document
-            if (!f.exists()) {
-                f = new File(fullPath + ".gz");
-            }
-            if (f.exists()) {
-                InputStream fis = new FileInputStream(f);
-                if (f.getName().endsWith(".gz")) {
-                    fis = new GZIPInputStream(fis);
-                }
-                return parse(fis);
-            }else {
-                throw new IOException("File " + fullPath + " or " + fullPath +".gz" +  " not found");
-            }
-        }
-    }
-    
-    public static void main(String args[]) {
-        SRBXDATXMLReader reader = new SRBXDATXMLReader();
-        try {
-            System.out.println(reader.parse("srb://test_SCAN1.xml"));
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("All done");
-    }
-    
+	public SRBXDATXMLReader() {
+		super();
+	}
+
+	public BaseElement parse(String fullPath) throws IOException, SAXException,
+			URISyntaxException {
+		if (fullPath.startsWith("srb:")) {
+			String file = fullPath.substring(6);
+			SRBFileSystem srbFileSystem = XNATSrbConnection.getSRBFileSystem();
+			SRBFile srbFile = new SRBFile(srbFileSystem, file);
+			if (!srbFile.exists()) {
+				srbFile = new SRBFile(srbFileSystem, file + ".gz");
+			}
+			if (srbFile.exists()) {
+				InputStream fis = new SRBFileInputStream(srbFile);
+				if (srbFile.getName().endsWith(".gz")) {
+					fis = new GZIPInputStream(fis);
+				}
+				return parse(fis);
+			} else {
+				throw new IOException(file + " File " + fullPath + " or "
+						+ fullPath + ".gz" + " not found");
+			}
+		} else {
+			File f = new File(fullPath);// OBTAINED path from the mr session
+										// document
+			if (!f.exists()) {
+				f = new File(fullPath + ".gz");
+			}
+			if (f.exists()) {
+				InputStream fis = new FileInputStream(f);
+				if (f.getName().endsWith(".gz")) {
+					fis = new GZIPInputStream(fis);
+				}
+				return parse(fis);
+			} else {
+				throw new IOException("File " + fullPath + " or " + fullPath
+						+ ".gz" + " not found");
+			}
+		}
+	}
+
+	public static void main(String args[]) {
+		SRBXDATXMLReader reader = new SRBXDATXMLReader();
+		try {
+			System.out.println(reader.parse("srb://test_SCAN1.xml"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("All done");
+	}
+
 }

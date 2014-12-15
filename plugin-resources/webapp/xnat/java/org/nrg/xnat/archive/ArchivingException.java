@@ -16,12 +16,12 @@ public class ArchivingException extends Exception {
 	private static final long serialVersionUID = 1L;
 	private static final Status DEFAULT_STATUS = Status.SERVER_ERROR_INTERNAL;
 	private final Status status;
-	
+
 	public ArchivingException(Status status) {
 		super();
 		this.status = status;
 	}
-	
+
 	public ArchivingException() {
 		this(DEFAULT_STATUS);
 	}
@@ -30,7 +30,7 @@ public class ArchivingException extends Exception {
 		super(message);
 		this.status = status;
 	}
-	
+
 	public ArchivingException(String message) {
 		this(DEFAULT_STATUS, message);
 	}
@@ -39,7 +39,7 @@ public class ArchivingException extends Exception {
 		super(cause);
 		this.status = status;
 	}
-	
+
 	public ArchivingException(Throwable cause) {
 		this(DEFAULT_STATUS, cause);
 	}
@@ -55,6 +55,7 @@ public class ArchivingException extends Exception {
 
 	/**
 	 * What is the HTTP Status code for the response?
+	 * 
 	 * @return Restlet wrapper around an HTTP status code
 	 */
 	public final Status getStatus() {

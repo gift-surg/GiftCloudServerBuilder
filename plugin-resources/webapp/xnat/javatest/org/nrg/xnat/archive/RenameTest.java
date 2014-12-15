@@ -28,117 +28,123 @@ import java.io.FileNotFoundException;
 public class RenameTest {
 	final File archive = new File("./archive");
 
-
-	
 	@Before
 	public void setUp() throws Exception {
 	}
 
-
 	@Test
-	public void testModifyResource() throws Throwable{
-		final File session_dir=new File("test/mr1/");
-		final File session_dir2=new File("test/mr2/");
+	public void testModifyResource() throws Throwable {
+		final File session_dir = new File("test/mr1/");
+		final File session_dir2 = new File("test/mr2/");
 		final String snapshot = "SCANS/1/SNAPSHOTS/x.gif";
-		
-		final XnatResource res=new XnatResource((UserI)admin_user);
-		res.setUri((new File(session_dir,snapshot)).getAbsolutePath());
-		
-		final SecurityManager sm= SecurityManager.GetInstance();
-		final DBItemCache cache = new DBItemCache(null,null);
-		
-		final Rename rnm=new Rename();
-		rnm.modifyResource(res, session_dir.toURI(), session_dir2.getAbsolutePath(), null, sm, cache);
-		
-		final String new_path=new File(session_dir2,snapshot).getAbsolutePath();
-		
-		//should be changed
-		org.junit.Assert.assertEquals(new File(session_dir2,snapshot).toURI(),new File(res.getUri()).toURI());
+
+		final XnatResource res = new XnatResource((UserI) admin_user);
+		res.setUri((new File(session_dir, snapshot)).getAbsolutePath());
+
+		final SecurityManager sm = SecurityManager.GetInstance();
+		final DBItemCache cache = new DBItemCache(null, null);
+
+		final Rename rnm = new Rename();
+		rnm.modifyResource(res, session_dir.toURI(),
+				session_dir2.getAbsolutePath(), null, sm, cache);
+
+		final String new_path = new File(session_dir2, snapshot)
+				.getAbsolutePath();
+
+		// should be changed
+		org.junit.Assert.assertEquals(new File(session_dir2, snapshot).toURI(),
+				new File(res.getUri()).toURI());
 	}
 
 	@Test
-	public void testModifyResourceOutsideSession() throws Throwable{
-		final File session_dir=new File("test/mr1/");
-		final File session_dir2=new File("test/mr2/");
-		final File session_dir3=new File("test/mr3/");
+	public void testModifyResourceOutsideSession() throws Throwable {
+		final File session_dir = new File("test/mr1/");
+		final File session_dir2 = new File("test/mr2/");
+		final File session_dir3 = new File("test/mr3/");
 		final String snapshot = "SCANS/1/SNAPSHOTS/x.gif";
-		
-		final XnatResource res=new XnatResource((UserI)admin_user);
-		res.setUri((new File(session_dir3,snapshot)).getAbsolutePath());
-		
-		final SecurityManager sm= SecurityManager.GetInstance();
-		final DBItemCache cache = new DBItemCache(null,null);;
-		
-		final Rename rnm=new Rename();
-		rnm.modifyResource(res, session_dir.toURI(), session_dir2.getAbsolutePath(), null, sm, cache);
-		
-		final String new_path=new File(session_dir2,snapshot).getAbsolutePath();
-		
-		//should be unchanged
-		org.junit.Assert.assertEquals(new File(session_dir3,snapshot).toURI(),new File(res.getUri()).toURI());
-		
-		org.junit.Assert.assertEquals(0,cache.getStatements().size());
+
+		final XnatResource res = new XnatResource((UserI) admin_user);
+		res.setUri((new File(session_dir3, snapshot)).getAbsolutePath());
+
+		final SecurityManager sm = SecurityManager.GetInstance();
+		final DBItemCache cache = new DBItemCache(null, null);
+		;
+
+		final Rename rnm = new Rename();
+		rnm.modifyResource(res, session_dir.toURI(),
+				session_dir2.getAbsolutePath(), null, sm, cache);
+
+		final String new_path = new File(session_dir2, snapshot)
+				.getAbsolutePath();
+
+		// should be unchanged
+		org.junit.Assert.assertEquals(new File(session_dir3, snapshot).toURI(),
+				new File(res.getUri()).toURI());
+
+		org.junit.Assert.assertEquals(0, cache.getStatements().size());
 	}
 
 	@Test
-	public void testModifyResourceRelativePath() throws Throwable{
-		final File session_dir=new File("test/mr1/");
-		final File session_dir2=new File("test/mr2/");
-		final File session_dir3=new File("test/mr3/");
+	public void testModifyResourceRelativePath() throws Throwable {
+		final File session_dir = new File("test/mr1/");
+		final File session_dir2 = new File("test/mr2/");
+		final File session_dir3 = new File("test/mr3/");
 		final String snapshot = "SCANS/1/SNAPSHOTS/x.gif";
-		
-		final XnatResource res=new XnatResource((UserI)admin_user);
+
+		final XnatResource res = new XnatResource((UserI) admin_user);
 		res.setUri("arc001/mr1/SCANS/1/SNAPSHOTS/x.gif");
-		
-		final SecurityManager sm= SecurityManager.GetInstance();
-		final DBItemCache cache = new DBItemCache(null,null);
-		
-		final Rename rnm=new Rename();
+
+		final SecurityManager sm = SecurityManager.GetInstance();
+		final DBItemCache cache = new DBItemCache(null, null);
+
+		final Rename rnm = new Rename();
 		try {
-			rnm.modifyResource(res, session_dir.toURI(), session_dir2.getAbsolutePath(), null, sm, cache);
-			
-			org.junit.Assert.fail("Resource with a relative path successfully renamed.");
+			rnm.modifyResource(res, session_dir.toURI(),
+					session_dir2.getAbsolutePath(), null, sm, cache);
+
+			org.junit.Assert
+					.fail("Resource with a relative path successfully renamed.");
 		} catch (UnsupportedResourceType e) {
-			
+
 		}
 	}
 
-	
 	/*************************************
-	 * The rest is copied from BaseXDATTestCase and should be removed when this is integrated into more recent development
+	 * The rest is copied from BaseXDATTestCase and should be removed when this
+	 * is integrated into more recent development
 	 */
 
-	static XDATTool tool=null;
-	public static XDATUser admin_user=null;
-	public static XDATUser user=null;
+	static XDATTool tool = null;
+	public static XDATUser admin_user = null;
+	public static XDATUser user = null;
 	private static final String XNAT_INSTANCE_FOLDER = "deployments/xnat/";
 	private static final String USER = "tolsen";
 	private static final String PASS = "tolsen";
-	
+
 	private static final String ADMIN_USER = "admin";
 	private static final String ADMIN_PASS = "admin";
 
 	@BeforeClass
 	public static void setUpBeforeClassInit() throws Exception {
-		XFT.VERBOSE=true;
-		
-		if(tool==null){
+		XFT.VERBOSE = true;
+
+		if (tool == null) {
 			File file = new File(XNAT_INSTANCE_FOLDER + "InstanceSettings.xml");
-			if(file.exists())
+			if (file.exists())
 				tool = new XDATTool(XNAT_INSTANCE_FOLDER);
 			else
-				throw new FileNotFoundException(XNAT_INSTANCE_FOLDER + "InstanceSettings.xml");
+				throw new FileNotFoundException(XNAT_INSTANCE_FOLDER
+						+ "InstanceSettings.xml");
 		}
 
-		
-		admin_user=new XDATUser(ADMIN_USER);
+		admin_user = new XDATUser(ADMIN_USER);
 		admin_user.login(ADMIN_PASS);
-		
+
 		try {
-			XDATUser temp=new XDATUser(USER);
+			XDATUser temp = new XDATUser(USER);
 			temp.login(PASS);
-			
-			user=temp;
+
+			user = temp;
 		} catch (Exception e) {
 		}
 	}

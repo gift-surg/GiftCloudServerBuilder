@@ -33,10 +33,11 @@ public class UserSession extends SecureResource {
 		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 
 		// copy the user from the request into the session
-		getHttpSession().setAttribute(USER_ATTRIBUTE,getRequest().getAttributes().get(USER_ATTRIBUTE));
-		
+		getHttpSession().setAttribute(USER_ATTRIBUTE,
+				getRequest().getAttributes().get(USER_ATTRIBUTE));
 
-        getHttpSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
+		getHttpSession()
+				.setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
 	}
 
 	@Override
@@ -69,4 +70,4 @@ public class UserSession extends SecureResource {
 		return new StringRepresentation(getHttpSession().getId(),
 				MediaType.TEXT_PLAIN);
 	}
-	}
+}

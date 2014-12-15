@@ -17,27 +17,29 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Provider;
 
 public class XnatUserProvider implements Provider<XDATUser> {
-    private final Logger logger = LoggerFactory.getLogger(XnatUserProvider.class);
-    private final String login;
-    private XDATUser user = null;
-    
-    XnatUserProvider(final String login) {
-        this.login = login;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see javax.inject.Provider#get()
-     */
-    public XDATUser get() {
-        if (null == user) {
-            try {
-                user = new XDATUser(login);
-            } catch (Throwable t) {
-                logger.error("Unable to retrieve user " + login, t);
-                return null;
-            }
-        }
-        return user;
-    }
+	private final Logger logger = LoggerFactory
+			.getLogger(XnatUserProvider.class);
+	private final String login;
+	private XDATUser user = null;
+
+	XnatUserProvider(final String login) {
+		this.login = login;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.inject.Provider#get()
+	 */
+	public XDATUser get() {
+		if (null == user) {
+			try {
+				user = new XDATUser(login);
+			} catch (Throwable t) {
+				logger.error("Unable to retrieve user " + login, t);
+				return null;
+			}
+		}
+		return user;
+	}
 }

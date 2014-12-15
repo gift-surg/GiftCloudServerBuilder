@@ -22,14 +22,22 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class SetEmailSpecs extends AdminAction {
 
-    /* (non-Javadoc)
-     * @see org.apache.turbine.modules.actions.VelocitySecureAction#doPerform(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    @Override
-    public void doPerform(RunData data, Context context) throws Exception {
-        XFTItem item = PopulateItem.Populate(data,"arc:ArchiveSpecification",true).getItem();
-        item.setUser(TurbineUtils.getUser(data));
-        ArcSpecManager.save(new ArcArchivespecification(item), newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN, "Modified email specifications."));
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.turbine.modules.actions.VelocitySecureAction#doPerform(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	@Override
+	public void doPerform(RunData data, Context context) throws Exception {
+		XFTItem item = PopulateItem.Populate(data, "arc:ArchiveSpecification",
+				true).getItem();
+		item.setUser(TurbineUtils.getUser(data));
+		ArcSpecManager.save(
+				new ArcArchivespecification(item),
+				newEventInstance(data, EventUtils.CATEGORY.SIDE_ADMIN,
+						"Modified email specifications."));
+	}
 
 }

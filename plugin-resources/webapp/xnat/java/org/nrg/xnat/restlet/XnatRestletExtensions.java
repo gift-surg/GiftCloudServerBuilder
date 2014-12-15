@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class XnatRestletExtensions extends HashSet<String> {
-    public void setPackages(Set<String> packages) {
-        clear();
-        addAll(packages);
-    }
+	public void setPackages(Set<String> packages) {
+		clear();
+		addAll(packages);
+	}
 }

@@ -20,14 +20,17 @@ import org.restlet.data.Request;
 import java.util.Hashtable;
 
 public class RESTLoginRepresentation extends TurbineScreenRepresentation {
-	static org.apache.log4j.Logger logger = Logger.getLogger(RESTLoginRepresentation.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(RESTLoginRepresentation.class);
 	XFTItem item = null;
-	boolean includeSchemaLocations=true;
+	boolean includeSchemaLocations = true;
 
-	public RESTLoginRepresentation(MediaType mt, Request _request, XDATUser _user) throws TurbineException {
-		super(mt,_request,_user,new Hashtable<String,Object>());	
-		
-    	data.getParameters().add("rest_uri", request.getOriginalRef().toString());
+	public RESTLoginRepresentation(MediaType mt, Request _request,
+			XDATUser _user) throws TurbineException {
+		super(mt, _request, _user, new Hashtable<String, Object>());
+
+		data.getParameters().add("rest_uri",
+				request.getOriginalRef().toString());
 	}
 
 	@Override

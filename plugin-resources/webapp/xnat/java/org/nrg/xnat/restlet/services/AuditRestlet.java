@@ -43,54 +43,55 @@ public class AuditRestlet extends SecureResource {
 	public AuditRestlet(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		xsiType=this.filepath.substring(0, filepath.indexOf("/"));
-		key=this.filepath.substring(filepath.indexOf("/")+1);
-		
+		xsiType = this.filepath.substring(0, filepath.indexOf("/"));
+		key = this.filepath.substring(filepath.indexOf("/") + 1);
 
-		List<String> ids=StringUtils.DelimitedStringToArrayList(key, ",");
-		
+		List<String> ids = StringUtils.DelimitedStringToArrayList(key, ",");
+
 		try {
-			item=retrieveItemByIds(xsiType, ids);
+			item = retrieveItemByIds(xsiType, ids);
 		} catch (ActionException e) {
-			respondToException(e,e.getStatus());
-		} 
+			respondToException(e, e.getStatus());
+		}
 
-		if(item!=null){
-	        this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-	        this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+		if (item != null) {
+			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}
 	}
-	
-	private ItemI retrieve(final String xsiType, List<String> pks, List<String> ids) throws Exception{
+
+	private ItemI retrieve(final String xsiType, List<String> pks,
+			List<String> ids) throws Exception {
 		CriteriaCollection cc = new CriteriaCollection("AND");
-		for(int i=0;i<pks.size();i++){
-			cc.addClause(xsiType+"/"+pks.get(i), ids.get(i));
+		for (int i = 0; i < pks.size(); i++) {
+			cc.addClause(xsiType + "/" + pks.get(i), ids.get(i));
 		}
-		
+
 		return ItemSearch.GetItems(xsiType, cc, this.user, false).getFirst();
 	}
-	
-	public ItemI retrieveItemByIds(final String xsiType, List<String> ids) throws ActionException{		
+
+	public ItemI retrieveItemByIds(final String xsiType, List<String> ids)
+			throws ActionException {
 		try {
-			GenericWrapperElement element=GenericWrapperElement.GetElement(xsiType);
-			
-			
-			List<String> pks=element.getPkNames();
-			
-			if(pks.size()!=ids.size()){
+			GenericWrapperElement element = GenericWrapperElement
+					.GetElement(xsiType);
+
+			List<String> pks = element.getPkNames();
+
+			if (pks.size() != ids.size()) {
 				throw new ClientException("Missing required primary key values");
 			}
-			
-			ItemI i=retrieve(xsiType, pks, ids);
-			
-			if(i==null){
-				i=retrieve(xsiType+"_history", pks, ids);
+
+			ItemI i = retrieve(xsiType, pks, ids);
+
+			if (i == null) {
+				i = retrieve(xsiType + "_history", pks, ids);
 			}
-			
-			if(i!=null){
+
+			if (i != null) {
 				Authorizer.getInstance().authorizeRead(i.getItem(), user);
 			}
-			
+
 			return i;
 		} catch (ElementNotFoundException e) {
 			throw new ClientException(e);
@@ -99,50 +100,51 @@ public class AuditRestlet extends SecureResource {
 		}
 	}
 
-	
 	@Override
 	public Representation represent(Variant variant) throws ResourceException {
-		MediaType mt=overrideVariant(variant);
-		
+		MediaType mt = overrideVariant(variant);
+
 		try {
-			if(mt.equals(MediaType.TEXT_HTML)){
-				String screen=getQueryVariable("requested_screen");
-				if(screen==null){
-					screen="WorkflowHistorySummary";
+			if (mt.equals(MediaType.TEXT_HTML)) {
+				String screen = getQueryVariable("requested_screen");
+				if (screen == null) {
+					screen = "WorkflowHistorySummary";
 				}
-				
-				Map<String,Object> params=Maps.newHashMap();
-				
+
+				Map<String, Object> params = Maps.newHashMap();
+
 				params.put("key", key);
-				
-				if(hasQueryVariable("includeFiles")){
+
+				if (hasQueryVariable("includeFiles")) {
 					params.put("includeFiles", getQueryVariable("includeFiles"));
 				}
-				
-				if(xsiType!=null){
+
+				if (xsiType != null) {
 					params.put("xsiType", xsiType);
 				}
-				
-				if(key!=null){
+
+				if (key != null) {
 					params.put("key", key);
 				}
-				
-				if(hasQueryVariable("includeDetails")){
-					params.put("includeDetails", getQueryVariable("includeDetails"));
+
+				if (hasQueryVariable("includeDetails")) {
+					params.put("includeDetails",
+							getQueryVariable("includeDetails"));
 				}
-				
-				params.put("hideTopBar",isQueryVariableTrue("hideTopBar"));
-				
-				return new ItemHTMLRepresentation(item.getItem(), MediaType.TEXT_HTML, getRequest(), user,screen,params);
-			}else{
+
+				params.put("hideTopBar", isQueryVariableTrue("hideTopBar"));
+
+				return new ItemHTMLRepresentation(item.getItem(),
+						MediaType.TEXT_HTML, getRequest(), user, screen, params);
+			} else {
 				return buildChangesets(item.getItem(), key, mt);
 			}
 		} catch (Exception e) {
-			logger.error("",e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e.getMessage());
+			logger.error("", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+					e.getMessage());
 			return null;
 		}
 	}
 
-	
 }

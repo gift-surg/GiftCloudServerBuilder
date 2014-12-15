@@ -33,130 +33,160 @@ import java.util.List;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseArcProject extends AutoArcProject {
 
-	public BaseArcProject(ItemI item)
-	{
+	public BaseArcProject(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcProject(UserI user)
-	{
+	public BaseArcProject(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcProject(UserI user)
-	 **/
-	public BaseArcProject()
-	{}
+	 */
+	public BaseArcProject() {
+	}
 
-	public BaseArcProject(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseArcProject(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 	@Override
 	public Integer getPrearchiveCode() {
-		Integer i= super.getPrearchiveCode();
-		if(i==null){
+		Integer i = super.getPrearchiveCode();
+		if (i == null) {
 			return new Integer(0);
-		}else{
+		} else {
 			return i;
 		}
 	}
 
 	@Override
 	public Integer getQuarantineCode() {
-		Integer i= super.getQuarantineCode();
-		if(i==null){
+		Integer i = super.getQuarantineCode();
+		if (i == null) {
 			return new Integer(0);
-		}else{
+		} else {
 			return i;
 		}
 	}
 
-		public List<ArcProjectDescendantPipelineI> getPipelinesForDescendant(String xsiType) {
-			List<ArcProjectDescendantPipelineI>rtn = new ArrayList<ArcProjectDescendantPipelineI>();
-			List<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
-			if (xsiType == null || descendants == null) return rtn;
-			for (int i = 0; i < descendants.size(); i++) {
-            if (xsiType.equals(descendants.get(i).getXsitype()) || PipelineRepositoryManager.ALL_DATA_TYPES.equals(descendants.get(i).getXsitype())) {
-            	List<ArcProjectDescendantPipelineI> pipelines = descendants.get(i).getPipeline();	
-            	if (pipelines != null && pipelines.size() > 0)
-            		rtn.addAll(pipelines);
-				}
-			}
+	public List<ArcProjectDescendantPipelineI> getPipelinesForDescendant(
+			String xsiType) {
+		List<ArcProjectDescendantPipelineI> rtn = new ArrayList<ArcProjectDescendantPipelineI>();
+		List<ArcProjectDescendant> descendants = getPipelines_descendants_descendant();
+		if (xsiType == null || descendants == null)
 			return rtn;
+		for (int i = 0; i < descendants.size(); i++) {
+			if (xsiType.equals(descendants.get(i).getXsitype())
+					|| PipelineRepositoryManager.ALL_DATA_TYPES
+							.equals(descendants.get(i).getXsitype())) {
+				List<ArcProjectDescendantPipelineI> pipelines = descendants
+						.get(i).getPipeline();
+				if (pipelines != null && pipelines.size() > 0)
+					rtn.addAll(pipelines);
+			}
 		}
+		return rtn;
+	}
 
-
-		public ArrayList<ArcPipelinedataI> getPipelinesForDescendantLikeStepId(String xsiType, String pipelineStep) throws PipelineNotFoundException {
-			ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
-			List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
-			for (int i = 0; i < descendantPipelines.size(); i++) {
-				if (descendantPipelines.get(i).getStepid()!=null && descendantPipelines.get(i).getStepid().startsWith(pipelineStep)) {
-					rtn.add(((ArcProjectDescendantPipeline)descendantPipelines.get(i)).getPipelinedata());
-				}
+	public ArrayList<ArcPipelinedataI> getPipelinesForDescendantLikeStepId(
+			String xsiType, String pipelineStep)
+			throws PipelineNotFoundException {
+		ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
+		List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
+		for (int i = 0; i < descendantPipelines.size(); i++) {
+			if (descendantPipelines.get(i).getStepid() != null
+					&& descendantPipelines.get(i).getStepid()
+							.startsWith(pipelineStep)) {
+				rtn.add(((ArcProjectDescendantPipeline) descendantPipelines
+						.get(i)).getPipelinedata());
 			}
-			//if (rtn.size() == 0) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());
-			return rtn;
 		}
+		// if (rtn.size() == 0) throw new
+		// PipelineNotFoundException("A Pipeline identified by " + pipelineStep
+		// + " could not be found for " + xsiType + " for project " + getId());
+		return rtn;
+	}
 
-		public ArrayList<ArcPipelinedataI> getPipelinesForDescendant(String xsiType, String pipelineStep, String match) throws PipelineNotFoundException {
-			ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
-			if (match.equalsIgnoreCase("EXACT")) {
-				ArcPipelinedataI pipeline = getPipelineForDescendant(xsiType, pipelineStep);
-				rtn.add(pipeline);
-			}else if (match.equalsIgnoreCase("LIKE")) {
-			  rtn = getPipelinesForDescendantLikeStepId(xsiType, pipelineStep);	
-			}
-			//if (rtn.size() == 0) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());
-			return rtn;
-			
-		}		
+	public ArrayList<ArcPipelinedataI> getPipelinesForDescendant(
+			String xsiType, String pipelineStep, String match)
+			throws PipelineNotFoundException {
+		ArrayList<ArcPipelinedataI> rtn = new ArrayList<ArcPipelinedataI>();
+		if (match.equalsIgnoreCase("EXACT")) {
+			ArcPipelinedataI pipeline = getPipelineForDescendant(xsiType,
+					pipelineStep);
+			rtn.add(pipeline);
+		} else if (match.equalsIgnoreCase("LIKE")) {
+			rtn = getPipelinesForDescendantLikeStepId(xsiType, pipelineStep);
+		}
+		// if (rtn.size() == 0) throw new
+		// PipelineNotFoundException("A Pipeline identified by " + pipelineStep
+		// + " could not be found for " + xsiType + " for project " + getId());
+		return rtn;
 
-	public ArcPipelinedataI getPipelineForDescendant(String xsiType, String pipelineStep) throws PipelineNotFoundException {
+	}
+
+	public ArcPipelinedataI getPipelineForDescendant(String xsiType,
+			String pipelineStep) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
 		List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
 		for (int i = 0; i < descendantPipelines.size(); i++) {
 			if (descendantPipelines.get(i).getStepid().equals(pipelineStep)) {
-				rtn = ((ArcProjectDescendantPipeline)descendantPipelines.get(i)).getPipelinedata();
+				rtn = ((ArcProjectDescendantPipeline) descendantPipelines
+						.get(i)).getPipelinedata();
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for " + xsiType + " for project " + getId());
+		if (rtn == null)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelineStep + " could not be found for " + xsiType
+					+ " for project " + getId());
 		return rtn;
 	}
 
-	public ArcPipelinedataI getPipelineForDescendantByPath(String xsiType, String pipelinePath) throws PipelineNotFoundException {
+	public ArcPipelinedataI getPipelineForDescendantByPath(String xsiType,
+			String pipelinePath) throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
 		List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
 		for (int i = 0; i < descendantPipelines.size(); i++) {
 			if (descendantPipelines.get(i).getLocation().equals(pipelinePath)) {
-				rtn = ((ArcProjectDescendantPipeline)descendantPipelines.get(i)).getPipelinedata();
+				rtn = ((ArcProjectDescendantPipeline) descendantPipelines
+						.get(i)).getPipelinedata();
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for " + xsiType + " for project " + getId());
+		if (rtn == null)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelinePath + " could not be found for " + xsiType
+					+ " for project " + getId());
 		return rtn;
 	}
 
-	public ArcProjectDescendantPipeline getPipelineForDescendantEltByPath(String xsiType, String pipelinePath) throws PipelineNotFoundException {
+	public ArcProjectDescendantPipeline getPipelineForDescendantEltByPath(
+			String xsiType, String pipelinePath)
+			throws PipelineNotFoundException {
 		ArcProjectDescendantPipeline rtn = null;
 		List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
 		for (int i = 0; i < descendantPipelines.size(); i++) {
 			if (descendantPipelines.get(i).getLocation().equals(pipelinePath)) {
-				rtn =((ArcProjectDescendantPipeline)descendantPipelines.get(i));
+				rtn = ((ArcProjectDescendantPipeline) descendantPipelines
+						.get(i));
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for " + xsiType + " for project " + getId());
+		if (rtn == null)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelinePath + " could not be found for " + xsiType
+					+ " for project " + getId());
 		return rtn;
 	}
 
-	public int getPipelineForDescendantIndexByPath(String xsiType, String pipelinePath) throws PipelineNotFoundException {
+	public int getPipelineForDescendantIndexByPath(String xsiType,
+			String pipelinePath) throws PipelineNotFoundException {
 		int rtn = -1;
 		List<ArcProjectDescendantPipelineI> descendantPipelines = getPipelinesForDescendant(xsiType);
 		for (int i = 0; i < descendantPipelines.size(); i++) {
@@ -165,118 +195,140 @@ public abstract class BaseArcProject extends AutoArcProject {
 				break;
 			}
 		}
-		if (rtn == -1) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for " + xsiType + " for project " + getId());
+		if (rtn == -1)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelinePath + " could not be found for " + xsiType
+					+ " for project " + getId());
 		return rtn;
 	}
 
-
-	public ArcPipelinedataI getPipeline(String pipelineStep) throws PipelineNotFoundException {
+	public ArcPipelinedataI getPipeline(String pipelineStep)
+			throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
-		List<ArcProjectPipelineI> pipelines =getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = getPipelines_pipeline();
 		for (int i = 0; i < pipelines.size(); i++) {
 			if (pipelines.get(i).getStepid().equals(pipelineStep)) {
-				rtn = ((ArcProjectPipeline)pipelines.get(i)).getPipelinedata();
+				rtn = ((ArcProjectPipeline) pipelines.get(i)).getPipelinedata();
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelineStep + " could not be found for  project " + getId());
+		if (rtn == null)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelineStep + " could not be found for  project "
+					+ getId());
 		return rtn;
 	}
-	
+
 	/**
 	 * Return root level pipeline with matching location and stepId (or null)
+	 * 
 	 * @param location
 	 * @param stepId
 	 * @return
 	 */
-	public ArcProjectPipelineI getPipeline(String location, String stepId){
-		for (ArcProjectPipelineI pipe:getPipelines_pipeline()) {
-			if (StringUtils.equals(pipe.getLocation(),location) && StringUtils.equals(pipe.getStepid(),stepId)) {
+	public ArcProjectPipelineI getPipeline(String location, String stepId) {
+		for (ArcProjectPipelineI pipe : getPipelines_pipeline()) {
+			if (StringUtils.equals(pipe.getLocation(), location)
+					&& StringUtils.equals(pipe.getStepid(), stepId)) {
 				return pipe;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
-	 * Return descendant pipeline with matching xsiType, location and stepId (or null)
+	 * Return descendant pipeline with matching xsiType, location and stepId (or
+	 * null)
+	 * 
 	 * @param xsiType
 	 * @param location
 	 * @param stepId
 	 * @return
 	 */
-	public ArcProjectDescendantPipelineI getDescendantPipeline(String xsiType, String location, String stepId){
-		for (final ArcProjectDescendantPipelineI pipe: getPipelinesForDescendant(xsiType)) {
-			if (StringUtils.equals(pipe.getLocation(),location) && StringUtils.equals(pipe.getStepid(),stepId)) {
+	public ArcProjectDescendantPipelineI getDescendantPipeline(String xsiType,
+			String location, String stepId) {
+		for (final ArcProjectDescendantPipelineI pipe : getPipelinesForDescendant(xsiType)) {
+			if (StringUtils.equals(pipe.getLocation(), location)
+					&& StringUtils.equals(pipe.getStepid(), stepId)) {
 				return pipe;
 			}
 		}
-		
+
 		return null;
 	}
 
-
-	public ArcProjectPipeline getProjectPipeline(String pipelineStep) throws PipelineNotFoundException {
+	public ArcProjectPipeline getProjectPipeline(String pipelineStep)
+			throws PipelineNotFoundException {
 		ArcProjectPipeline rtn = null;
-		List<ArcProjectPipelineI> pipelines =getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = getPipelines_pipeline();
 		for (int i = 0; i < pipelines.size(); i++) {
 			if (pipelines.get(i).getStepid().equals(pipelineStep)) {
-				return ((ArcProjectPipeline)pipelines.get(i));
+				return ((ArcProjectPipeline) pipelines.get(i));
 			}
 		}
 		return null;
 	}
 
-
-
-	public ArcPipelinedataI getPipelineByPath(String pipelinePath) throws PipelineNotFoundException {
+	public ArcPipelinedataI getPipelineByPath(String pipelinePath)
+			throws PipelineNotFoundException {
 		ArcPipelinedataI rtn = null;
-		List<ArcProjectPipelineI> pipelines =getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = getPipelines_pipeline();
 		for (int i = 0; i < pipelines.size(); i++) {
 			if (pipelines.get(i).getLocation().equals(pipelinePath)) {
-				rtn = ((ArcProjectPipeline)pipelines.get(i)).getPipelinedata();
+				rtn = ((ArcProjectPipeline) pipelines.get(i)).getPipelinedata();
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for  project " + getId());
+		if (rtn == null)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelinePath + " could not be found for  project "
+					+ getId());
 		return rtn;
 	}
 
-	public ArcProjectPipeline getPipelineEltByPath(String pipelinePath) throws PipelineNotFoundException {
+	public ArcProjectPipeline getPipelineEltByPath(String pipelinePath)
+			throws PipelineNotFoundException {
 		ArcProjectPipeline rtn = null;
-		List<ArcProjectPipelineI> pipelines =getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = getPipelines_pipeline();
 		for (int i = 0; i < pipelines.size(); i++) {
 			if (pipelines.get(i).getLocation().equals(pipelinePath)) {
-				rtn = (ArcProjectPipeline)pipelines.get(i);
+				rtn = (ArcProjectPipeline) pipelines.get(i);
 				break;
 			}
 		}
-		if (rtn == null) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for  project " + getId());
+		if (rtn == null)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelinePath + " could not be found for  project "
+					+ getId());
 		return rtn;
 	}
 
-	public int getPipelineIndexByPath(String pipelinePath) throws PipelineNotFoundException {
+	public int getPipelineIndexByPath(String pipelinePath)
+			throws PipelineNotFoundException {
 		int rtn = -1;
-		List<ArcProjectPipelineI> pipelines =getPipelines_pipeline();
+		List<ArcProjectPipelineI> pipelines = getPipelines_pipeline();
 		for (int i = 0; i < pipelines.size(); i++) {
 			if (pipelines.get(i).getLocation().equals(pipelinePath)) {
 				rtn = i;
 				break;
 			}
 		}
-		if (rtn == -1) throw new PipelineNotFoundException("A Pipeline identified by " + pipelinePath + " could not be found for  project " + getId());
+		if (rtn == -1)
+			throw new PipelineNotFoundException("A Pipeline identified by "
+					+ pipelinePath + " could not be found for  project "
+					+ getId());
 		return rtn;
 	}
-
 
 	public ArcProjectDescendant getDescendant(String xsiType) {
 		ArcProjectDescendant rtn = null;
 		List<ArcProjectDescendantI> descendants = getPipelines_descendants_descendant();
-		if (xsiType == null || descendants == null) return rtn;
+		if (xsiType == null || descendants == null)
+			return rtn;
 		for (int i = 0; i < descendants.size(); i++) {
 			if (descendants.get(i).getXsitype().equals(xsiType)) {
-				rtn = (ArcProjectDescendant)descendants.get(i);
+				rtn = (ArcProjectDescendant) descendants.get(i);
 				break;
 			}
 		}

@@ -26,19 +26,22 @@ import org.restlet.resource.Variant;
 
 @XnatRestlet("/services/extensions/verify")
 public class VerifyExtensionsRestlet extends SecureResource {
-    private static final Log _log = LogFactory.getLog(VerifyExtensionsRestlet.class);
+	private static final Log _log = LogFactory
+			.getLog(VerifyExtensionsRestlet.class);
 
-    public VerifyExtensionsRestlet(Context context, Request request, Response response) {
-        super(context, request, response);
-        this.getVariants().add(new Variant(MediaType.ALL));
-    }
+	public VerifyExtensionsRestlet(Context context, Request request,
+			Response response) {
+		super(context, request, response);
+		this.getVariants().add(new Variant(MediaType.ALL));
+	}
 
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        if (_log.isDebugEnabled()) {
-            _log.debug("Passing a representation of the verify extensions restlet.");
-        }
+	@Override
+	public Representation represent(Variant variant) throws ResourceException {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Passing a representation of the verify extensions restlet.");
+		}
 
-        return new StringRepresentation("This is to verify that dynamically configured restlets are functioning properly.");
-    }
+		return new StringRepresentation(
+				"This is to verify that dynamically configured restlets are functioning properly.");
+	}
 }

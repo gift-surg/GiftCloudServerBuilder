@@ -25,50 +25,52 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class ItemXMLRepresentation extends OutputRepresentation {
-	static org.apache.log4j.Logger logger = Logger.getLogger(ItemXMLRepresentation.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(ItemXMLRepresentation.class);
 	XFTItem item = null;
-	boolean includeSchemaLocations=true;
-	private boolean allowDBAccess=true;
-	private boolean hidden_fields=true;
-	
-	public ItemXMLRepresentation(XFTItem i,MediaType mt,boolean includeSchemaLocations,boolean writeHiddenFields) {
+	boolean includeSchemaLocations = true;
+	private boolean allowDBAccess = true;
+	private boolean hidden_fields = true;
+
+	public ItemXMLRepresentation(XFTItem i, MediaType mt,
+			boolean includeSchemaLocations, boolean writeHiddenFields) {
 		super(mt);
-		item=i;	
-		this.includeSchemaLocations=includeSchemaLocations;
-		hidden_fields=writeHiddenFields;
+		item = i;
+		this.includeSchemaLocations = includeSchemaLocations;
+		hidden_fields = writeHiddenFields;
 	}
 
-	public ItemXMLRepresentation(XFTItem i,MediaType mt) {
+	public ItemXMLRepresentation(XFTItem i, MediaType mt) {
 		super(mt);
-		item=i;	
+		item = i;
 	}
-	
-	public void setAllowDBAccess(boolean b){
-		this.allowDBAccess=b;
+
+	public void setAllowDBAccess(boolean b) {
+		this.allowDBAccess = b;
 	}
-	
+
 	@Override
 	public void write(OutputStream out) throws IOException {
-			try {
-				SAXWriter writer = new SAXWriter(out,this.allowDBAccess);
-				if(includeSchemaLocations){
-					writer.setAllowSchemaLocation(true);
-					writer.setLocation(TurbineUtils.GetFullServerPath() + "/" + "schemas/");
-				}
-				writer.setWriteHiddenFields(hidden_fields);
-				writer.write(item);
-			} catch (TransformerConfigurationException e) {
-				logger.error("",e);
-			} catch (IllegalArgumentException e) {
-				logger.error("",e);
-			} catch (TransformerFactoryConfigurationError e) {
-				logger.error("",e);
-			} catch (FieldNotFoundException e) {
-				logger.error("",e);
-			} catch (SAXException e) {
-				logger.error("",e);
+		try {
+			SAXWriter writer = new SAXWriter(out, this.allowDBAccess);
+			if (includeSchemaLocations) {
+				writer.setAllowSchemaLocation(true);
+				writer.setLocation(TurbineUtils.GetFullServerPath() + "/"
+						+ "schemas/");
 			}
+			writer.setWriteHiddenFields(hidden_fields);
+			writer.write(item);
+		} catch (TransformerConfigurationException e) {
+			logger.error("", e);
+		} catch (IllegalArgumentException e) {
+			logger.error("", e);
+		} catch (TransformerFactoryConfigurationError e) {
+			logger.error("", e);
+		} catch (FieldNotFoundException e) {
+			logger.error("", e);
+		} catch (SAXException e) {
+			logger.error("", e);
+		}
 	}
 
-	
 }

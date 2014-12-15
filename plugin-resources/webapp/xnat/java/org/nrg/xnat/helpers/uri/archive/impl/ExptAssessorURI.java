@@ -25,36 +25,39 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class ExptAssessorURI extends ArchiveURI implements ArchiveItemURI,AssessedURII,AssessorURII{
-	private XnatImageassessordata expt=null;
-	private XnatImagesessiondata session=null; 
-	
+public class ExptAssessorURI extends ArchiveURI implements ArchiveItemURI,
+		AssessedURII, AssessorURII {
+	private XnatImageassessordata expt = null;
+	private XnatImagesessiondata session = null;
+
 	public ExptAssessorURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
-	
-	protected void populate(){		
-		if(expt==null){
-			final String sessID= (String)props.get(URIManager.ASSESSED_ID);
-			
-			if(session==null){
-				session=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(sessID, null, false);
+
+	protected void populate() {
+		if (expt == null) {
+			final String sessID = (String) props.get(URIManager.ASSESSED_ID);
+
+			if (session == null) {
+				session = (XnatImagesessiondata) XnatExperimentdata
+						.getXnatExperimentdatasById(sessID, null, false);
 			}
-			
-			final String exptID= (String)props.get(URIManager.EXPT_ID);
-			
-			if(expt==null){
-				expt=(XnatImageassessordata)XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
+
+			final String exptID = (String) props.get(URIManager.EXPT_ID);
+
+			if (expt == null) {
+				expt = (XnatImageassessordata) XnatExperimentdata
+						.getXnatExperimentdatasById(exptID, null, false);
 			}
 		}
 	}
 
-	public XnatImagesessiondata getSession(){
+	public XnatImagesessiondata getSession() {
 		this.populate();
 		return this.session;
 	}
-	
-	public XnatImageassessordata getAssessor(){
+
+	public XnatImageassessordata getAssessor() {
 		this.populate();
 		return expt;
 	}
@@ -65,10 +68,10 @@ public class ExptAssessorURI extends ArchiveURI implements ArchiveItemURI,Assess
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatExperimentdata expt=getAssessor();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatExperimentdata expt = getAssessor();
 		res.addAll(expt.getResources_resource());
-		res.addAll(((XnatImageassessordata)expt).getOut_file());
+		res.addAll(((XnatImageassessordata) expt).getOut_file());
 		return res;
 	}
 }

@@ -38,104 +38,104 @@ import java.util.Hashtable;
  */
 public class SessionUtils {
 
-    static org.apache.log4j.Logger logger = Logger.getLogger(SessionUtils.class);
-    public ArrayList getSessionScanIds(String _id) throws RemoteException
-    {
-        String _username= AxisEngine.getCurrentMessageContext().getUsername();
-        String _password= AxisEngine.getCurrentMessageContext().getPassword();
-        AccessLogger.LogServiceAccess(_username,"","SessionUtils:getSessionScanIds",_id);
-        ArrayList al = new ArrayList();
-        try {
-            MessageContext mc = AxisEngine.getCurrentMessageContext();
-            XDATUser user =(XDATUser) mc.getSession().get("user");
-            if(user!=null){
-                if (_username != null && _password !=null)
-                {
-                    user = Authenticator.Authenticate(new Authenticator.Credentials(_username,_password));
-                    mc.getSession().invalidate();
-                }
-            }
-            
-            if (user == null)
-            {
-                throw new Exception("Invalid User.");
-            }
-            
-            QueryOrganizer qo = new QueryOrganizer("xnat:mrScanData",user,ViewManager.ALL);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(SessionUtils.class);
+
+	public ArrayList getSessionScanIds(String _id) throws RemoteException {
+		String _username = AxisEngine.getCurrentMessageContext().getUsername();
+		String _password = AxisEngine.getCurrentMessageContext().getPassword();
+		AccessLogger.LogServiceAccess(_username, "",
+				"SessionUtils:getSessionScanIds", _id);
+		ArrayList al = new ArrayList();
+		try {
+			MessageContext mc = AxisEngine.getCurrentMessageContext();
+			XDATUser user = (XDATUser) mc.getSession().get("user");
+			if (user != null) {
+				if (_username != null && _password != null) {
+					user = Authenticator
+							.Authenticate(new Authenticator.Credentials(
+									_username, _password));
+					mc.getSession().invalidate();
+				}
+			}
+
+			if (user == null) {
+				throw new Exception("Invalid User.");
+			}
+
+			QueryOrganizer qo = new QueryOrganizer("xnat:mrScanData", user,
+					ViewManager.ALL);
 			qo.addField("xnat:mrScanData/id");
 			qo.addField("xnat:mrScanData/image_session_id");
 			qo.addField("xnat:mrScanData/type");
-			
-			CriteriaCollection cc =new CriteriaCollection("AND");
-			cc.addClause("xnat:mrScanData/image_session_id","=",_id);
-			
+
+			CriteriaCollection cc = new CriteriaCollection("AND");
+			cc.addClause("xnat:mrScanData/image_session_id", "=", _id);
+
 			String query = "SELECT * FROM (" + qo.buildQuery() + ") SEARCH";
 			query += " WHERE " + cc.getSQLClause(qo);
 			query += ";";
-			
-			XFTTable table = XFTTable.Execute(query,SchemaElement.GetElement("xnat:mrScanData").getDbName(),user.getLogin());
-			
-			
-			String scan_idN= qo.translateXMLPath("xnat:mrScanData/id");
-			String typeN= qo.translateXMLPath("xnat:mrScanData/type");
-			
+
+			XFTTable table = XFTTable.Execute(query,
+					SchemaElement.GetElement("xnat:mrScanData").getDbName(),
+					user.getLogin());
+
+			String scan_idN = qo.translateXMLPath("xnat:mrScanData/id");
+			String typeN = qo.translateXMLPath("xnat:mrScanData/type");
+
 			Hashtable hash = new Hashtable();
-						
+
 			table.resetRowCursor();
-			while (table.hasMoreRows())
-			{
-			    Hashtable row = table.nextRowHash();
-			    
-			    String scan_id = (String)row.get(scan_idN.toLowerCase());
-			    String type = (String)row.get(typeN.toLowerCase());
-			    
-			    if (hash.get(type)==null)
-			    {
-			        hash.put(type,new ArrayList());
-			    }
-			    
-			    ((ArrayList)hash.get(type)).add(scan_id);
+			while (table.hasMoreRows()) {
+				Hashtable row = table.nextRowHash();
+
+				String scan_id = (String) row.get(scan_idN.toLowerCase());
+				String type = (String) row.get(typeN.toLowerCase());
+
+				if (hash.get(type) == null) {
+					hash.put(type, new ArrayList());
+				}
+
+				((ArrayList) hash.get(type)).add(scan_id);
 			}
-			
+
 			Enumeration e = hash.keys();
-			while (e.hasMoreElements())
-			{
-			    String type = (String) e.nextElement();
-			    ArrayList ids = (ArrayList)hash.get(type);
-			    
-			    ArrayList child = new ArrayList();
-			    child.add(type);
-			    child.add(new Integer(ids.size()));
-			    child.add(ids);
-			    al.add(child);
+			while (e.hasMoreElements()) {
+				String type = (String) e.nextElement();
+				ArrayList ids = (ArrayList) hash.get(type);
+
+				ArrayList child = new ArrayList();
+				child.add(type);
+				child.add(new Integer(ids.size()));
+				child.add(ids);
+				al.add(child);
 			}
-			
-            al.trimToSize();
-        } catch (ElementNotFoundException e) {
-            logger.error("",e);
-            throw new RemoteException("",e);
-        } catch (DBPoolException e) {
-            logger.error("",e);
-            throw new RemoteException("",e);
-        } catch (SQLException e) {
-            logger.error("",e);
-            throw new RemoteException("",e);
-        } catch (FieldNotFoundException e) {
-            logger.error("",e);
-            throw new RemoteException("",e);
-        } catch (FailedLoginException e) {
-            logger.error("",e);
-            throw new RemoteException("",e);
-        } catch (Exception e) {
-            logger.error("",e);
-            throw new RemoteException("",e);
-        }
-        return al;
-    }
-    
-    
-    public static ArrayList GetSessionScanIds(String _id) throws RemoteException
-    {
-        return (new SessionUtils()).getSessionScanIds(_id);
-    }
+
+			al.trimToSize();
+		} catch (ElementNotFoundException e) {
+			logger.error("", e);
+			throw new RemoteException("", e);
+		} catch (DBPoolException e) {
+			logger.error("", e);
+			throw new RemoteException("", e);
+		} catch (SQLException e) {
+			logger.error("", e);
+			throw new RemoteException("", e);
+		} catch (FieldNotFoundException e) {
+			logger.error("", e);
+			throw new RemoteException("", e);
+		} catch (FailedLoginException e) {
+			logger.error("", e);
+			throw new RemoteException("", e);
+		} catch (Exception e) {
+			logger.error("", e);
+			throw new RemoteException("", e);
+		}
+		return al;
+	}
+
+	public static ArrayList GetSessionScanIds(String _id)
+			throws RemoteException {
+		return (new SessionUtils()).getSessionScanIds(_id);
+	}
 }

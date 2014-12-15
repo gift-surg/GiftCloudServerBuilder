@@ -25,35 +25,40 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 
 import java.util.Map;
 
-public class ResourcesProjSubjAssExptURI extends ResourcesProjSubjSessionURIA  implements AssessedURII,ResourceURII,ArchiveItemURI,AssessorURII{
-	private XnatImageassessordata expt=null;
-	
+public class ResourcesProjSubjAssExptURI extends ResourcesProjSubjSessionURIA
+		implements AssessedURII, ResourceURII, ArchiveItemURI, AssessorURII {
+	private XnatImageassessordata expt = null;
+
 	public ResourcesProjSubjAssExptURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
-	
-	protected void populateAssmt(){
+
+	protected void populateAssmt() {
 		super.populateSession();
-		
-		if(expt==null){
-			final XnatProjectdata proj=getProject();
-			
-			final String exptID= (String)props.get(URIManager.EXPT_ID);
-			
-			if(proj!=null){
-				expt=(XnatImageassessordata)XnatExperimentdata.GetExptByProjectIdentifier(proj.getId(), exptID,null, false);
+
+		if (expt == null) {
+			final XnatProjectdata proj = getProject();
+
+			final String exptID = (String) props.get(URIManager.EXPT_ID);
+
+			if (proj != null) {
+				expt = (XnatImageassessordata) XnatExperimentdata
+						.GetExptByProjectIdentifier(proj.getId(), exptID, null,
+								false);
 			}
-			
-			if(expt==null){
-				expt=(XnatImageassessordata)XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
-				if(expt!=null && (proj!=null && !expt.hasProject(proj.getId()))){
-					expt=null;
+
+			if (expt == null) {
+				expt = (XnatImageassessordata) XnatExperimentdata
+						.getXnatExperimentdatasById(exptID, null, false);
+				if (expt != null
+						&& (proj != null && !expt.hasProject(proj.getId()))) {
+					expt = null;
 				}
 			}
 		}
 	}
-	
-	public XnatImageassessordata getAssessor(){
+
+	public XnatImageassessordata getAssessor() {
 		this.populateAssmt();
 		return expt;
 	}
@@ -65,28 +70,32 @@ public class ResourcesProjSubjAssExptURI extends ResourcesProjSubjSessionURIA  i
 
 	@Override
 	public XnatAbstractresourceI getXnatResource() {
-		if(getAssessor()!=null){
-			String type=(String)this.props.get(URIManager.TYPE);
-			
-			if(type==null){
-				type="out";
+		if (getAssessor() != null) {
+			String type = (String) this.props.get(URIManager.TYPE);
+
+			if (type == null) {
+				type = "out";
 			}
-			
-			if(type.equals("out")){
-				for(XnatAbstractresourceI res:this.getAssessor().getOut_file()){
-					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+
+			if (type.equals("out")) {
+				for (XnatAbstractresourceI res : this.getAssessor()
+						.getOut_file()) {
+					if (StringUtils.equals(res.getLabel(),
+							this.getResourceLabel())) {
 						return res;
 					}
 				}
-			}else if(type.equals("in")){
-				for(XnatAbstractresourceI res:this.getAssessor().getIn_file()){
-					if(StringUtils.equals(res.getLabel(), this.getResourceLabel())){
+			} else if (type.equals("in")) {
+				for (XnatAbstractresourceI res : this.getAssessor()
+						.getIn_file()) {
+					if (StringUtils.equals(res.getLabel(),
+							this.getResourceLabel())) {
 						return res;
 					}
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }

@@ -23,44 +23,52 @@ import org.restlet.data.Request;
 import java.util.Map;
 
 public class ItemHTMLRepresentation extends TurbineScreenRepresentation {
-	static org.apache.log4j.Logger logger = Logger.getLogger(ItemHTMLRepresentation.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(ItemHTMLRepresentation.class);
 	private final String screen;
-	
-	public ItemHTMLRepresentation(XFTItem i,MediaType mt,Request request,XDATUser _user,Map<String,Object> params) throws TurbineException,ElementNotFoundException {
-		super(mt,request,_user,params);
-		
+
+	public ItemHTMLRepresentation(XFTItem i, MediaType mt, Request request,
+			XDATUser _user, Map<String, Object> params)
+			throws TurbineException, ElementNotFoundException {
+		super(mt, request, _user, params);
+
 		TurbineUtils.setDataItem(data, i);
-		 
+
 		try {
-			if(i.getProperty("project")!=null){
-				data.getParameters().setString("project", i.getStringProperty("project"));
+			if (i.getProperty("project") != null) {
+				data.getParameters().setString("project",
+						i.getStringProperty("project"));
 			}
 		} catch (Throwable e1) {
-			logger.error("",e1);
+			logger.error("", e1);
 		}
-		
-		
-		screen = DisplayItemAction.GetReportScreen(i.getItem().getGenericSchemaElement());
+
+		screen = DisplayItemAction.GetReportScreen(i.getItem()
+				.getGenericSchemaElement());
 	}
-	
-	public ItemHTMLRepresentation(XFTItem i,MediaType mt,Request request,XDATUser _user,String requested_screen,Map<String,Object> params) throws TurbineException,ElementNotFoundException {
-		super(mt,request,_user,params);
-		
+
+	public ItemHTMLRepresentation(XFTItem i, MediaType mt, Request request,
+			XDATUser _user, String requested_screen, Map<String, Object> params)
+			throws TurbineException, ElementNotFoundException {
+		super(mt, request, _user, params);
+
 		TurbineUtils.setDataItem(data, i);
-		 
+
 		try {
-			if(i.getProperty("project")!=null){
-				data.getParameters().setString("project", i.getStringProperty("project"));
+			if (i.getProperty("project") != null) {
+				data.getParameters().setString("project",
+						i.getStringProperty("project"));
 			}
 		} catch (Throwable e1) {
-			logger.error("",e1);
+			logger.error("", e1);
 		}
-		
-		
-		if(requested_screen==null){
-			screen = DisplayItemAction.GetReportScreen(i.getItem().getGenericSchemaElement());
-		}else{
-			if(!requested_screen.endsWith(".vm"))requested_screen+=".vm";
+
+		if (requested_screen == null) {
+			screen = DisplayItemAction.GetReportScreen(i.getItem()
+					.getGenericSchemaElement());
+		} else {
+			if (!requested_screen.endsWith(".vm"))
+				requested_screen += ".vm";
 			screen = requested_screen;
 		}
 	}
@@ -69,5 +77,5 @@ public class ItemHTMLRepresentation extends TurbineScreenRepresentation {
 	public String getScreen() {
 		return screen;
 	}
-	
+
 }

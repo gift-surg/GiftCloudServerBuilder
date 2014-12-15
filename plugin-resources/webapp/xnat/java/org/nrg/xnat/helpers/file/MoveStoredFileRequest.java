@@ -21,79 +21,85 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoveStoredFileRequest implements Serializable {
-    public MoveStoredFileRequest(ResourceModifierA resourceModifier, Object resourceIdentifier, List<FileWriterWrapperI> writers, XDATUser user, Number workflowId, boolean delete, String[] notifyList, String type, String filepath, XnatResourceInfo resourceInfo, boolean extract) {
-        this.resourceModifier = resourceModifier;
-        this.resourceIdentifier = resourceIdentifier != null ? resourceIdentifier.toString() : null;
-        for (FileWriterWrapperI writer : writers) {
-            try {
-                StoredFile storedFile = (StoredFile) writer;
-                this.writers.add(storedFile);
-            } catch (Exception e) { /* Not a stored file for some reason */ }
-        }
-        this.user = user;
-        this.workflowId = workflowId.toString();
-        this.delete = delete;
-        this.notifyList = notifyList;
-        this.type = type;
-        this.filepath = filepath;
-        this.resourceInfo = resourceInfo;
-        this.extract = extract;
-    }
+	public MoveStoredFileRequest(ResourceModifierA resourceModifier,
+			Object resourceIdentifier, List<FileWriterWrapperI> writers,
+			XDATUser user, Number workflowId, boolean delete,
+			String[] notifyList, String type, String filepath,
+			XnatResourceInfo resourceInfo, boolean extract) {
+		this.resourceModifier = resourceModifier;
+		this.resourceIdentifier = resourceIdentifier != null ? resourceIdentifier
+				.toString() : null;
+		for (FileWriterWrapperI writer : writers) {
+			try {
+				StoredFile storedFile = (StoredFile) writer;
+				this.writers.add(storedFile);
+			} catch (Exception e) { /* Not a stored file for some reason */
+			}
+		}
+		this.user = user;
+		this.workflowId = workflowId.toString();
+		this.delete = delete;
+		this.notifyList = notifyList;
+		this.type = type;
+		this.filepath = filepath;
+		this.resourceInfo = resourceInfo;
+		this.extract = extract;
+	}
 
-    public ResourceModifierA getResourceModifier() {
-        return resourceModifier;
-    }
+	public ResourceModifierA getResourceModifier() {
+		return resourceModifier;
+	}
 
-    public String getResourceIdentifier() {
-        return resourceIdentifier;
-    }
+	public String getResourceIdentifier() {
+		return resourceIdentifier;
+	}
 
-    public List<StoredFile> getWriters() {
-        return writers;
-    }
+	public List<StoredFile> getWriters() {
+		return writers;
+	}
 
-    public XDATUser getUser() {
-        return user;
-    }
+	public XDATUser getUser() {
+		return user;
+	}
 
-    public String getWorkflowId() {
-        return workflowId;
-    }
+	public String getWorkflowId() {
+		return workflowId;
+	}
 
-    public boolean isDelete() {
-        return delete;
-    }
+	public boolean isDelete() {
+		return delete;
+	}
 
-    public String[] getNotifyList() {
-        return notifyList;
-    }
+	public String[] getNotifyList() {
+		return notifyList;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public String getFilepath() {
-        return filepath;
-    }
+	public String getFilepath() {
+		return filepath;
+	}
 
-    public XnatResourceInfo getResourceInfo() {
-        return resourceInfo;
-    }
+	public XnatResourceInfo getResourceInfo() {
+		return resourceInfo;
+	}
 
-    public boolean isExtract() {
-        return extract;
-    }
+	public boolean isExtract() {
+		return extract;
+	}
 
-    private static final long serialVersionUID = 42L;
-    private final ResourceModifierA resourceModifier;
-    private final String resourceIdentifier;
-    private final List<StoredFile> writers = new ArrayList<StoredFile>();
-    private final XDATUser user;
-    private final String workflowId;
-    private final boolean delete;
-    private final String[] notifyList;
-    private final String type;
-    private final String filepath;
-    private final XnatResourceInfo resourceInfo;
-    private final boolean extract;
+	private static final long serialVersionUID = 42L;
+	private final ResourceModifierA resourceModifier;
+	private final String resourceIdentifier;
+	private final List<StoredFile> writers = new ArrayList<StoredFile>();
+	private final XDATUser user;
+	private final String workflowId;
+	private final boolean delete;
+	private final String[] notifyList;
+	private final String type;
+	private final String filepath;
+	private final XnatResourceInfo resourceInfo;
+	private final boolean extract;
 }

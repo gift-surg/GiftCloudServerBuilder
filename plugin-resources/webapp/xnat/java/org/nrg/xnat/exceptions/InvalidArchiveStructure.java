@@ -17,32 +17,32 @@ package org.nrg.xnat.exceptions;
 @SuppressWarnings("serial")
 public class InvalidArchiveStructure extends Exception {
 
-    /**
+	/**
      * 
      */
-    public InvalidArchiveStructure() {
-    }
+	public InvalidArchiveStructure() {
+	}
 
-    /**
-     * @param message
-     */
-    public InvalidArchiveStructure(String message) {
-        super(message);
-    }
+	/**
+	 * @param message
+	 */
+	public InvalidArchiveStructure(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public InvalidArchiveStructure(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * @param cause
+	 */
+	public InvalidArchiveStructure(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public InvalidArchiveStructure(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public InvalidArchiveStructure(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

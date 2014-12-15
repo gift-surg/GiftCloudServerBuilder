@@ -29,16 +29,17 @@ public class HistorySummary extends SecureReport {
 	public void finalProcessing(RunData data, Context context) {
 		try {
 
-			List<FlattenedItemI> items=
-				Arrays.asList(
-					ItemMerger.merge(
-							ItemPropBuilder.build(item.getItem(), FlattenedItemA.GET_ALL,Arrays.asList(new FullFileHistoryBuilder()))));
-			
-			context.put("change_sets",(new DateBasedSummaryBuilder(null)).call(items));
+			List<FlattenedItemI> items = Arrays.asList(ItemMerger
+					.merge(ItemPropBuilder.build(item.getItem(),
+							FlattenedItemA.GET_ALL,
+							Arrays.asList(new FullFileHistoryBuilder()))));
+
+			context.put("change_sets",
+					(new DateBasedSummaryBuilder(null)).call(items));
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 		}
-		
+
 	}
 
 }

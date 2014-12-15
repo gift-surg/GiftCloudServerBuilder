@@ -27,19 +27,24 @@ import java.util.Date;
  *
  */
 public class ImageUpload extends SecureScreen {
-    /* (non-Javadoc)
-     * @see org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    protected void doBuildTemplate(final RunData data, final Context context)
-    throws MalformedURLException {
-        final Date d = Calendar.getInstance().getTime();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	protected void doBuildTemplate(final RunData data, final Context context)
+			throws MalformedURLException {
+		final Date d = Calendar.getInstance().getTime();
 
-        final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_hhmmss");
-        context.put("uploadID", formatter.format(d));
+		final SimpleDateFormat formatter = new SimpleDateFormat(
+				"yyyyMMdd_hhmmss");
+		context.put("uploadID", formatter.format(d));
 
-        final ArcArchivespecification arc = ArcSpecManager.GetInstance();
-        context.put("arc", arc);
-        final URL url = new URL(arc.getSiteUrl());
-        context.put("hostname", url.getHost());
-    }
+		final ArcArchivespecification arc = ArcSpecManager.GetInstance();
+		context.put("arc", arc);
+		final URL url = new URL(arc.getSiteUrl());
+		context.put("hostname", url.getHost());
+	}
 }

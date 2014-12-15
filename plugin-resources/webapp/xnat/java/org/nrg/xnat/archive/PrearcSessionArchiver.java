@@ -70,7 +70,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public  class PrearcSessionArchiver extends StatusProducer implements Callable<String>,StatusProducerI {
+public class PrearcSessionArchiver extends StatusProducer implements
+		Callable<String>, StatusProducerI {
 
 	public static final String MERGED = "Merged";
 
@@ -93,75 +94,77 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	public static final String PARAM_SESSION = "session";
 	public static final String PARAM_SUBJECT = "subject";
 
-	private final static Logger logger = LoggerFactory.getLogger(PrearcSessionArchiver.class);
+	private final static Logger logger = LoggerFactory
+			.getLogger(PrearcSessionArchiver.class);
 	protected XnatImagesessiondata src;
 	protected final XDATUser user;
 	protected final String project;
-	protected final Map<String,Object> params;
-	
+	protected final Map<String, Object> params;
+
 	protected final PrearcSession prearcSession;
 
-	private final boolean overrideExceptions;//as of 1.6.2 this is being used to override any potential overridable exception
-	private final boolean allowSessionMerge;//should process proceed if the session already exists
-	private final boolean overwriteFiles;//should process proceed if the same file is reuploaded
+	private final boolean overrideExceptions;// as of 1.6.2 this is being used
+												// to override any potential
+												// overridable exception
+	private final boolean allowSessionMerge;// should process proceed if the
+											// session already exists
+	private final boolean overwriteFiles;// should process proceed if the same
+											// file is reuploaded
 	private final boolean waitFor;
-	
-	private boolean needsScanIdCorrection=false;
 
-	protected PrearcSessionArchiver(final XnatImagesessiondata src, final PrearcSession prearcSession, final XDATUser user, final String project,final Map<String,Object> params, final Boolean overrideExceptions, final Boolean allowSessionMerge, final Boolean waitFor, final Boolean overwriteFiles) {
+	private boolean needsScanIdCorrection = false;
+
+	protected PrearcSessionArchiver(final XnatImagesessiondata src,
+			final PrearcSession prearcSession, final XDATUser user,
+			final String project, final Map<String, Object> params,
+			final Boolean overrideExceptions, final Boolean allowSessionMerge,
+			final Boolean waitFor, final Boolean overwriteFiles) {
 		super(src.getPrearchivePath());
 		this.src = src;
 		this.user = user;
 		this.project = project;
 		this.params = params;
-		this.overrideExceptions=(overrideExceptions==null)?false:overrideExceptions;
-		this.allowSessionMerge=(allowSessionMerge==null)?false:allowSessionMerge;
-		this.overwriteFiles=(overwriteFiles==null)?false:overwriteFiles;
-		this.prearcSession=prearcSession;
-		this.waitFor=waitFor;
+		this.overrideExceptions = (overrideExceptions == null) ? false
+				: overrideExceptions;
+		this.allowSessionMerge = (allowSessionMerge == null) ? false
+				: allowSessionMerge;
+		this.overwriteFiles = (overwriteFiles == null) ? false : overwriteFiles;
+		this.prearcSession = prearcSession;
+		this.waitFor = waitFor;
 	}
 
-	public PrearcSessionArchiver(final PrearcSession session,	
-								 final XDATUser user, 
-								 final Map<String,Object> params, 
-								 boolean overrideExceptions,
-								 final boolean allowSessionMerge, 
-								 final boolean waitFor, 
-								 final Boolean overwriteFiles)
-	throws IOException,SAXException {
-		this((new XNATSessionPopulater(user, 
-									   session.getSessionDir(),  
-									   session.getProject(), 
-									   false)).populate(),
-			  session, 
-			  user, 
-			  session.getProject(), 
-			  params, 
-			  overrideExceptions,
-			  allowSessionMerge, 
-			  waitFor,
-			  overwriteFiles);
+	public PrearcSessionArchiver(final PrearcSession session,
+			final XDATUser user, final Map<String, Object> params,
+			boolean overrideExceptions, final boolean allowSessionMerge,
+			final boolean waitFor, final Boolean overwriteFiles)
+			throws IOException, SAXException {
+		this((new XNATSessionPopulater(user, session.getSessionDir(),
+				session.getProject(), false)).populate(), session, user,
+				session.getProject(), params, overrideExceptions,
+				allowSessionMerge, waitFor, overwriteFiles);
 	}
 
-	public XnatImagesessiondata getSrc(){
+	public XnatImagesessiondata getSrc() {
 		return src;
 	}
 
-	public File getSrcDIR(){
+	public File getSrcDIR() {
 		return prearcSession.getSessionDir();
 	}
 
-
 	public XnatImagesessiondata retrieveExistingExpt() {
-		XnatImagesessiondata existing=null;
+		XnatImagesessiondata existing = null;
 
-		//review existing sessions
-		if(XNATUtils.hasValue(src.getId())){
-			existing=(XnatImagesessiondata)XnatExperimentdata.getXnatExperimentdatasById(src.getId(), user, false);
-	}
+		// review existing sessions
+		if (XNATUtils.hasValue(src.getId())) {
+			existing = (XnatImagesessiondata) XnatExperimentdata
+					.getXnatExperimentdatasById(src.getId(), user, false);
+		}
 
-		if(existing==null){
-			existing=(XnatImagesessiondata)XnatExperimentdata.GetExptByProjectIdentifier(project, src.getLabel(), user, false);
+		if (existing == null) {
+			existing = (XnatImagesessiondata) XnatExperimentdata
+					.GetExptByProjectIdentifier(project, src.getLabel(), user,
+							false);
 		}
 
 		return existing;
@@ -169,35 +172,37 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 	/**
 	 * Determine an appropriate session label.
+	 * 
 	 * @throws ArchivingException
 	 */
-	protected void fixSessionLabel()  throws ClientException {
-		String label = (String)params.get(PARAM_SESSION);
-		
-		if(StringUtils.isEmpty(label)){
-			label = (String)params.get(src.getXSIType()+"/label");
-		}
-		
-		if(StringUtils.isEmpty(label)){
-			label = (String)params.get(URIManager.EXPT_LABEL);
-		}
-
-		if(StringUtils.isEmpty(label)){
-			label = (String)params.get(LABEL2);
-		}
-        
-		//the previous code allows the value in the session xml to be overridden by passed parameters.
-		//if they aren't there, then it should default to the xml label
-        if(StringUtils.isEmpty(label) && !StringUtils.isEmpty(src.getLabel())){
-        	label=src.getLabel();
-        }
-
-        if (StringUtils.isEmpty(label)) {
-            label = prearcSession.getFolderName();
-        }
+	protected void fixSessionLabel() throws ClientException {
+		String label = (String) params.get(PARAM_SESSION);
 
 		if (StringUtils.isEmpty(label)) {
-		    label = src.getId();
+			label = (String) params.get(src.getXSIType() + "/label");
+		}
+
+		if (StringUtils.isEmpty(label)) {
+			label = (String) params.get(URIManager.EXPT_LABEL);
+		}
+
+		if (StringUtils.isEmpty(label)) {
+			label = (String) params.get(LABEL2);
+		}
+
+		// the previous code allows the value in the session xml to be
+		// overridden by passed parameters.
+		// if they aren't there, then it should default to the xml label
+		if (StringUtils.isEmpty(label) && !StringUtils.isEmpty(src.getLabel())) {
+			label = src.getLabel();
+		}
+
+		if (StringUtils.isEmpty(label)) {
+			label = prearcSession.getFolderName();
+		}
+
+		if (StringUtils.isEmpty(label)) {
+			label = src.getId();
 		}
 
 		if (StringUtils.isNotEmpty(label)) {
@@ -210,48 +215,54 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		}
 	}
 
-	public static XnatSubjectdata retrieveMatchingSubject(final String id, final String project,final XDATUser user){
-		XnatSubjectdata sub=null;
-		if(StringUtils.isNotEmpty(project)){
+	public static XnatSubjectdata retrieveMatchingSubject(final String id,
+			final String project, final XDATUser user) {
+		XnatSubjectdata sub = null;
+		if (StringUtils.isNotEmpty(project)) {
 			// XNAT-2865 - Perform case insensitive search for subject
-			sub=XnatSubjectdata.GetSubjectByProjectIdentifierCaseInsensitive(project, id, user, false);
+			sub = XnatSubjectdata.GetSubjectByProjectIdentifierCaseInsensitive(
+					project, id, user, false);
 		}
-		if(sub==null){
-			sub=XnatSubjectdata.getXnatSubjectdatasById(id, user, false);
+		if (sub == null) {
+			sub = XnatSubjectdata.getXnatSubjectdatasById(id, user, false);
 		}
 
 		return sub;
 	}
 
 	/**
-	 * Ensure that the subject label and ID are set in the session --
-	 * by deriving and setting them, if necessary.
+	 * Ensure that the subject label and ID are set in the session -- by
+	 * deriving and setting them, if necessary.
+	 * 
 	 * @throws ArchivingException
 	 */
-	protected void fixSubject(EventMetaI c,boolean allowNewSubject)  throws ClientException,ServerException {
-		String subjectID =  (String)params.get(PARAM_SUBJECT);
+	protected void fixSubject(EventMetaI c, boolean allowNewSubject)
+			throws ClientException, ServerException {
+		String subjectID = (String) params.get(PARAM_SUBJECT);
 
-		if(!XNATUtils.hasValue(subjectID)){
-			subjectID = (String)params.get(URIManager.SUBJECT_ID);
+		if (!XNATUtils.hasValue(subjectID)) {
+			subjectID = (String) params.get(URIManager.SUBJECT_ID);
 		}
 
-		if(!XNATUtils.hasValue(subjectID)){
+		if (!XNATUtils.hasValue(subjectID)) {
 			subjectID = src.getSubjectId();
 		}
 
 		if (!XNATUtils.hasValue(subjectID)) {
 			if (XNATUtils.hasValue(src.getDcmpatientname())) {
-				subjectID=XnatImagesessiondata.cleanValue(src.getDcmpatientname());
+				subjectID = XnatImagesessiondata.cleanValue(src
+						.getDcmpatientname());
 			}
 		}
 
-		if(!XNATUtils.hasValue(subjectID)){
+		if (!XNATUtils.hasValue(subjectID)) {
 			failed("Unable to identify subject.");
 			throw new ClientException("Unable to identify subject.");
 		}
 
 		processing("looking for subject " + subjectID);
-		XnatSubjectdata subject = retrieveMatchingSubject(subjectID, project, user);
+		XnatSubjectdata subject = retrieveMatchingSubject(subjectID, project,
+				user);
 
 		if (null == subject && XNATUtils.hasValue(subjectID)) {
 			final String cleaned = XnatSubjectdata.cleanValue(subjectID);
@@ -261,11 +272,11 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		}
 
 		if (null == subject) {
-			if(!allowNewSubject){
+			if (!allowNewSubject) {
 				return;
 			}
 			processing("creating new subject");
-			subject = new XnatSubjectdata((UserI)user);
+			subject = new XnatSubjectdata((UserI) user);
 			subject.setProject(project);
 			if (XNATUtils.hasValue(subjectID)) {
 				subject.setLabel(XnatSubjectdata.cleanValue(subjectID));
@@ -279,10 +290,11 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			}
 			subject.setId(newID);
 			try {
-				SaveItemHelper.authorizedSave(subject,user, false, false,c);
+				SaveItemHelper.authorizedSave(subject, user, false, false, c);
 			} catch (Exception e) {
 				failed("unable to save new subject " + newID);
-				throw new ServerException("Unable to save new subject " + subject, e);
+				throw new ServerException("Unable to save new subject "
+						+ subject, e);
 			}
 			processing("created new subject " + subjectID);
 
@@ -295,17 +307,20 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 
 	/**
 	 * Retrieves the archive session directory for the given session.
+	 * 
 	 * @return archive session directory
-	 * @throws UnknownPrimaryProjectException 
+	 * @throws UnknownPrimaryProjectException
 	 * @throws ArchivingException
 	 */
-	protected File getArcSessionDir() throws ServerException, UnknownPrimaryProjectException{
+	protected File getArcSessionDir() throws ServerException,
+			UnknownPrimaryProjectException {
 		final File currentArcDir;
 		try {
 			final String path = src.getCurrentArchiveFolder();
 			currentArcDir = (null == path) ? null : new File(path);
 		} catch (InvalidArchiveStructure e) {
-			throw new ServerException("couldn't get archive folder for " + src, e);
+			throw new ServerException("couldn't get archive folder for " + src,
+					e);
 		}
 		final String sessDirName = src.getArchiveDirectoryName();
 		final File relativeSessionDir;
@@ -315,146 +330,203 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			relativeSessionDir = new File(currentArcDir, sessDirName);
 		}
 
-		final File rootArchiveDir = new File(src.getPrimaryProject(false).getRootArchivePath());
-		final File arcSessionDir = new File(rootArchiveDir, relativeSessionDir.getPath());
+		final File rootArchiveDir = new File(src.getPrimaryProject(false)
+				.getRootArchivePath());
+		final File arcSessionDir = new File(rootArchiveDir,
+				relativeSessionDir.getPath());
 
 		return arcSessionDir;
 	}
 
-
 	/**
 	 * Verify that the session isn't already in the transfer pipeline.
+	 * 
 	 * @throws AlreadyArchivingException
 	 */
-	protected void preventConcurrentArchiving(final String id, final XDATUser user) throws ClientException {
-		if(!overrideExceptions){//allow overriding of this behavior via the overwrite parameter
-			Collection<? extends PersistentWorkflowI> wrks=PersistentWorkflowUtils.getOpenWorkflows(user, id);
-			if(!wrks.isEmpty()){
-				this.failed("Session processing in progress:" + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getOnlyPipelineName());
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session processing may already be in progress: " + ((WrkWorkflowdata)CollectionUtils.get(wrks, 0)).getOnlyPipelineName() + ".  Concurrent modification is discouraged.",new Exception());
+	protected void preventConcurrentArchiving(final String id,
+			final XDATUser user) throws ClientException {
+		if (!overrideExceptions) {// allow overriding of this behavior via the
+									// overwrite parameter
+			Collection<? extends PersistentWorkflowI> wrks = PersistentWorkflowUtils
+					.getOpenWorkflows(user, id);
+			if (!wrks.isEmpty()) {
+				this.failed("Session processing in progress:"
+						+ ((WrkWorkflowdata) CollectionUtils.get(wrks, 0))
+								.getOnlyPipelineName());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+						"Session processing may already be in progress: "
+								+ ((WrkWorkflowdata) CollectionUtils.get(wrks,
+										0)).getOnlyPipelineName()
+								+ ".  Concurrent modification is discouraged.",
+						new Exception());
 			}
 		}
 	}
 
 	/**
-	 * Updates the prearchive session XML, if possible. Errors here are logged but not
-	 * otherwise handled; messing up the prearchive session XML is not a disaster.
-	 * @param prearcSessionPath path of session directory in prearchive
+	 * Updates the prearchive session XML, if possible. Errors here are logged
+	 * but not otherwise handled; messing up the prearchive session XML is not a
+	 * disaster.
+	 * 
+	 * @param prearcSessionPath
+	 *            path of session directory in prearchive
 	 */
-	protected void updatePrearchiveSessionXML(final String prearcSessionPath, final XnatImagesessiondata newSession) {
-		
+	protected void updatePrearchiveSessionXML(final String prearcSessionPath,
+			final XnatImagesessiondata newSession) {
+
 		final File prearcSessionDir = new File(prearcSessionPath);
 		try {
-			final FileWriter prearcXML = new FileWriter(prearcSessionDir.getPath() + ".xml");
+			final FileWriter prearcXML = new FileWriter(
+					prearcSessionDir.getPath() + ".xml");
 			try {
-				logger.debug("Preparing to update prearchive XML for {}", newSession);
-				((XFTItem)newSession.getItem().clone()).toXML(prearcXML, false);
+				logger.debug("Preparing to update prearchive XML for {}",
+						newSession);
+				((XFTItem) newSession.getItem().clone())
+						.toXML(prearcXML, false);
 			} catch (RuntimeException e) {
 				logger.error("unable to update prearchive session XML", e);
-				warning("updated prearchive session XML could not be written: " + e.getMessage());
+				warning("updated prearchive session XML could not be written: "
+						+ e.getMessage());
 			} catch (SAXException e) {
-				logger.error("attempted to write invalid updated prearchive session XML", e);
-				warning("updated prearchive session XML is invalid: " + e.getMessage());
+				logger.error(
+						"attempted to write invalid updated prearchive session XML",
+						e);
+				warning("updated prearchive session XML is invalid: "
+						+ e.getMessage());
 			} finally {
 				prearcXML.close();
 			}
-			
-			
+
 		} catch (FileNotFoundException e) {
 			logger.error("unable to update prearchive session XML", e);
 			warning("prearchive session XML not found, cannot update");
 		} catch (IOException e) {
 			logger.error("error updating prearchive session XML", e);
-			warning("could not update prearchive session XML: " + e.getMessage());
+			warning("could not update prearchive session XML: "
+					+ e.getMessage());
 		}
 	}
 
-
 	/**
-	 * This method will allow users to pass xml path as parameters.  The values supplied will be copied into the loaded session.
+	 * This method will allow users to pass xml path as parameters. The values
+	 * supplied will be copied into the loaded session.
 	 *
 	 * @throws ElementNotFoundException
 	 * @throws FieldNotFoundException
 	 * @throws InvalidValueException
 	 */
-	protected void populateAdditionalFields() throws ClientException{
-		//prepare params by removing non xml path names
-		final Map<String,Object> cleaned=XMLPathShortcuts.identifyUsableFields(params,XMLPathShortcuts.EXPERIMENT_DATA,false);
+	protected void populateAdditionalFields() throws ClientException {
+		// prepare params by removing non xml path names
+		final Map<String, Object> cleaned = XMLPathShortcuts
+				.identifyUsableFields(params, XMLPathShortcuts.EXPERIMENT_DATA,
+						false);
 		XFTItem i = src.getItem();
-		
-		if(cleaned.size()>0){
-		try {
-			i.setProperties(cleaned,true);
-			i.removeEmptyItems();
-		} catch (Exception e) {
-			failed("unable to map parameters to valid xml path: " + e.getMessage());
-			throw new ClientException("unable to map parameters to valid xml path: ", e);
+
+		if (cleaned.size() > 0) {
+			try {
+				i.setProperties(cleaned, true);
+				i.removeEmptyItems();
+			} catch (Exception e) {
+				failed("unable to map parameters to valid xml path: "
+						+ e.getMessage());
+				throw new ClientException(
+						"unable to map parameters to valid xml path: ", e);
 			}
 		}
-		src=(XnatImagesessiondata)BaseElement.GetGeneratedItem(i);
+		src = (XnatImagesessiondata) BaseElement.GetGeneratedItem(i);
 	}
 
 	@SuppressWarnings("deprecation")
-	public void checkForConflicts(final XnatImagesessiondata src, final File srcDIR, final XnatImagesessiondata existing, final File destDIR) throws ClientException{
-		if(existing!=null){
-			if(!allowSessionMerge){
+	public void checkForConflicts(final XnatImagesessiondata src,
+			final File srcDIR, final XnatImagesessiondata existing,
+			final File destDIR) throws ClientException {
+		if (existing != null) {
+			if (!allowSessionMerge) {
 				failed(PRE_EXISTS);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PRE_EXISTS, new Exception());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+						PRE_EXISTS, new Exception());
 			}
 
-			if(!StringUtils.equals(src.getLabel(),existing.getLabel())){
+			if (!StringUtils.equals(src.getLabel(), existing.getLabel())) {
 				this.failed(LABEL_MOD);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,LABEL_MOD, new Exception());
-			}
-	
-			if(!StringUtils.equals(existing.getProject(),src.getProject())){
-				failed(PROJ_MOD);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,PROJ_MOD, new Exception());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+						LABEL_MOD, new Exception());
 			}
 
-			//check if the XSI types match
-			if(!StringUtils.equals(existing.getXSIType(), src.getXSIType())){
+			if (!StringUtils.equals(existing.getProject(), src.getProject())) {
+				failed(PROJ_MOD);
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+						PROJ_MOD, new Exception());
+			}
+
+			// check if the XSI types match
+			if (!StringUtils.equals(existing.getXSIType(), src.getXSIType())) {
 				failed(MODALITY_MOD);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,MODALITY_MOD, new Exception());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+						MODALITY_MOD, new Exception());
 			}
-	
-			if(!StringUtils.equals(existing.getSubjectId(),src.getSubjectId())){
+
+			if (!StringUtils
+					.equals(existing.getSubjectId(), src.getSubjectId())) {
 				String subjectId = existing.getLabel();
-				String newError = SUBJECT_MOD + ": " + subjectId + " Already Exists for another Subject";
+				String newError = SUBJECT_MOD + ": " + subjectId
+						+ " Already Exists for another Subject";
 				failed(newError);
-				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,newError, new Exception());
+				throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+						newError, new Exception());
 			}
-			
-			if(!overrideExceptions){
-				if(StringUtils.isNotEmpty(existing.getUid()) && StringUtils.isNotEmpty(src.getUid())){
-					if(!StringUtils.equals(existing.getUid(), src.getUid())){
+
+			if (!overrideExceptions) {
+				if (StringUtils.isNotEmpty(existing.getUid())
+						&& StringUtils.isNotEmpty(src.getUid())) {
+					if (!StringUtils.equals(existing.getUid(), src.getUid())) {
 						failed(UID_MOD);
-						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,UID_MOD, new Exception());
+						throw new ClientException(Status.CLIENT_ERROR_CONFLICT,
+								UID_MOD, new Exception());
 					}
 				}
 			}
-			
-			for(final XnatImagescandataI newScan : src.getScans_scan()){
-				XnatImagescandataI match=MergeUtils.getMatchingScanById(newScan.getId(), existing.getScans_scan());//match by ID
-				if(match!=null){
-					if(StringUtils.equals(match.getUid(),newScan.getUid())){
-						if(!allowSessionMerge){
-							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same UID and number.", new Exception());
+
+			for (final XnatImagescandataI newScan : src.getScans_scan()) {
+				XnatImagescandataI match = MergeUtils.getMatchingScanById(
+						newScan.getId(), existing.getScans_scan());// match by
+																	// ID
+				if (match != null) {
+					if (StringUtils.equals(match.getUid(), newScan.getUid())) {
+						if (!allowSessionMerge) {
+							throw new ClientException(
+									Status.CLIENT_ERROR_CONFLICT,
+									"Session already contains a scan ("
+											+ match.getId()
+											+ ") with the same UID and number.",
+									new Exception());
 						}
-					}else if(StringUtils.isNotEmpty(match.getUid())){
-						if(!allowSessionMerge){
-							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan (" + match.getId() +") with the same number, but a different UID.", new Exception());
-						}else{
-							needsScanIdCorrection=true;
+					} else if (StringUtils.isNotEmpty(match.getUid())) {
+						if (!allowSessionMerge) {
+							throw new ClientException(
+									Status.CLIENT_ERROR_CONFLICT,
+									"Session already contains a scan ("
+											+ match.getId()
+											+ ") with the same number, but a different UID.",
+									new Exception());
+						} else {
+							needsScanIdCorrection = true;
 						}
 					}
 				}
-				
-				XnatImagescandataI match2=MergeUtils.getMatchingScanByUID(newScan, existing.getScans_scan());//match by UID
-				if(match2!=null){
-					if(match==null || !StringUtils.equals(match.getId(),newScan.getId())){
-						if(!overrideExceptions){
-							throw new ClientException(Status.CLIENT_ERROR_CONFLICT,"Session already contains a scan with the same UID, but a different number (" + match2.getId() +").", new Exception());
+
+				XnatImagescandataI match2 = MergeUtils.getMatchingScanByUID(
+						newScan, existing.getScans_scan());// match by UID
+				if (match2 != null) {
+					if (match == null
+							|| !StringUtils.equals(match.getId(),
+									newScan.getId())) {
+						if (!overrideExceptions) {
+							throw new ClientException(
+									Status.CLIENT_ERROR_CONFLICT,
+									"Session already contains a scan with the same UID, but a different number ("
+											+ match2.getId() + ").",
+									new Exception());
 						}
 					}
 				}
@@ -462,272 +534,336 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.concurrent.Callable#call()
 	 */
-	public String call()  throws ClientException,ServerException {
+	public String call() throws ClientException, ServerException {
 		try {
 			this.lock(this.prearcSession.getUrl());
 		} catch (LockedItemException e3) {
-			throw new ClientException(Status.CLIENT_ERROR_LOCKED, "Duplicate archive attempt.  Preachive session already archiving.",e3);
+			throw new ClientException(
+					Status.CLIENT_ERROR_LOCKED,
+					"Duplicate archive attempt.  Preachive session already archiving.",
+					e3);
 		}
-		
+
 		try {
-			if(StringUtils.isEmpty(project)){
+			if (StringUtils.isEmpty(project)) {
 				failed("unable to identify destination project");
-				throw new ClientException("unable to identify destination project", new Exception());
+				throw new ClientException(
+						"unable to identify destination project",
+						new Exception());
 			}
 			populateAdditionalFields();
 
 			fixSessionLabel();
-			
-			final XnatImagesessiondata existing=retrieveExistingExpt();
-			
-			if(existing==null){
+
+			final XnatImagesessiondata existing = retrieveExistingExpt();
+
+			if (existing == null) {
 				try {
-					if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
+					if (!XNATUtils.hasValue(src.getId()))
+						src.setId(XnatExperimentdata.CreateNewID());
 				} catch (Exception e) {
 					failed("unable to create new session ID");
-					throw new ServerException("unable to create new session ID", e);
+					throw new ServerException(
+							"unable to create new session ID", e);
 				}
-			}else{
-				try{
+			} else {
+				try {
 					lock(existing.getId());
 				} catch (LockedItemException e3) {
-					throw new ClientException(Status.CLIENT_ERROR_LOCKED, "Duplicate archive attempt.  Destination session in use.",e3);
+					throw new ClientException(
+							Status.CLIENT_ERROR_LOCKED,
+							"Duplicate archive attempt.  Destination session in use.",
+							e3);
 				}
 				src.setId(existing.getId());
-				preventConcurrentArchiving(existing.getId(),user);
+				preventConcurrentArchiving(existing.getId(), user);
 			}
-			
 
-			
 			final PersistentWorkflowI workflow;
 			final EventMetaI c;
-			
+
 			try {
-				String justification=(String)params.get(EventUtils.EVENT_REASON);
-				if(justification==null){
-					justification="standard upload";
+				String justification = (String) params
+						.get(EventUtils.EVENT_REASON);
+				if (justification == null) {
+					justification = "standard upload";
 				}
-				workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src.getItem(),EventUtils.newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getType((String)params.get(EventUtils.EVENT_TYPE),EventUtils.TYPE.WEB_SERVICE), (existing==null)?EventUtils.TRANSFER:MERGED, (String)params.get(EventUtils.EVENT_REASON), (String)params.get(EventUtils.EVENT_COMMENT)));
+				workflow = PersistentWorkflowUtils.buildOpenWorkflow(user, src
+						.getItem(), EventUtils.newEventInstance(
+						EventUtils.CATEGORY.DATA, EventUtils.getType(
+								(String) params.get(EventUtils.EVENT_TYPE),
+								EventUtils.TYPE.WEB_SERVICE),
+						(existing == null) ? EventUtils.TRANSFER : MERGED,
+						(String) params.get(EventUtils.EVENT_REASON),
+						(String) params.get(EventUtils.EVENT_COMMENT)));
 				workflow.setStepDescription("Validating");
-				c=workflow.buildEvent();
-				
+				c = workflow.buildEvent();
+
 			} catch (JustificationAbsent e2) {
 				throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e2);
 			} catch (EventRequirementAbsent e2) {
 				throw new ClientException(Status.CLIENT_ERROR_BAD_REQUEST, e2);
 			}
 
-			fixSubject(c,true);
+			fixSubject(c, true);
 
-			
 			try {
 				processing("validating loaded data");
 				validateSession();
 
 				final File arcSessionDir = getArcSessionDir();
 
-				if(existing!=null)checkForConflicts(src,this.prearcSession.getSessionDir(),existing,arcSessionDir);
+				if (existing != null)
+					checkForConflicts(src, this.prearcSession.getSessionDir(),
+							existing, arcSessionDir);
 
-
-				if(!overrideExceptions){
+				if (!overrideExceptions) {
 					validateDicomFiles();
 				}
-				
+
 				verifyCompliance();
-				
-				if(arcSessionDir.exists()){
+
+				if (arcSessionDir.exists()) {
 					processing("merging files data with existing session");
-				}else{
+				} else {
 					processing("archiving session");
 				}
 
 				final boolean shouldForceQuarantine;
-				if(params.containsKey(ViewManager.QUARANTINE) && params.get(ViewManager.QUARANTINE).toString().equalsIgnoreCase("true")){
-					shouldForceQuarantine=true;
-				}else{
-					shouldForceQuarantine=false;
+				if (params.containsKey(ViewManager.QUARANTINE)
+						&& params.get(ViewManager.QUARANTINE).toString()
+								.equalsIgnoreCase("true")) {
+					shouldForceQuarantine = true;
+				} else {
+					shouldForceQuarantine = false;
 				}
-				
-				if(needsScanIdCorrection){
+
+				if (needsScanIdCorrection) {
 					correctScanID(existing);
 				}
 
-				final EventMetaI savetime=workflow.buildEvent();
-				SaveHandlerI<XnatImagesessiondata> saveImpl=new SaveHandlerI<XnatImagesessiondata>() {
-					public void save(XnatImagesessiondata merged) throws Exception {					
-						if(SaveItemHelper.authorizedSave(merged,user,false,false,c)){
+				final EventMetaI savetime = workflow.buildEvent();
+				SaveHandlerI<XnatImagesessiondata> saveImpl = new SaveHandlerI<XnatImagesessiondata>() {
+					public void save(XnatImagesessiondata merged)
+							throws Exception {
+						if (SaveItemHelper.authorizedSave(merged, user, false,
+								false, c)) {
 							user.clearLocalCache();
 							try {
 								MaterializedView.DeleteByUser(user);
 							} catch (Exception e) {
-								logger.error("",e);
+								logger.error("", e);
 							}
-							
+
 							try {
 								if (shouldForceQuarantine) {
 									src.quarantine(user);
 								} else {
-									final XnatProjectdata proj = src.getPrimaryProject(false);
-									if (null != proj.getArcSpecification().getQuarantineCode() &&
-											proj.getArcSpecification().getQuarantineCode().equals(1)) {
+									final XnatProjectdata proj = src
+											.getPrimaryProject(false);
+									if (null != proj.getArcSpecification()
+											.getQuarantineCode()
+											&& proj.getArcSpecification()
+													.getQuarantineCode()
+													.equals(1)) {
 										src.quarantine(user);
 									}
 								}
 							} catch (Exception e) {
-								logger.error("",e);
+								logger.error("", e);
 							}
 						}
 					}
 				};
 
-				ListenerUtils.addListeners(this, new MergePrearcToArchiveSession(src.getPrearchivePath(),
-																				 this.prearcSession.getSessionDir(),
-																				 src,
-																				 src.getPrearchivepath(),
-																				 arcSessionDir,
-																				 existing,
-																				 arcSessionDir.getAbsolutePath(),
-																				 allowSessionMerge, 
-																				 (overrideExceptions)?overrideExceptions:overwriteFiles,
-																				 saveImpl,user,workflow.buildEvent())).call();
+				ListenerUtils.addListeners(
+						this,
+						new MergePrearcToArchiveSession(
+								src.getPrearchivePath(), this.prearcSession
+										.getSessionDir(), src, src
+										.getPrearchivepath(), arcSessionDir,
+								existing, arcSessionDir.getAbsolutePath(),
+								allowSessionMerge,
+								(overrideExceptions) ? overrideExceptions
+										: overwriteFiles, saveImpl, user,
+								workflow.buildEvent())).call();
 
-				org.nrg.xft.utils.FileUtils.DeleteFile(new File(this.prearcSession.getSessionDir().getAbsolutePath()+".xml"));
-				org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession.getSessionDir());
-				File timestampedDir = new File(this.prearcSession.getSessionDir().getParent());
+				org.nrg.xft.utils.FileUtils.DeleteFile(new File(
+						this.prearcSession.getSessionDir().getAbsolutePath()
+								+ ".xml"));
+				org.nrg.xft.utils.FileUtils.DeleteFile(this.prearcSession
+						.getSessionDir());
+				File timestampedDir = new File(this.prearcSession
+						.getSessionDir().getParent());
 				File projectDir = timestampedDir.getParentFile();
-				if (timestampedDir.listFiles().length == 0)  {
+				if (timestampedDir.listFiles().length == 0) {
 					org.nrg.xft.utils.FileUtils.DeleteFile(timestampedDir);
 				}
-				if (projectDir.listFiles().length == 0)  {
-					// to keep things tidy, also direct the project-level dir if it's empty
+				if (projectDir.listFiles().length == 0) {
+					// to keep things tidy, also direct the project-level dir if
+					// it's empty
 					org.nrg.xft.utils.FileUtils.DeleteFile(projectDir);
 				}
 
 				try {
 					workflow.setStepDescription(PersistentWorkflowUtils.COMPLETE);
 					WorkflowUtils.complete(workflow, workflow.buildEvent());
-					
+
 				} catch (Exception e1) {
 					logger.error("", e1);
 				}
-				
-				postArchive(user,src,params);
 
-				String triggerPipelines=(String)params.get(TRIGGER_PIPELINES);
-				//if triggerPipelines!=false
-				if((BooleanUtils.isNotFalse(BooleanUtils.toBooleanObject(triggerPipelines)))){
-					TriggerPipelines tp=new TriggerPipelines(src,false,user,waitFor);
+				postArchive(user, src, params);
+
+				String triggerPipelines = (String) params
+						.get(TRIGGER_PIPELINES);
+				// if triggerPipelines!=false
+				if ((BooleanUtils.isNotFalse(BooleanUtils
+						.toBooleanObject(triggerPipelines)))) {
+					TriggerPipelines tp = new TriggerPipelines(src, false,
+							user, waitFor);
 					tp.call();
 				}
 			} catch (ServerException e) {
-				//PER Dan, Don't log failed archive operations
-//			try {
-//				workflow.setStatus(PersistentWorkflowUtils.FAILED);
-//				PersistentWorkflowUtils.save(workflow,c);
-//				if(workflow instanceof WrkWorkflowdata){
-//					((WrkWorkflowdata)workflow).postSave();
-//				}
-//			} catch (Exception e1) {
-//				logger.error("", e1);
-//			}
+				// PER Dan, Don't log failed archive operations
+				// try {
+				// workflow.setStatus(PersistentWorkflowUtils.FAILED);
+				// PersistentWorkflowUtils.save(workflow,c);
+				// if(workflow instanceof WrkWorkflowdata){
+				// ((WrkWorkflowdata)workflow).postSave();
+				// }
+				// } catch (Exception e1) {
+				// logger.error("", e1);
+				// }
 				throw e;
 			} catch (ClientException e) {
-				//PER Dan, Don't log failed archive operations
-//			try {
-//				workflow.setStatus(PersistentWorkflowUtils.FAILED);
-//				PersistentWorkflowUtils.save(workflow,c);
-//				if(workflow instanceof WrkWorkflowdata){
-//					((WrkWorkflowdata)workflow).postSave();
-//				}
-//			} catch (Exception e1) {
-//				logger.error("", e1);
-//			}
+				// PER Dan, Don't log failed archive operations
+				// try {
+				// workflow.setStatus(PersistentWorkflowUtils.FAILED);
+				// PersistentWorkflowUtils.save(workflow,c);
+				// if(workflow instanceof WrkWorkflowdata){
+				// ((WrkWorkflowdata)workflow).postSave();
+				// }
+				// } catch (Exception e1) {
+				// logger.error("", e1);
+				// }
 				throw e;
 			} catch (Throwable e) {
-				//PER Dan, Don't log failed archive operations
-//			try {
-//				workflow.setStatus(PersistentWorkflowUtils.FAILED);
-//				PersistentWorkflowUtils.save(workflow,c);
-//				if(workflow instanceof WrkWorkflowdata){
-//					((WrkWorkflowdata)workflow).postSave();
-//				}
-//			} catch (Exception e1) {
-//				logger.error("", e1);
-//			}
-				logger.error("",e);
-				throw new ServerException(e.getMessage(),new Exception());
+				// PER Dan, Don't log failed archive operations
+				// try {
+				// workflow.setStatus(PersistentWorkflowUtils.FAILED);
+				// PersistentWorkflowUtils.save(workflow,c);
+				// if(workflow instanceof WrkWorkflowdata){
+				// ((WrkWorkflowdata)workflow).postSave();
+				// }
+				// } catch (Exception e1) {
+				// logger.error("", e1);
+				// }
+				logger.error("", e);
+				throw new ServerException(e.getMessage(), new Exception());
 			}
 		} catch (ClientException e) {
 			throw e;
 		} catch (ServerException e) {
 			throw e;
-		}finally{
+		} finally {
 			unlock();
 		}
 
-		final String url = buildURI(project,src);
+		final String url = buildURI(project, src);
 
 		completed("archiving operation complete");
 		return url;
 
 	}
-	
+
 	/**
-	 * This code is used by this class and PrearcSessionValidator to confirm that all scan data is compliant according to the SeriesImportFilters
+	 * This code is used by this class and PrearcSessionValidator to confirm
+	 * that all scan data is compliant according to the SeriesImportFilters
 	 * 
 	 * @throws ClientException
 	 */
-	protected void verifyCompliance() throws ClientException{
-		final SeriesImportFilter siteWide=new SeriesImportFilter();
-		SeriesImportFilter projectSpecific=null;
-		if(StringUtils.isNotEmpty(this.project)){
-			projectSpecific=new SeriesImportFilter(BaseXnatProjectdata.getProjectInfoIdFromStringId(this.project));
+	protected void verifyCompliance() throws ClientException {
+		final SeriesImportFilter siteWide = new SeriesImportFilter();
+		SeriesImportFilter projectSpecific = null;
+		if (StringUtils.isNotEmpty(this.project)) {
+			projectSpecific = new SeriesImportFilter(
+					BaseXnatProjectdata
+							.getProjectInfoIdFromStringId(this.project));
 		}
-		
-		for(final XnatImagescandataI scan: src.getScans_scan()){
-			if(siteWide.isEnabled() && !siteWide.shouldIncludeDicomObject(scan)){
-				fail(22,String.format("Scan %1$s is non-compliant with this server's DICOM whitelist/blacklist.",scan.getId()));
+
+		for (final XnatImagescandataI scan : src.getScans_scan()) {
+			if (siteWide.isEnabled()
+					&& !siteWide.shouldIncludeDicomObject(scan)) {
+				fail(22,
+						String.format(
+								"Scan %1$s is non-compliant with this server's DICOM whitelist/blacklist.",
+								scan.getId()));
 			}
-			if(projectSpecific!=null && projectSpecific.isEnabled() && !projectSpecific.shouldIncludeDicomObject(scan)){
-				fail(22,String.format("Scan %1$s is non-compliant with this project's DICOM whitelist/blacklist.",scan.getId()));
+			if (projectSpecific != null && projectSpecific.isEnabled()
+					&& !projectSpecific.shouldIncludeDicomObject(scan)) {
+				fail(22,
+						String.format(
+								"Scan %1$s is non-compliant with this project's DICOM whitelist/blacklist.",
+								scan.getId()));
 			}
 		}
 	}
 
 	/**
-	 * This code is used by this class and PrearcSessionValidator to confirm that there are no un-referenced or unexpected files in the prearchive content
+	 * This code is used by this class and PrearcSessionValidator to confirm
+	 * that there are no un-referenced or unexpected files in the prearchive
+	 * content
 	 * 
 	 * @throws ClientException
 	 */
-	protected void validateDicomFiles() throws ClientException{
-		//validate files to confirm DICOM contents
-		for(final XnatImagescandataI scan: src.getScans_scan()){
-			for(final XnatAbstractresourceI resource:scan.getFile()){
-				if(resource instanceof XnatResourcecatalogI){
-					final File f=CatalogUtils.getCatalogFile(src.getPrearchivepath(), (XnatResourcecatalogI)resource);
-					if(f==null || !f.exists()){
-						warn(21,"Expected a catalog file, however it was missing.");
+	protected void validateDicomFiles() throws ClientException {
+		// validate files to confirm DICOM contents
+		for (final XnatImagescandataI scan : src.getScans_scan()) {
+			for (final XnatAbstractresourceI resource : scan.getFile()) {
+				if (resource instanceof XnatResourcecatalogI) {
+					final File f = CatalogUtils.getCatalogFile(
+							src.getPrearchivepath(),
+							(XnatResourcecatalogI) resource);
+					if (f == null || !f.exists()) {
+						warn(21,
+								"Expected a catalog file, however it was missing.");
 					}
-					
-					final List<File> unreferenced=CatalogUtils.getUnreferencedFiles(f.getParentFile());
-					if(unreferenced.size()>0){
-						warn(20,String.format("Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files", scan.getId(),unreferenced.size(),resource.getLabel()));
+
+					final List<File> unreferenced = CatalogUtils
+							.getUnreferencedFiles(f.getParentFile());
+					if (unreferenced.size() > 0) {
+						warn(20,
+								String.format(
+										"Scan %1$s has %2$s non-%3$s (or non-parsable %3$s) files",
+										scan.getId(), unreferenced.size(),
+										resource.getLabel()));
 					}
-					
-					if(StringUtils.equals(resource.getLabel(),"DICOM")){
-						//check for entries that aren't DICOM entries or don't have a UID stored
-						final CatCatalogI cat=CatalogUtils.getCatalog(f);
-						final Collection<CatEntryI> nonDCM=CatalogUtils.getEntriesByFilter(cat, new CatEntryFilterI(){
-							@Override
-							public boolean accept(CatEntryI entry) {
-								return ((!(entry instanceof CatDcmentryI)) || StringUtils.isEmpty(((CatDcmentryI)entry).getUid()));
-							}});
-						
-						if(nonDCM.size()>0){
-							warn(20,String.format("Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files", scan.getId(),nonDCM.size()));
+
+					if (StringUtils.equals(resource.getLabel(), "DICOM")) {
+						// check for entries that aren't DICOM entries or don't
+						// have a UID stored
+						final CatCatalogI cat = CatalogUtils.getCatalog(f);
+						final Collection<CatEntryI> nonDCM = CatalogUtils
+								.getEntriesByFilter(cat, new CatEntryFilterI() {
+									@Override
+									public boolean accept(CatEntryI entry) {
+										return ((!(entry instanceof CatDcmentryI)) || StringUtils
+												.isEmpty(((CatDcmentryI) entry)
+														.getUid()));
+									}
+								});
+
+						if (nonDCM.size() > 0) {
+							warn(20,
+									String.format(
+											"Scan %1$s has %2$s non-DICOM (or non-parsable DICOM) files",
+											scan.getId(), nonDCM.size()));
 						}
 					}
 				}
@@ -736,99 +872,128 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	}
 
 	/**
-	 * Method to compare new scans to existing scans.  Matching scan IDs (with different UIDs) will have a _1 added to them.
+	 * Method to compare new scans to existing scans. Matching scan IDs (with
+	 * different UIDs) will have a _1 added to them.
+	 * 
 	 * @param existing
-	 * @throws ServerException 
+	 * @throws ServerException
 	 */
-	private void correctScanID(XnatImagesessiondata existing) throws ServerException {
-		for(final XnatImagescandataI newScan : src.getScans_scan()){
-			//find matching scan by UID
-			final XnatImagescandataI match2=MergeUtils.getMatchingScanByUID(newScan, existing.getScans_scan());//match by UID
-			if(match2!=null){
-				if(!StringUtils.equals(match2.getId(),newScan.getId())){
-					//this UID has been mapped to a different scan ID
-					//update the prearc session to match
-					processing("Renaming scan " + newScan.getId() +" to " + match2.getId() +" due to UID match.");
+	private void correctScanID(XnatImagesessiondata existing)
+			throws ServerException {
+		for (final XnatImagescandataI newScan : src.getScans_scan()) {
+			// find matching scan by UID
+			final XnatImagescandataI match2 = MergeUtils.getMatchingScanByUID(
+					newScan, existing.getScans_scan());// match by UID
+			if (match2 != null) {
+				if (!StringUtils.equals(match2.getId(), newScan.getId())) {
+					// this UID has been mapped to a different scan ID
+					// update the prearc session to match
+					processing("Renaming scan " + newScan.getId() + " to "
+							+ match2.getId() + " due to UID match.");
 					moveScan(newScan, match2.getId());
 				}
-				//scan with matching UID is done (whether their ID's matched or not)
+				// scan with matching UID is done (whether their ID's matched or
+				// not)
 				continue;
 			}
-			
-			//build modality code via parsing of the xsi:type.  modality code matches first 2 characters after the : for xnat types.  Otherwise, leave it empty.
-			//this is a bit of a hack.  It would be better to have an official mapping
-			String modalityCode=(newScan.getXSIType().startsWith("xnat:"))?newScan.getXSIType().substring(5, 7).toUpperCase():"";
-			if("PE".equals(modalityCode)){
-				modalityCode="PT";//this works for everything but PET, which gets called PE instead of PT, so we correct it.
+
+			// build modality code via parsing of the xsi:type. modality code
+			// matches first 2 characters after the : for xnat types. Otherwise,
+			// leave it empty.
+			// this is a bit of a hack. It would be better to have an official
+			// mapping
+			String modalityCode = (newScan.getXSIType().startsWith("xnat:")) ? newScan
+					.getXSIType().substring(5, 7).toUpperCase()
+					: "";
+			if ("PE".equals(modalityCode)) {
+				modalityCode = "PT";// this works for everything but PET, which
+									// gets called PE instead of PT, so we
+									// correct it.
 			}
-			
-			String scan_id=newScan.getId();
-			int count=1;
-			boolean needsMove=false;
-			//make sure there aren't any matches by ID.  if there aren't needsMove stays false.  And, it identifies a good scan_id to use in the process.
-			while(MergeUtils.getMatchingScanById(scan_id, existing.getScans_scan())!=null){
-				scan_id=newScan.getId()+"-"+ modalityCode +count++;
-				needsMove=true;
+
+			String scan_id = newScan.getId();
+			int count = 1;
+			boolean needsMove = false;
+			// make sure there aren't any matches by ID. if there aren't
+			// needsMove stays false. And, it identifies a good scan_id to use
+			// in the process.
+			while (MergeUtils.getMatchingScanById(scan_id,
+					existing.getScans_scan()) != null) {
+				scan_id = newScan.getId() + "-" + modalityCode + count++;
+				needsMove = true;
 			}
-			
-			if(needsMove){
-				//the scan id conflicted with a pre-existing one, so we have to rename this one.
-				processing("Renaming scan " + newScan.getId() +" to " + scan_id +" due to ID conflict.");
-				moveScan(newScan,scan_id);
+
+			if (needsMove) {
+				// the scan id conflicted with a pre-existing one, so we have to
+				// rename this one.
+				processing("Renaming scan " + newScan.getId() + " to "
+						+ scan_id + " due to ID conflict.");
+				moveScan(newScan, scan_id);
 			}
 		}
 	}
 
 	/**
-	 * Used to move a scan to a different scan ID within the prearchive, prior to transfer
+	 * Used to move a scan to a different scan ID within the prearchive, prior
+	 * to transfer
+	 * 
 	 * @param newScan
 	 * @param scan_id
-	 * @throws ServerException 
+	 * @throws ServerException
 	 */
-	private void moveScan(XnatImagescandataI newScan, String scan_id) throws ServerException {
+	private void moveScan(XnatImagescandataI newScan, String scan_id)
+			throws ServerException {
 		/******
 		 * SCANS\1\scan_1_catalog.xml
 		 */
-		final String oldScanCatalogPath=((XnatResourcecatalog)newScan.getFile().get(0)).getUri();
-		final File catalog=new File(src.getPrearchivepath(),oldScanCatalogPath);
-		final String oldScanFolderPath="SCANS/" + newScan.getId();
-		final String newScanFolderPath="SCANS/" + scan_id;
-		final String newScanCatalogPath=newScanFolderPath + "/DICOM/" + catalog.getName();
-		final String prearcpath=getSrcDIR().getAbsolutePath();
-		
-		//confirm expected structure
-		if(!catalog.exists()){
-			throw new ServerException("Non-standard prearchive structure- failed scan rename.");
+		final String oldScanCatalogPath = ((XnatResourcecatalog) newScan
+				.getFile().get(0)).getUri();
+		final File catalog = new File(src.getPrearchivepath(),
+				oldScanCatalogPath);
+		final String oldScanFolderPath = "SCANS/" + newScan.getId();
+		final String newScanFolderPath = "SCANS/" + scan_id;
+		final String newScanCatalogPath = newScanFolderPath + "/DICOM/"
+				+ catalog.getName();
+		final String prearcpath = getSrcDIR().getAbsolutePath();
+
+		// confirm expected structure
+		if (!catalog.exists()) {
+			throw new ServerException(
+					"Non-standard prearchive structure- failed scan rename.");
 		}
-		
-		
-		if(oldScanCatalogPath.startsWith(oldScanFolderPath)){
-			File oldFolder=new File(src.getPrearchivepath(),oldScanFolderPath);
-			
-			//confirm expected structure
-			if(!oldFolder.exists()){
-				throw new ServerException("Non-standard prearchive structure- failed scan rename.");
+
+		if (oldScanCatalogPath.startsWith(oldScanFolderPath)) {
+			File oldFolder = new File(src.getPrearchivepath(),
+					oldScanFolderPath);
+
+			// confirm expected structure
+			if (!oldFolder.exists()) {
+				throw new ServerException(
+						"Non-standard prearchive structure- failed scan rename.");
 			}
-			
-			//move the directory
+
+			// move the directory
 			try {
-				FileUtils.MoveDir(oldFolder, new File(src.getPrearchivepath(),newScanFolderPath), false);
+				FileUtils.MoveDir(oldFolder, new File(src.getPrearchivepath(),
+						newScanFolderPath), false);
 			} catch (FileNotFoundException e) {
 				new ServerException(e);
 			} catch (IOException e) {
 				new ServerException(e);
-			} 
-			
-			//fix the file path
-			XnatResourcecatalog cat=(XnatResourcecatalog)newScan.getFile().get(0);
+			}
+
+			// fix the file path
+			XnatResourcecatalog cat = (XnatResourcecatalog) newScan.getFile()
+					.get(0);
 			cat.setUri(newScanCatalogPath);
-			
-			//fix the scan ID
+
+			// fix the scan ID
 			newScan.setId(scan_id);
-		}else{
-			throw new ServerException("Non-standard prearchive structure- failed scan rename.");
+		} else {
+			throw new ServerException(
+					"Non-standard prearchive structure- failed scan rename.");
 		}
-		
+
 		try {
 			updatePrearchiveSessionXML(prearcpath, src);
 		} catch (Throwable e) {
@@ -837,34 +1002,44 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 	}
 
 	public interface PostArchiveAction {
-		public Boolean execute(XDATUser user, XnatImagesessiondata src, Map<String,Object> params);
+		public Boolean execute(XDATUser user, XnatImagesessiondata src,
+				Map<String, Object> params);
 	}
 
-    private void postArchive(XDATUser user, XnatImagesessiondata src, Map<String, Object> params) {
-        try {
-            List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.actions.postArchive");
-
-            if (classes != null && classes.size() > 0) {
-                for (Class<?> clazz : classes) {
-                    if (PostArchiveAction.class.isAssignableFrom(clazz)) {
-                        PostArchiveAction action = (PostArchiveAction) clazz.newInstance();
-                        Boolean result = action.execute(user, src, params);
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Ran post-archive action class: " + clazz.getSimpleName() + ". Result was " + (result == null ? "false" : result.toString()));
-                        }
-                    } else if (logger.isInfoEnabled()) {
-                        logger.info("Found class in postArchive action package that's not a valid post-archive action class: " + clazz.getSimpleName());
-                    }
-                }
-            }
-        } catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-	public void validateSession() throws ServerException{
+	private void postArchive(XDATUser user, XnatImagesessiondata src,
+			Map<String, Object> params) {
 		try {
-			if(!XNATUtils.hasValue(src.getId()))src.setId(XnatExperimentdata.CreateNewID());
+			List<Class<?>> classes = Reflection
+					.getClassesForPackage("org.nrg.xnat.actions.postArchive");
+
+			if (classes != null && classes.size() > 0) {
+				for (Class<?> clazz : classes) {
+					if (PostArchiveAction.class.isAssignableFrom(clazz)) {
+						PostArchiveAction action = (PostArchiveAction) clazz
+								.newInstance();
+						Boolean result = action.execute(user, src, params);
+						if (logger.isDebugEnabled()) {
+							logger.debug("Ran post-archive action class: "
+									+ clazz.getSimpleName()
+									+ ". Result was "
+									+ (result == null ? "false" : result
+											.toString()));
+						}
+					} else if (logger.isInfoEnabled()) {
+						logger.info("Found class in postArchive action package that's not a valid post-archive action class: "
+								+ clazz.getSimpleName());
+					}
+				}
+			}
+		} catch (Exception exception) {
+			throw new RuntimeException(exception);
+		}
+	}
+
+	public void validateSession() throws ServerException {
+		try {
+			if (!XNATUtils.hasValue(src.getId()))
+				src.setId(XnatExperimentdata.CreateNewID());
 		} catch (Exception e) {
 			throw new ServerException("unable to create new session ID", e);
 		}
@@ -878,87 +1053,106 @@ public  class PrearcSessionArchiver extends StatusProducer implements Callable<S
 			failed("unable to perform session validation: " + e.getMessage());
 			throw new ServerException(e.getMessage(), e);
 		}
-		}
+	}
 
-	public static String buildURI(final String project, final XnatImagesessiondata session){
+	public static String buildURI(final String project,
+			final XnatImagesessiondata session) {
 		final StringBuilder urlb = new StringBuilder();
-			urlb.append("/archive/projects/").append(project);
-			urlb.append("/subjects/");
-			final XnatSubjectdata subjectData = session.getSubjectData();
-			if (XNATUtils.hasValue(subjectData.getLabel())) {
-				urlb.append(subjectData.getLabel());
-			} else {
-				urlb.append(subjectData.getId());
-			}
-			urlb.append("/experiments/").append(session.getLabel());
+		urlb.append("/archive/projects/").append(project);
+		urlb.append("/subjects/");
+		final XnatSubjectdata subjectData = session.getSubjectData();
+		if (XNATUtils.hasValue(subjectData.getLabel())) {
+			urlb.append(subjectData.getLabel());
+		} else {
+			urlb.append(subjectData.getId());
+		}
+		urlb.append("/experiments/").append(session.getLabel());
 		return urlb.toString();
 	}
 
-	
 	/************************************
-	 * We used to use the workflow table to implement locking of the destination session when merging.
-	 * We did so by saving the workflow entry towards the begenning of the archive process (the call method), and checking to see
-	 * if there were any others open.
-	 * However, Dan (and Jenny) requested that we only save the workflow entry if the job completes. So, that approach won't work anymore.
+	 * We used to use the workflow table to implement locking of the destination
+	 * session when merging. We did so by saving the workflow entry towards the
+	 * begenning of the archive process (the call method), and checking to see
+	 * if there were any others open. However, Dan (and Jenny) requested that we
+	 * only save the workflow entry if the job completes. So, that approach
+	 * won't work anymore.
 	 * 
-	 * We should prevent multiple processes from archiving the same prearchived session at the same time.
-	 * And, we should prevent multiple sessions from being merged into a single archived session at the same time.
+	 * We should prevent multiple processes from archiving the same prearchived
+	 * session at the same time. And, we should prevent multiple sessions from
+	 * being merged into a single archived session at the same time.
 	 * 
-	 * So, for now, I'll add a static List to track locked prearchived sessions and archived sessions.
+	 * So, for now, I'll add a static List to track locked prearchived sessions
+	 * and archived sessions.
 	 */
-	//tracks all of the strings locked by any archiver
-	private static List<String> GLOBAL_LOCKS=Lists.newArrayList();
-	private static synchronized void requestLock(String id) throws LockedItemException{
-		if(GLOBAL_LOCKS.contains(id)){
+	// tracks all of the strings locked by any archiver
+	private static List<String> GLOBAL_LOCKS = Lists.newArrayList();
+
+	private static synchronized void requestLock(String id)
+			throws LockedItemException {
+		if (GLOBAL_LOCKS.contains(id)) {
 			throw new LockedItemException();
 		}
-		
-		//free to go
+
+		// free to go
 		GLOBAL_LOCKS.add(id);
 	}
-	
-	private static synchronized void releaseLock(String id){
-		if(GLOBAL_LOCKS.contains(id)){
+
+	private static synchronized void releaseLock(String id) {
+		if (GLOBAL_LOCKS.contains(id)) {
 			GLOBAL_LOCKS.remove(id);
 		}
 	}
-	
-	//used to track the strings that have been locked for this particular archiver instance
-	private List<String> local_locks=Lists.newArrayList();
-	private void lock(String s) throws LockedItemException{
+
+	// used to track the strings that have been locked for this particular
+	// archiver instance
+	private List<String> local_locks = Lists.newArrayList();
+
+	private void lock(String s) throws LockedItemException {
 		PrearcSessionArchiver.requestLock(s);
 		local_locks.add(s);
 	}
-	
-	private void unlock(){
-		for(String lock: local_locks){
+
+	private void unlock() {
+		for (String lock : local_locks) {
 			PrearcSessionArchiver.releaseLock(lock);
 		}
 	}
-	
+
 	private static class LockedItemException extends Exception {
 		private static final long serialVersionUID = 1L;
 
 	}
-	
-	//the following methods are overridden in PrearcSessionValidator
-	//PrearcSessionValidator tries to validate whether the PrearcSessionArchiver would work (and if not what would break it)
-	//ideally, the PrearcSessionValidator would use the exact same code as the Archiver.  But, the Archiver code is sometimes uncompatible
-	//with the validator (validator wants to collect all failure reasons, archiver fails on first one).
-	//however, were possible, they should use the same code.  In those situations the Archiver should use these methods to trigger its exceptions.
-	//then Validator can just change the way those exceptions are handled, by changing the implementation of these methods.
-	//ideally all of the Validator would work this way, but that requires large scale refactoring of PrearcSessionArchiver (which predated the Validator by several years).
-	
-	protected void fail(int code, String msg) throws ClientException{
+
+	// the following methods are overridden in PrearcSessionValidator
+	// PrearcSessionValidator tries to validate whether the
+	// PrearcSessionArchiver would work (and if not what would break it)
+	// ideally, the PrearcSessionValidator would use the exact same code as the
+	// Archiver. But, the Archiver code is sometimes uncompatible
+	// with the validator (validator wants to collect all failure reasons,
+	// archiver fails on first one).
+	// however, were possible, they should use the same code. In those
+	// situations the Archiver should use these methods to trigger its
+	// exceptions.
+	// then Validator can just change the way those exceptions are handled, by
+	// changing the implementation of these methods.
+	// ideally all of the Validator would work this way, but that requires large
+	// scale refactoring of PrearcSessionArchiver (which predated the Validator
+	// by several years).
+
+	protected void fail(int code, String msg) throws ClientException {
 		failed(msg);
 		throw new ClientException(msg);
 	}
-	protected void warn(int code, String msg) throws ClientException{
+
+	protected void warn(int code, String msg) throws ClientException {
 		failed(msg);
 		throw new ClientException(msg);
 	}
-	protected void conflict(int code, String msg) throws ClientException{
+
+	protected void conflict(int code, String msg) throws ClientException {
 		failed(msg);
-		throw new ClientException(Status.CLIENT_ERROR_CONFLICT,msg,new Exception());
+		throw new ClientException(Status.CLIENT_ERROR_CONFLICT, msg,
+				new Exception());
 	}
 }

@@ -19,25 +19,27 @@ import java.util.Date;
 
 public class UpdateExpirationCookie implements Filter {
 	public static String name = "SESSION_EXPIRATION_TIME";
-	
 
 	@Override
-	public void destroy() {}
+	public void destroy() {
+	}
+
 	@Override
-	public void doFilter(ServletRequest req, 
-						   ServletResponse resp,
-						   FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest req, ServletResponse resp,
+			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest hq = (HttpServletRequest) req;
 		HttpServletResponse hr = (HttpServletResponse) resp;
 		int sessionIdleTime = hq.getSession().getMaxInactiveInterval();
 
-		Cookie c=new Cookie(name, ""+(new Date()).getTime()+","+((sessionIdleTime *1000))); 
+		Cookie c = new Cookie(name, "" + (new Date()).getTime() + ","
+				+ ((sessionIdleTime * 1000)));
 		c.setPath("/");
 		hr.addCookie(c);
-		
-		chain.doFilter(req,resp);
+
+		chain.doFilter(req, resp);
 	}
-	
+
 	@Override
-	public void init(FilterConfig fg) throws ServletException {}
+	public void init(FilterConfig fg) throws ServletException {
+	}
 }

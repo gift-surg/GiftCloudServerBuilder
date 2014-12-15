@@ -35,24 +35,29 @@ public class UserSessionId extends SecureResource {
 
 	final private String userID;
 
-	public UserSessionId(Context context, Request request, Response response) throws Exception {
+	public UserSessionId(Context context, Request request, Response response)
+			throws Exception {
 		super(context, request, response);
 
 		userID = (String) getParameter(request, "USER_ID");
-        if (!user.isSiteAdmin() && !user.getLogin().equals(userID)) {
-            _log.error("User " + user.getLogin() + " attempted to access session list for user " + userID);
-            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only administrators can get the session list for users other than themselves.");
-        } else {
-            if (_log.isDebugEnabled()) {
-                _log.debug(user.getLogin() + " is retrieving active sessions for user " + userID);
-            }
-            getVariants().add(new Variant(MediaType.ALL));
-        }
+		if (!user.isSiteAdmin() && !user.getLogin().equals(userID)) {
+			_log.error("User " + user.getLogin()
+					+ " attempted to access session list for user " + userID);
+			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+					"Only administrators can get the session list for users other than themselves.");
+		} else {
+			if (_log.isDebugEnabled()) {
+				_log.debug(user.getLogin()
+						+ " is retrieving active sessions for user " + userID);
+			}
+			getVariants().add(new Variant(MediaType.ALL));
+		}
 	}
 
-    @Override
-    public Representation represent(Variant variant) {
-        SessionRegistry sessionRegistry = XDAT.getContextService().getBean("sessionRegistry", SessionRegistryImpl.class);
+	@Override
+	public Representation represent(Variant variant) {
+		SessionRegistry sessionRegistry = XDAT.getContextService().getBean(
+				"sessionRegistry", SessionRegistryImpl.class);
 		List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
 		List<SessionInformation> l = null;
 		for (Object p : allPrincipals) {
@@ -62,22 +67,24 @@ public class UserSessionId extends SecureResource {
 				}
 			}
 		}
-        try {
-		if (l == null) {
-			JSONObject json = new JSONObject();
-			json.put(userID, 0);
-                return new JSONObjectRepresentation(null, json);
-		} else {
-			JSONObject json = new JSONObject();
-                json.put(userID, l.size());
-                return new JSONObjectRepresentation(null, json);
-            }
-        } catch (JSONException e) {
-            _log.error("There was an error processing the JSON", e);
-            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e, "There was an error processing the JSON");
-            return null;
-        }
+		try {
+			if (l == null) {
+				JSONObject json = new JSONObject();
+				json.put(userID, 0);
+				return new JSONObjectRepresentation(null, json);
+			} else {
+				JSONObject json = new JSONObject();
+				json.put(userID, l.size());
+				return new JSONObjectRepresentation(null, json);
+			}
+		} catch (JSONException e) {
+			_log.error("There was an error processing the JSON", e);
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e,
+					"There was an error processing the JSON");
+			return null;
 		}
-
-    private static final Logger _log = LoggerFactory.getLogger(UserSessionId.class);
 	}
+
+	private static final Logger _log = LoggerFactory
+			.getLogger(UserSessionId.class);
+}

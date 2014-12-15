@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseArcFieldspecification extends AutoArcFieldspecification {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseArcFieldspecification extends
+		AutoArcFieldspecification {
 
-	public BaseArcFieldspecification(ItemI item)
-	{
+	public BaseArcFieldspecification(ItemI item) {
 		super(item);
 	}
 
-	public BaseArcFieldspecification(UserI user)
-	{
+	public BaseArcFieldspecification(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseArcFieldspecification(UserI user)
-	 **/
-	public BaseArcFieldspecification()
-	{}
+	 */
+	public BaseArcFieldspecification() {
+	}
 
-	public BaseArcFieldspecification(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseArcFieldspecification(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

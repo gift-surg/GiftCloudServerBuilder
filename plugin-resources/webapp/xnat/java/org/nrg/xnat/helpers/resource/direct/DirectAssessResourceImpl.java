@@ -31,102 +31,127 @@ public class DirectAssessResourceImpl extends ResourceModifierA {
 	private final XnatImageassessordata expt;
 	private final XnatImagesessiondata session;
 	private final String type;
-	
-	public DirectAssessResourceImpl(final XnatImageassessordata expt, final XnatImagesessiondata session, final String type,final boolean overwrite, final XDATUser user, final EventMetaI ci){
-		super(overwrite,user,ci);
-		this.expt=expt;
-		this.session=session;
-		this.type=type;
-		
-		if(session==null){
-			throw new NullPointerException("Must reference a valid imaging session");
+
+	public DirectAssessResourceImpl(final XnatImageassessordata expt,
+			final XnatImagesessiondata session, final String type,
+			final boolean overwrite, final XDATUser user, final EventMetaI ci) {
+		super(overwrite, user, ci);
+		this.expt = expt;
+		this.session = session;
+		this.type = type;
+
+		if (session == null) {
+			throw new NullPointerException(
+					"Must reference a valid imaging session");
 		}
 	}
-	
-	public XnatProjectdata getProject(){
+
+	public XnatProjectdata getProject() {
 		return expt.getProjectData();
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#buildDestinationPath()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#
+	 * buildDestinationPath()
 	 */
 	@Override
-	public String buildDestinationPath() throws InvalidArchiveStructure, UnknownPrimaryProjectException {
-		String path=FileUtils.AppendRootPath(((XnatImagesessiondata)session).getCurrentSessionFolder(true), "ASSESSORS/" + expt.getId() +"/");
-		
-		if(type!=null){
-			path=FileUtils.AppendRootPath(path,type);
+	public String buildDestinationPath() throws InvalidArchiveStructure,
+			UnknownPrimaryProjectException {
+		String path = FileUtils.AppendRootPath(
+				((XnatImagesessiondata) session).getCurrentSessionFolder(true),
+				"ASSESSORS/" + expt.getId() + "/");
+
+		if (type != null) {
+			path = FileUtils.AppendRootPath(path, type);
 		}
-		
+
 		return path;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource
+	 * (org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
 	 */
 	@Override
-	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
-		XnatImageassessordata iad = (XnatImageassessordata)expt.getLightCopy();
-		if(type!=null){
-			if(type.equals("in")){
+	public boolean addResource(XnatResource resource, final String type,
+			XDATUser user) throws Exception {
+		XnatImageassessordata iad = (XnatImageassessordata) expt.getLightCopy();
+		if (type != null) {
+			if (type.equals("in")) {
 				iad.setIn_file(resource);
-			}else{
+			} else {
 				iad.setOut_file(resource);
 			}
-		}else{
+		} else {
 			iad.setOut_file(resource);
 		}
-		
-		SaveItemHelper.authorizedSave(iad,user, false, false,ci);
+
+		SaveItemHelper.authorizedSave(iad, user, false, false, ci);
 		return true;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById(java.lang.Integer)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById
+	 * (java.lang.Integer)
 	 */
 	@Override
 	public XnatAbstractresourceI getResourceById(Integer i, final String type) {
-		for(XnatAbstractresourceI res: this.expt.getResources_resource()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.expt.getResources_resource()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		for(XnatAbstractresourceI res: this.expt.getIn_file()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.expt.getIn_file()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		for(XnatAbstractresourceI res: this.expt.getOut_file()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.expt.getOut_file()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel
+	 * (java.lang.String)
 	 */
 	@Override
-	public XnatAbstractresourceI getResourceByLabel(String lbl, final String type) {
-		for(XnatAbstractresourceI res: this.expt.getResources_resource()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+	public XnatAbstractresourceI getResourceByLabel(String lbl,
+			final String type) {
+		for (XnatAbstractresourceI res : this.expt.getResources_resource()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		for(XnatAbstractresourceI res: this.expt.getIn_file()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+		for (XnatAbstractresourceI res : this.expt.getIn_file()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		for(XnatAbstractresourceI res: this.expt.getOut_file()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+		for (XnatAbstractresourceI res : this.expt.getOut_file()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 

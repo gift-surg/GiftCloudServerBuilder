@@ -13,54 +13,43 @@ package org.nrg.xnat.exceptions;
 
 public class PipelineNotFoundException extends Exception {
 
-    public PipelineNotFoundException() {
+	public PipelineNotFoundException() {
 
-    }
+	}
 
+	/**
+	 * 
+	 * @param message
+	 */
 
+	public PipelineNotFoundException(String message) {
 
-    /**
+		super(message);
 
-     * @param message
+	}
 
-     */
+	/**
+	 * 
+	 * @param cause
+	 */
 
-    public PipelineNotFoundException(String message) {
+	public PipelineNotFoundException(Throwable cause) {
 
-        super(message);
+		super(cause);
 
-    }
+	}
 
+	/**
+	 * 
+	 * @param message
+	 * 
+	 * @param cause
+	 */
 
+	public PipelineNotFoundException(String message, Throwable cause) {
 
-    /**
+		super(message, cause);
 
-     * @param cause
+	}
 
-     */
-
-    public PipelineNotFoundException(Throwable cause) {
-
-        super(cause);
-
-    }
-
-
-
-    /**
-
-     * @param message
-
-     * @param cause
-
-     */
-
-    public PipelineNotFoundException(String message, Throwable cause) {
-
-        super(message, cause);
-
-    }
-
-
-	
 }

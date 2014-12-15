@@ -38,30 +38,29 @@ public abstract class PrearcSessionResourceA extends SecureResource {
 	protected final String timestamp;
 	protected final String session;
 
-
 	public PrearcSessionResourceA(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		
-		project = (String)getParameter(request,PROJECT_ATTR);
-		timestamp = (String)getParameter(request,SESSION_TIMESTAMP);
-		session = (String)getParameter(request,SESSION_LABEL);
-		
+
+		project = (String) getParameter(request, PROJECT_ATTR);
+		timestamp = (String) getParameter(request, SESSION_TIMESTAMP);
+		session = (String) getParameter(request, SESSION_LABEL);
+
 		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 	}
-	
-	
-	public class PrearcInfo{
+
+	public class PrearcInfo {
 		public final File sessionDIR;
 		public final File sessionXML;
 		public final XnatImagesessiondataBean session;
-		
-		public PrearcInfo(final File dir, final File xml, final XnatImagesessiondataBean session){
-			this.sessionDIR=dir;
-			this.sessionXML=xml;
-			this.session=session;
+
+		public PrearcInfo(final File dir, final File xml,
+				final XnatImagesessiondataBean session) {
+			this.sessionDIR = dir;
+			this.sessionXML = xml;
+			this.session = session;
 		}
 	}
 
@@ -69,24 +68,27 @@ public abstract class PrearcSessionResourceA extends SecureResource {
 		File sessionDIR;
 		File srcXML;
 		try {
-			sessionDIR = PrearcUtils.getPrearcSessionDir(user, project, timestamp, session,false);
-			srcXML=new File(sessionDIR.getAbsolutePath()+".xml");
+			sessionDIR = PrearcUtils.getPrearcSessionDir(user, project,
+					timestamp, session, false);
+			srcXML = new File(sessionDIR.getAbsolutePath() + ".xml");
 		} catch (InvalidPermissionException e) {
-			logger.error("",e);
-			throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN,e);
+			logger.error("", e);
+			throw new ClientException(Status.CLIENT_ERROR_FORBIDDEN, e);
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 			throw new ServerException(e);
 		}
-		
-		if(!srcXML.exists()){
-			throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,"Unable to locate prearc resource.",new Exception());
+
+		if (!srcXML.exists()) {
+			throw new ClientException(Status.CLIENT_ERROR_NOT_FOUND,
+					"Unable to locate prearc resource.", new Exception());
 		}
-		
+
 		try {
-			return new PrearcInfo(sessionDIR,srcXML,PrearcTableBuilder.parseSession(srcXML));
+			return new PrearcInfo(sessionDIR, srcXML,
+					PrearcTableBuilder.parseSession(srcXML));
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 			throw new ServerException(e);
 		}
 	}

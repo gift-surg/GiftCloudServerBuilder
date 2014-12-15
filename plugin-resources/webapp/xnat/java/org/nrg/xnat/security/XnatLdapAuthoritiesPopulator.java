@@ -19,10 +19,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class XnatLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator {
-	
+
 	public Collection<GrantedAuthority> getGrantedAuthorities(
-		DirContextOperations userData, String username) {
+			DirContextOperations userData, String username) {
 		GrantedAuthority ga = new GrantedAuthorityImpl("ROLE_USER");
 		return Arrays.asList(ga);
 	}
-	}
+}

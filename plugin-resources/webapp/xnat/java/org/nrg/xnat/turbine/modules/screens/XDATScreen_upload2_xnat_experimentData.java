@@ -18,7 +18,7 @@ public class XDATScreen_upload2_xnat_experimentData extends SecureReport {
 
 	@Override
 	public void finalProcessing(RunData data, Context context) {
-		
+
 	}
 
 }

@@ -12,7 +12,6 @@ package org.nrg.dcm.id;
 
 import java.util.SortedSet;
 
-
 public interface DicomObjectFunction {
-    SortedSet<Integer> getTags();
+	SortedSet<Integer> getTags();
 }

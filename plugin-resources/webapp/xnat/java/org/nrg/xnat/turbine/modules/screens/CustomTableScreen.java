@@ -24,28 +24,33 @@ public abstract class CustomTableScreen extends SecureScreen {
 	}
 
 	@Override
-	protected void doBuildTemplate(RunData data, Context context) throws Exception {
-		XFTTable t=null;
-		
-		//this used to pass objects via the HTTP session, because the standard RunData can't have complex objects in its parameters.
-		//customized the REST based RunData builder to pass the object in a different way.
-		//but kept it backwards compatible in case there are modules out there using this
-		if(TurbineUtils.HasPassedParameter("table_tag", data)){
-			String tag=(String)TurbineUtils.GetPassedParameter("table_tag", data);
-			t=(XFTTable)data.getSession().getAttribute(tag);
-			
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		XFTTable t = null;
+
+		// this used to pass objects via the HTTP session, because the standard
+		// RunData can't have complex objects in its parameters.
+		// customized the REST based RunData builder to pass the object in a
+		// different way.
+		// but kept it backwards compatible in case there are modules out there
+		// using this
+		if (TurbineUtils.HasPassedParameter("table_tag", data)) {
+			String tag = (String) TurbineUtils.GetPassedParameter("table_tag",
+					data);
+			t = (XFTTable) data.getSession().getAttribute(tag);
+
 			context.put("table", t);
 			data.getSession().removeAttribute(tag);
-		}else if(data instanceof RestletRunData){
-			t=(XFTTable)((RestletRunData)data).retrieveObject("table");
+		} else if (data instanceof RestletRunData) {
+			t = (XFTTable) ((RestletRunData) data).retrieveObject("table");
 			context.put("table", t);
 		}
-		
-		finalProcessing(t,data,context);
+
+		finalProcessing(t, data, context);
 	}
-	
-	public void finalProcessing(XFTTable t, RunData data, Context context){
-		
+
+	public void finalProcessing(XFTTable t, RunData data, Context context) {
+
 	}
 
 }

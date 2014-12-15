@@ -18,14 +18,14 @@ import org.nrg.xnat.utils.XnatHttpUtils;
 
 public class DownloadApplet extends SecureScreen {
 
-    @Override
-    protected void doBuildTemplate(RunData data, Context context)
-            throws Exception {
+	@Override
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
 
-
-        context.put("appletPath",TurbineUtils.GetRelativeServerPath(data) + "/applet");
-        context.put("serverRoot",TurbineUtils.GetRelativeServerPath(data));
+		context.put("appletPath", TurbineUtils.GetRelativeServerPath(data)
+				+ "/applet");
+		context.put("serverRoot", TurbineUtils.GetRelativeServerPath(data));
 		context.put("jsessionid", XnatHttpUtils.getJSESSIONID(data));
-    }
+	}
 
 }

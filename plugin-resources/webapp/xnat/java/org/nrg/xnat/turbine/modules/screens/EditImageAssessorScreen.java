@@ -28,14 +28,18 @@ public abstract class EditImageAssessorScreen extends EditScreenA {
 	@Override
 	public ItemI getEmptyItem(RunData data) throws Exception {
 		final UserI user = TurbineUtils.getUser(data);
-		final XnatImageassessordata assessor = (XnatImageassessordata)BaseElement.GetGeneratedItem(XFTItem.NewItem(getElementName(), user));
+		final XnatImageassessordata assessor = (XnatImageassessordata) BaseElement
+				.GetGeneratedItem(XFTItem.NewItem(getElementName(), user));
 		final String search_element = TurbineUtils.GetSearchElement(data);
 		if (!StringUtils.IsEmpty(search_element)) {
-			final GenericWrapperElement se = GenericWrapperElement.GetElement(search_element);
+			final GenericWrapperElement se = GenericWrapperElement
+					.GetElement(search_element);
 			if (se.instanceOf(XnatImagesessiondata.SCHEMA_ELEMENT_NAME)) {
-				final String search_value = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("search_value",data));
+				final String search_value = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+						.GetPassedParameter("search_value", data));
 				if (!StringUtils.IsEmpty(search_value)) {
-					final XnatImagesessiondata imageSession = new XnatImagesessiondata(TurbineUtils.GetItemBySearch(data));
+					final XnatImagesessiondata imageSession = new XnatImagesessiondata(
+							TurbineUtils.GetItemBySearch(data));
 
 					// set defaults for new qc assessors
 					assessor.setImagesessionId(search_value);
@@ -47,6 +51,5 @@ public abstract class EditImageAssessorScreen extends EditScreenA {
 
 		return assessor.getItem();
 	}
-
 
 }

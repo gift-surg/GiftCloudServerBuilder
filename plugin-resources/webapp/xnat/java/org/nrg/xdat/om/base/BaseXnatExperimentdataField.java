@@ -20,28 +20,25 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseXnatExperimentdataField extends AutoXnatExperimentdataField {
 
-	public BaseXnatExperimentdataField(ItemI item)
-	{
+	public BaseXnatExperimentdataField(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatExperimentdataField(UserI user)
-	{
+	public BaseXnatExperimentdataField(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatExperimentdataField(UserI user)
-	 **/
-	public BaseXnatExperimentdataField()
-	{}
+	 */
+	public BaseXnatExperimentdataField() {
+	}
 
-	public BaseXnatExperimentdataField(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatExperimentdataField(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

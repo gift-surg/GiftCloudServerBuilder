@@ -41,7 +41,8 @@ import java.util.Iterator;
 import java.util.UUID;
 
 public class XnatSecureGuard extends Filter {
-	static org.apache.log4j.Logger logger = Logger.getLogger(XnatSecureGuard.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(XnatSecureGuard.class);
 	private static final String HTTP_REALM = "XNAT Protected Area";
 
 	/**
@@ -61,10 +62,12 @@ public class XnatSecureGuard extends Filter {
 
 	protected Representation loginRepresentation(Request request) {
 		try {
-			return new RESTLoginRepresentation(MediaType.TEXT_HTML, request, null);
+			return new RESTLoginRepresentation(MediaType.TEXT_HTML, request,
+					null);
 		} catch (TurbineException e) {
-			logger.error("",e);
-			return new StringRepresentation("An error has occurred. Unable to load login page.");
+			logger.error("", e);
+			return new StringRepresentation(
+					"An error has occurred. Unable to load login page.");
 		}
 	}
 
@@ -88,12 +91,13 @@ public class XnatSecureGuard extends Filter {
 		return new XDATUser(login);
 	}
 
-    private AliasTokenService getAliasTokenService() {
-        if (_aliasTokenService == null) {
-            _aliasTokenService = XDAT.getContextService().getBean(AliasTokenService.class);
-        }
-        return _aliasTokenService;
-    }
+	private AliasTokenService getAliasTokenService() {
+		if (_aliasTokenService == null) {
+			_aliasTokenService = XDAT.getContextService().getBean(
+					AliasTokenService.class);
+		}
+		return _aliasTokenService;
+	}
 
 	private boolean authenticate(Request request, Response response) {
 		// THIS BREAKS THE TRADITIONAL REST MODEL
@@ -102,61 +106,66 @@ public class XnatSecureGuard extends Filter {
 		final HttpServletRequest httpRequest = getHttpServletRequest(request);
 		final XDATUser sessionUser = getSessionUser(httpRequest);
 		if (sessionUser != null) {
-				//Check for a CsrfToken if necessary.
-				try {
-					//isCsrfTokenOk either returns true or throws an exception...
-					SecureAction.isCsrfTokenOk(httpRequest,false);
-				} catch (Exception e){
-					throw new RuntimeException(e);//LOL.
-				}
-			
+			// Check for a CsrfToken if necessary.
+			try {
+				// isCsrfTokenOk either returns true or throws an exception...
+				SecureAction.isCsrfTokenOk(httpRequest, false);
+			} catch (Exception e) {
+				throw new RuntimeException(e);// LOL.
+			}
+
 			attachUser(request, sessionUser);
 			return true;
 		} else {
 			try {
-                XDATUser user = null;
+				XDATUser user = null;
 				final ChallengeResponse challengeResponse = request
 						.getChallengeResponse();
 				if (challengeResponse != null) {
 					user = authenticateBasic(challengeResponse);
 					if (user != null) {
 						attachUser(request, user);
-						httpRequest.getSession().setAttribute("XNAT_CSRF", UUID.randomUUID().toString());
+						httpRequest.getSession().setAttribute("XNAT_CSRF",
+								UUID.randomUUID().toString());
 						return true;
 					}
+				} else if (!XFT.GetRequireLogin()) {
+					try {
+						HttpSession session = httpRequest.getSession();
+						session.removeAttribute("loggedin");
+						ItemSearch search = new ItemSearch();
+						SchemaElementI e = SchemaElement
+								.GetElement(XDATUser.USER_ELEMENT);
+						search.setElement(e.getGenericXFTElement());
+						search.addCriteria(XDATUser.USER_ELEMENT + "/login",
+								"guest");
+						ItemCollection items = search.exec(true);
+						if (items.size() > 0) {
+							Iterator iter = items.iterator();
+							while (iter.hasNext()) {
+								ItemI o = (ItemI) iter.next();
+								XDATUser temp = new XDATUser(o);
+								if (temp.getUsername()
+										.equalsIgnoreCase("guest")) {
+									user = temp;
+								}
+							}
+							if (user == null) {
+								ItemI o = items.getFirst();
+								user = new XDATUser(o);
+							}
+							attachUser(request, user);
+							return true;
+						}
+					} catch (Exception e) {
+						logger.error("", e);
+					}
 				}
-                else if (!XFT.GetRequireLogin()) {
-                    try {
-                        HttpSession session = httpRequest.getSession();
-                        session.removeAttribute("loggedin");
-                        ItemSearch search = new ItemSearch();
-                        SchemaElementI e = SchemaElement.GetElement(XDATUser.USER_ELEMENT);
-                        search.setElement(e.getGenericXFTElement());
-                        search.addCriteria(XDATUser.USER_ELEMENT +"/login", "guest");
-                        ItemCollection items = search.exec(true);
-                        if (items.size() > 0) {
-                            Iterator iter = items.iterator();
-                            while (iter.hasNext()){
-                                ItemI o = (ItemI)iter.next();
-                                XDATUser temp = new XDATUser(o);
-                                if (temp.getUsername().equalsIgnoreCase("guest")) {
-                                    user = temp;
-                                }
-                            }
-                            if (user == null){
-                                ItemI o = items.getFirst();
-                                user = new XDATUser(o);
-                            }
-                            attachUser(request, user);
-                            return true;
-                        }
-                    } catch (Exception e) {
-                        logger.error("",e);
-                    }
-                }
 			} catch (RuntimeException e) {
-				// We let this return an error to cause a 500 to return to the user.  The only other
-				// option is to throw a 401.  But this wouldn't inform the user that there was an error.
+				// We let this return an error to cause a 500 to return to the
+				// user. The only other
+				// option is to throw a 401. But this wouldn't inform the user
+				// that there was an error.
 				throw e;
 			}
 		}
@@ -164,11 +173,11 @@ public class XnatSecureGuard extends Filter {
 	}
 
 	private XDATUser getSessionUser(HttpServletRequest httpRequest) {
-		if(XDAT.getUserDetails()!=null){
+		if (XDAT.getUserDetails() != null) {
 			return XDAT.getUserDetails();
-		}
-		else{
-			return (XDATUser) httpRequest.getSession().getAttribute(SecureResource.USER_ATTRIBUTE);
+		} else {
+			return (XDATUser) httpRequest.getSession().getAttribute(
+					SecureResource.USER_ATTRIBUTE);
 		}
 	}
 
@@ -177,28 +186,29 @@ public class XnatSecureGuard extends Filter {
 	}
 
 	private XDATUser authenticateBasic(ChallengeResponse challengeResponse) {
-			final String username = challengeResponse.getIdentifier();
-			final String password = new String(challengeResponse.getSecret());
+		final String username = challengeResponse.getIdentifier();
+		final String password = new String(challengeResponse.getSecret());
 
-        XDATUser user;
+		XDATUser user;
 
-        try {
+		try {
 			user = getUser(username);
-			if(!Authenticator.Authenticate(user, new Authenticator.Credentials(username, password))){
-				user=null;
+			if (!Authenticator.Authenticate(user,
+					new Authenticator.Credentials(username, password))) {
+				user = null;
 			}
 		} catch (Exception e) {
 			user = null;
 		}
 
-        if (user == null && AliasToken.isAliasFormat(username)) {
-            AliasToken token = getAliasTokenService().locateToken(username);
-            try {
-                user = new XDATUser(token.getXdatUserId());
-            } catch (Exception exception) {
-                user = null;
-            }
-        }
+		if (user == null && AliasToken.isAliasFormat(username)) {
+			AliasToken token = getAliasTokenService().locateToken(username);
+			try {
+				user = new XDATUser(token.getXdatUserId());
+			} catch (Exception exception) {
+				user = null;
+			}
+		}
 
 		return user;
 	}
@@ -223,5 +233,5 @@ public class XnatSecureGuard extends Filter {
 		}
 	}
 
-    private AliasTokenService _aliasTokenService;
+	private AliasTokenService _aliasTokenService;
 }

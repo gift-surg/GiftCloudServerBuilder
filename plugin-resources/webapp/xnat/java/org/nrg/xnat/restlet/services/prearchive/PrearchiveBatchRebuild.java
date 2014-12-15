@@ -27,12 +27,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class PrearchiveBatchRebuild extends BatchPrearchiveActionsA {
 
-	public PrearchiveBatchRebuild(Context context, Request request, Response response) {
+	public PrearchiveBatchRebuild(Context context, Request request,
+			Response response) {
 		super(context, request, response);
-				
+
 	}
 
 	@Override
@@ -40,42 +40,53 @@ public class PrearchiveBatchRebuild extends BatchPrearchiveActionsA {
 		try {
 			loadBodyVariables();
 
-			//maintain parameters
+			// maintain parameters
 			loadQueryVariables();
 		} catch (ClientException e) {
-			this.getResponse().setStatus(e.getStatus(),e);
+			this.getResponse().setStatus(e.getStatus(), e);
 			return;
 		}
 
-        final List<SessionDataTriple> ss=new ArrayList<SessionDataTriple>();
-		
-		for(final String src:srcs){
-            File sessionDir;
-            try {
-                SessionDataTriple s=buildSessionDataTriple(src);
-                ss.add(s);
-                sessionDir = PrearcUtils.getPrearcSessionDir(user, s.getProject(), s.getTimestamp(), s.getFolderName(), false);
+		final List<SessionDataTriple> ss = new ArrayList<SessionDataTriple>();
 
-                if (PrearcDatabase.setStatus(s.getFolderName(), s.getTimestamp(), s.getProject(), PrearcUtils.PrearcStatus.QUEUED_BUILDING)) {
-                    SessionData sessionData = PrearcDatabase.getSession(s.getFolderName(), s.getTimestamp(), s.getProject());
-                    SessionXmlRebuilderRequest request = new SessionXmlRebuilderRequest(user, sessionData, sessionDir);
-                    XDAT.sendJmsRequest(request);
-                }
-            } catch (Exception exception) {
-                logger.error("Error when setting prearchive session status to QUEUED", exception);
-                this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,exception);
-            }
-        }
+		for (final String src : srcs) {
+			File sessionDir;
+			try {
+				SessionDataTriple s = buildSessionDataTriple(src);
+				ss.add(s);
+				sessionDir = PrearcUtils.getPrearcSessionDir(user,
+						s.getProject(), s.getTimestamp(), s.getFolderName(),
+						false);
 
-		
+				if (PrearcDatabase.setStatus(s.getFolderName(),
+						s.getTimestamp(), s.getProject(),
+						PrearcUtils.PrearcStatus.QUEUED_BUILDING)) {
+					SessionData sessionData = PrearcDatabase
+							.getSession(s.getFolderName(), s.getTimestamp(),
+									s.getProject());
+					SessionXmlRebuilderRequest request = new SessionXmlRebuilderRequest(
+							user, sessionData, sessionDir);
+					XDAT.sendJmsRequest(request);
+				}
+			} catch (Exception exception) {
+				logger.error(
+						"Error when setting prearchive session status to QUEUED",
+						exception);
+				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+						exception);
+			}
+		}
+
 		final Response response = getResponse();
 		try {
-			response.setEntity(updatedStatusRepresentation(ss,overrideVariant(getPreferredVariant())));
+			response.setEntity(updatedStatusRepresentation(ss,
+					overrideVariant(getPreferredVariant())));
 		} catch (Exception e) {
-			logger.error("",e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			logger.error("", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 		}
 	}
 
-    private static final Logger logger = Logger.getLogger(PrearchiveBatchRebuild.class);
+	private static final Logger logger = Logger
+			.getLogger(PrearchiveBatchRebuild.class);
 }

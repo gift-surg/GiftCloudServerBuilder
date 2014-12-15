@@ -31,13 +31,13 @@ public class XMLWriter implements ResponseWriterI {
 	public XMLWriter(HttpServletRequest req, HttpServletResponse resp) {
 		this.request = req;
 		this.response = resp;
-		metaFields = new Hashtable<String,ArrayList<String>>();
+		metaFields = new Hashtable<String, ArrayList<String>>();
 	}
-	
-	public   void setMetaFields(Hashtable<String, ArrayList<String>> metaFields) {
+
+	public void setMetaFields(Hashtable<String, ArrayList<String>> metaFields) {
 	}
-	
-	public   void write(XFTTable table, String title) throws IOException  {
+
+	public void write(XFTTable table, String title) throws IOException {
 		ServletOutputStream out = response.getOutputStream();
 		OutputStreamWriter sw = new OutputStreamWriter(out);
 		BufferedWriter writer = new BufferedWriter(sw);

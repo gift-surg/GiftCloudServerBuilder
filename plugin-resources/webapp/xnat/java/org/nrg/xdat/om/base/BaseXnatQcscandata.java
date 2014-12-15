@@ -17,9 +17,9 @@ import org.nrg.xnat.scanAssessors.ScanAssessorScanI;
 
 import java.util.Hashtable;
 
-
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatQcscandata extends AutoXnatQcscandata implements ScanAssessorScanI{
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatQcscandata extends AutoXnatQcscandata implements
+		ScanAssessorScanI {
 	public BaseXnatQcscandata(ItemI item) {
 		super(item);
 	}
@@ -34,15 +34,14 @@ public abstract class BaseXnatQcscandata extends AutoXnatQcscandata implements S
 	public BaseXnatQcscandata(Hashtable properties, UserI user) {
 		super(properties, user);
 	}
-	
-	public String getSummary(){
+
+	public String getSummary() {
 		String status = getPass();
 		String summary = "<span>Unknown</span>";
-		if(status!=null){
-			if(status.equals("1")||status.equalsIgnoreCase("pass")){
+		if (status != null) {
+			if (status.equals("1") || status.equalsIgnoreCase("pass")) {
 				summary = "<span style=\"color:green\">Passed</span>";
-			}
-			else if(status.equals("0")||status.equalsIgnoreCase("fail")){
+			} else if (status.equals("0") || status.equalsIgnoreCase("fail")) {
 				summary = "<span style=\"color:red\">Failed</span>";
 			}
 		}

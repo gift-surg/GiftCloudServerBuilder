@@ -18,17 +18,17 @@ import org.apache.turbine.services.rundata.DefaultTurbineRunData;
 import com.google.common.collect.Maps;
 
 public class RestletRunData extends DefaultTurbineRunData {
-	Map<String,Object> passedObjects=Maps.newHashMap();
-	
-	public void passObject(String key, Object o){
-		passedObjects.put(key,o);
+	Map<String, Object> passedObjects = Maps.newHashMap();
+
+	public void passObject(String key, Object o) {
+		passedObjects.put(key, o);
 	}
-	
-	public Object retrieveObject(String key){
+
+	public Object retrieveObject(String key) {
 		return passedObjects.remove(key);
 	}
-	
-	public void hijackOutput(PrintWriter os){
+
+	public void hijackOutput(PrintWriter os) {
 		this.setOut(os);
 	}
 }

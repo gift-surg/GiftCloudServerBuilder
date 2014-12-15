@@ -31,20 +31,20 @@ public abstract class ActionException extends Exception {
 	public ActionException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
-	public ActionException(Status s, String msg,Throwable e){
-		super(msg,e);
-		status=s;
-	}
-	
-	public ActionException(Status s, String message){
-		super(message);
-		status=s;
+
+	public ActionException(Status s, String msg, Throwable e) {
+		super(msg, e);
+		status = s;
 	}
 
-	public ActionException(Status s, Throwable e){
+	public ActionException(Status s, String message) {
+		super(message);
+		status = s;
+	}
+
+	public ActionException(Status s, Throwable e) {
 		super(e);
-		status=s;
+		status = s;
 	}
 
 	public abstract Status getStatus();

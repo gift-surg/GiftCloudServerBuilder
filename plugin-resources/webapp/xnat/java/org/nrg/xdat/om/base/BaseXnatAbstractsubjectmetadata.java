@@ -20,25 +20,23 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatAbstractsubjectmetadata extends AutoXnatAbstractsubjectmetadata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatAbstractsubjectmetadata extends
+		AutoXnatAbstractsubjectmetadata {
 
-	public BaseXnatAbstractsubjectmetadata(ItemI item)
-	{
+	public BaseXnatAbstractsubjectmetadata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatAbstractsubjectmetadata(UserI user)
-	{
+	public BaseXnatAbstractsubjectmetadata(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatAbstractsubjectmetadata()
-	{}
+	public BaseXnatAbstractsubjectmetadata() {
+	}
 
-	public BaseXnatAbstractsubjectmetadata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatAbstractsubjectmetadata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

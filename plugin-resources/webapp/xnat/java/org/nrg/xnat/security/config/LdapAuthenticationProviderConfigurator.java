@@ -25,39 +25,60 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class LdapAuthenticationProviderConfigurator extends AbstractAuthenticationProviderConfigurator {
-    @Override
-    public List<AuthenticationProvider> getAuthenticationProviders(String id, String name) {
-        throw new NotImplementedException("You must provide LDAP properties in order to configure an LDAP connection.");
-    }
+public class LdapAuthenticationProviderConfigurator extends
+		AbstractAuthenticationProviderConfigurator {
+	@Override
+	public List<AuthenticationProvider> getAuthenticationProviders(String id,
+			String name) {
+		throw new NotImplementedException(
+				"You must provide LDAP properties in order to configure an LDAP connection.");
+	}
 
-    @Override
-    public List<AuthenticationProvider> getAuthenticationProviders(String id, String name, Map<String, String> properties) {
-        try {
-            XnatLdapAuthenticationProvider ldapAuthProvider = new XnatLdapAuthenticationProvider(getBindAuthenticator(properties, getLdapContextSource(properties)), new XnatLdapAuthoritiesPopulator());
-            ldapAuthProvider.setUserDetailsContextMapper(new XnatLdapUserDetailsMapper(id, properties));
-            ldapAuthProvider.setName(name);
-            ldapAuthProvider.setProviderId(id);
-            return Arrays.asList(new AuthenticationProvider[] { ldapAuthProvider });
-        } catch (Exception exception) {
-            _log.error("Something went wrong when configuring the LDAP authentication provider", exception);
-            return null;
-        }
-    }
+	@Override
+	public List<AuthenticationProvider> getAuthenticationProviders(String id,
+			String name, Map<String, String> properties) {
+		try {
+			XnatLdapAuthenticationProvider ldapAuthProvider = new XnatLdapAuthenticationProvider(
+					getBindAuthenticator(properties,
+							getLdapContextSource(properties)),
+					new XnatLdapAuthoritiesPopulator());
+			ldapAuthProvider
+					.setUserDetailsContextMapper(new XnatLdapUserDetailsMapper(
+							id, properties));
+			ldapAuthProvider.setName(name);
+			ldapAuthProvider.setProviderId(id);
+			return Arrays
+					.asList(new AuthenticationProvider[] { ldapAuthProvider });
+		} catch (Exception exception) {
+			_log.error(
+					"Something went wrong when configuring the LDAP authentication provider",
+					exception);
+			return null;
+		}
+	}
 
-    private BindAuthenticator getBindAuthenticator(final Map<String, String> properties, final DefaultSpringSecurityContextSource ldapServer) {
-        BindAuthenticator ldapBindAuthenticator = new BindAuthenticator(ldapServer);
-        ldapBindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(properties.get("search.base"), properties.get("search.filter"), ldapServer));
-        return ldapBindAuthenticator;
-    }
+	private BindAuthenticator getBindAuthenticator(
+			final Map<String, String> properties,
+			final DefaultSpringSecurityContextSource ldapServer) {
+		BindAuthenticator ldapBindAuthenticator = new BindAuthenticator(
+				ldapServer);
+		ldapBindAuthenticator.setUserSearch(new FilterBasedLdapUserSearch(
+				properties.get("search.base"), properties.get("search.filter"),
+				ldapServer));
+		return ldapBindAuthenticator;
+	}
 
-    private DefaultSpringSecurityContextSource getLdapContextSource(final Map<String, String> properties) throws Exception {
-        return new DefaultSpringSecurityContextSource(properties.get("address")) {{
-            setUserDn(properties.get("userdn"));
-            setPassword(properties.get("password"));
-            afterPropertiesSet();
-        }};
-    }
+	private DefaultSpringSecurityContextSource getLdapContextSource(
+			final Map<String, String> properties) throws Exception {
+		return new DefaultSpringSecurityContextSource(properties.get("address")) {
+			{
+				setUserDn(properties.get("userdn"));
+				setPassword(properties.get("password"));
+				afterPropertiesSet();
+			}
+		};
+	}
 
-    private static final Log _log = LogFactory.getLog(LdapAuthenticationProviderConfigurator.class);
+	private static final Log _log = LogFactory
+			.getLog(LdapAuthenticationProviderConfigurator.class);
 }

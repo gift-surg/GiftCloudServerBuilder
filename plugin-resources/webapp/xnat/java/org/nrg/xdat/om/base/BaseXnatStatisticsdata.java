@@ -25,53 +25,51 @@ import java.util.List;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseXnatStatisticsdata extends AutoXnatStatisticsdata {
 
-	public BaseXnatStatisticsdata(ItemI item)
-	{
+	public BaseXnatStatisticsdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatStatisticsdata(UserI user)
-	{
+	public BaseXnatStatisticsdata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatStatisticsdata(UserI user)
-	 **/
-	public BaseXnatStatisticsdata()
-	{}
-
-	public BaseXnatStatisticsdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatStatisticsdata() {
 	}
-	
-	public XnatStatisticsdataAdditionalstatistics getAdditionalstatistics(String name) {
+
+	public BaseXnatStatisticsdata(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public XnatStatisticsdataAdditionalstatistics getAdditionalstatistics(
+			String name) {
 		XnatStatisticsdataAdditionalstatistics rtn = null;
-		List<XnatStatisticsdataAdditionalstatisticsI> additionalStats = getAdditionalstatistics() ;
+		List<XnatStatisticsdataAdditionalstatisticsI> additionalStats = getAdditionalstatistics();
 		for (int i = 0; i < additionalStats.size(); i++) {
 			if (additionalStats.get(i).getName().equals(name)) {
-				rtn = (XnatStatisticsdataAdditionalstatistics)additionalStats.get(i);
+				rtn = (XnatStatisticsdataAdditionalstatistics) additionalStats
+						.get(i);
 				break;
 			}
 		}
 		return rtn;
-	}	
+	}
 
 	public XnatStatisticsdataAddfield getAddfield(String name) {
 		XnatStatisticsdataAddfield rtn = null;
-		List<XnatStatisticsdataAddfieldI> additionalFields = getAddfield() ;
+		List<XnatStatisticsdataAddfieldI> additionalFields = getAddfield();
 		for (int i = 0; i < additionalFields.size(); i++) {
 			if (additionalFields.get(i).getName().equals(name)) {
-				rtn = (XnatStatisticsdataAddfield)additionalFields.get(i);
+				rtn = (XnatStatisticsdataAddfield) additionalFields.get(i);
 				break;
 			}
 		}
 		return rtn;
 	}
-
 
 }

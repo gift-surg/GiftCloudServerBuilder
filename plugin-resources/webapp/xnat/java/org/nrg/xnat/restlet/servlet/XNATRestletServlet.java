@@ -45,135 +45,172 @@ import java.util.Collection;
 import java.util.List;
 
 public class XNATRestletServlet extends ServerServlet {
-    private static final long serialVersionUID = -4149339105144231596L;
+	private static final long serialVersionUID = -4149339105144231596L;
 
-    public static ServletConfig REST_CONFIG=null;
+	public static ServletConfig REST_CONFIG = null;
 
-    private final Logger logger = LoggerFactory.getLogger(XNATRestletServlet.class);
+	private final Logger logger = LoggerFactory
+			.getLogger(XNATRestletServlet.class);
 
-    /**
-     * Get the username of the site administrator. If there are multiple
-     * site admins, just get the first one. If none are found, return null.
-     * @return The name of the admin user.
-     */
-    @SuppressWarnings("unchecked")
-    private String getAdminUser() throws Exception {
-        String admin = null;
-        Collection<String> logins = (Collection<String>) XDATUser.getAllLogins();
-        for (String login : logins) {
-            XDATUser user = new XDATUser(login);
-            if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
-                admin = login;
-                break;
-            }
-        }
-        return admin;
-    }
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-
-        try {
-            XDAT.getSiteConfiguration();	// get this cached before a user hits it
-        }
-        catch(ConfigServiceException e) {
-            throw new ServletException(e);
-        }
-        
-        updateAuthTable();
-
-        XNATRestletServlet.REST_CONFIG=this.getServletConfig();
-        try {
-            String path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, "");
-            Configuration init_config = AnonUtils.getService().getScript(path, null);
-            if (init_config == null) {
-                logger.info("Creating Script Table.");
-                String site_wide = FileUtils.readFileToString(AnonUtils.getDefaultScript());
-                String adminUser = this.getAdminUser();
-                if (adminUser != null) {
-                    AnonUtils.getService().setSiteWideScript(adminUser, path,site_wide);
-                } else {
-                    throw new Exception("Site administrator not found.");
-                }
-            }
-            // there is a default site-wide script, so nothing to do here for the else.
-        } catch (Throwable e){
-            logger.error("Unable to either find or initialize script database", e);
-        }
-
-        // blatant copy of how we initialize the anon script
-        try {
-            String path = PETTracerUtils.buildScriptPath(PETTracerUtils.ResourceScope.SITE_WIDE, "");
-            Configuration init_config = PETTracerUtils.getService().getTracerList(path, null);
-            if (init_config == null) {
-                logger.info("Creating PET Tracer List.");
-                String site_wide = FileUtils.readFileToString(PETTracerUtils.getDefaultTracerList());
-                String adminUser = this.getAdminUser();
-                if (adminUser != null) {
-                    PETTracerUtils.getService().setSiteWideTracerList(adminUser, path, site_wide);
-                } else {
-                    throw new Exception("Site administrator not found.");
-                }
-            }
-            // there is a default site-wide tracer list, so nothing to do here for the else.
-        } catch (Throwable e){
-            logger.error("Unable to either find or initialize the PET tracer list.", e);
-        }
-
-        PrearcConfig prearcConfig = XDAT.getContextService().getBean(PrearcConfig.class);
-        try {
-            PrearcDatabase.initDatabase(prearcConfig.isReloadPrearcDatabaseOnApplicationStartup());
-        } catch (Throwable e) {
-            logger.error("Unable to initialize prearchive database", e);
-        }
-
-        XnatPasswordEncrypter.execute();
-
-        addWorkflowListeners();
-        
-        XDAT.getContextService().getBean(DicomSCPManager.class).startOrStopDicomSCPAsDictatedByConfiguration();
-        
-    }
-    
-    private void addWorkflowListeners(){
-    	try {
-			List<Class<?>> classes = Reflection.getClassesForPackage("org.nrg.xnat.workflow.listeners");
-
-			if(classes!=null && classes.size()>0){
-				 for(Class<?> clazz: classes){
-					 if(WorkflowSaveHandlerAbst.class.isAssignableFrom(clazz)){
-						EventManager.AddListener(WrkWorkflowdata.SCHEMA_ELEMENT_NAME,(EventListener)clazz.newInstance());
-					 }
-				 }
-			 }
-		} catch (Exception e) {
-			logger.error("",e);
+	/**
+	 * Get the username of the site administrator. If there are multiple site
+	 * admins, just get the first one. If none are found, return null.
+	 * 
+	 * @return The name of the admin user.
+	 */
+	@SuppressWarnings("unchecked")
+	private String getAdminUser() throws Exception {
+		String admin = null;
+		Collection<String> logins = (Collection<String>) XDATUser
+				.getAllLogins();
+		for (String login : logins) {
+			XDATUser user = new XDATUser(login);
+			if (user.checkRole(PrearcUtils.ROLE_SITE_ADMIN)) {
+				admin = login;
+				break;
+			}
 		}
-    }
+		return admin;
+	}
 
-    /**
-     * Adds users from /old xdat_user table to new user authentication table if they are not already there. New local database users now get added to both automatically, but this is necessary
-     * so that those who upgrade from an earlier version will still have their users be able to log in. Password expiry times are also added so that pre-existing users still have their passwords expire.
-     */
-    private void updateAuthTable(){
-        JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
-        List<XdatUserAuth> unmapped = template.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth)", new RowMapper<XdatUserAuth>() {
-            @Override
-            public XdatUserAuth mapRow(final ResultSet resultSet, final int i) throws SQLException {
-                final String login = resultSet.getString("login");
-                final boolean enabled = resultSet.getInt("enabled") == 1;
-                return new XdatUserAuth(login, XdatUserAuthService.LOCALDB, enabled, true, true, true, AuthorityUtils.NO_AUTHORITIES, login,0);
-            }
-        });
-        for (XdatUserAuth userAuth : unmapped) {
-            XDAT.getXdatUserAuthService().create(userAuth);
-        }
-        template.execute("UPDATE xhbm_xdat_user_auth SET password_updated=current_timestamp WHERE auth_method='"+XdatUserAuthService.LOCALDB+"' AND password_updated IS NULL");   
-    }
+	@Override
+	public void init() throws ServletException {
+		super.init();
 
-    @Override
-    public void destroy() {
-        XDAT.getContextService().getBean(DicomSCPManager.class).stopDicomSCP();
-    }
+		try {
+			XDAT.getSiteConfiguration(); // get this cached before a user hits
+											// it
+		} catch (ConfigServiceException e) {
+			throw new ServletException(e);
+		}
+
+		updateAuthTable();
+
+		XNATRestletServlet.REST_CONFIG = this.getServletConfig();
+		try {
+			String path = DicomEdit.buildScriptPath(
+					DicomEdit.ResourceScope.SITE_WIDE, "");
+			Configuration init_config = AnonUtils.getService().getScript(path,
+					null);
+			if (init_config == null) {
+				logger.info("Creating Script Table.");
+				String site_wide = FileUtils.readFileToString(AnonUtils
+						.getDefaultScript());
+				String adminUser = this.getAdminUser();
+				if (adminUser != null) {
+					AnonUtils.getService().setSiteWideScript(adminUser, path,
+							site_wide);
+				} else {
+					throw new Exception("Site administrator not found.");
+				}
+			}
+			// there is a default site-wide script, so nothing to do here for
+			// the else.
+		} catch (Throwable e) {
+			logger.error("Unable to either find or initialize script database",
+					e);
+		}
+
+		// blatant copy of how we initialize the anon script
+		try {
+			String path = PETTracerUtils.buildScriptPath(
+					PETTracerUtils.ResourceScope.SITE_WIDE, "");
+			Configuration init_config = PETTracerUtils.getService()
+					.getTracerList(path, null);
+			if (init_config == null) {
+				logger.info("Creating PET Tracer List.");
+				String site_wide = FileUtils.readFileToString(PETTracerUtils
+						.getDefaultTracerList());
+				String adminUser = this.getAdminUser();
+				if (adminUser != null) {
+					PETTracerUtils.getService().setSiteWideTracerList(
+							adminUser, path, site_wide);
+				} else {
+					throw new Exception("Site administrator not found.");
+				}
+			}
+			// there is a default site-wide tracer list, so nothing to do here
+			// for the else.
+		} catch (Throwable e) {
+			logger.error(
+					"Unable to either find or initialize the PET tracer list.",
+					e);
+		}
+
+		PrearcConfig prearcConfig = XDAT.getContextService().getBean(
+				PrearcConfig.class);
+		try {
+			PrearcDatabase.initDatabase(prearcConfig
+					.isReloadPrearcDatabaseOnApplicationStartup());
+		} catch (Throwable e) {
+			logger.error("Unable to initialize prearchive database", e);
+		}
+
+		XnatPasswordEncrypter.execute();
+
+		addWorkflowListeners();
+
+		XDAT.getContextService().getBean(DicomSCPManager.class)
+				.startOrStopDicomSCPAsDictatedByConfiguration();
+
+	}
+
+	private void addWorkflowListeners() {
+		try {
+			List<Class<?>> classes = Reflection
+					.getClassesForPackage("org.nrg.xnat.workflow.listeners");
+
+			if (classes != null && classes.size() > 0) {
+				for (Class<?> clazz : classes) {
+					if (WorkflowSaveHandlerAbst.class.isAssignableFrom(clazz)) {
+						EventManager.AddListener(
+								WrkWorkflowdata.SCHEMA_ELEMENT_NAME,
+								(EventListener) clazz.newInstance());
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
+
+	/**
+	 * Adds users from /old xdat_user table to new user authentication table if
+	 * they are not already there. New local database users now get added to
+	 * both automatically, but this is necessary so that those who upgrade from
+	 * an earlier version will still have their users be able to log in.
+	 * Password expiry times are also added so that pre-existing users still
+	 * have their passwords expire.
+	 */
+	private void updateAuthTable() {
+		JdbcTemplate template = new JdbcTemplate(XDAT.getDataSource());
+		List<XdatUserAuth> unmapped = template
+				.query("SELECT login, enabled FROM xdat_user WHERE login NOT IN (SELECT xdat_username FROM xhbm_xdat_user_auth)",
+						new RowMapper<XdatUserAuth>() {
+							@Override
+							public XdatUserAuth mapRow(
+									final ResultSet resultSet, final int i)
+									throws SQLException {
+								final String login = resultSet
+										.getString("login");
+								final boolean enabled = resultSet
+										.getInt("enabled") == 1;
+								return new XdatUserAuth(login,
+										XdatUserAuthService.LOCALDB, enabled,
+										true, true, true,
+										AuthorityUtils.NO_AUTHORITIES, login, 0);
+							}
+						});
+		for (XdatUserAuth userAuth : unmapped) {
+			XDAT.getXdatUserAuthService().create(userAuth);
+		}
+		template.execute("UPDATE xhbm_xdat_user_auth SET password_updated=current_timestamp WHERE auth_method='"
+				+ XdatUserAuthService.LOCALDB
+				+ "' AND password_updated IS NULL");
+	}
+
+	@Override
+	public void destroy() {
+		XDAT.getContextService().getBean(DicomSCPManager.class).stopDicomSCP();
+	}
 }

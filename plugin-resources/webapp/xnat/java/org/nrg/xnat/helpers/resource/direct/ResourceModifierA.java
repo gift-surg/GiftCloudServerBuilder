@@ -38,168 +38,185 @@ import java.util.List;
  * @author timo
  */
 public abstract class ResourceModifierA implements Serializable {
-    private static final long serialVersionUID = 42L;
-    final boolean overwrite;
-    final XDATUser user;
-    final EventMetaI ci;
+	private static final long serialVersionUID = 42L;
+	final boolean overwrite;
+	final XDATUser user;
+	final EventMetaI ci;
 
-    public ResourceModifierA(final boolean overwrite, final XDATUser user, final EventMetaI ci) {
-        this.overwrite = overwrite;
-        this.user = user;
-        this.ci = ci;
-    }
+	public ResourceModifierA(final boolean overwrite, final XDATUser user,
+			final EventMetaI ci) {
+		this.overwrite = overwrite;
+		this.user = user;
+		this.ci = ci;
+	}
 
-    public static class UpdateMeta implements EventMetaI, Serializable {
-        private static final long serialVersionUID = 42L;
-        final EventMetaI i;
-        final boolean update;
-        public UpdateMeta(EventMetaI i, boolean update) {
-            this.i = i;
-            this.update = update;
-        }
+	public static class UpdateMeta implements EventMetaI, Serializable {
+		private static final long serialVersionUID = 42L;
+		final EventMetaI i;
+		final boolean update;
 
-        @Override
-        public String getMessage() {
-            return i.getMessage();
-        }
+		public UpdateMeta(EventMetaI i, boolean update) {
+			this.i = i;
+			this.update = update;
+		}
 
-        @Override
-        public Date getEventDate() {
-            return i.getEventDate();
-        }
+		@Override
+		public String getMessage() {
+			return i.getMessage();
+		}
 
-        @Override
-        public String getTimestamp() {
-            return i.getTimestamp();
-        }
+		@Override
+		public Date getEventDate() {
+			return i.getEventDate();
+		}
 
-        @Override
-        public UserI getUser() {
-            return i.getUser();
-        }
+		@Override
+		public String getTimestamp() {
+			return i.getTimestamp();
+		}
 
-        @Override
-        public Number getEventId() {
-            return i.getEventId();
-        }
+		@Override
+		public UserI getUser() {
+			return i.getUser();
+		}
 
-        public boolean getUpdate() {
-            return update;
-        }
+		@Override
+		public Number getEventId() {
+			return i.getEventId();
+		}
 
-    }
+		public boolean getUpdate() {
+			return update;
+		}
 
-    public abstract XnatProjectdata getProject();
+	}
 
-    public abstract boolean addResource(final XnatResource resource, final String type, final XDATUser user) throws Exception;
+	public abstract XnatProjectdata getProject();
 
-    public String getRootPath() {
-        return getProject().getRootArchivePath();
-    }
+	public abstract boolean addResource(final XnatResource resource,
+			final String type, final XDATUser user) throws Exception;
 
-    public List<String> addFile(final List<? extends FileWriterWrapperI> fws, final Object resourceIdentifier, final String type, final String filepath, final XnatResourceInfo info, final boolean extract) throws Exception {
-        List<String> duplicates = new ArrayList<String>();
+	public String getRootPath() {
+		return getProject().getRootArchivePath();
+	}
 
-        if (fws == null || fws.size() == 0) {
-            return duplicates;
-        }
+	public List<String> addFile(final List<? extends FileWriterWrapperI> fws,
+			final Object resourceIdentifier, final String type,
+			final String filepath, final XnatResourceInfo info,
+			final boolean extract) throws Exception {
+		List<String> duplicates = new ArrayList<String>();
 
-        XnatAbstractresource abst = (XnatAbstractresource) getResourceByIdentifier(resourceIdentifier, type);
+		if (fws == null || fws.size() == 0) {
+			return duplicates;
+		}
 
-        boolean isNew = false;
-        if (abst == null) {
-            isNew = true;
-            //new resource
-            abst = new XnatResourcecatalog((UserI) user);
+		XnatAbstractresource abst = (XnatAbstractresource) getResourceByIdentifier(
+				resourceIdentifier, type);
 
-            if (resourceIdentifier != null) {
-                abst.setLabel(resourceIdentifier.toString());
-            }
-            abst.setFileCount(0);
-            abst.setFileSize(0);
+		boolean isNew = false;
+		if (abst == null) {
+			isNew = true;
+			// new resource
+			abst = new XnatResourcecatalog((UserI) user);
 
-            createCatalog((XnatResourcecatalog) abst, info);
+			if (resourceIdentifier != null) {
+				abst.setLabel(resourceIdentifier.toString());
+			}
+			abst.setFileCount(0);
+			abst.setFileSize(0);
 
-        } else {
-            if (!(abst instanceof XnatResourcecatalog)) {
-                throw new Exception("Conflict:Non-catalog resource already exits.");
-            }
-        }
+			createCatalog((XnatResourcecatalog) abst, info);
 
-        duplicates.addAll(CatalogUtils.storeCatalogEntry(fws, filepath, (XnatResourcecatalog) abst, getProject(), extract, info, overwrite, ci));
+		} else {
+			if (!(abst instanceof XnatResourcecatalog)) {
+				throw new Exception(
+						"Conflict:Non-catalog resource already exits.");
+			}
+		}
 
-        CatalogUtils.populateStats(abst, null);
+		duplicates.addAll(CatalogUtils.storeCatalogEntry(fws, filepath,
+				(XnatResourcecatalog) abst, getProject(), extract, info,
+				overwrite, ci));
 
-        if (isNew) {
-            addResource((XnatResourcecatalog) abst, type, user);
-        } else {
-            if ((!(ci instanceof UpdateMeta)) || ((UpdateMeta) ci).getUpdate()) {
-                SaveItemHelper.authorizedSave(abst, user, false, false, ci);
-            }
-        }
+		CatalogUtils.populateStats(abst, null);
 
-        return duplicates;
-    }
+		if (isNew) {
+			addResource((XnatResourcecatalog) abst, type, user);
+		} else {
+			if ((!(ci instanceof UpdateMeta)) || ((UpdateMeta) ci).getUpdate()) {
+				SaveItemHelper.authorizedSave(abst, user, false, false, ci);
+			}
+		}
 
-    public XnatAbstractresourceI getResourceByIdentifier(final Object resourceIdentifier, final String type) {
-        if (resourceIdentifier == null) {
-            return null;
-        }
+		return duplicates;
+	}
 
-        XnatAbstractresourceI resource = null;
+	public XnatAbstractresourceI getResourceByIdentifier(
+			final Object resourceIdentifier, final String type) {
+		if (resourceIdentifier == null) {
+			return null;
+		}
 
-        if (resourceIdentifier instanceof Integer) {
-            resource = getResourceById((Integer) resourceIdentifier, type);
-        }
+		XnatAbstractresourceI resource = null;
 
-        if (resource != null) {
-            return resource;
-        }
+		if (resourceIdentifier instanceof Integer) {
+			resource = getResourceById((Integer) resourceIdentifier, type);
+		}
 
-        resource = getResourceByLabel(resourceIdentifier.toString(), type);
+		if (resource != null) {
+			return resource;
+		}
 
-        if (resource != null) {
-            return resource;
-        }
+		resource = getResourceByLabel(resourceIdentifier.toString(), type);
 
-        if (StringUtils.isNumeric(resourceIdentifier.toString())) {
-            resource = getResourceById(Integer.valueOf(resourceIdentifier.toString()), type);
-        }
+		if (resource != null) {
+			return resource;
+		}
 
-        return resource;
-    }
+		if (StringUtils.isNumeric(resourceIdentifier.toString())) {
+			resource = getResourceById(
+					Integer.valueOf(resourceIdentifier.toString()), type);
+		}
 
-    protected static String getDefaultUID() {
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss");
-        return formatter.format(Calendar.getInstance().getTime());
-    }
+		return resource;
+	}
 
-    protected abstract String buildDestinationPath() throws InvalidArchiveStructure, UnknownPrimaryProjectException;
+	protected static String getDefaultUID() {
+		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
+				"yyyyMMdd_HHmmss");
+		return formatter.format(Calendar.getInstance().getTime());
+	}
 
-    protected abstract XnatAbstractresourceI getResourceById(final Integer i, final String type);
+	protected abstract String buildDestinationPath()
+			throws InvalidArchiveStructure, UnknownPrimaryProjectException;
 
-    protected abstract XnatAbstractresourceI getResourceByLabel(final String lbl, final String type);
+	protected abstract XnatAbstractresourceI getResourceById(final Integer i,
+			final String type);
 
-    private boolean createCatalog(XnatResourcecatalog resource, XnatResourceInfo info) throws Exception {
-        CatalogUtils.configureEntry(resource, info, user);
+	protected abstract XnatAbstractresourceI getResourceByLabel(
+			final String lbl, final String type);
 
-        final String dest_path = this.buildDestinationPath();
+	private boolean createCatalog(XnatResourcecatalog resource,
+			XnatResourceInfo info) throws Exception {
+		CatalogUtils.configureEntry(resource, info, user);
 
-        CatCatalogBean cat = new CatCatalogBean();
-        if (resource.getLabel() != null) {
-            cat.setId(resource.getLabel());
-        } else {
-            cat.setId(getDefaultUID());
-        }
+		final String dest_path = this.buildDestinationPath();
 
-        File saveTo = new File(new File(dest_path, cat.getId()), cat.getId() + "_catalog.xml");
-        saveTo.getParentFile().mkdirs();
+		CatCatalogBean cat = new CatCatalogBean();
+		if (resource.getLabel() != null) {
+			cat.setId(resource.getLabel());
+		} else {
+			cat.setId(getDefaultUID());
+		}
 
-        CatalogUtils.writeCatalogToFile(cat, saveTo);
+		File saveTo = new File(new File(dest_path, cat.getId()), cat.getId()
+				+ "_catalog.xml");
+		saveTo.getParentFile().mkdirs();
 
-        resource.setUri(saveTo.getAbsolutePath());
+		CatalogUtils.writeCatalogToFile(cat, saveTo);
 
-        return true;
-    }
+		resource.setUri(saveTo.getAbsolutePath());
+
+		return true;
+	}
 }
-

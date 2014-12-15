@@ -10,7 +10,6 @@
  */
 package org.nrg.xnat.turbine.modules.actions;
 
-
 public class ModifyManualQC extends ModifyImageAssessorData {
 
 	@Override

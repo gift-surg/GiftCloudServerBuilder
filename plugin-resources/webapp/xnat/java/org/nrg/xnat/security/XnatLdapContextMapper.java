@@ -22,24 +22,28 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import java.util.Collection;
 
 public class XnatLdapContextMapper implements UserDetailsContextMapper {
-	private String authMethodId="";
-	
-	public XnatLdapContextMapper(){
+	private String authMethodId = "";
+
+	public XnatLdapContextMapper() {
 		super();
 	}
-	
-	public XnatLdapContextMapper(String authMethodId){
+
+	public XnatLdapContextMapper(String authMethodId) {
 		super();
 		this.authMethodId = authMethodId;
 	}
-	
-    public UserDetails mapUserFromContext(DirContextOperations ctx, String username, Collection<GrantedAuthority> authorities) {
-    	String email = ctx.getObjectAttribute("mail").toString();
-    	XDATUserDetails user = XDAT.getXdatUserAuthService().getUserDetailsByNameAndAuth(username, XdatUserAuthService.LDAP, authMethodId, email);
-		return user;
-   }
 
-    public void mapUserToContext(UserDetails user, DirContextAdapter ctx) {
-    	throw new UnsupportedOperationException("LdapUserDetailsMapper only supports reading from a context.");
-    }
+	public UserDetails mapUserFromContext(DirContextOperations ctx,
+			String username, Collection<GrantedAuthority> authorities) {
+		String email = ctx.getObjectAttribute("mail").toString();
+		XDATUserDetails user = XDAT.getXdatUserAuthService()
+				.getUserDetailsByNameAndAuth(username,
+						XdatUserAuthService.LDAP, authMethodId, email);
+		return user;
+	}
+
+	public void mapUserToContext(UserDetails user, DirContextAdapter ctx) {
+		throw new UnsupportedOperationException(
+				"LdapUserDetailsMapper only supports reading from a context.");
+	}
 }

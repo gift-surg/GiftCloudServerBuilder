@@ -35,237 +35,270 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 public class FeatureDefinitionRestlet extends SecureResource {
-    public FeatureDefinitionRestlet(Context context, Request request, Response response) {
-        super(context, request, response);
-        
-        if (request.getMethod() == Method.POST && !request.isEntityAvailable()) {
-            getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED, "You must provide a configuration for whitelisted IP addresses.");
-        } else {
-	        this.getVariants().add(new Variant(MediaType.ALL));
-	    }
-    }
+	public FeatureDefinitionRestlet(Context context, Request request,
+			Response response) {
+		super(context, request, response);
 
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        if (_log.isDebugEnabled()) {
-            _log.debug("Entering the featureDefinitionRestlet represent() method");
-        }
+		if (request.getMethod() == Method.POST && !request.isEntityAvailable()) {
+			getResponse()
+					.setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED,
+							"You must provide a configuration for whitelisted IP addresses.");
+		} else {
+			this.getVariants().add(new Variant(MediaType.ALL));
+		}
+	}
 
-        if(getQueryVariable("tag")==null && getQueryVariable("type")==null && getQueryVariable("group")==null){
-	        XFTTable t = new XFTTable();
-	        t.initTable(new String[]{"key","name","description","enabled","banned"});
-	        
-	        for(FeatureDefinitionI feature: Features.getAllFeatures()){
-	        	t.insertRow(new Object[]{feature.getKey(),feature.getName(),feature.isOnByDefault(),feature.isBanned()});
-	        }
-	        
-	        return representTable(t, overrideVariant(variant), new Hashtable<String, Object>());
-        }else if(getQueryVariable("tag")!=null){
-        	String[] tags=StringUtils.split(getQueryVariable("tag"), ",");
-        	
-        	Collection<String> siteWideEnabled=Features.getEnabledFeatures();
-        	Collection<String> siteWideBanned=Features.getBannedFeatures();
-        	
-        	
-        	JSONArray projects = new JSONArray();
-        	for(String tag:tags){
-        		XnatProjectdata proj=XnatProjectdata.getProjectByIDorAlias(tag, user, false);
-        		        		
-        		try {
-					JSONObject project= new JSONObject();
-					project.put("id",proj.getId());
-					project.put("banned",siteWideBanned);
-					project.put("onByDefault",siteWideEnabled);
-					
-					List<JSONObject> groups=Lists.newArrayList();
-					
-					for(List gID:proj.getGroupIDs()){
-						UserGroup ug= UserGroupManager.GetGroup((String)gID.get(0));
-						
+	@Override
+	public Representation represent(Variant variant) throws ResourceException {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Entering the featureDefinitionRestlet represent() method");
+		}
+
+		if (getQueryVariable("tag") == null && getQueryVariable("type") == null
+				&& getQueryVariable("group") == null) {
+			XFTTable t = new XFTTable();
+			t.initTable(new String[] { "key", "name", "description", "enabled",
+					"banned" });
+
+			for (FeatureDefinitionI feature : Features.getAllFeatures()) {
+				t.insertRow(new Object[] { feature.getKey(), feature.getName(),
+						feature.isOnByDefault(), feature.isBanned() });
+			}
+
+			return representTable(t, overrideVariant(variant),
+					new Hashtable<String, Object>());
+		} else if (getQueryVariable("tag") != null) {
+			String[] tags = StringUtils.split(getQueryVariable("tag"), ",");
+
+			Collection<String> siteWideEnabled = Features.getEnabledFeatures();
+			Collection<String> siteWideBanned = Features.getBannedFeatures();
+
+			JSONArray projects = new JSONArray();
+			for (String tag : tags) {
+				XnatProjectdata proj = XnatProjectdata.getProjectByIDorAlias(
+						tag, user, false);
+
+				try {
+					JSONObject project = new JSONObject();
+					project.put("id", proj.getId());
+					project.put("banned", siteWideBanned);
+					project.put("onByDefault", siteWideEnabled);
+
+					List<JSONObject> groups = Lists.newArrayList();
+
+					for (List gID : proj.getGroupIDs()) {
+						UserGroup ug = UserGroupManager.GetGroup((String) gID
+								.get(0));
+
 						JSONObject group = new JSONObject();
-						group.put("id",ug.getId());
-						group.put("display",gID.get(1));
-						
-						group.put("features",ug.getFeatures());
+						group.put("id", ug.getId());
+						group.put("display", gID.get(1));
+
+						group.put("features", ug.getFeatures());
 						group.put("blocked", ug.getBlockedFeatures());
-						
-						group.put("inherited_features",Features.getEnabledFeaturesForGroupType((String)gID.get(1)));
-						group.put("inherited_banned", Features.getBannedFeaturesForGroupType((String)gID.get(1)));
-						
+
+						group.put("inherited_features", Features
+								.getEnabledFeaturesForGroupType((String) gID
+										.get(1)));
+						group.put("inherited_banned", Features
+								.getBannedFeaturesForGroupType((String) gID
+										.get(1)));
+
 						groups.add(group);
 					}
-					
+
 					project.put("groups", groups);
 					projects.put(project);
 				} catch (JSONException e) {
-					logger.error("",e);
+					logger.error("", e);
 				}
-        	}
-        	
-        	return new StringRepresentation(projects.toString());
-        }else if(getQueryVariable("type")!=null){        	
-        	Collection<String> siteWideEnabled=Features.getEnabledFeatures();
-        	Collection<String> siteWideBanned=Features.getBannedFeatures();
-        	
-        	
-        	JSONArray projects = new JSONArray();
-    		        		
-    		try {
-				JSONObject project= new JSONObject();
-				project.put("id",Features.SITE_WIDE);
-				project.put("banned",siteWideBanned);
-				project.put("onByDefault",siteWideEnabled);
-				
-				List<JSONObject> groups=Lists.newArrayList();
-				
-				XFTTable t= XFTTable.Execute("SELECT DISTINCT displayname FROM xdat_usergroup WHERE tag IS NOT NULL;", null, null);
-		        List<Object> groupTypes=t.convertColumnToArrayList("displayname");
-				
-				for(Object gType:groupTypes){
+			}
+
+			return new StringRepresentation(projects.toString());
+		} else if (getQueryVariable("type") != null) {
+			Collection<String> siteWideEnabled = Features.getEnabledFeatures();
+			Collection<String> siteWideBanned = Features.getBannedFeatures();
+
+			JSONArray projects = new JSONArray();
+
+			try {
+				JSONObject project = new JSONObject();
+				project.put("id", Features.SITE_WIDE);
+				project.put("banned", siteWideBanned);
+				project.put("onByDefault", siteWideEnabled);
+
+				List<JSONObject> groups = Lists.newArrayList();
+
+				XFTTable t = XFTTable
+						.Execute(
+								"SELECT DISTINCT displayname FROM xdat_usergroup WHERE tag IS NOT NULL;",
+								null, null);
+				List<Object> groupTypes = t
+						.convertColumnToArrayList("displayname");
+
+				for (Object gType : groupTypes) {
 					JSONObject group = new JSONObject();
-					group.put("id",gType);
-					group.put("display",gType);
-					
-					group.put("features",Features.getEnabledFeaturesForGroupType((String)gType));
-					group.put("blocked", Features.getBannedFeaturesForGroupType((String)gType));
-					
+					group.put("id", gType);
+					group.put("display", gType);
+
+					group.put("features", Features
+							.getEnabledFeaturesForGroupType((String) gType));
+					group.put("blocked", Features
+							.getBannedFeaturesForGroupType((String) gType));
+
 					groups.add(group);
 				}
-				
+
 				project.put("groups", groups);
 				projects.put(project);
 			} catch (Exception e) {
-				logger.error("",e);
+				logger.error("", e);
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				return null;
 			}
-        	return new StringRepresentation(projects.toString());
-        }else{
-        	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        	return null;
-        }
-    }
+			return new StringRepresentation(projects.toString());
+		} else {
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
+		}
+	}
 
-    @Override
-    public boolean allowPost() {
-        return true;
-    }
+	@Override
+	public boolean allowPost() {
+		return true;
+	}
 
-    @Override
-    public void handlePost() {
-    	try {
+	@Override
+	public void handlePost() {
+		try {
 			InputStream is = this.getRequest().getEntity().getStream();
-			
-			String body= IOUtils.toString(is);
-			
-			JSONObject json=new JSONObject(body);
-			
-			Boolean enabled=null;
+
+			String body = IOUtils.toString(is);
+
+			JSONObject json = new JSONObject(body);
+
+			Boolean enabled = null;
 			try {
 				enabled = json.getBoolean("enabled");
 			} catch (Exception e) {
-				//missing fields are thrown as exceptions
+				// missing fields are thrown as exceptions
 			}
-			Boolean banned=null;
+			Boolean banned = null;
 			try {
 				banned = json.getBoolean("banned");
 			} catch (Exception e) {
-				//missing fields are thrown as exceptions
+				// missing fields are thrown as exceptions
 			}
-			
-			String key = json.getString("key");
-			
 
-			if(getQueryVariable("type")==null && getQueryVariable("group")==null){
+			String key = json.getString("key");
+
+			if (getQueryVariable("type") == null
+					&& getQueryVariable("group") == null) {
 				if (!user.isSiteAdmin()) {
-		            getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-		            return ;
-		        }
-				//site wide configuration
-				FeatureDefinitionI def=Features.getFeatureRepositoryService().getByKey(key);
-				if(def==null){
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+					return;
+				}
+				// site wide configuration
+				FeatureDefinitionI def = Features.getFeatureRepositoryService()
+						.getByKey(key);
+				if (def == null) {
 					this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 					return;
 				}
-				
-				//manage banning
-				if(banned!=null){
-					if(BooleanUtils.toBoolean(def.isBanned()) && !BooleanUtils.toBoolean(banned)){
+
+				// manage banning
+				if (banned != null) {
+					if (BooleanUtils.toBoolean(def.isBanned())
+							&& !BooleanUtils.toBoolean(banned)) {
 						Features.unBanFeature(key);
-					}else if(BooleanUtils.toBoolean(banned) && !BooleanUtils.toBoolean(def.isBanned())){
+					} else if (BooleanUtils.toBoolean(banned)
+							&& !BooleanUtils.toBoolean(def.isBanned())) {
 						Features.banFeature(key);
 					}
 				}
-				
-				//manage OnByDefault
-				if(enabled!=null){
-					if(BooleanUtils.toBoolean(def.isOnByDefault()) && !BooleanUtils.toBoolean(enabled)){
+
+				// manage OnByDefault
+				if (enabled != null) {
+					if (BooleanUtils.toBoolean(def.isOnByDefault())
+							&& !BooleanUtils.toBoolean(enabled)) {
 						Features.disableByDefault(key);
-					}else if(BooleanUtils.toBoolean(enabled) && !BooleanUtils.toBoolean(def.isOnByDefault())){
+					} else if (BooleanUtils.toBoolean(enabled)
+							&& !BooleanUtils.toBoolean(def.isOnByDefault())) {
 						Features.enableByDefault(key);
 					}
 				}
-			}else if(getQueryVariable("type")!=null){
+			} else if (getQueryVariable("type") != null) {
 				if (!user.isSiteAdmin()) {
-		            getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-		            return ;
-		        }
-				//display name specific customization
-				String type=getQueryVariable("type");
-				
-				//manage banning
-				if(banned!=null){
-					if(!BooleanUtils.toBoolean(banned) && Features.isBlockedByGroupType(key, type)){
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+					return;
+				}
+				// display name specific customization
+				String type = getQueryVariable("type");
+
+				// manage banning
+				if (banned != null) {
+					if (!BooleanUtils.toBoolean(banned)
+							&& Features.isBlockedByGroupType(key, type)) {
 						Features.unblockByGroupType(key, type, user);
-					}else if(BooleanUtils.toBoolean(banned) && !Features.isBlockedByGroupType(key, type)){
+					} else if (BooleanUtils.toBoolean(banned)
+							&& !Features.isBlockedByGroupType(key, type)) {
 						Features.blockByGroupType(key, type, user);
 					}
 				}
-				
-				//manage OnByDefault
-				if(enabled!=null){
-					if(!BooleanUtils.toBoolean(enabled) && Features.isOnByDefaultByGroupType(key, type)){
-						Features.disableIsOnByDefaultByGroupType(key, type, user);
-					}else if(BooleanUtils.toBoolean(enabled) && !Features.isOnByDefaultByGroupType(key, type)){
+
+				// manage OnByDefault
+				if (enabled != null) {
+					if (!BooleanUtils.toBoolean(enabled)
+							&& Features.isOnByDefaultByGroupType(key, type)) {
+						Features.disableIsOnByDefaultByGroupType(key, type,
+								user);
+					} else if (BooleanUtils.toBoolean(enabled)
+							&& !Features.isOnByDefaultByGroupType(key, type)) {
 						Features.enableIsOnByDefaultByGroupType(key, type, user);
 					}
 				}
-			}else if(getQueryVariable("group")!=null){
-				//tag specific customization
-				String groupid=getQueryVariable("group");
-				
-				UserGroup group=UserGroupManager.GetGroup(groupid);
-				
-				//manage banning
-				if(banned!=null){
-					if(!BooleanUtils.toBoolean(banned) && Features.isBannedByGroup(group, key)){
+			} else if (getQueryVariable("group") != null) {
+				// tag specific customization
+				String groupid = getQueryVariable("group");
+
+				UserGroup group = UserGroupManager.GetGroup(groupid);
+
+				// manage banning
+				if (banned != null) {
+					if (!BooleanUtils.toBoolean(banned)
+							&& Features.isBannedByGroup(group, key)) {
 						Features.unblockFeatureForGroup(group, key, user);
-					}else if(BooleanUtils.toBoolean(banned) && !Features.isBannedByGroup(group, key)){
+					} else if (BooleanUtils.toBoolean(banned)
+							&& !Features.isBannedByGroup(group, key)) {
 						Features.blockFeatureForGroup(group, key, user);
 					}
 				}
-				
-				//manage OnByDefault
-				if(enabled!=null){
-					if(!BooleanUtils.toBoolean(enabled) && Features.isOnByDefaultByGroup(group,key)){
+
+				// manage OnByDefault
+				if (enabled != null) {
+					if (!BooleanUtils.toBoolean(enabled)
+							&& Features.isOnByDefaultByGroup(group, key)) {
 						Features.disableFeatureForGroup(group, key, user);
-					}else if(BooleanUtils.toBoolean(enabled) && !Features.isOnByDefaultByGroup(group,key)){
+					} else if (BooleanUtils.toBoolean(enabled)
+							&& !Features.isOnByDefaultByGroup(group, key)) {
 						Features.enableFeatureForGroup(group, key, user);
 					}
 				}
 			}
 		} catch (IOException e) {
-			logger.error("",e);
-			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Need posted JSON content");
+			logger.error("", e);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Need posted JSON content");
 		} catch (JSONException e) {
-			logger.error("",e);
-			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,"Invalid JSON content");
+			logger.error("", e);
+			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Invalid JSON content");
 		} catch (Exception e) {
-			logger.error("",e);
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,e);
+			logger.error("", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 		}
-    }
+	}
 
-
-    private static final Logger _log = LoggerFactory.getLogger(FeatureDefinitionRestlet.class);
+	private static final Logger _log = LoggerFactory
+			.getLogger(FeatureDefinitionRestlet.class);
 }

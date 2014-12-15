@@ -53,38 +53,40 @@ public class RefreshCatalog extends SecureResource {
 		return true;
 	}
 
-	List<String> resources=Lists.newArrayList();
-	ListMultimap<String,Object> otherParams=ArrayListMultimap.create();
+	List<String> resources = Lists.newArrayList();
+	ListMultimap<String, Object> otherParams = ArrayListMultimap.create();
 
-    private boolean populateStats, checksum, delete, append = false;
-	
-	public void handleParam(final String key,final Object value) throws ClientException{
-		if(value!=null){
-			if(key.equals("resource")){
-				resources.add((String)value);
-			}else if(key.equals("populateStats")){
-                populateStats=isQueryVariableTrueHelper(value);
-			}else if(key.equals("checksum")){
-				checksum=isQueryVariableTrueHelper(value);
-			}else if(key.equals("delete")){
-				delete=isQueryVariableTrueHelper(value);
-			}else if(key.equals("append")){
-				append=isQueryVariableTrueHelper(value);
-			}else if(key.equals("options")){
-				List<String> options=Arrays.asList(((String)value).split(","));
-				if(options.contains("populateStats")){
-					populateStats=true;
+	private boolean populateStats, checksum, delete, append = false;
+
+	public void handleParam(final String key, final Object value)
+			throws ClientException {
+		if (value != null) {
+			if (key.equals("resource")) {
+				resources.add((String) value);
+			} else if (key.equals("populateStats")) {
+				populateStats = isQueryVariableTrueHelper(value);
+			} else if (key.equals("checksum")) {
+				checksum = isQueryVariableTrueHelper(value);
+			} else if (key.equals("delete")) {
+				delete = isQueryVariableTrueHelper(value);
+			} else if (key.equals("append")) {
+				append = isQueryVariableTrueHelper(value);
+			} else if (key.equals("options")) {
+				List<String> options = Arrays.asList(((String) value)
+						.split(","));
+				if (options.contains("populateStats")) {
+					populateStats = true;
 				}
-				if(options.contains("checksum")){
-					checksum=true;
+				if (options.contains("checksum")) {
+					checksum = true;
 				}
-				if(options.contains("delete")){
-					delete=true;
+				if (options.contains("delete")) {
+					delete = true;
 				}
-				if(options.contains("append")){
-					append=true;
+				if (options.contains("append")) {
+					append = true;
 				}
-			}else{
+			} else {
 				otherParams.put(key, value);
 			}
 		}
@@ -95,39 +97,43 @@ public class RefreshCatalog extends SecureResource {
 		try {
 			final Representation entity = this.getRequest().getEntity();
 
-			//parse body to identify resources if its multi-part form data
-			//TODO: Handle JSON body.
+			// parse body to identify resources if its multi-part form data
+			// TODO: Handle JSON body.
 			if (entity.isAvailable() && RequestUtil.isMultiPartFormData(entity)) {
 				loadParams(new Form(entity));
 			}
-			loadQueryVariables();//parse query string to identify resources
+			loadQueryVariables();// parse query string to identify resources
 
-			for(final String resource:resources){
-				//parse passed URI parameter
-				URIManager.DataURIA uri=UriParserUtils.parseURI(resource);
+			for (final String resource : resources) {
+				// parse passed URI parameter
+				URIManager.DataURIA uri = UriParserUtils.parseURI(resource);
 
-				if(!(uri instanceof ArchiveItemURI)) {
-					throw new ClientException("Invalid Resource URI:"+ resource);
+				if (!(uri instanceof ArchiveItemURI)) {
+					throw new ClientException("Invalid Resource URI:"
+							+ resource);
 				}
 
-                ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
+				ArchiveItemURI resourceURI = (ArchiveItemURI) uri;
 
-                ArchivableItem existenceCheck = resourceURI.getSecurityItem();
-                if (existenceCheck != null) {
-                    //call refresh operation
-                    ResourceUtils.refreshResourceCatalog(resourceURI, user, this.newEventInstance(EventUtils.CATEGORY.DATA, "Catalog(s) Refreshed"), populateStats, checksum, delete, append);
-                }
+				ArchivableItem existenceCheck = resourceURI.getSecurityItem();
+				if (existenceCheck != null) {
+					// call refresh operation
+					ResourceUtils.refreshResourceCatalog(resourceURI, user,
+							this.newEventInstance(EventUtils.CATEGORY.DATA,
+									"Catalog(s) Refreshed"), populateStats,
+							checksum, delete, append);
+				}
 			}
 
 			this.getResponse().setStatus(Status.SUCCESS_OK);
 		} catch (ActionException e) {
 			this.getResponse().setStatus(e.getStatus(), e.getMessage());
-			logger.error("",e);
+			logger.error("", e);
 		} catch (Exception e) {
-			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-			logger.error("",e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+					e.getMessage());
+			logger.error("", e);
 		}
 	}
-
 
 }

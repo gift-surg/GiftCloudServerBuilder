@@ -20,28 +20,25 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseValAdditionalval extends AutoValAdditionalval {
 
-	public BaseValAdditionalval(ItemI item)
-	{
+	public BaseValAdditionalval(ItemI item) {
 		super(item);
 	}
 
-	public BaseValAdditionalval(UserI user)
-	{
+	public BaseValAdditionalval(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseValAdditionalval(UserI user)
-	 **/
-	public BaseValAdditionalval()
-	{}
+	 */
+	public BaseValAdditionalval() {
+	}
 
-	public BaseValAdditionalval(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseValAdditionalval(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

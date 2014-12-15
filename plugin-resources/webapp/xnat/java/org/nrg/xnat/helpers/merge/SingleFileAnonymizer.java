@@ -26,8 +26,9 @@ public class SingleFileAnonymizer extends AnonymizerA {
 	public final String anonProject;
 	private final boolean reanonymize;
 	final String path;
-	
-	public SingleFileAnonymizer(File f, String project, String subject, String label, String anonProject, boolean reanonymize) {
+
+	public SingleFileAnonymizer(File f, String project, String subject,
+			String label, String anonProject, boolean reanonymize) {
 		this.f = f;
 		this.project = project;
 		this.subject = subject;
@@ -35,14 +36,15 @@ public class SingleFileAnonymizer extends AnonymizerA {
 		this.anonProject = anonProject;
 		this.reanonymize = reanonymize;
 		if (anonProject != null) {
-			this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.PROJECT, anonProject);	
+			this.path = DicomEdit.buildScriptPath(
+					DicomEdit.ResourceScope.PROJECT, anonProject);
+		} else {
+			this.path = DicomEdit.buildScriptPath(
+					DicomEdit.ResourceScope.SITE_WIDE, null);
 		}
-		else {
-			this.path = DicomEdit.buildScriptPath(DicomEdit.ResourceScope.SITE_WIDE, null);	
-		}
-		
+
 	}
-	
+
 	@Override
 	String getSubject() {
 		return this.subject;
@@ -55,12 +57,14 @@ public class SingleFileAnonymizer extends AnonymizerA {
 
 	@Override
 	Configuration getScript() {
-		return AnonUtils.getService().getScript(this.path, BaseXnatProjectdata.getProjectInfoIdFromStringId(anonProject));
+		return AnonUtils.getService().getScript(this.path,
+				BaseXnatProjectdata.getProjectInfoIdFromStringId(anonProject));
 	}
 
 	@Override
 	boolean isEnabled() {
-		return AnonUtils.getService().isEnabled(this.path, BaseXnatProjectdata.getProjectInfoIdFromStringId(anonProject));
+		return AnonUtils.getService().isEnabled(this.path,
+				BaseXnatProjectdata.getProjectInfoIdFromStringId(anonProject));
 	}
 
 	@Override
@@ -74,17 +78,16 @@ public class SingleFileAnonymizer extends AnonymizerA {
 		ret.add(this.f);
 		return ret;
 	}
-	
+
 	public boolean alreadyAnonymized() {
 		return false;
 	}
-	
+
 	@Override
-	public java.lang.Void call () throws Exception {
+	public java.lang.Void call() throws Exception {
 		if (this.reanonymize) {
 			super.call();
-		}
-		else {
+		} else {
 			// do nothing
 		}
 		return null;

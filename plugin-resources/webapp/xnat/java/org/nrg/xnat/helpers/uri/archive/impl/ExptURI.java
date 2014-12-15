@@ -26,25 +26,27 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class ExptURI extends ArchiveURI implements ArchiveItemURI,ExperimentURII {
-	private XnatExperimentdata expt=null;
-	
+public class ExptURI extends ArchiveURI implements ArchiveItemURI,
+		ExperimentURII {
+	private XnatExperimentdata expt = null;
+
 	public ExptURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
-	protected void populateExperiment(){
-		if(expt==null){
-			
-			final String exptID= (String)props.get(URIManager.EXPT_ID);
-			
-			if(expt==null){
-				expt=XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
+	protected void populateExperiment() {
+		if (expt == null) {
+
+			final String exptID = (String) props.get(URIManager.EXPT_ID);
+
+			if (expt == null) {
+				expt = XnatExperimentdata.getXnatExperimentdatasById(exptID,
+						null, false);
 			}
 		}
 	}
-	
-	public XnatExperimentdata getExperiment(){
+
+	public XnatExperimentdata getExperiment() {
 		this.populateExperiment();
 		return expt;
 	}
@@ -55,22 +57,25 @@ public class ExptURI extends ArchiveURI implements ArchiveItemURI,ExperimentURII
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatExperimentdata expt=getExperiment();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatExperimentdata expt = getExperiment();
 		res.addAll(expt.getResources_resource());
-		
-		if(expt instanceof XnatImagesessiondata && includeAll){
-			for(XnatImagescandataI scan:((XnatImagesessiondata)expt).getScans_scan()){
+
+		if (expt instanceof XnatImagesessiondata && includeAll) {
+			for (XnatImagescandataI scan : ((XnatImagesessiondata) expt)
+					.getScans_scan()) {
 				res.addAll(scan.getFile());
 			}
-			for(XnatReconstructedimagedataI scan:((XnatImagesessiondata)expt).getReconstructions_reconstructedimage()){
+			for (XnatReconstructedimagedataI scan : ((XnatImagesessiondata) expt)
+					.getReconstructions_reconstructedimage()) {
 				res.addAll(scan.getOut_file());
 			}
-			for(XnatImageassessordataI scan:((XnatImagesessiondata)expt).getAssessors_assessor()){
+			for (XnatImageassessordataI scan : ((XnatImagesessiondata) expt)
+					.getAssessors_assessor()) {
 				res.addAll(scan.getOut_file());
 			}
 		}
-		
+
 		return res;
 	}
 }

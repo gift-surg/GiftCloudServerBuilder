@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatQcassessmentdataScanSlice extends AutoXnatQcassessmentdataScanSlice {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatQcassessmentdataScanSlice extends
+		AutoXnatQcassessmentdataScanSlice {
 
-	public BaseXnatQcassessmentdataScanSlice(ItemI item)
-	{
+	public BaseXnatQcassessmentdataScanSlice(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatQcassessmentdataScanSlice(UserI user)
-	{
+	public BaseXnatQcassessmentdataScanSlice(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatQcassessmentdataScanSlice(UserI user)
-	 **/
-	public BaseXnatQcassessmentdataScanSlice()
-	{}
+	 */
+	public BaseXnatQcassessmentdataScanSlice() {
+	}
 
-	public BaseXnatQcassessmentdataScanSlice(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatQcassessmentdataScanSlice(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

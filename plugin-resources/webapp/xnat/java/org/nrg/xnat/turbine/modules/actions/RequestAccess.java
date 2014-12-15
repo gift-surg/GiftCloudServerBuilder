@@ -30,70 +30,76 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class RequestAccess extends SecureAction {
-    static Logger logger = Logger.getLogger(RequestAccess.class);
+	static Logger logger = Logger.getLogger(RequestAccess.class);
 
-    @Override
-    public void doPerform(RunData data, Context context) throws Exception {
-        String p = ((String) TurbineUtils.GetPassedParameter("project",data));
-        XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
+	@Override
+	public void doPerform(RunData data, Context context) throws Exception {
+		String p = ((String) TurbineUtils.GetPassedParameter("project", data));
+		XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(p,
+				null, false);
 
-        String access_level = ((String) TurbineUtils.GetPassedParameter("access_level",data));
-        String comments = ((String) TurbineUtils.GetPassedParameter("comments",data));
+		String access_level = ((String) TurbineUtils.GetPassedParameter(
+				"access_level", data));
+		String comments = ((String) TurbineUtils.GetPassedParameter("comments",
+				data));
 
-        XDATUser user = TurbineUtils.getUser(data);
+		XDATUser user = TurbineUtils.getUser(data);
 
-        ProjectAccessRequest.CreatePAR(project.getId(), access_level, user);
-                
-        context.put("user",user);
-        context.put("server",TurbineUtils.GetFullServerPath());
-        context.put("process","Transfer to the archive.");
-        context.put("system",TurbineUtils.GetSystemName());
-        context.put("admin_email",AdminUtils.getAdminEmailId());
-        context.put("projectOM",project);
-        context.put("access_level",access_level);
-        context.put("comments",comments);
-        context.put("displayManager", DisplayManager.GetInstance());
-        StringWriter sw = new StringWriter();
-        Template template;
+		ProjectAccessRequest.CreatePAR(project.getId(), access_level, user);
+
+		context.put("user", user);
+		context.put("server", TurbineUtils.GetFullServerPath());
+		context.put("process", "Transfer to the archive.");
+		context.put("system", TurbineUtils.GetSystemName());
+		context.put("admin_email", AdminUtils.getAdminEmailId());
+		context.put("projectOM", project);
+		context.put("access_level", access_level);
+		context.put("comments", comments);
+		context.put("displayManager", DisplayManager.GetInstance());
+		StringWriter sw = new StringWriter();
+		Template template;
 		try {
-			template = Velocity.getTemplate("/screens/RequestProjectAccessEmail.vm");
-        template.merge(context,sw);
+			template = Velocity
+					.getTemplate("/screens/RequestProjectAccessEmail.vm");
+			template.merge(context, sw);
 		} catch (Exception exception) {
-            logger.error("Unable to send mail", exception);
-            throw exception;
+			logger.error("Unable to send mail", exception);
+			throw exception;
 		}
 
-        String message= sw.toString();
+		String message = sw.toString();
 
-        ArrayList<String> ownerEmails;
+		ArrayList<String> ownerEmails;
 		try {
 			ownerEmails = project.getOwnerEmails();
 		} catch (Exception exception) {
-            logger.error("Unable to send mail", exception);
-            throw exception;
+			logger.error("Unable to send mail", exception);
+			throw exception;
 		}
 
 		String[] to = null;
-        if (ownerEmails != null && ownerEmails.size() > 0) {
-        	to = ownerEmails.toArray(new String[ownerEmails.size()]);
-        }
+		if (ownerEmails != null && ownerEmails.size() > 0) {
+			to = ownerEmails.toArray(new String[ownerEmails.size()]);
+		}
 
-        String[] bcc = null;
-        if(ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()){
-        	bcc = new String[] { AdminUtils.getAdminEmailId() };
-        }
-        
-        String from = AdminUtils.getAdminEmailId();
-        String subject = TurbineUtils.GetSystemName() + " Access Request for " + project.getName();
+		String[] bcc = null;
+		if (ArcSpecManager.GetInstance().getEmailspecifications_projectAccess()) {
+			bcc = new String[] { AdminUtils.getAdminEmailId() };
+		}
 
-        try {
-			XDAT.getMailService().sendHtmlMessage(from, to, null, bcc, subject, message);
+		String from = AdminUtils.getAdminEmailId();
+		String subject = TurbineUtils.GetSystemName() + " Access Request for "
+				+ project.getName();
+
+		try {
+			XDAT.getMailService().sendHtmlMessage(from, to, null, bcc, subject,
+					message);
 		} catch (MessagingException exception) {
-            logger.error("Unable to send mail", exception);
-            throw exception;
-        }
-        
-        data.setMessage("Access request sent.");
-        data.setScreenTemplate("Index.vm");
-    }
+			logger.error("Unable to send mail", exception);
+			throw exception;
+		}
+
+		data.setMessage("Access request sent.");
+		data.setScreenTemplate("Index.vm");
+	}
 }

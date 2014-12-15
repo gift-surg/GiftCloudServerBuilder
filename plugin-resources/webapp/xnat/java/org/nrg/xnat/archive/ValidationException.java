@@ -17,12 +17,14 @@ import java.util.Arrays;
 
 public class ValidationException extends ArchivingException {
 	private static final long serialVersionUID = 1L;
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private static final String LINE_SEPARATOR = System
+			.getProperty("line.separator");
 	private static final Status status = Status.SERVER_ERROR_INTERNAL;
 	private final ValidationResults results;
-	
+
 	/**
-	 * @param results cause of the ValidationException: must not be valid
+	 * @param results
+	 *            cause of the ValidationException: must not be valid
 	 */
 	public ValidationException(final ValidationResults results) {
 		super(status, makeMessage(results));
@@ -31,15 +33,16 @@ public class ValidationException extends ArchivingException {
 		}
 		this.results = results;
 	}
-	
+
 	/**
 	 * Retrieves the ValidationResults underlying this exception.
+	 * 
 	 * @return ValidationResults
 	 */
 	public ValidationResults getValidationResults() {
 		return results;
 	}
-	
+
 	private static String makeMessage(final ValidationResults results) {
 		final StringBuilder sb = new StringBuilder();
 		for (final Object[] result : results.getResults()) {

@@ -24,74 +24,78 @@ import java.util.Hashtable;
 
 public class QDECScreen extends SecureScreen {
 
-    @Override
+	@Override
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
 
-    protected void doBuildTemplate(RunData data, Context context) throws Exception {
+		XDATUser user = TurbineUtils.getUser(data);
 
-        XDATUser user = TurbineUtils.getUser(data);
+		if (user == null)
 
-        if (user == null)
+		{
 
-        {
+			throw new Exception("Invalid User.");
 
-            throw new Exception("Invalid User.");
+		}
 
-        }
+		DisplaySearch search = TurbineUtils.getSearch(data);
 
-        DisplaySearch search = TurbineUtils.getSearch(data);
+		search.setPagingOn(false);
 
-        search.setPagingOn(false);
+		search.execute(
+				new org.nrg.xdat.presentation.HTMLNoTagsAllFieldsPresenter(),
+				TurbineUtils.getUser(data).getLogin());
 
-        search.execute(new org.nrg.xdat.presentation.HTMLNoTagsAllFieldsPresenter(),TurbineUtils.getUser(data).getLogin());
-        
-        XFTTableI table = search.getPresentedTable();
+		XFTTableI table = search.getPresentedTable();
 
-        
-        Hashtable<String, ArrayList> bins = separateColTypes(table);
-        ArrayList discreteCols = bins.get("discreteCols");
-        ArrayList continuousCols = bins.get("continuousCols");
-        context.put("discereteCols",discreteCols);
-        context.put("continuousCols", continuousCols);
-        context.put("table",table);
-        data.getParameters().add("popup","true");
-    }
+		Hashtable<String, ArrayList> bins = separateColTypes(table);
+		ArrayList discreteCols = bins.get("discreteCols");
+		ArrayList continuousCols = bins.get("continuousCols");
+		context.put("discereteCols", discreteCols);
+		context.put("continuousCols", continuousCols);
+		context.put("table", table);
+		data.getParameters().add("popup", "true");
+	}
 
-    private Hashtable<String, ArrayList> separateColTypes(XFTTableI table) {
-    	Hashtable<String, ArrayList> bins = new Hashtable<String, ArrayList>();
-    	ArrayList discrete = new ArrayList();
-    	ArrayList continuous = new ArrayList();
-    	if (table != null) {
-	    	String[] cols = table.getColumns();
-	    	for (int i = 0; i < cols.length; i++) {
-	    		if (isDiscrete(cols[i], table)) discrete.add(cols[i]);
-	    		else continuous.add(cols[i]);
-	    	}
-    	}
-    	bins.put("discreteCols", discrete); 
-    	bins.put("continuousCols", continuous);
-    	return bins;
-    }
-    
-    private boolean isDiscrete(String columnHeader, XFTTableI table) {
-    	boolean rtn = false;
+	private Hashtable<String, ArrayList> separateColTypes(XFTTableI table) {
+		Hashtable<String, ArrayList> bins = new Hashtable<String, ArrayList>();
+		ArrayList discrete = new ArrayList();
+		ArrayList continuous = new ArrayList();
+		if (table != null) {
+			String[] cols = table.getColumns();
+			for (int i = 0; i < cols.length; i++) {
+				if (isDiscrete(cols[i], table))
+					discrete.add(cols[i]);
+				else
+					continuous.add(cols[i]);
+			}
+		}
+		bins.put("discreteCols", discrete);
+		bins.put("continuousCols", continuous);
+		return bins;
+	}
+
+	private boolean isDiscrete(String columnHeader, XFTTableI table) {
+		boolean rtn = false;
 		Hashtable distinctValues = new Hashtable();
 		if (table != null) {
 			table.resetRowCursor();
 			while (table.hasMoreRows()) {
 				table.nextRow();
 				Object rowColumnValue = table.getCellValue(columnHeader);
-				if (rowColumnValue !=  null) {
+				if (rowColumnValue != null) {
 					String colValue = rowColumnValue.toString();
 					if (!distinctValues.containsKey(colValue)) {
 						distinctValues.put(colValue, "");
 					}
-					if (distinctValues.size() > 3) break;
+					if (distinctValues.size() > 3)
+						break;
 				}
 			}
 		}
-		if (distinctValues.size() >= 2 && distinctValues.size() < 4) rtn = true;
-    	return rtn;
-    }
-    
-    
+		if (distinctValues.size() >= 2 && distinctValues.size() < 4)
+			rtn = true;
+		return rtn;
+	}
+
 }

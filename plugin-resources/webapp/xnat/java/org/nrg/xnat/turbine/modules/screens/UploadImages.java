@@ -25,48 +25,51 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class UploadImages extends SecureScreen {
-    static org.apache.log4j.Logger logger = Logger.getLogger(UploadImages.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(UploadImages.class);
 
-    @Override
-    protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        Date d = Calendar.getInstance().getTime();
-        
-        StringBuffer sb = new StringBuffer();
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("yyyyMMdd_HHmmss");
-        sb.append(formatter.format(d));
-        context.put("uploadID", sb.toString());
-        
-        XDATUser user = TurbineUtils.getUser(data);
-        String cachepath= ArcSpecManager.GetInstance().getGlobalCachePath();
-        
-        cachepath += "uploads" + File.separator + user.getLogin() + File.separator;
+	@Override
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		Date d = Calendar.getInstance().getTime();
 
-        java.text.NumberFormat nf = NumberFormat.getInstance();
-        ArrayList uploadedFiles = new ArrayList();
-        formatter = new java.text.SimpleDateFormat ("MM/dd/yyyy HH:mm:ss");
-        File dir = new File(cachepath);
-        File[] listFiles = dir.listFiles();
-        if (listFiles !=null)
-        {
-            for(int i=0;i<listFiles.length;i++){
-                if (listFiles[i].isDirectory())
-                {
-                    //root
-                    File[] children = listFiles[i].listFiles();
+		StringBuffer sb = new StringBuffer();
+		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
+				"yyyyMMdd_HHmmss");
+		sb.append(formatter.format(d));
+		context.put("uploadID", sb.toString());
 
-                    for(int j=0;j<children.length;j++){
-                        ArrayList file = new ArrayList();
-                        file.add(children[j].getName());
-                        file.add(formatter.format(children[j].lastModified()));
-                        file.add((children[j].length()/1024) +" KB");
-                        uploadedFiles.add(file);
-                    }
-                }
-            }
-        }
-        
-        context.put("image_type", TurbineUtils.GetPassedParameter("image_type", data, "ECAT"));
-        context.put("uploadedFiles", uploadedFiles);
-    }
+		XDATUser user = TurbineUtils.getUser(data);
+		String cachepath = ArcSpecManager.GetInstance().getGlobalCachePath();
+
+		cachepath += "uploads" + File.separator + user.getLogin()
+				+ File.separator;
+
+		java.text.NumberFormat nf = NumberFormat.getInstance();
+		ArrayList uploadedFiles = new ArrayList();
+		formatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		File dir = new File(cachepath);
+		File[] listFiles = dir.listFiles();
+		if (listFiles != null) {
+			for (int i = 0; i < listFiles.length; i++) {
+				if (listFiles[i].isDirectory()) {
+					// root
+					File[] children = listFiles[i].listFiles();
+
+					for (int j = 0; j < children.length; j++) {
+						ArrayList file = new ArrayList();
+						file.add(children[j].getName());
+						file.add(formatter.format(children[j].lastModified()));
+						file.add((children[j].length() / 1024) + " KB");
+						uploadedFiles.add(file);
+					}
+				}
+			}
+		}
+
+		context.put("image_type",
+				TurbineUtils.GetPassedParameter("image_type", data, "ECAT"));
+		context.put("uploadedFiles", uploadedFiles);
+	}
 
 }

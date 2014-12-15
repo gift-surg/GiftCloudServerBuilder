@@ -20,28 +20,28 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatFielddefinitiongroupFieldPossiblevalue extends AutoXnatFielddefinitiongroupFieldPossiblevalue {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatFielddefinitiongroupFieldPossiblevalue extends
+		AutoXnatFielddefinitiongroupFieldPossiblevalue {
 
-	public BaseXnatFielddefinitiongroupFieldPossiblevalue(ItemI item)
-	{
+	public BaseXnatFielddefinitiongroupFieldPossiblevalue(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatFielddefinitiongroupFieldPossiblevalue(UserI user)
-	{
+	public BaseXnatFielddefinitiongroupFieldPossiblevalue(UserI user) {
 		super(user);
 	}
 
 	/*
-	 * @deprecated Use BaseXnatFielddefinitiongroupFieldPossiblevalue(UserI user)
-	 **/
-	public BaseXnatFielddefinitiongroupFieldPossiblevalue()
-	{}
+	 * @deprecated Use BaseXnatFielddefinitiongroupFieldPossiblevalue(UserI
+	 * user)
+	 */
+	public BaseXnatFielddefinitiongroupFieldPossiblevalue() {
+	}
 
-	public BaseXnatFielddefinitiongroupFieldPossiblevalue(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatFielddefinitiongroupFieldPossiblevalue(Hashtable properties,
+			UserI user) {
+		super(properties, user);
 	}
 
 }

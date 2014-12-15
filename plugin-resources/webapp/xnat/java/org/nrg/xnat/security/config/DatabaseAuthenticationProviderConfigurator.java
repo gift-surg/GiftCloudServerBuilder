@@ -22,40 +22,44 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DatabaseAuthenticationProviderConfigurator extends AbstractAuthenticationProviderConfigurator {
-    @Override
-    public List<AuthenticationProvider> getAuthenticationProviders(String id, String name) {
-        List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>();
+public class DatabaseAuthenticationProviderConfigurator extends
+		AbstractAuthenticationProviderConfigurator {
+	@Override
+	public List<AuthenticationProvider> getAuthenticationProviders(String id,
+			String name) {
+		List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>();
 
-        XnatDatabaseUserDetailsService detailsService = new XnatDatabaseUserDetailsService();
-        detailsService.setDataSource(XDAT.getDataSource());
+		XnatDatabaseUserDetailsService detailsService = new XnatDatabaseUserDetailsService();
+		detailsService.setDataSource(XDAT.getDataSource());
 
-        ReflectionSaltSource saltSource = new ReflectionSaltSource();
-        saltSource.setUserPropertyToUse("salt");
+		ReflectionSaltSource saltSource = new ReflectionSaltSource();
+		saltSource.setUserPropertyToUse("salt");
 
-        XnatDatabaseAuthenticationProvider sha2DatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
-        ShaPasswordEncoder encoder = new ShaPasswordEncoder(256);
-        sha2DatabaseAuthProvider.setUserDetailsService(detailsService);
-        sha2DatabaseAuthProvider.setPasswordEncoder(encoder);
-        sha2DatabaseAuthProvider.setName(name);
-        sha2DatabaseAuthProvider.setProviderId(id);
-        sha2DatabaseAuthProvider.setSaltSource(saltSource);
-        providers.add(sha2DatabaseAuthProvider);
+		XnatDatabaseAuthenticationProvider sha2DatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
+		ShaPasswordEncoder encoder = new ShaPasswordEncoder(256);
+		sha2DatabaseAuthProvider.setUserDetailsService(detailsService);
+		sha2DatabaseAuthProvider.setPasswordEncoder(encoder);
+		sha2DatabaseAuthProvider.setName(name);
+		sha2DatabaseAuthProvider.setProviderId(id);
+		sha2DatabaseAuthProvider.setSaltSource(saltSource);
+		providers.add(sha2DatabaseAuthProvider);
 
-        XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
-        ObfuscatedPasswordEncoder encoder2 = new ObfuscatedPasswordEncoder(256);
-        sha2ObfuscatedDatabaseAuthProvider.setUserDetailsService(detailsService);
-        sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
-        sha2ObfuscatedDatabaseAuthProvider.setName(name);
-        sha2ObfuscatedDatabaseAuthProvider.setProviderId(id);
-        sha2ObfuscatedDatabaseAuthProvider.setSaltSource(saltSource);
-        providers.add(sha2ObfuscatedDatabaseAuthProvider);
+		XnatDatabaseAuthenticationProvider sha2ObfuscatedDatabaseAuthProvider = new XnatDatabaseAuthenticationProvider();
+		ObfuscatedPasswordEncoder encoder2 = new ObfuscatedPasswordEncoder(256);
+		sha2ObfuscatedDatabaseAuthProvider
+				.setUserDetailsService(detailsService);
+		sha2ObfuscatedDatabaseAuthProvider.setPasswordEncoder(encoder2);
+		sha2ObfuscatedDatabaseAuthProvider.setName(name);
+		sha2ObfuscatedDatabaseAuthProvider.setProviderId(id);
+		sha2ObfuscatedDatabaseAuthProvider.setSaltSource(saltSource);
+		providers.add(sha2ObfuscatedDatabaseAuthProvider);
 
-        return providers;
-    }
+		return providers;
+	}
 
-    @Override
-    public List<AuthenticationProvider> getAuthenticationProviders(String id, String name, Map<String, String> properties) {
-        return getAuthenticationProviders(id, name);
-    }
+	@Override
+	public List<AuthenticationProvider> getAuthenticationProviders(String id,
+			String name, Map<String, String> properties) {
+		return getAuthenticationProviders(id, name);
+	}
 }

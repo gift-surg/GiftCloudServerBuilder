@@ -22,33 +22,34 @@ import java.io.PrintWriter;
 
 @Deprecated
 public class CatalogRepresentation extends OutputRepresentation {
-	static org.apache.log4j.Logger logger = Logger.getLogger(ItemXMLRepresentation.class);
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(ItemXMLRepresentation.class);
 	CatCatalogBean cat = null;
-	boolean includeSchemaLocations=true;
-	
-	public CatalogRepresentation(CatCatalogBean i,MediaType mt,boolean includeSchemaLocations) {
+	boolean includeSchemaLocations = true;
+
+	public CatalogRepresentation(CatCatalogBean i, MediaType mt,
+			boolean includeSchemaLocations) {
 		super(mt);
-		cat=i;	
-		this.includeSchemaLocations=includeSchemaLocations;
+		cat = i;
+		this.includeSchemaLocations = includeSchemaLocations;
 	}
 
-	public CatalogRepresentation(CatCatalogBean i,MediaType mt) {
+	public CatalogRepresentation(CatCatalogBean i, MediaType mt) {
 		super(mt);
-		cat=i;	
+		cat = i;
 	}
-	
+
 	@Override
 	public void write(OutputStream out) throws IOException {
-			try {
-				PrintWriter pw = new PrintWriter(out);
-				cat.toXML(pw, false);
-				pw.close();
-			} catch (IllegalArgumentException e) {
-				logger.error("",e);
-			} catch (TransformerFactoryConfigurationError e) {
-				logger.error("",e);
-			}
+		try {
+			PrintWriter pw = new PrintWriter(out);
+			cat.toXML(pw, false);
+			pw.close();
+		} catch (IllegalArgumentException e) {
+			logger.error("", e);
+		} catch (TransformerFactoryConfigurationError e) {
+			logger.error("", e);
+		}
 	}
 
-	
 }

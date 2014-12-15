@@ -19,25 +19,31 @@ import org.nrg.xnat.turbine.utils.XNATUtils;
 import java.util.Hashtable;
 
 public class XDATScreen_prearchives extends SecureScreen {
-    /* (non-Javadoc)
-     * @see org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    protected void doBuildTemplate(final RunData data, final Context context) {
-	try {
-	    context.put("user", TurbineUtils.getUser(data).getUsername());
-	    final Hashtable hash = XNATUtils.getInvestigatorsForRead("xnat:mrSessionData",data);
-	    context.put("investigators", hash);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	protected void doBuildTemplate(final RunData data, final Context context) {
+		try {
+			context.put("user", TurbineUtils.getUser(data).getUsername());
+			final Hashtable hash = XNATUtils.getInvestigatorsForRead(
+					"xnat:mrSessionData", data);
+			context.put("investigators", hash);
 
-	    if (data.getParameters().containsKey("project")) {
-		    context.put("project", org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
-	    }
-        if(TurbineUtils.getUser(data).checkRole("Administrator")){
-            context.put("role","admin");
-        }
-	} catch (Exception e) {
-	    log.error(e);
-	    e.printStackTrace();
+			if (data.getParameters().containsKey("project")) {
+				context.put("project", org.nrg.xdat.turbine.utils.TurbineUtils
+						.GetPassedParameter("project", data));
+			}
+			if (TurbineUtils.getUser(data).checkRole("Administrator")) {
+				context.put("role", "admin");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			e.printStackTrace();
+		}
 	}
-    }
 
 }

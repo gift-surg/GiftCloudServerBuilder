@@ -21,28 +21,37 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 public class DelegatingJobBean extends QuartzJobBean {
 	@Override
-	protected final void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+	protected final void executeInternal(JobExecutionContext jobExecutionContext)
+			throws JobExecutionException {
 		SchedulerContext schedulerContext = null;
 		try {
 			schedulerContext = jobExecutionContext.getScheduler().getContext();
 		} catch (SchedulerException e) {
-			throw new JobExecutionException("Failure accessing scheduler context", e);
+			throw new JobExecutionException(
+					"Failure accessing scheduler context", e);
 		}
 
-		String contextKey = (String) jobExecutionContext.getJobDetail().getJobDataMap().get(APPLICATION_CONTEXT_KEY_NAME);
+		String contextKey = (String) jobExecutionContext.getJobDetail()
+				.getJobDataMap().get(APPLICATION_CONTEXT_KEY_NAME);
 		if (contextKey != null && !contextKey.isEmpty()) {
 			_contextKey = contextKey;
 		}
 
-		ApplicationContext appContext = (ApplicationContext) schedulerContext.get(_contextKey);
+		ApplicationContext appContext = (ApplicationContext) schedulerContext
+				.get(_contextKey);
 
 		if (appContext == null) {
-			throw new JobExecutionException("No application context found. Verify that the applicationContextSchedulerContextKey is set in the scheduler properties. This should be set to either applicationContext (the default) or to the value configured with the " + APPLICATION_CONTEXT_KEY_NAME + " setting.");
+			throw new JobExecutionException(
+					"No application context found. Verify that the applicationContextSchedulerContextKey is set in the scheduler properties. This should be set to either applicationContext (the default) or to the value configured with the "
+							+ APPLICATION_CONTEXT_KEY_NAME + " setting.");
 		}
 
-		String jobBeanName = (String) jobExecutionContext.getJobDetail().getJobDataMap().get(JOB_BEAN_NAME_KEY);
+		String jobBeanName = (String) jobExecutionContext.getJobDetail()
+				.getJobDataMap().get(JOB_BEAN_NAME_KEY);
 		if (jobBeanName == null || jobBeanName.isEmpty()) {
-			throw new JobExecutionException("You must specify the " + JOB_BEAN_NAME_KEY + " setting to identify the job to be executed.");
+			throw new JobExecutionException("You must specify the "
+					+ JOB_BEAN_NAME_KEY
+					+ " setting to identify the job to be executed.");
 		}
 
 		if (_log.isInfoEnabled()) {

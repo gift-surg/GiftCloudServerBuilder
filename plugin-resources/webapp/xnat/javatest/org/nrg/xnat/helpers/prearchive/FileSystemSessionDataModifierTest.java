@@ -55,129 +55,149 @@ public class FileSystemSessionDataModifierTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		fs = new FileSystemSessionDataModifier(basePath);
-		move = new FileSystemSessionDataModifier.Move(basePath,sess,uri,null, newProj);
+		move = new FileSystemSessionDataModifier.Move(basePath, sess, uri,
+				null, newProj);
 		copy = move.new Copy(new File(tsdir), new File(newTsdir), sess);
-		setXml = move.new SetXml(new File(xml), newProj,new File(newTsdir, sess).getAbsolutePath());
-		copyException = new Move(basePath,sess,uri,null,newProj) {
+		setXml = move.new SetXml(new File(xml), newProj, new File(newTsdir,
+				sess).getAbsolutePath());
+		copyException = new Move(basePath, sess, uri, null, newProj) {
 			{
 				this.copy = new Except(tsdir, newTsdir, sess);
 			}
-			class Except extends Copy{
-				public Except (File tsdir, File newTsdir, String sess){
-					super(tsdir,newTsdir,sess);
+
+			class Except extends Copy {
+				public Except(File tsdir, File newTsdir, String sess) {
+					super(tsdir, newTsdir, sess);
 				}
+
 				public java.lang.Void run() throws SyncFailedException {
 					throw new SyncFailedException("Test Exception");
 				}
 			}
 		};
-		setXmlException = new Move(basePath,sess,uri,null,newProj) {
+		setXmlException = new Move(basePath, sess, uri, null, newProj) {
 			{
-				this.setXml = new Except(xml,newProj);
+				this.setXml = new Except(xml, newProj);
 			}
+
 			class Except extends SetXml {
-				public Except (File xml, String sess){
-					super(xml,sess,null);
+				public Except(File xml, String sess) {
+					super(xml, sess, null);
 				}
-				public XnatImagesessiondataBean run () throws SyncFailedException {
+
+				public XnatImagesessiondataBean run()
+						throws SyncFailedException {
 					throw new SyncFailedException("Test exception");
 				}
 			}
 		};
-		writeXmlException = new Move(basePath,sess,uri,null,newProj) {
+		writeXmlException = new Move(basePath, sess, uri, null, newProj) {
 			{
-				this.writeXml = new Except(tsdir,sess,xml);
+				this.writeXml = new Except(tsdir, sess, xml);
 			}
+
 			class Except extends WriteXml {
-				public Except (File tsdir, String sess, File xml){
+				public Except(File tsdir, String sess, File xml) {
 					super(tsdir, sess);
 				}
-				public java.lang.Void run () throws SyncFailedException {
+
+				public java.lang.Void run() throws SyncFailedException {
 					throw new SyncFailedException("Test exception");
 				}
 			}
 		};
 	}
+
 	@Before
-	public final void setupTmp () {
-		//create tmp space	
+	public final void setupTmp() {
+		// create tmp space
 		new File(basePath + oldProj + "/" + timestamp).mkdirs();
-		// copy project to tmp space 
+		// copy project to tmp space
 		try {
-			FileUtils.copyDirectoryToDirectory(new File(base + oldProj + "/" + timestamp + "/" + sess), 
-					                		   new File(basePath + oldProj + "/" + timestamp + "/")); 
-			FileUtils.copyFileToDirectory(new File(base + oldProj + "/" + timestamp + "/" + sess + ".xml"),
-					                      new File(basePath + oldProj + "/" + timestamp + "/"));
+			FileUtils.copyDirectoryToDirectory(new File(base + oldProj + "/"
+					+ timestamp + "/" + sess), new File(basePath + oldProj
+					+ "/" + timestamp + "/"));
+			FileUtils.copyFileToDirectory(new File(base + oldProj + "/"
+					+ timestamp + "/" + sess + ".xml"), new File(basePath
+					+ oldProj + "/" + timestamp + "/"));
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@After
-	public final void deleteTmp () {
-		//delete tmp space
+	public final void deleteTmp() {
+		// delete tmp space
 		try {
 			FileUtils.deleteDirectory(new File(basePath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public final void testCopyRollback() {
-		FileSystemSessionDataModifier fs = new FileSystemSessionDataModifier(basePath);
+		FileSystemSessionDataModifier fs = new FileSystemSessionDataModifier(
+				basePath);
 		try {
 			fs._move(copyException);
 			fail("Should have thrown a SyncFailedException");
-		}
-		catch (SyncFailedException e) {
+		} catch (SyncFailedException e) {
 			// check that the rollback worked.
-			boolean newDirExists = new File(basePath + newProj + "/" + timestamp + "/" + sess).exists();
+			boolean newDirExists = new File(basePath + newProj + "/"
+					+ timestamp + "/" + sess).exists();
 			Assert.assertFalse(newDirExists);
 		}
 	}
+
 	@Test
 	public final void testSetXmlRollback() {
-		FileSystemSessionDataModifier fs = new FileSystemSessionDataModifier(basePath);
+		FileSystemSessionDataModifier fs = new FileSystemSessionDataModifier(
+				basePath);
 		try {
 			fs._move(setXmlException);
 			fail("Should have thrown a SyncFailedException");
-		}
-		catch (SyncFailedException e) {
+		} catch (SyncFailedException e) {
 			// check that the rollback worked.
 			boolean baseDirExists = new File(basePath + newProj).exists();
-			boolean newDirExists = new File(basePath + newProj + "/" + timestamp + "/" + sess).exists();
+			boolean newDirExists = new File(basePath + newProj + "/"
+					+ timestamp + "/" + sess).exists();
 			Assert.assertFalse(newDirExists);
 			Assert.assertTrue(baseDirExists);
 		}
 	}
+
 	@Test
 	public final void testWriteXmlRollback() {
-		FileSystemSessionDataModifier fs = new FileSystemSessionDataModifier(basePath);
+		FileSystemSessionDataModifier fs = new FileSystemSessionDataModifier(
+				basePath);
 		try {
 			fs._move(writeXmlException);
 			fail("Should have thrown a SyncFailedException");
-		}
-		catch (SyncFailedException e) {
+		} catch (SyncFailedException e) {
 			// check that the rollback worked.
 			boolean baseDirExists = new File(basePath + newProj).exists();
-			boolean newDirExists = new File(basePath + newProj + "/" + timestamp + "/" + sess).exists();
+			boolean newDirExists = new File(basePath + newProj + "/"
+					+ timestamp + "/" + sess).exists();
 			Assert.assertFalse(newDirExists);
-			File f = new File(basePath + newProj + "/" + timestamp + "/" + sess + ".xml");
+			File f = new File(basePath + newProj + "/" + timestamp + "/" + sess
+					+ ".xml");
 			boolean xmlExists = f.exists();
 			Assert.assertFalse(xmlExists);
 			Assert.assertTrue(baseDirExists);
 		}
 	}
-	@Test 
+
+	@Test
 	public final void testMove() {
 		try {
-			fs._move(new Move(basePath,sess,uri,null,newProj));
+			fs._move(new Move(basePath, sess, uri, null, newProj));
 		} catch (SyncFailedException e) {
 			fail("SyncFailedException thrown " + e);
 		}
 		File newXml = new File(newTsdir + "/" + sess + ".xml");
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory
+				.newInstance();
 		DocumentBuilder docBuilder;
 		Document doc = null;
 		try {
@@ -190,7 +210,7 @@ public class FileSystemSessionDataModifierTest {
 		} catch (IOException e) {
 			fail("Exception thrown " + e.getMessage());
 		}
-		
+
 		Element e = doc.getDocumentElement();
 		e.normalize();
 		Assert.assertEquals(newProj, e.getAttribute("project"));

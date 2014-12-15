@@ -20,28 +20,25 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseXnatRegionresource extends AutoXnatRegionresource {
 
-	public BaseXnatRegionresource(ItemI item)
-	{
+	public BaseXnatRegionresource(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatRegionresource(UserI user)
-	{
+	public BaseXnatRegionresource(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatRegionresource(UserI user)
-	 **/
-	public BaseXnatRegionresource()
-	{}
+	 */
+	public BaseXnatRegionresource() {
+	}
 
-	public BaseXnatRegionresource(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatRegionresource(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

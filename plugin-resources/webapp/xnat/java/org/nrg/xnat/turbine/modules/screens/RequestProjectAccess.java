@@ -18,15 +18,18 @@ import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 
 public class RequestProjectAccess extends SecureScreen {
 
-    @Override
-    protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        String p = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("project",data));
-        XnatProjectdataI project = XnatProjectdata.getXnatProjectdatasById(p, null, false);
-        
-        context.put("project", project);
-    }
-    
-    public boolean allowGuestAccess(){
-        return false;
-    }
+	@Override
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		String p = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("project", data));
+		XnatProjectdataI project = XnatProjectdata.getXnatProjectdatasById(p,
+				null, false);
+
+		context.put("project", project);
+	}
+
+	public boolean allowGuestAccess() {
+		return false;
+	}
 }

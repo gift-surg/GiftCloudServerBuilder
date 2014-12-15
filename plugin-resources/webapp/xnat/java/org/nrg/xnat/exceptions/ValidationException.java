@@ -10,13 +10,12 @@
  */
 package org.nrg.xnat.exceptions;
 
-
 /**
  * @author Timothy R. Olsen <olsent@wustl.edu>
  *
  */
 public class ValidationException extends Exception {
-	public ValidationException(String s){
+	public ValidationException(String s) {
 		super(s);
 	}
 }

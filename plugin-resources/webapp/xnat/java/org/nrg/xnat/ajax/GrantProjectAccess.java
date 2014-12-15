@@ -29,43 +29,53 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class GrantProjectAccess {
-	public void invite(HttpServletRequest req, HttpServletResponse response,ServletConfig sc) throws IOException{
-		String email = (String)req.getParameter("email");
-		String projectID = (String)req.getParameter("project");
-		String level = (String)req.getParameter("level");
-		
+	public void invite(HttpServletRequest req, HttpServletResponse response,
+			ServletConfig sc) throws IOException {
+		String email = (String) req.getParameter("email");
+		String projectID = (String) req.getParameter("project");
+		String level = (String) req.getParameter("level");
+
 		RunDataService rundataService = null;
-        rundataService = TurbineRunDataFacade.getService();
-        try {
-            if (rundataService == null)
-            {
-                throw new TurbineException(
-                        "No RunData Service configured!");
-            }
-            RunData data = rundataService.getRunData(req, response, sc);
-            Context context = TurbineVelocity.getContext(data);
-            XDATUser user = TurbineUtils.getUser(data);
-    		
-    		XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectID, user, false);
-    		
-    		context.put("user",user);
-            context.put("server",TurbineUtils.GetFullServerPath());
-            context.put("process","Transfer to the archive.");
-            context.put("system",TurbineUtils.GetSystemName());
-            context.put("access_level",level);
-            context.put("admin_email",AdminUtils.getAdminEmailId());
-            context.put("projectOM",project);
-            //SEND email to user
-	    ProjectAccessRequest.InviteUser(context, email, user, user.getFirstname() + " " + user.getLastname()
-		    + " has invited you to join the " + project.getName() + " "
-		    + DisplayManager.GetInstance().getSingularDisplayNameForProject().toLowerCase() + ".");
-        }catch(Exception e){
-        	
-        }
-		
-        response.setContentType("text/html");
-        response.setHeader("Cache-Control", "no-cache");
-        response.getWriter().write("GREEN");
-        
-    }
+		rundataService = TurbineRunDataFacade.getService();
+		try {
+			if (rundataService == null) {
+				throw new TurbineException("No RunData Service configured!");
+			}
+			RunData data = rundataService.getRunData(req, response, sc);
+			Context context = TurbineVelocity.getContext(data);
+			XDATUser user = TurbineUtils.getUser(data);
+
+			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(
+					projectID, user, false);
+
+			context.put("user", user);
+			context.put("server", TurbineUtils.GetFullServerPath());
+			context.put("process", "Transfer to the archive.");
+			context.put("system", TurbineUtils.GetSystemName());
+			context.put("access_level", level);
+			context.put("admin_email", AdminUtils.getAdminEmailId());
+			context.put("projectOM", project);
+			// SEND email to user
+			ProjectAccessRequest.InviteUser(
+					context,
+					email,
+					user,
+					user.getFirstname()
+							+ " "
+							+ user.getLastname()
+							+ " has invited you to join the "
+							+ project.getName()
+							+ " "
+							+ DisplayManager.GetInstance()
+									.getSingularDisplayNameForProject()
+									.toLowerCase() + ".");
+		} catch (Exception e) {
+
+		}
+
+		response.setContentType("text/html");
+		response.setHeader("Cache-Control", "no-cache");
+		response.getWriter().write("GREEN");
+
+	}
 }

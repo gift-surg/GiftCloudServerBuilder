@@ -21,38 +21,35 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseValProtocoldataScanCheck extends AutoValProtocoldataScanCheck implements ScanAssessorScanI{
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseValProtocoldataScanCheck extends
+		AutoValProtocoldataScanCheck implements ScanAssessorScanI {
 
-	public BaseValProtocoldataScanCheck(ItemI item)
-	{
+	public BaseValProtocoldataScanCheck(ItemI item) {
 		super(item);
 	}
 
-	public BaseValProtocoldataScanCheck(UserI user)
-	{
+	public BaseValProtocoldataScanCheck(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseValProtocoldataScanCheck(UserI user)
-	 **/
-	public BaseValProtocoldataScanCheck()
-	{}
-
-	public BaseValProtocoldataScanCheck(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseValProtocoldataScanCheck() {
 	}
-	
-	public String getSummary(){
+
+	public BaseValProtocoldataScanCheck(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
+
+	public String getSummary() {
 		String status = getStatus();
 		String summary = "<span>Unknown</span>";
-		if(status!=null){
-			if(status.equals("1")||status.equalsIgnoreCase("pass")){
+		if (status != null) {
+			if (status.equals("1") || status.equalsIgnoreCase("pass")) {
 				summary = "<span style=\"color:green\">Passed</span>";
-			}
-			else if(status.equals("0")||status.equalsIgnoreCase("fail")){
+			} else if (status.equals("0") || status.equalsIgnoreCase("fail")) {
 				summary = "<span style=\"color:red\">Failed</span>";
 			}
 		}

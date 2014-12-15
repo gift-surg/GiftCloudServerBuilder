@@ -20,28 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatVoiceaudioscandata extends AutoXnatVoiceaudioscandata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatVoiceaudioscandata extends
+		AutoXnatVoiceaudioscandata {
 
-	public BaseXnatVoiceaudioscandata(ItemI item)
-	{
+	public BaseXnatVoiceaudioscandata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatVoiceaudioscandata(UserI user)
-	{
+	public BaseXnatVoiceaudioscandata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatVoiceaudioscandata(UserI user)
-	 **/
-	public BaseXnatVoiceaudioscandata()
-	{}
+	 */
+	public BaseXnatVoiceaudioscandata() {
+	}
 
-	public BaseXnatVoiceaudioscandata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatVoiceaudioscandata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

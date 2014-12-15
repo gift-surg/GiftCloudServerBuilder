@@ -21,12 +21,16 @@ public class ModifyImageAssessorData extends ModifyItem {
 	public void postProcessing(XFTItem item, RunData data, Context context)
 			throws Exception {
 		super.postProcessing(item, data, context);
-//		
-//		XnatImageassessordata assessor= (XnatImageassessordata) BaseElement.GetGeneratedItem(item);
-//
-//		final PersistentWorkflowI wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null, TurbineUtils.getUser(data), assessor.getImageSessionData().getItem(),"Added image assessment");
-//    	EventMetaI c=wrk.buildEvent();
-//        PersistentWorkflowUtils.save(wrk,c);
+		//
+		// XnatImageassessordata assessor= (XnatImageassessordata)
+		// BaseElement.GetGeneratedItem(item);
+		//
+		// final PersistentWorkflowI
+		// wrk=PersistentWorkflowUtils.getOrCreateWorkflowData(null,
+		// TurbineUtils.getUser(data),
+		// assessor.getImageSessionData().getItem(),"Added image assessment");
+		// EventMetaI c=wrk.buildEvent();
+		// PersistentWorkflowUtils.save(wrk,c);
 	}
-	
+
 }

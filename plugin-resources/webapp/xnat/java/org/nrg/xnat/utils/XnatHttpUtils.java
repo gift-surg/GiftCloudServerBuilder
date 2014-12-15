@@ -16,17 +16,17 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 public class XnatHttpUtils {
-	
+
 	public static String getJSESSIONID(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equalsIgnoreCase("jsessionid")) {
-                	return cookie.getValue();
-                }
-            }
-        }
-        throw new JSESSIONIDCookieNotFoundException();
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equalsIgnoreCase("jsessionid")) {
+					return cookie.getValue();
+				}
+			}
+		}
+		throw new JSESSIONIDCookieNotFoundException();
 	}
 
 	public static String getJSESSIONID(RunData runData) {

@@ -20,25 +20,22 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class BaseXnatAddfield extends AutoXnatAddfield {
 
-	public BaseXnatAddfield(ItemI item)
-	{
+	public BaseXnatAddfield(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatAddfield(UserI user)
-	{
+	public BaseXnatAddfield(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatAddfield()
-	{}
+	public BaseXnatAddfield() {
+	}
 
-	public BaseXnatAddfield(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatAddfield(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

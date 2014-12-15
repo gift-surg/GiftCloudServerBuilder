@@ -40,28 +40,27 @@ import java.util.List;
  */
 public class PrearcSessionResourcesList extends PrearcSessionResourceA {
 	static Logger logger = Logger.getLogger(PrearcSessionResourcesList.class);
-	
+
 	public PrearcSessionResourcesList(Context context, Request request,
 			Response response) {
 		super(context, request, response);
 	}
 
-
-	
-	final static ArrayList<String> columns=new ArrayList<String>(){
+	final static ArrayList<String> columns = new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
-	{
-		add("category");
-		add("cat_id");
-		add("label");
-		add("file_count");
-		add("file_size");
-	}};
+		{
+			add("category");
+			add("cat_id");
+			add("label");
+			add("file_count");
+			add("file_size");
+		}
+	};
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		final MediaType mt=overrideVariant(variant);
-				
+		final MediaType mt = overrideVariant(variant);
+
 		final PrearcInfo info;
 		try {
 			info = retrieveSessionBean();
@@ -69,18 +68,25 @@ public class PrearcSessionResourcesList extends PrearcSessionResourceA {
 			setResponseStatus(e);
 			return null;
 		}
-		
-        final XFTTable table=new XFTTable();
-        table.initTable(columns);
-        for(final XnatImagescandataI scan: info.session.getScans_scan()){
-	        for (final XnatAbstractresourceI res : scan.getFile()) {
-	        	final String rootPath=CatalogUtils.getCatalogFile(info.session.getPrearchivepath(), ((XnatResourcecatalogI)res)).getParentFile().getAbsolutePath();
-	        	CatalogUtils.Stats stats=CatalogUtils.getFileStats(CatalogUtils.getCleanCatalog(info.session.getPrearchivepath(), (XnatResourcecatalogI)res, false), rootPath);
-	        	Object[] oarray = new Object[] { "scans", scan.getId(),res.getLabel(), stats.count, stats.size};
-	        	table.insertRow(oarray);
-	        }
-        }
-        
-        return representTable(table, mt, new Hashtable<String,Object>());
+
+		final XFTTable table = new XFTTable();
+		table.initTable(columns);
+		for (final XnatImagescandataI scan : info.session.getScans_scan()) {
+			for (final XnatAbstractresourceI res : scan.getFile()) {
+				final String rootPath = CatalogUtils
+						.getCatalogFile(info.session.getPrearchivepath(),
+								((XnatResourcecatalogI) res)).getParentFile()
+						.getAbsolutePath();
+				CatalogUtils.Stats stats = CatalogUtils.getFileStats(
+						CatalogUtils.getCleanCatalog(
+								info.session.getPrearchivepath(),
+								(XnatResourcecatalogI) res, false), rootPath);
+				Object[] oarray = new Object[] { "scans", scan.getId(),
+						res.getLabel(), stats.count, stats.size };
+				table.insertRow(oarray);
+			}
+		}
+
+		return representTable(table, mt, new Hashtable<String, Object>());
 	}
 }

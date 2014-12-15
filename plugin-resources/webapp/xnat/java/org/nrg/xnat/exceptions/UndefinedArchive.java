@@ -17,32 +17,32 @@ package org.nrg.xnat.exceptions;
 @SuppressWarnings("serial")
 public class UndefinedArchive extends Exception {
 
-    /**
+	/**
      * 
      */
-    public UndefinedArchive() {
-    }
+	public UndefinedArchive() {
+	}
 
-    /**
-     * @param message
-     */
-    public UndefinedArchive(String message) {
-        super(message);
-    }
+	/**
+	 * @param message
+	 */
+	public UndefinedArchive(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public UndefinedArchive(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * @param cause
+	 */
+	public UndefinedArchive(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public UndefinedArchive(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public UndefinedArchive(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

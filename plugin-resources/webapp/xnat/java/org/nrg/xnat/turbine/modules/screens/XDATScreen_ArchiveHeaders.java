@@ -20,7 +20,8 @@ public class XDATScreen_ArchiveHeaders extends SecureScreen {
 	@Override
 	protected void doBuildTemplate(RunData arg0, Context arg1) throws Exception {
 		if (TurbineUtils.HasPassedParameter("numdays", arg0)) {
-			arg1.put("numdays", TurbineUtils.GetPassedParameter("numdays", arg0));
+			arg1.put("numdays",
+					TurbineUtils.GetPassedParameter("numdays", arg0));
 		}
 	}
 }

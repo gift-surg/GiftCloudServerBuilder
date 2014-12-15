@@ -30,65 +30,85 @@ import java.sql.SQLException;
  * @author XDAT
  */
 public class XDATScreen_report_xnat_projectData extends SecureReport {
-	public static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(XDATScreen_report_xnat_projectData.class);
-	/* (non-Javadoc)
-	 * @see org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	public static org.apache.log4j.Logger logger = org.apache.log4j.Logger
+			.getLogger(XDATScreen_report_xnat_projectData.class);
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
 	 */
 	public void finalProcessing(RunData data, Context context) {
-        XnatProjectdata project = (XnatProjectdata)om;
+		XnatProjectdata project = (XnatProjectdata) om;
 
+		try {
+			// org.nrg.xft.search.CriteriaCollection cc = new
+			// CriteriaCollection("AND");
+			// cc.addClause("wrk:workflowData.ID",project.getId());
+			// org.nrg.xft.collections.ItemCollection items =
+			// org.nrg.xft.search.ItemSearch.GetItems(cc,TurbineUtils.getUser(data),false);
+			// //Sort by Launch Time
+			// ArrayList workitems =
+			// items.getItems("wrk:workflowData.launch_time","DESC");
+			// Iterator iter = workitems.iterator();
+			// ArrayList workflows = new ArrayList();
+			// while (iter.hasNext())
+			// {
+			// WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem)iter.next());
+			// workflows.add(vrc);
+			// }
+			//
+			//
+			// context.put("workflows",workflows);
 
-        try {
-//        	org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
-//            cc.addClause("wrk:workflowData.ID",project.getId());
-//            org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc,TurbineUtils.getUser(data),false);
-//            //Sort by Launch Time
-//            ArrayList workitems = items.getItems("wrk:workflowData.launch_time","DESC");
-//            Iterator iter = workitems.iterator();
-//            ArrayList workflows = new ArrayList();
-//            while (iter.hasNext())
-//            {
-//                WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem)iter.next());
-//                workflows.add(vrc);
-//            }
-//
-//
-//            context.put("workflows",workflows);
+			XDATUser user = TurbineUtils.getUser(data);
 
-        	XDATUser user=TurbineUtils.getUser(data);
+			if (user.canRead("xnat:subjectData/project", project.getId()))
+				ItemAccessHistory.LogAccess(user, item, "report");
 
-        	if(user.canRead("xnat:subjectData/project",project.getId()))
-        		ItemAccessHistory.LogAccess(user, item, "report");
+			if (ProjectAccessRequest.CREATED_PAR_TABLE) {
+				Integer parcount = (Integer) PoolDBUtils.ReturnStatisticQuery(
+						"SELECT COUNT(par_id)::int4 AS count FROM xs_par_table WHERE proj_id='"
+								+ project.getId() + "'", "count",
+						user.getDBName(), user.getLogin());
+				context.put("par_count", parcount);
+			}
 
+			if (((String) org.nrg.xdat.turbine.utils.TurbineUtils
+					.GetPassedParameter("topTab", data)) != null) {
+				context.put("topTab",
+						((String) org.nrg.xdat.turbine.utils.TurbineUtils
+								.GetPassedParameter("topTab", data)));
+			}
 
-           if(ProjectAccessRequest.CREATED_PAR_TABLE){
-               Integer parcount=(Integer)PoolDBUtils.ReturnStatisticQuery("SELECT COUNT(par_id)::int4 AS count FROM xs_par_table WHERE proj_id='"+ project.getId() + "'", "count", user.getDBName(), user.getLogin());
-               context.put("par_count", parcount);
-           }
+			if (((String) org.nrg.xdat.turbine.utils.TurbineUtils
+					.GetPassedParameter("bottomTab", data)) != null) {
+				context.put("bottomTab",
+						((String) org.nrg.xdat.turbine.utils.TurbineUtils
+								.GetPassedParameter("bottomTab", data)));
+			}
 
-           if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("topTab",data))!=null){
-        	   context.put("topTab", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("topTab",data)));
-           }
-
-           if(((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("bottomTab",data))!=null){
-        	   context.put("bottomTab", ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("bottomTab",data)));
-           }
-
-            setDefaultTabs("xnat_projectData_summary_details", "xnat_projectData_summary_management", "xnat_projectData_summary_manage", "xnat_projectData_summary_pipeline", "xnat_projectData_summary_history");
-            cacheTabs(context, "xnat_projectData/tabs");
-        } catch (XFTInitException e) {
-            logger.error("",e);
-        } catch (ElementNotFoundException e) {
-            logger.error("",e);
-        } catch (DBPoolException e) {
-            logger.error("",e);
-        } catch (SQLException e) {
-            logger.error("",e);
-        } catch (IllegalAccessException e) {
-            logger.error("",e);
-        } catch (Exception e) {
-            logger.error("",e);
-        }
+			setDefaultTabs("xnat_projectData_summary_details",
+					"xnat_projectData_summary_management",
+					"xnat_projectData_summary_manage",
+					"xnat_projectData_summary_pipeline",
+					"xnat_projectData_summary_history");
+			cacheTabs(context, "xnat_projectData/tabs");
+		} catch (XFTInitException e) {
+			logger.error("", e);
+		} catch (ElementNotFoundException e) {
+			logger.error("", e);
+		} catch (DBPoolException e) {
+			logger.error("", e);
+		} catch (SQLException e) {
+			logger.error("", e);
+		} catch (IllegalAccessException e) {
+			logger.error("", e);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 
 }

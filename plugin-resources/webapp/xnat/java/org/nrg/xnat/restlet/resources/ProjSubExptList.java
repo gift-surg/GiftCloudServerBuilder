@@ -46,17 +46,18 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class ProjSubExptList extends SubjAssessmentAbst {
-	XnatProjectdata proj=null;
-	XnatSubjectdata subject=null;
+	XnatProjectdata proj = null;
+	XnatSubjectdata subject = null;
 
-	String pID=null;
-	String subID=null;
+	String pID = null;
+	String subID = null;
+
 	public ProjSubExptList(Context context, Request request, Response response) {
 		super(context, request, response);
 
-		pID = (String) getParameter(request,"PROJECT_ID");
-			if(pID!=null){
-				proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
+		pID = (String) getParameter(request, "PROJECT_ID");
+		if (pID != null) {
+			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 
 			if (proj == null) {
 				response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
@@ -64,12 +65,12 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 				return;
 			}
 
-			subID = (String) getParameter(request,"SUBJECT_ID");
-				if(subID!=null){
-				subject = XnatSubjectdata.GetSubjectByProjectIdentifier(proj
-						.getId(), subID, user, false);
+			subID = (String) getParameter(request, "SUBJECT_ID");
+			if (subID != null) {
+				subject = XnatSubjectdata.GetSubjectByProjectIdentifier(
+						proj.getId(), subID, user, false);
 
-					if(subject==null){
+				if (subject == null) {
 					subject = XnatSubjectdata.getXnatSubjectdatasById(subID,
 							user, false);
 					if (subject != null
@@ -77,27 +78,28 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 									.getId()))) {
 						subject = null;
 					}
-					}
+				}
 
-					if(subject!=null){
+				if (subject != null) {
 					this.getVariants().add(
 							new Variant(MediaType.APPLICATION_JSON));
-						this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-						this.getVariants().add(new Variant(MediaType.TEXT_XML));
-					}else{
+					this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+					this.getVariants().add(new Variant(MediaType.TEXT_XML));
+				} else {
 					response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
 							"Unable to identify subject " + subID);
-					}
-				}else{
+				}
+			} else {
 				this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 				this.getVariants().add(new Variant(MediaType.TEXT_HTML));
 				this.getVariants().add(new Variant(MediaType.TEXT_XML));
 			}
-		}else{
+		} else {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(XMLPathShortcuts.EXPERIMENT_DATA,true));
+		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(
+				XMLPathShortcuts.EXPERIMENT_DATA, true));
 	}
 
 	@Override
@@ -107,183 +109,236 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 
 	@Override
 	public void handlePost() {
-	        XFTItem item = null;
+		XFTItem item = null;
 
-			try {
-			item=this.loadItem(null,true);
+		try {
+			item = this.loadItem(null, true);
 
-				if(item==null){
-					String xsiType=this.getQueryVariable("xsiType");
-					if(xsiType!=null){
-						item=XFTItem.NewItem(xsiType, user);
-					}
+			if (item == null) {
+				String xsiType = this.getQueryVariable("xsiType");
+				if (xsiType != null) {
+					item = XFTItem.NewItem(xsiType, user);
+				}
+			}
+
+			if (item == null) {
+				this.getResponse().setStatus(
+						Status.CLIENT_ERROR_EXPECTATION_FAILED,
+						"Need POST Contents");
+				return;
+			}
+
+			if (item.instanceOf("xnat:subjectAssessorData")) {
+				XnatSubjectassessordata expt = (XnatSubjectassessordata) BaseElement
+						.GetGeneratedItem(item);
+
+				// MATCH PROJECT
+				if (this.proj == null && expt.getProject() != null) {
+					proj = XnatProjectdata.getXnatProjectdatasById(
+							expt.getProject(), user, false);
 				}
 
-				if(item==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Need POST Contents");
+				if (this.proj != null) {
+					if (expt.getProject() == null
+							|| expt.getProject().equals("")) {
+						expt.setProject(this.proj.getId());
+					} else if (expt.getProject().equals(this.proj.getId())) {
+					} else {
+						boolean matched = false;
+						for (XnatExperimentdataShareI pp : expt
+								.getSharing_share()) {
+							if (pp.getProject().equals(this.proj.getId())) {
+								matched = true;
+								break;
+							}
+						}
+
+						if (!matched) {
+							XnatExperimentdataShare pp = new XnatExperimentdataShare(
+									(UserI) user);
+							pp.setProject(this.proj.getId());
+							expt.setSharing_share(pp);
+						}
+					}
+				} else {
+					this.getResponse()
+							.setStatus(
+									Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+									"Submitted experiment record must include the project attribute.");
 					return;
 				}
 
-				if(item.instanceOf("xnat:subjectAssessorData")){
-					XnatSubjectassessordata expt = (XnatSubjectassessordata)BaseElement.GetGeneratedItem(item);
+				// MATCH SUBJECT
+				if (this.subject != null) {
+					expt.setSubjectId(this.subject.getId());
+				} else {
+					if (expt.getSubjectId() != null
+							&& !expt.getSubjectId().equals("")) {
+						this.subject = XnatSubjectdata.getXnatSubjectdatasById(
+								expt.getSubjectId(), user, false);
 
-					//MATCH PROJECT
-					if(this.proj==null && expt.getProject()!=null){
-						proj = XnatProjectdata.getXnatProjectdatasById(expt.getProject(), user, false);
-					}
+						if (this.subject == null && expt.getProject() != null
+								&& expt.getLabel() != null) {
+							this.subject = XnatSubjectdata
+									.GetSubjectByProjectIdentifier(
+											expt.getProject(),
+											expt.getSubjectId(), user, false);
+						}
 
-					if(this.proj!=null){
-						if(expt.getProject()==null || expt.getProject().equals("")){
-							expt.setProject(this.proj.getId());
-						}else if(expt.getProject().equals(this.proj.getId())){
-						}else{
-							boolean matched=false;
-							for(XnatExperimentdataShareI pp : expt.getSharing_share()){
-								if(pp.getProject().equals(this.proj.getId())){
-									matched=true;
+						if (this.subject == null) {
+							for (XnatExperimentdataShareI pp : expt
+									.getSharing_share()) {
+								this.subject = XnatSubjectdata
+										.GetSubjectByProjectIdentifier(
+												pp.getProject(),
+												expt.getSubjectId(), user,
+												false);
+								if (this.subject != null) {
 									break;
 								}
 							}
-
-							if(!matched){
-								XnatExperimentdataShare pp= new XnatExperimentdataShare((UserI)user);
-								pp.setProject(this.proj.getId());
-								expt.setSharing_share(pp);
-							}
 						}
-					}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Submitted experiment record must include the project attribute.");
-						return;
-					}
 
-					//MATCH SUBJECT
-					if(this.subject!=null){
-						expt.setSubjectId(this.subject.getId());
-					}else{
-						if(expt.getSubjectId()!=null && !expt.getSubjectId().equals("")){
-							this.subject=XnatSubjectdata.getXnatSubjectdatasById(expt.getSubjectId(), user, false);
-
-							if(this.subject==null && expt.getProject()!=null && expt.getLabel()!=null){
-							this.subject=XnatSubjectdata.GetSubjectByProjectIdentifier(expt.getProject(), expt.getSubjectId(),user, false);
-							}
-
-							if(this.subject==null){
-								for(XnatExperimentdataShareI pp : expt.getSharing_share()){
-								this.subject=XnatSubjectdata.GetSubjectByProjectIdentifier(pp.getProject(), expt.getSubjectId(),user, false);
-									if(this.subject!=null){
-										break;
-									}
-								}
-							}
-
-						if(this.subject==null){
-							this.subject = new XnatSubjectdata((UserI)user);
+						if (this.subject == null) {
+							this.subject = new XnatSubjectdata((UserI) user);
 							this.subject.setProject(this.proj.getId());
 							this.subject.setLabel(expt.getSubjectId());
 							this.subject.setId(XnatSubjectdata.CreateNewID());
-				            create(this.subject,false,true,newEventInstance(EventUtils.CATEGORY.DATA,EventUtils.AUTO_CREATE_SUBJECT));
+							create(this.subject,
+									false,
+									true,
+									newEventInstance(EventUtils.CATEGORY.DATA,
+											EventUtils.AUTO_CREATE_SUBJECT));
 							expt.setSubjectId(this.subject.getId());
 						}
 					}
 				}
 
-				if(this.subject==null){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Submitted experiment record must include the subject.");
+				if (this.subject == null) {
+					this.getResponse()
+							.setStatus(
+									Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+									"Submitted experiment record must include the subject.");
 					return;
 				}
 
-					//FIND PRE-EXISTING
-					XnatSubjectassessordata existing=null;
-					if(expt.getId()!=null){
-						existing=(XnatSubjectassessordata)XnatExperimentdata.getXnatExperimentdatasById(expt.getId(), user, completeDocument);
-					}
+				// FIND PRE-EXISTING
+				XnatSubjectassessordata existing = null;
+				if (expt.getId() != null) {
+					existing = (XnatSubjectassessordata) XnatExperimentdata
+							.getXnatExperimentdatasById(expt.getId(), user,
+									completeDocument);
+				}
 
-					if(existing==null && expt.getProject()!=null && expt.getLabel()!=null){
-					existing=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(expt.getProject(), expt.getLabel(),user, completeDocument);
-					}
+				if (existing == null && expt.getProject() != null
+						&& expt.getLabel() != null) {
+					existing = (XnatSubjectassessordata) XnatExperimentdata
+							.GetExptByProjectIdentifier(expt.getProject(),
+									expt.getLabel(), user, completeDocument);
+				}
 
-					if(existing==null){
-						for(XnatExperimentdataShareI pp : expt.getSharing_share()){
-						existing=(XnatSubjectassessordata)XnatExperimentdata.GetExptByProjectIdentifier(pp.getProject(), pp.getLabel(),user, completeDocument);
-							if(existing!=null){
-								break;
-							}
+				if (existing == null) {
+					for (XnatExperimentdataShareI pp : expt.getSharing_share()) {
+						existing = (XnatSubjectassessordata) XnatExperimentdata
+								.GetExptByProjectIdentifier(pp.getProject(),
+										pp.getLabel(), user, completeDocument);
+						if (existing != null) {
+							break;
 						}
 					}
+				}
 
-					if(existing==null){
-						if(!user.canCreate(expt)){
-						this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Specified user account has insufficient create privileges for experiments in this project.");
+				if (existing == null) {
+					if (!user.canCreate(expt)) {
+						this.getResponse()
+								.setStatus(
+										Status.CLIENT_ERROR_FORBIDDEN,
+										"Specified user account has insufficient create privileges for experiments in this project.");
 						return;
-						}
-						//IS NEW
-						if(expt.getId()==null || expt.getId().equals("")){
+					}
+					// IS NEW
+					if (expt.getId() == null || expt.getId().equals("")) {
 						expt.setId(XnatExperimentdata.CreateNewID());
-						}
-					}else{
-						this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,"Specified experiment already exists.");
-					return;
-						//MATCHED
 					}
-
-					boolean allowDataDeletion=false;
-					if(this.getQueryVariable("allowDataDeletion")!=null && this.getQueryVariable("allowDataDeletion").equals("true")){
-						allowDataDeletion=true;
-					}
-
-				if(!StringUtils.IsEmpty(expt.getLabel()) && !StringUtils.IsAlphaNumericUnderscore(expt.getId())){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,"Invalid character in experiment label.");
+				} else {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,
+							"Specified experiment already exists.");
 					return;
+					// MATCHED
 				}
 
+				boolean allowDataDeletion = false;
+				if (this.getQueryVariable("allowDataDeletion") != null
+						&& this.getQueryVariable("allowDataDeletion").equals(
+								"true")) {
+					allowDataDeletion = true;
+				}
 
+				if (!StringUtils.IsEmpty(expt.getLabel())
+						&& !StringUtils.IsAlphaNumericUnderscore(expt.getId())) {
+					this.getResponse().setStatus(
+							Status.CLIENT_ERROR_EXPECTATION_FAILED,
+							"Invalid character in experiment label.");
+					return;
+				}
 
 				final ValidationResults vr = expt.validate();
 
-	            if (vr != null && !vr.isValid())
-	            {
-	            	this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,vr.toFullString());
+				if (vr != null && !vr.isValid()) {
+					this.getResponse().setStatus(
+							Status.CLIENT_ERROR_BAD_REQUEST, vr.toFullString());
 					return;
-	            }
+				}
 
-	            create(expt,false,allowDataDeletion,newEventInstance(EventUtils.CATEGORY.DATA, EventUtils.getAddModifyAction(expt.getXSIType(), (existing==null))));
+				create(expt,
+						false,
+						allowDataDeletion,
+						newEventInstance(EventUtils.CATEGORY.DATA, EventUtils
+								.getAddModifyAction(expt.getXSIType(),
+										(existing == null))));
 
-	            postSaveManageStatus(expt);
+				postSaveManageStatus(expt);
 
-				if(user.canEdit(expt.getItem())){
-					if(this.isQueryVariableTrue(XNATRestConstants.TRIGGER_PIPELINES) || this.containsAction(XNATRestConstants.TRIGGER_PIPELINES)){
-						TriggerPipelines tp = new TriggerPipelines(expt,this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),user);
+				if (user.canEdit(expt.getItem())) {
+					if (this.isQueryVariableTrue(XNATRestConstants.TRIGGER_PIPELINES)
+							|| this.containsAction(XNATRestConstants.TRIGGER_PIPELINES)) {
+						TriggerPipelines tp = new TriggerPipelines(
+								expt,
+								this.isQueryVariableTrue(XNATRestConstants.SUPRESS_EMAIL),
+								user);
 						tp.call();
 					}
 				}
 
 				this.returnSuccessfulCreateFromList(expt.getId());
-				}else{
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,"Only xnat:Subject documents can be PUT to this address.");
-				}
+			} else {
+				this.getResponse()
+						.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+								"Only xnat:Subject documents can be PUT to this address.");
+			}
 		} catch (ActionException e) {
-			this.getResponse().setStatus(e.getStatus(),e.getMessage());
+			this.getResponse().setStatus(e.getStatus(), e.getMessage());
 			return;
 		} catch (InvalidValueException e) {
 			this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-			logger.error("",e);
-			} catch (Exception e) {
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			logger.error("",e);
+			logger.error("", e);
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			logger.error("", e);
 		}
 	}
 
-
-
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		Representation rep=super.getRepresentation(variant);
-		if(rep!=null)return rep;
+		Representation rep = super.getRepresentation(variant);
+		if (rep != null)
+			return rep;
 
 		XFTTable table = null;
 
-		if(proj==null){
-			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,"Unable to identify project " + pID);
+		if (proj == null) {
+			this.getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+					"Unable to identify project " + pID);
 			return null;
 		}
 
@@ -292,11 +347,14 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 			values.put("xnat:subjectData/project", proj.getId());
 			values.put("xnat:subjectData/sharing/share/project", proj.getId());
 
-			final SchemaElement se= SchemaElement.GetElement(XnatSubjectdata.SCHEMA_ELEMENT_NAME);
+			final SchemaElement se = SchemaElement
+					.GetElement(XnatSubjectdata.SCHEMA_ELEMENT_NAME);
 
-			if (!user.canReadByXMLPath(se,values))
-			{
-				this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,"Unable to read experiments for Project: " + proj.getId());
+			if (!user.canReadByXMLPath(se, values)) {
+				this.getResponse().setStatus(
+						Status.CLIENT_ERROR_FORBIDDEN,
+						"Unable to read experiments for Project: "
+								+ proj.getId());
 				return null;
 			}
 		} catch (Exception e1) {
@@ -305,114 +363,131 @@ public class ProjSubExptList extends SubjAssessmentAbst {
 			return null;
 		}
 
-		if(subject!=null){
-			subID=subject.getId();
+		if (subject != null) {
+			subID = subject.getId();
 		}
 
 		try {
-			final String rootElementName=this.getRootElementName();
-			final QueryOrganizer qo = new QueryOrganizer(rootElementName,user,ViewManager.ALL);
+			final String rootElementName = this.getRootElementName();
+			final QueryOrganizer qo = new QueryOrganizer(rootElementName, user,
+					ViewManager.ALL);
 
 			this.populateQuery(qo);
 
-			CriteriaCollection where=new CriteriaCollection("AND");
+			CriteriaCollection where = new CriteriaCollection("AND");
 
-			CriteriaCollection cc= new CriteriaCollection("OR");
-			cc.addClause(rootElementName+"/project", proj.getId());
-			cc.addClause(rootElementName+"/sharing/share/project", proj.getId());
+			CriteriaCollection cc = new CriteriaCollection("OR");
+			cc.addClause(rootElementName + "/project", proj.getId());
+			cc.addClause(rootElementName + "/sharing/share/project",
+					proj.getId());
 			where.addClause(cc);
 
-			if(subID!=null){
-				CriteriaCollection cc2= new CriteriaCollection("AND");
+			if (subID != null) {
+				CriteriaCollection cc2 = new CriteriaCollection("AND");
 				cc2.addClause("xnat:subjectAssessorData/subject_id", subID);
 				where.addClause(cc2);
 			}
 
-            if(!ElementSecurity.IsSecureElement(rootElementName)){
-                qo.addField("xnat:experimentData/extension_item/element_name");
-                qo.addField("xnat:experimentData/project");
-            }
+			if (!ElementSecurity.IsSecureElement(rootElementName)) {
+				qo.addField("xnat:experimentData/extension_item/element_name");
+				qo.addField("xnat:experimentData/project");
+			}
 
 			qo.setWhere(where);
 
-			String query=qo.buildQuery();
+			String query = qo.buildQuery();
 
-			table=XFTTable.Execute(query, user.getDBName(), userName);
+			table = XFTTable.Execute(query, user.getDBName(), userName);
 
-			if(table.size()>0){
-				 if(!ElementSecurity.IsSecureElement(rootElementName)){
-	                    List<Object[]> remove=new ArrayList<Object[]>();
-	                    Hashtable<String, Boolean> checked = new Hashtable<String,Boolean>();
+			if (table.size() > 0) {
+				if (!ElementSecurity.IsSecureElement(rootElementName)) {
+					List<Object[]> remove = new ArrayList<Object[]>();
+					Hashtable<String, Boolean> checked = new Hashtable<String, Boolean>();
 
-	                    String enS=qo.getFieldAlias("xnat:experimentData/extension_item/element_name");
-	                    if(enS==null) {
-	                        logger.error("Couldn't find property xnat:experimentData/extension_item/element_name for search",new Exception());
-	                        this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-	                        return null;
-	                    }
+					String enS = qo
+							.getFieldAlias("xnat:experimentData/extension_item/element_name");
+					if (enS == null) {
+						logger.error(
+								"Couldn't find property xnat:experimentData/extension_item/element_name for search",
+								new Exception());
+						this.getResponse().setStatus(
+								Status.SERVER_ERROR_INTERNAL);
+						return null;
+					}
 
-	                    Integer en=table.getColumnIndex(enS.toLowerCase());
-	                    
-	                    for(Object[] row : table.rows()) {
-	                        String element_name=(String)row[en];
-	                        try{
-	                            if(element_name==null){
-	                                remove.add(row);
-	                            }else{
+					Integer en = table.getColumnIndex(enS.toLowerCase());
 
-	                                if(!checked.containsKey(element_name)){
-	                                    SchemaElementI secureElement = SchemaElement.GetElement(element_name);
+					for (Object[] row : table.rows()) {
+						String element_name = (String) row[en];
+						try {
+							if (element_name == null) {
+								remove.add(row);
+							} else {
 
-	                                    SecurityValues values = new SecurityValues();
-	                                    values.put(element_name + "/project",proj.getId());
+								if (!checked.containsKey(element_name)) {
+									SchemaElementI secureElement = SchemaElement
+											.GetElement(element_name);
 
-	                                    if (user.canReadByXMLPath(secureElement,values)) {
-	                                        checked.put(element_name, Boolean.TRUE);
-	                                    }else{
-	                                        checked.put(element_name, Boolean.FALSE);
-	                                    }
-	                                }
+									SecurityValues values = new SecurityValues();
+									values.put(element_name + "/project",
+											proj.getId());
 
-	                                if(!checked.get(element_name)){
-	                                    remove.add(row);
-	                                }
-	                            }
-	                        } catch (Throwable e) {
-	                            logger.debug("Problem occurred iterating secure elements", e);
-	                            remove.add(row);
-	                        }
-	                    }
+									if (user.canReadByXMLPath(secureElement,
+											values)) {
+										checked.put(element_name, Boolean.TRUE);
+									} else {
+										checked.put(element_name, Boolean.FALSE);
+									}
+								}
 
-	                    table.rows().removeAll(remove);
-	                }
-				
-				table=formatHeaders(table,qo,rootElementName+"/ID","/data/experiments/");
+								if (!checked.get(element_name)) {
+									remove.add(row);
+								}
+							}
+						} catch (Throwable e) {
+							logger.debug(
+									"Problem occurred iterating secure elements",
+									e);
+							remove.add(row);
+						}
+					}
 
-				final Integer labelI=table.getColumnIndex("label");
-				final Integer idI=table.getColumnIndex(rootElementName+"/ID");
-				if(labelI!=null && idI!=null){
-					final XFTTable t= XFTTable.Execute("SELECT sharing_share_xnat_experimentda_id as id,label FROM xnat_experimentData_share WHERE project='"+ proj.getId() + "'", user.getDBName(), user.getUsername());
-					final Hashtable lbls=t.toHashtable("id", "label");
-					for(Object[] row:table.rows()){
-						final String id=(String)row[idI];
-						if(lbls.containsKey(id)){
-							final String lbl=(String)lbls.get(id);
-							if(null!=lbl && !lbl.equals("")){
-								row[labelI]=lbl;
+					table.rows().removeAll(remove);
+				}
+
+				table = formatHeaders(table, qo, rootElementName + "/ID",
+						"/data/experiments/");
+
+				final Integer labelI = table.getColumnIndex("label");
+				final Integer idI = table.getColumnIndex(rootElementName
+						+ "/ID");
+				if (labelI != null && idI != null) {
+					final XFTTable t = XFTTable
+							.Execute(
+									"SELECT sharing_share_xnat_experimentda_id as id,label FROM xnat_experimentData_share WHERE project='"
+											+ proj.getId() + "'",
+									user.getDBName(), user.getUsername());
+					final Hashtable lbls = t.toHashtable("id", "label");
+					for (Object[] row : table.rows()) {
+						final String id = (String) row[idI];
+						if (lbls.containsKey(id)) {
+							final String lbl = (String) lbls.get(id);
+							if (null != lbl && !lbl.equals("")) {
+								row[labelI] = lbl;
 							}
 						}
 					}
 				}
 			}
-			} catch (SQLException e) {
-				logger.error("",e);
-			} catch (DBPoolException e) {
-				logger.error("",e);
-			} catch (Exception e) {
-				logger.error("",e);
-			}
+		} catch (SQLException e) {
+			logger.error("", e);
+		} catch (DBPoolException e) {
+			logger.error("", e);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 
-		Hashtable<String,Object> params=new Hashtable<String,Object>();
+		Hashtable<String, Object> params = new Hashtable<String, Object>();
 		if (table != null)
 			params.put("totalRecords", table.size());
 		return this.representTable(table, overrideVariant(variant), params);

@@ -25,19 +25,26 @@ import java.util.Hashtable;
  */
 public class XDATScreen_mr_super_search extends SecureScreen {
 
-    /* (non-Javadoc)
-     * @see org.cnl.xdat.turbine.modules.screens.SecureReport#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void doBuildTemplate(RunData data, Context context) {
-        try {
-            Hashtable hash = ElementSecurity.GetDistinctIdValuesFor("xnat:investigatorData","default",TurbineUtils.getUser(data).getLogin());
-            context.put("investigators",hash);
-            SchemaElement se = SchemaElement.GetElement("xnat:mrSessionData");
-            context.put("sessionElement",se);
-            SchemaElement subject = SchemaElement.GetElement("xnat:subjectData");
-            context.put("subjectElement",subject);
-        } catch (Exception e) {
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cnl.xdat.turbine.modules.screens.SecureReport#finalProcessing(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void doBuildTemplate(RunData data, Context context) {
+		try {
+			Hashtable hash = ElementSecurity.GetDistinctIdValuesFor(
+					"xnat:investigatorData", "default",
+					TurbineUtils.getUser(data).getLogin());
+			context.put("investigators", hash);
+			SchemaElement se = SchemaElement.GetElement("xnat:mrSessionData");
+			context.put("sessionElement", se);
+			SchemaElement subject = SchemaElement
+					.GetElement("xnat:subjectData");
+			context.put("subjectElement", subject);
+		} catch (Exception e) {
+		}
+	}
 
 }

@@ -21,30 +21,33 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class XnatLogoutHandler extends SecurityContextLogoutHandler implements LogoutHandler {
-    SessionRegistry sessionRegistry;
+public class XnatLogoutHandler extends SecurityContextLogoutHandler implements
+		LogoutHandler {
+	SessionRegistry sessionRegistry;
 
-    @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        super.logout(request, response, authentication);
+	@Override
+	public void logout(HttpServletRequest request,
+			HttpServletResponse response, Authentication authentication) {
+		super.logout(request, response, authentication);
 
-        //expire that guy here.
-        SessionInformation si = getSessionRegistry().getSessionInformation(request.getSession().getId());
-        if (si!=null) {
-            si.expireNow();
-        }
+		// expire that guy here.
+		SessionInformation si = getSessionRegistry().getSessionInformation(
+				request.getSession().getId());
+		if (si != null) {
+			si.expireNow();
+		}
 
-    }
+	}
 
-    public SessionRegistry getSessionRegistry() {
-        if (sessionRegistry == null) {
-            setSessionRegistry(XDAT.getContextService().getBean("sessionRegistry", SessionRegistryImpl.class));
-        }
-        return sessionRegistry;
-    }
+	public SessionRegistry getSessionRegistry() {
+		if (sessionRegistry == null) {
+			setSessionRegistry(XDAT.getContextService().getBean(
+					"sessionRegistry", SessionRegistryImpl.class));
+		}
+		return sessionRegistry;
+	}
 
-    public void setSessionRegistry(SessionRegistry sessionRegistry) {
-        this.sessionRegistry = sessionRegistry;
-    }
+	public void setSessionRegistry(SessionRegistry sessionRegistry) {
+		this.sessionRegistry = sessionRegistry;
+	}
 }
-

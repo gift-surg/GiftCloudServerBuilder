@@ -29,9 +29,10 @@ public class PARList extends SecureResource {
 	public PARList(Context context, Request request, Response response) {
 		super(context, request, response);
 		getVariants().addAll(STANDARD_VARIANTS);
-        if (!user.isSiteAdmin()) {
-            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only administrators can access the list of project access requests.");
-        }
+		if (!user.isSiteAdmin()) {
+			response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+					"Only administrators can access the list of project access requests.");
+		}
 	}
 
 	@Override
@@ -43,8 +44,8 @@ public class PARList extends SecureResource {
 					.Execute(
 							"SELECT par.par_id,par.proj_id,par.level,par.create_date,u.login, u.firstname, u.lastname,p.secondary_id,p.name,p.id,SUBSTRING(p.description,0,300) as description,pi.firstname || ' ' || pi.lastname FROM xs_par_table par LEFT JOIN xnat_projectData p ON par.proj_id=p.id LEFT JOIN xnat_investigatordata pi ON p.pi_xnat_investigatordata_id=pi.xnat_investigatordata_id LEFT JOIN xdat_user u ON par.approver_id=u.xdat_user_id WHERE LOWER(par.email)='"
 									+ user.getEmail().toLowerCase()
-									+ "' AND approval_date IS NULL", user
-									.getDBName(), user.getLogin());
+									+ "' AND approval_date IS NULL",
+							user.getDBName(), user.getLogin());
 
 		} catch (Exception e) {
 			e.printStackTrace();

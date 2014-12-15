@@ -30,39 +30,42 @@ import org.restlet.resource.Variant;
  *
  */
 public class SearchFieldsVersionListResource extends SecureResource {
-	static org.apache.log4j.Logger logger = Logger.getLogger(SearchFieldsVersionListResource.class);
-	private String elementName=null;
-	public SearchFieldsVersionListResource(Context context, Request request, Response response) {
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(SearchFieldsVersionListResource.class);
+	private String elementName = null;
+
+	public SearchFieldsVersionListResource(Context context, Request request,
+			Response response) {
 		super(context, request, response);
-		
-		elementName = (String) getParameter(request,"ELEMENT_NAME");
+
+		elementName = (String) getParameter(request, "ELEMENT_NAME");
 		if (elementName != null) {
 			this.getVariants().add(new Variant(MediaType.TEXT_XML));
 		} else {
 			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
-			
+
 	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {	        
+	public Representation getRepresentation(Variant variant) {
 		try {
 			SchemaElement se = SchemaElement.GetElement(elementName);
 			ElementDisplay ed = se.getDisplay();
-			
+
 			MediaType mt = overrideVariant(variant);
 
-			if (mt.equals(MediaType.APPLICATION_JSON)){
-				return new StringRepresentation(ed.getVersionsJSON(),mt);
-			}else{
-				return new StringRepresentation(ed.getVersionsXML(),mt);
+			if (mt.equals(MediaType.APPLICATION_JSON)) {
+				return new StringRepresentation(ed.getVersionsJSON(), mt);
+			} else {
+				return new StringRepresentation(ed.getVersionsXML(), mt);
 			}
 		} catch (XFTInitException e) {
-            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return null;
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
 		} catch (ElementNotFoundException e) {
-            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return null;
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+			return null;
 		}
 	}
 }

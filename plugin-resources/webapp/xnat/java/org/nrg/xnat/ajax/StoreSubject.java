@@ -16,10 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class StoreSubject{
-    static org.apache.log4j.Logger logger = Logger.getLogger(StoreSubject.class);
-    public void execute(HttpServletRequest req, HttpServletResponse response) throws IOException{
-        response.setStatus(404);
-        return;
-    }
+public class StoreSubject {
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(StoreSubject.class);
+
+	public void execute(HttpServletRequest req, HttpServletResponse response)
+			throws IOException {
+		response.setStatus(404);
+		return;
+	}
 }

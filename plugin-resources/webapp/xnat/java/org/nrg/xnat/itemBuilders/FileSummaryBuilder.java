@@ -27,43 +27,56 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-public class FileSummaryBuilder implements FlattenedItemModifierI{
-	final Map<String,List<FileSummary>> found= new Hashtable<String,List<FileSummary>>();
+public class FileSummaryBuilder implements FlattenedItemModifierI {
+	final Map<String, List<FileSummary>> found = new Hashtable<String, List<FileSummary>>();
 
-	public void modify(XFTItem i, FlattenedItemA.HistoryConfigI includeHistory, Callable<Integer> idGenerator, FlattenedItemA.FilterI filter, XMLWrapperElement root, List<FlattenedItemA.ItemObject> parents, FlattenedItemI fi) {
-		if(root.instanceOf(XnatResourcecatalog.SCHEMA_ELEMENT_NAME)){
-			String uri=(String)fi.getFields().getParams().get("URI");
-			if(FileUtils.IsAbsolutePath(uri)){				
+	public void modify(XFTItem i, FlattenedItemA.HistoryConfigI includeHistory,
+			Callable<Integer> idGenerator, FlattenedItemA.FilterI filter,
+			XMLWrapperElement root, List<FlattenedItemA.ItemObject> parents,
+			FlattenedItemI fi) {
+		if (root.instanceOf(XnatResourcecatalog.SCHEMA_ELEMENT_NAME)) {
+			String uri = (String) fi.getFields().getParams().get("URI");
+			if (FileUtils.IsAbsolutePath(uri)) {
 				fi.getMisc().addAll(getFiles(uri));
 			}
 		}
 	}
 
 	private List<FileSummary> getFiles(String uri) {
-		if(!found.containsKey(uri)){
-			final File catFile=new File(uri);
-		
-			Map<String,Map<String,Integer>> summary=new HashMap<String,Map<String,Integer>>();
-			
-			merge(summary,CatalogUtils.retrieveAuditySummary(CatalogUtils.getCatalog(catFile)));
-			
-			List<File> historicalCats=CatalogUtils.findHistoricalCatFiles(catFile);
-			for(File hisCatFile:historicalCats){
-				merge(summary,CatalogUtils.retrieveAuditySummary(CatalogUtils.getCatalog(hisCatFile)));
+		if (!found.containsKey(uri)) {
+			final File catFile = new File(uri);
+
+			Map<String, Map<String, Integer>> summary = new HashMap<String, Map<String, Integer>>();
+
+			merge(summary, CatalogUtils.retrieveAuditySummary(CatalogUtils
+					.getCatalog(catFile)));
+
+			List<File> historicalCats = CatalogUtils
+					.findHistoricalCatFiles(catFile);
+			for (File hisCatFile : historicalCats) {
+				merge(summary, CatalogUtils.retrieveAuditySummary(CatalogUtils
+						.getCatalog(hisCatFile)));
 			}
-			
+
 			List<FileSummary> files = new ArrayList<FileSummary>();
-							
-			for(Map.Entry<String,Map<String,Integer>> sub:summary.entrySet()){
-				String[] ids=sub.getKey().split(":");
-				Integer change=(StringUtils.isEmpty(ids[0]) || ids[0].equalsIgnoreCase("null"))?null:Integer.valueOf(ids[0]);
-				Date d=null;
+
+			for (Map.Entry<String, Map<String, Integer>> sub : summary
+					.entrySet()) {
+				String[] ids = sub.getKey().split(":");
+				Integer change = (StringUtils.isEmpty(ids[0]) || ids[0]
+						.equalsIgnoreCase("null")) ? null : Integer
+						.valueOf(ids[0]);
+				Date d = null;
 				try {
-					d = (StringUtils.isEmpty(ids[1]) || ids[1].equalsIgnoreCase("null"))?null:DateUtils.parseDateTime(ids[1]);
+					d = (StringUtils.isEmpty(ids[1]) || ids[1]
+							.equalsIgnoreCase("null")) ? null : DateUtils
+							.parseDateTime(ids[1]);
 				} catch (ParseException e1) {
 				}
-				for(Map.Entry<String,Integer> sub2:sub.getValue().entrySet()){
-					files.add(new FileSummary(change, d, sub2.getKey(), sub2.getValue()));
+				for (Map.Entry<String, Integer> sub2 : sub.getValue()
+						.entrySet()) {
+					files.add(new FileSummary(change, d, sub2.getKey(), sub2
+							.getValue()));
 				}
 			}
 
@@ -71,14 +84,17 @@ public class FileSummaryBuilder implements FlattenedItemModifierI{
 		}
 		return found.get(uri);
 	}
-	
-	private static void merge(Map<String,Map<String,Integer>> _new, Map<String,Map<String,Integer>> old){
-		for(Map.Entry<String,Map<String,Integer>> sub:old.entrySet()){
-			if(_new.containsKey(sub.getKey())){
-				for(Map.Entry<String,Integer> sub2:sub.getValue().entrySet()){
-					CatalogUtils.addAuditEntry(_new, sub.getKey(), sub2.getKey(),sub2.getValue());
+
+	private static void merge(Map<String, Map<String, Integer>> _new,
+			Map<String, Map<String, Integer>> old) {
+		for (Map.Entry<String, Map<String, Integer>> sub : old.entrySet()) {
+			if (_new.containsKey(sub.getKey())) {
+				for (Map.Entry<String, Integer> sub2 : sub.getValue()
+						.entrySet()) {
+					CatalogUtils.addAuditEntry(_new, sub.getKey(),
+							sub2.getKey(), sub2.getValue());
 				}
-			}else{
+			} else {
 				_new.put(sub.getKey(), sub.getValue());
 			}
 		}

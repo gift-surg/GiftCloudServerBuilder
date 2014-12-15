@@ -16,9 +16,9 @@ import org.nrg.xdat.turbine.modules.screens.SecureReport;
 
 public class XDATScreen_manage_entry_access extends SecureReport {
 
-    @Override
-    public void finalProcessing(RunData data, Context context) {
-        
-    }
+	@Override
+	public void finalProcessing(RunData data, Context context) {
+
+	}
 
 }

@@ -22,35 +22,38 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class ProjSubjURI extends ProjURI  implements ArchiveItemURI,SubjectURII{
-	private XnatSubjectdata subject=null;
-	
+public class ProjSubjURI extends ProjURI implements ArchiveItemURI, SubjectURII {
+	private XnatSubjectdata subject = null;
+
 	public ProjSubjURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
-	protected void populateSubject(){
+	protected void populateSubject() {
 		super.populateProject();
-		
-		if(subject==null){
-			final XnatProjectdata proj=getProject();
-			
-			final String subID= (String)props.get(URIManager.SUBJECT_ID);
-			
-			if(proj!=null){
-				subject=XnatSubjectdata.GetSubjectByProjectIdentifier(proj.getId(), subID,null, false);
+
+		if (subject == null) {
+			final XnatProjectdata proj = getProject();
+
+			final String subID = (String) props.get(URIManager.SUBJECT_ID);
+
+			if (proj != null) {
+				subject = XnatSubjectdata.GetSubjectByProjectIdentifier(
+						proj.getId(), subID, null, false);
 			}
-			
-			if(subject==null){
-				subject=XnatSubjectdata.getXnatSubjectdatasById(subID, null, false);
-				if(subject!=null && (proj!=null && !subject.hasProject(proj.getId()))){
-					subject=null;
+
+			if (subject == null) {
+				subject = XnatSubjectdata.getXnatSubjectdatasById(subID, null,
+						false);
+				if (subject != null
+						&& (proj != null && !subject.hasProject(proj.getId()))) {
+					subject = null;
 				}
 			}
 		}
 	}
-	
-	public XnatSubjectdata getSubject(){
+
+	public XnatSubjectdata getSubject() {
 		this.populateSubject();
 		return subject;
 	}
@@ -62,8 +65,8 @@ public class ProjSubjURI extends ProjURI  implements ArchiveItemURI,SubjectURII{
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatSubjectdata expt=getSubject();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatSubjectdata expt = getSubject();
 		res.addAll(expt.getResources_resource());
 		return res;
 	}

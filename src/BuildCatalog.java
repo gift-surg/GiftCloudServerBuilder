@@ -16,22 +16,21 @@ import org.nrg.xdat.bean.CatCatalogBean;
 import org.nrg.xft.commandPrompt.CommandPromptTool;
 import org.nrg.xnat.turbine.utils.XNATUtils;
 
-
 public class BuildCatalog extends CommandPromptTool {
 
-	public BuildCatalog(String[] args)
-	{
-	    super(args);
+	public BuildCatalog(String[] args) {
+		super(args);
 	}
-    
-    public static void main(String[] args) {
-    	BuildCatalog b = new BuildCatalog(args);	
+
+	public static void main(String[] args) {
+		BuildCatalog b = new BuildCatalog(args);
 		return;
-	}	
-    
+	}
+
 	@Override
 	public void definePossibleVariables() {
-        addPossibleVariable("folder","folder to look for files",new String[]{"folder"},true);
+		addPossibleVariable("folder", "folder to look for files",
+				new String[] { "folder" }, true);
 	}
 
 	@Override
@@ -48,8 +47,6 @@ public class BuildCatalog extends CommandPromptTool {
 	public String getName() {
 		return null;
 	}
-	
-	
 
 	@Override
 	public boolean requireLogin() {
@@ -58,17 +55,16 @@ public class BuildCatalog extends CommandPromptTool {
 
 	@Override
 	public void process() {
-		String folder = (String)this.arguments.get("folder");
-		
+		String folder = (String) this.arguments.get("folder");
+
 		File dir = new File(folder);
-		
+
 		CatCatalogBean cat = new CatCatalogBean();
-    	if (dir.exists())
-        {
-            XNATUtils.populateCatalogBean(cat, "", dir);
-        }
-    	File dest = new File(folder +"_catalog.xml");
-    	try {
+		if (dir.exists()) {
+			XNATUtils.populateCatalogBean(cat, "", dir);
+		}
+		File dest = new File(folder + "_catalog.xml");
+		try {
 			FileWriter fw = new FileWriter(dest);
 			cat.toXML(fw, true);
 			fw.close();

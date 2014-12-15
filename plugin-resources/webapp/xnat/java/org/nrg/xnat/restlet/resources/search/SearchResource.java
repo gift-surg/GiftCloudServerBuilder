@@ -53,21 +53,22 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class SearchResource extends SecureResource {
-	static org.apache.log4j.Logger logger = Logger.getLogger(SearchResource.class);
-	XFTTable table= null;
-	Long rows=null;
-	String tableName=null;
+	static org.apache.log4j.Logger logger = Logger
+			.getLogger(SearchResource.class);
+	XFTTable table = null;
+	Long rows = null;
+	String tableName = null;
 
-	String rootElementName=null;
-	
-	Hashtable<String,Object> tableParams=new Hashtable<String,Object>();
-	Map<String,Map<String,String>> cp=new LinkedHashMap<String,Map<String,String>>();
-	
+	String rootElementName = null;
+
+	Hashtable<String, Object> tableParams = new Hashtable<String, Object>();
+	Map<String, Map<String, String>> cp = new LinkedHashMap<String, Map<String, String>>();
+
 	public SearchResource(Context context, Request request, Response response) {
 		super(context, request, response);
-			this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
+		this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+		this.getVariants().add(new Variant(MediaType.TEXT_HTML));
+		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 	}
 
 	@Override
@@ -82,372 +83,450 @@ public class SearchResource extends SecureResource {
 
 	@Override
 	public void handlePost() {
-            try {
-				String cacheRequest = this.getQueryVariable("cache");
-				boolean cache = false;
-				if (cacheRequest!=null && cacheRequest.equalsIgnoreCase("true")){
-					cache =true;
-				}
-				
-			XFTItem item=null;
+		try {
+			String cacheRequest = this.getQueryVariable("cache");
+			boolean cache = false;
+			if (cacheRequest != null && cacheRequest.equalsIgnoreCase("true")) {
+				cache = true;
+			}
+
+			XFTItem item = null;
 			Representation entity = this.getRequest().getEntity();
-			if(entity!=null && entity.getMediaType()!=null && entity.getMediaType().getName().equals(MediaType.MULTIPART_FORM_DATA.getName())){
+			if (entity != null
+					&& entity.getMediaType() != null
+					&& entity.getMediaType().getName()
+							.equals(MediaType.MULTIPART_FORM_DATA.getName())) {
 				try {
 					org.apache.commons.fileupload.DefaultFileItemFactory factory = new org.apache.commons.fileupload.DefaultFileItemFactory();
-					org.restlet.ext.fileupload.RestletFileUpload upload = new  org.restlet.ext.fileupload.RestletFileUpload(factory);
+					org.restlet.ext.fileupload.RestletFileUpload upload = new org.restlet.ext.fileupload.RestletFileUpload(
+							factory);
 
-                    List<FileItem> items = upload.parseRequest(this.getRequest());
+					List<FileItem> items = upload.parseRequest(this
+							.getRequest());
 
-                    for (final FileItem fi : items) {
-					    if(fi.getName().endsWith(".xml")){
+					for (final FileItem fi : items) {
+						if (fi.getName().endsWith(".xml")) {
 							SAXReader reader = new SAXReader(user);
 							try {
 								item = reader.parse(fi.getInputStream());
 
-								if(!reader.assertValid()){
+								if (!reader.assertValid()) {
 									throw reader.getErrors().get(0);
 								}
 								if (XFT.VERBOSE)
-								    System.out.println("Loaded XML Item:" + item.getProperName());
-								
-								if(item!=null){
-									completeDocument=true;
+									System.out.println("Loaded XML Item:"
+											+ item.getProperName());
+
+								if (item != null) {
+									completeDocument = true;
 								}
 							} catch (SAXParseException e) {
-								logger.error("",e);
-								this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
+								logger.error("", e);
+								this.getResponse()
+										.setStatus(
+												Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+												e.getMessage());
 								throw e;
 							} catch (IOException e) {
-								logger.error("",e);
-								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+								logger.error("", e);
+								this.getResponse().setStatus(
+										Status.SERVER_ERROR_INTERNAL);
 							} catch (Exception e) {
-								logger.error("",e);
-								this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+								logger.error("", e);
+								this.getResponse().setStatus(
+										Status.SERVER_ERROR_INTERNAL);
 							}
-					    }
+						}
 					}
 				} catch (FileUploadException e) {
-                    logger.error("", e);
+					logger.error("", e);
 					this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 				}
-			}else{
-				if(entity!=null){
-					Reader sax=entity.getReader();
-			        try {
-								
-				SAXReader reader = new SAXReader(user);
+			} else {
+				if (entity != null) {
+					Reader sax = entity.getReader();
+					try {
+
+						SAXReader reader = new SAXReader(user);
 						item = reader.parse(sax);
-	
-						if(!reader.assertValid()){
+
+						if (!reader.assertValid()) {
 							throw reader.getErrors().get(0);
 						}
-			            if (XFT.VERBOSE)
-			                System.out.println("Loaded XML Item:" + item.getProperName());
-			            
-			            if(item!=null){
-							completeDocument=true;
-			            }
-			            
+						if (XFT.VERBOSE)
+							System.out.println("Loaded XML Item:"
+									+ item.getProperName());
+
+						if (item != null) {
+							completeDocument = true;
+						}
+
 					} catch (SAXParseException e) {
-						logger.error("",e);
-						this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,e.getMessage());
+						logger.error("", e);
+						this.getResponse().setStatus(
+								Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
+								e.getMessage());
 						throw e;
 					} catch (IOException e) {
-						logger.error("",e);
-						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+						logger.error("", e);
+						this.getResponse().setStatus(
+								Status.SERVER_ERROR_INTERNAL);
 					} catch (Exception e) {
-						logger.error("",e);
-						this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+						logger.error("", e);
+						this.getResponse().setStatus(
+								Status.SERVER_ERROR_INTERNAL);
 					}
 				}
 			}
-				
-				if(item == null || !item.instanceOf("xdat:stored_search")){
-					this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+
+			if (item == null || !item.instanceOf("xdat:stored_search")) {
+				this.getResponse().setStatus(
+						Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+				return;
+			}
+
+			XdatStoredSearch search = new XdatStoredSearch(item);
+
+			// If a user has been manually added to a secret search, it is
+			// allowed (the criteria cannot be modified,
+			// which is checked in the canQueryByAllowedUser() method)
+			boolean allowed = canQueryByAllowedUser(search);
+
+			// If the user is not explicitly allowed to perform a search...
+			if (!allowed) {
+				// See if the user can *implicitly* perform the search.
+				if (!user.canQuery(search.getRootElementName())) {
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
 					return;
 				}
-
-				XdatStoredSearch search = new XdatStoredSearch(item);
-
-                // If a user has been manually added to a secret search, it is allowed (the criteria cannot be modified,
-                // which is checked in the canQueryByAllowedUser() method)
-                boolean allowed = canQueryByAllowedUser(search);
-
-                // If the user is not explicitly allowed to perform a search...
-				if(!allowed) {
-                    // See if the user can *implicitly* perform the search.
-                    if (!user.canQuery(search.getRootElementName())) {
-                        getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-                        return;
-                    }
-				}
-					
-				rootElementName=search.getRootElementName();
-			
-				DisplaySearch ds=search.getDisplaySearch(user);
-				
-				String sortBy = this.getQueryVariable("sortBy");
-				String sortOrder = this.getQueryVariable("sortOrder");
-				if (sortBy != null){
-				    ds.setSortBy(sortBy);
-                if (sortOrder != null) {
-				        ds.setSortOrder(sortOrder);
-				    }
-				}
-				
-				MaterializedView mv=null;
-					
-				if(search.getId()!=null && !search.getId().equals("")){
-					mv = MaterializedView.GetMaterializedViewBySearchID(search.getId(), user);
-				}
-				
-				if(mv!=null && (search.getId().startsWith("@") || this.isQueryVariableTrue("refresh"))){
-					mv.delete();
-					mv=null;
-				}
-
-			cp=setColumnProperties(ds,user,this);
-				
-				if (!cache){
-					if(mv!=null){
-						table=mv.getData(null, null, null);
-					}else{
-					    ds.setPagingOn(false);
-					MediaType mt = this.getRequestedMediaType();
-						if (mt!=null && mt.equals(SecureResource.APPLICATION_XLIST)){
-							table=(XFTTable)ds.execute(new RESTHTMLPresenter(TurbineUtils.GetRelativePath(ServletCall.getRequest(this.getRequest())),null,user,sortBy),user.getLogin());
-						}else{
-					    table=(XFTTable)ds.execute(null,user.getLogin());
-					}
-					    //table=(XFTTable)ds.execute(null,user.getLogin());
-
-				}
-				}else{
-					if(mv!=null){
-						if(search.getId()!=null && !search.getId().equals("") && mv.getLast_access()!=null)
-							tableParams.put("last_access", mv.getLast_access());
-						table=mv.getData(null, null, 0);
-						tableName=mv.getTable_name();
-						rows=mv.getSize();
-					}else{
-						ds.setPagingOn(false);
-						ds.addKeyColumn(true);
-						
-						String query = ds.getSQLQuery(null);
-						query = StringUtils.ReplaceStr(query,"'","*'*");
-						query = StringUtils.ReplaceStr(query,"*'*","''");
-						
-						mv = new MaterializedView(user);
-						if(search.getId()!=null && !search.getId().equals(""))
-							mv.setSearch_id(search.getId());
-						mv.setSearch_sql(query);
-						mv.setSearch_xml(item.writeToFlatString(0));
-						mv.save();
-
-						if(search.getId()!=null && !search.getId().equals("") && mv.getLast_access()!=null)
-							tableParams.put("last_access", mv.getLast_access());
-						
-						tableName=mv.getTable_name();
-					
-						int limit=0;
-						if(this.getQueryVariable("limit")!=null)
-							limit=Integer.valueOf(this.getQueryVariable("limit"));
-						table=mv.getData(null, null, limit);
-						rows=mv.getSize();
-					}
-				}
-				
-				this.returnDefaultRepresentation();
-			} catch (IOException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (SAXException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-			} catch (ElementNotFoundException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (XFTInitException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (FieldNotFoundException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (DBPoolException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (SQLException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (IllegalAccessException e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-			} catch (Exception e) {
-			logger.error("Failed POST",e);
-				this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			}
-		}
 
-    @Override
+			rootElementName = search.getRootElementName();
+
+			DisplaySearch ds = search.getDisplaySearch(user);
+
+			String sortBy = this.getQueryVariable("sortBy");
+			String sortOrder = this.getQueryVariable("sortOrder");
+			if (sortBy != null) {
+				ds.setSortBy(sortBy);
+				if (sortOrder != null) {
+					ds.setSortOrder(sortOrder);
+				}
+			}
+
+			MaterializedView mv = null;
+
+			if (search.getId() != null && !search.getId().equals("")) {
+				mv = MaterializedView.GetMaterializedViewBySearchID(
+						search.getId(), user);
+			}
+
+			if (mv != null
+					&& (search.getId().startsWith("@") || this
+							.isQueryVariableTrue("refresh"))) {
+				mv.delete();
+				mv = null;
+			}
+
+			cp = setColumnProperties(ds, user, this);
+
+			if (!cache) {
+				if (mv != null) {
+					table = mv.getData(null, null, null);
+				} else {
+					ds.setPagingOn(false);
+					MediaType mt = this.getRequestedMediaType();
+					if (mt != null
+							&& mt.equals(SecureResource.APPLICATION_XLIST)) {
+						table = (XFTTable) ds
+								.execute(
+										new RESTHTMLPresenter(
+												TurbineUtils
+														.GetRelativePath(ServletCall
+																.getRequest(this
+																		.getRequest())),
+												null, user, sortBy), user
+												.getLogin());
+					} else {
+						table = (XFTTable) ds.execute(null, user.getLogin());
+					}
+					// table=(XFTTable)ds.execute(null,user.getLogin());
+
+				}
+			} else {
+				if (mv != null) {
+					if (search.getId() != null && !search.getId().equals("")
+							&& mv.getLast_access() != null)
+						tableParams.put("last_access", mv.getLast_access());
+					table = mv.getData(null, null, 0);
+					tableName = mv.getTable_name();
+					rows = mv.getSize();
+				} else {
+					ds.setPagingOn(false);
+					ds.addKeyColumn(true);
+
+					String query = ds.getSQLQuery(null);
+					query = StringUtils.ReplaceStr(query, "'", "*'*");
+					query = StringUtils.ReplaceStr(query, "*'*", "''");
+
+					mv = new MaterializedView(user);
+					if (search.getId() != null && !search.getId().equals(""))
+						mv.setSearch_id(search.getId());
+					mv.setSearch_sql(query);
+					mv.setSearch_xml(item.writeToFlatString(0));
+					mv.save();
+
+					if (search.getId() != null && !search.getId().equals("")
+							&& mv.getLast_access() != null)
+						tableParams.put("last_access", mv.getLast_access());
+
+					tableName = mv.getTable_name();
+
+					int limit = 0;
+					if (this.getQueryVariable("limit") != null)
+						limit = Integer.valueOf(this.getQueryVariable("limit"));
+					table = mv.getData(null, null, limit);
+					rows = mv.getSize();
+				}
+			}
+
+			this.returnDefaultRepresentation();
+		} catch (IOException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (SAXException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(
+					Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+		} catch (ElementNotFoundException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (XFTInitException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (FieldNotFoundException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (DBPoolException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (SQLException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (IllegalAccessException e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		} catch (Exception e) {
+			logger.error("Failed POST", e);
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+		}
+	}
+
+	@Override
 	public Representation represent(Variant variant) {
-		if(tableName!=null){
+		if (tableName != null) {
 			tableParams.put("ID", tableName);
 		}
-		
-		if(rows!=null){
+
+		if (rows != null) {
 			tableParams.put("totalRecords", rows);
-		}else{
+		} else {
 			tableParams.put("totalRecords", table.getNumRows());
 		}
 
-		if(rootElementName!=null){
+		if (rootElementName != null) {
 			tableParams.put("rootElementName", rootElementName);
 		}
 
 		MediaType mt = overrideVariant(variant);
-		
-		return this.representTable(table, mt, tableParams,cp);
+
+		return this.representTable(table, mt, tableParams, cp);
 	}
-	
-	public static LinkedHashMap<String,Map<String,String>> setColumnProperties(DisplaySearch search,XDATUser user, SecureResource sr){
-		LinkedHashMap<String,Map<String,String>> cp=new LinkedHashMap<String,Map<String,String>>();
+
+	public static LinkedHashMap<String, Map<String, String>> setColumnProperties(
+			DisplaySearch search, XDATUser user, SecureResource sr) {
+		LinkedHashMap<String, Map<String, String>> cp = new LinkedHashMap<String, Map<String, String>>();
 		try {
 			List<DisplayFieldReferenceI> fields = search.getAllFields("");
 
-			//int fieldCount = visibleFields.size() + search.getInClauses().size();
+			// int fieldCount = visibleFields.size() +
+			// search.getInClauses().size();
 
-            if (search.getInClauses().size() > 0) {
-                for (int i = 0; i < search.getInClauses().size(); i++) {
-			        cp.put("search_field"+i,new Hashtable<String,String>());
-			        cp.get("search_field"+i).put("header", "");
-			    }
+			if (search.getInClauses().size() > 0) {
+				for (int i = 0; i < search.getInClauses().size(); i++) {
+					cp.put("search_field" + i, new Hashtable<String, String>());
+					cp.get("search_field" + i).put("header", "");
+				}
 			}
 
-			//POPULATE HEADERS
+			// POPULATE HEADERS
 
-            for (DisplayFieldReferenceI dfr : fields) {
+			for (DisplayFieldReferenceI dfr : fields) {
 				try {
-                    String id;
-					if(dfr.getValue()!=null && !dfr.getValue().equals("")){
-						if(dfr.getValue().equals("{XDAT_USER_ID}")){
+					String id;
+					if (dfr.getValue() != null && !dfr.getValue().equals("")) {
+						if (dfr.getValue().equals("{XDAT_USER_ID}")) {
 							dfr.setValue(user.getXdatUserId());
 						}
 					}
-                    if (dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName())) {
+					if (dfr.getElementName().equalsIgnoreCase(
+							search.getRootElement().getFullXMLName())) {
 						id = dfr.getRowID().toLowerCase();
-					}else{
-						id = dfr.getElementSQLName().toLowerCase() + "_" + dfr.getRowID().toLowerCase();
+					} else {
+						id = dfr.getElementSQLName().toLowerCase() + "_"
+								+ dfr.getRowID().toLowerCase();
 					}
-					cp.put(id,new Hashtable<String,String>());
+					cp.put(id, new Hashtable<String, String>());
 					cp.get(id).put("element_name", dfr.getElementName());
 					try {
-						String temp_id=dfr.getDisplayField().getId();
-						if(dfr.getValue()!=null)
-							temp_id+="="+dfr.getValue();
+						String temp_id = dfr.getDisplayField().getId();
+						if (dfr.getValue() != null)
+							temp_id += "=" + dfr.getValue();
 						cp.get(id).put("id", temp_id);
 					} catch (DisplayFieldNotFoundException e2) {
-						logger.error("",e2);
+						logger.error("", e2);
 					}
-					cp.get(id).put("xPATH", dfr.getElementName() + "." + dfr.getSortBy());
-					
-                    if (dfr.getHeader().equalsIgnoreCase("")) {
+					cp.get(id).put("xPATH",
+							dfr.getElementName() + "." + dfr.getSortBy());
+
+					if (dfr.getHeader().equalsIgnoreCase("")) {
 						cp.get(id).put("header", " ");
-					}else{
+					} else {
 						cp.get(id).put("header", dfr.getHeader());
 					}
 
-					String t=dfr.getType();
-					if(t==null){
+					String t = dfr.getType();
+					if (t == null) {
 						try {
-							if(dfr.getDisplayField()!=null){
-								t=dfr.getDisplayField().getDataType();
+							if (dfr.getDisplayField() != null) {
+								t = dfr.getDisplayField().getDataType();
 							}
 						} catch (DisplayFieldNotFoundException e) {
-							logger.error("",e);
+							logger.error("", e);
 						}
 					}
-					if(t!=null){
+					if (t != null) {
 						cp.get(id).put("type", t);
 					}
 
 					try {
-						if(!dfr.isVisible()){
-							cp.get(id).put("visible","false");
+						if (!dfr.isVisible()) {
+							cp.get(id).put("visible", "false");
 						}
 					} catch (DisplayFieldNotFoundException e1) {
-						logger.error("",e1);
+						logger.error("", e1);
 					}
 
-                    if (dfr.getHTMLLink() != null && sr.getQueryVariable("format") != null && sr.getQueryVariable("format").equalsIgnoreCase("json")) {
+					if (dfr.getHTMLLink() != null
+							&& sr.getQueryVariable("format") != null
+							&& sr.getQueryVariable("format").equalsIgnoreCase(
+									"json")) {
 						cp.get(id).put("clickable", "true");
 						HTMLLink link = dfr.getHTMLLink();
-						
-                        StringBuilder linkProps = new StringBuilder("[");
-						int propCounter=0;
-						for(HTMLLinkProperty prop: link.getProperties()){
-							if(propCounter++>0)linkProps.append(",");
+
+						StringBuilder linkProps = new StringBuilder("[");
+						int propCounter = 0;
+						for (HTMLLinkProperty prop : link.getProperties()) {
+							if (propCounter++ > 0)
+								linkProps.append(",");
 							linkProps.append("{");
 							linkProps.append("\"name\":\"");
 							linkProps.append(prop.getName()).append("\"");
 							linkProps.append(",\"value\":\"");
-							String v =prop.getValue();
-							v = StringUtils.ReplaceStr(v,"@WEBAPP",TurbineUtils.GetRelativePath(ServletCall.getRequest(sr.getRequest())) + "/");
-							
+							String v = prop.getValue();
+							v = StringUtils
+									.ReplaceStr(
+											v,
+											"@WEBAPP",
+											TurbineUtils
+													.GetRelativePath(ServletCall.getRequest(sr
+															.getRequest()))
+													+ "/");
+
 							linkProps.append(v).append("\"");
 
-                            if (prop.getInsertedValues().size() > 0) {
+							if (prop.getInsertedValues().size() > 0) {
 								linkProps.append(",\"inserts\":[");
-								int valueCounter=0;
-                                for (Map.Entry<String, String> entry : prop.getInsertedValues().entrySet()) {
-									if(valueCounter++>0)linkProps.append(",");
+								int valueCounter = 0;
+								for (Map.Entry<String, String> entry : prop
+										.getInsertedValues().entrySet()) {
+									if (valueCounter++ > 0)
+										linkProps.append(",");
 									linkProps.append("{\"name\":\"");
-									linkProps.append(entry.getKey()).append("\"");
+									linkProps.append(entry.getKey()).append(
+											"\"");
 									linkProps.append(",\"value\":\"");
-									
+
 									String insert_value = entry.getValue();
-                                    if (insert_value.startsWith("@WHERE")){
-                                        try {
-											if (dfr.getDisplayField() instanceof SQLQueryField){
-											    Object insertValue = dfr.getValue();
+									if (insert_value.startsWith("@WHERE")) {
+										try {
+											if (dfr.getDisplayField() instanceof SQLQueryField) {
+												Object insertValue = dfr
+														.getValue();
 
-                                                if (insertValue == null) {
-											        insertValue = "NULL";
-											    }else{
-                                                    if (insertValue.toString().contains(",")) {
-											        	insert_value = insert_value.substring(6);
-											            try {
-											                Integer i = Integer.parseInt(insert_value);
-											                ArrayList<String> al = StringUtils.CommaDelimitedStringToArrayList(insertValue.toString());
-											                insertValue =al.get(i);
-											            } catch (Throwable e) {
-											                logger.error("",e);
-											            }
-											        }
-											    }
+												if (insertValue == null) {
+													insertValue = "NULL";
+												} else {
+													if (insertValue.toString()
+															.contains(",")) {
+														insert_value = insert_value
+																.substring(6);
+														try {
+															Integer i = Integer
+																	.parseInt(insert_value);
+															ArrayList<String> al = StringUtils
+																	.CommaDelimitedStringToArrayList(insertValue
+																			.toString());
+															insertValue = al
+																	.get(i);
+														} catch (Throwable e) {
+															logger.error("", e);
+														}
+													}
+												}
 
-                                                linkProps.append("@").append(insertValue);
+												linkProps.append("@").append(
+														insertValue);
 											}
 										} catch (DisplayFieldNotFoundException e) {
-											logger.error("",e);
+											logger.error("", e);
 										}
-                                    }else{
-                                        if (!dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName())) {
-                                        	 insert_value = dfr.getElementSQLName().toLowerCase() + "_" + insert_value.toLowerCase();
-                                         }else{
-                                        	 insert_value=insert_value.toLowerCase();
-                                         }
-                                         if(cp.get(insert_value)==null){
-                          					cp.put(insert_value,new Hashtable<String,String>());
-                         					
-                                            if (!dfr.getElementName().equalsIgnoreCase(search.getRootElement().getFullXMLName())) {
-                            					cp.get(insert_value).put("xPATH", dfr.getElementName() + "." + insert_value);
-                                            }else{
-                            					cp.get(insert_value).put("xPATH", insert_value);
-                                            }
-                                         }
-                    					
-    									linkProps.append(insert_value);
-                                    }
+									} else {
+										if (!dfr.getElementName()
+												.equalsIgnoreCase(
+														search.getRootElement()
+																.getFullXMLName())) {
+											insert_value = dfr
+													.getElementSQLName()
+													.toLowerCase()
+													+ "_"
+													+ insert_value
+															.toLowerCase();
+										} else {
+											insert_value = insert_value
+													.toLowerCase();
+										}
+										if (cp.get(insert_value) == null) {
+											cp.put(insert_value,
+													new Hashtable<String, String>());
+
+											if (!dfr.getElementName()
+													.equalsIgnoreCase(
+															search.getRootElement()
+																	.getFullXMLName())) {
+												cp.get(insert_value).put(
+														"xPATH",
+														dfr.getElementName()
+																+ "."
+																+ insert_value);
+											} else {
+												cp.get(insert_value).put(
+														"xPATH", insert_value);
+											}
+										}
+
+										linkProps.append(insert_value);
+									}
 									linkProps.append("\"}");
 								}
 								linkProps.append("]");
@@ -455,47 +534,50 @@ public class SearchResource extends SecureResource {
 							linkProps.append("}");
 						}
 						linkProps.append("]");
-						
+
 						cp.get(id).put("linkProps", linkProps.toString());
 					}
-					
-                    if (dfr.isImage()) {
-						cp.get(id).put("imgRoot", TurbineUtils.GetRelativePath(ServletCall.getRequest(sr.getRequest())) + "/");
+
+					if (dfr.isImage()) {
+						cp.get(id).put(
+								"imgRoot",
+								TurbineUtils.GetRelativePath(ServletCall
+										.getRequest(sr.getRequest())) + "/");
 					}
 				} catch (XFTInitException e) {
-					logger.error("",e);
+					logger.error("", e);
 				} catch (ElementNotFoundException e) {
-					logger.error("",e);
+					logger.error("", e);
 				}
 
-				
 			}
-			
-			cp.put("quarantine_status",new Hashtable<String,String>());
+
+			cp.put("quarantine_status", new Hashtable<String, String>());
 		} catch (ElementNotFoundException e) {
-			logger.error("",e);
+			logger.error("", e);
 		} catch (XFTInitException e) {
-			logger.error("",e);
+			logger.error("", e);
 		}
-		
+
 		return cp;
 	}
 
-    private boolean canQueryByAllowedUser(final XdatStoredSearch search) {
-        boolean allowed=false;
-        if(!StringUtils.IsEmpty(search.getId()))
-        {
-            //need to check against unmodified stored search
-            final org.nrg.xdat.om.XdatStoredSearch stored = XdatStoredSearch.getXdatStoredSearchsById(search.getId(), user, true);
+	private boolean canQueryByAllowedUser(final XdatStoredSearch search) {
+		boolean allowed = false;
+		if (!StringUtils.IsEmpty(search.getId())) {
+			// need to check against unmodified stored search
+			final org.nrg.xdat.om.XdatStoredSearch stored = XdatStoredSearch
+					.getXdatStoredSearchsById(search.getId(), user, true);
 
-            //if the user was added to the search
-            if(stored != null && stored.hasAllowedUser(user.getUsername())){
-                //confirm it has a WHERE clause and hasn't been modified
-                if(XdatCriteriaSet.compareCriteriaSets(stored.getSearchWhere(), search.getSearchWhere())){
-                    allowed=true;
-                }
-            }
-        }
-        return allowed;
-    }
+			// if the user was added to the search
+			if (stored != null && stored.hasAllowedUser(user.getUsername())) {
+				// confirm it has a WHERE clause and hasn't been modified
+				if (XdatCriteriaSet.compareCriteriaSets(
+						stored.getSearchWhere(), search.getSearchWhere())) {
+					allowed = true;
+				}
+			}
+		}
+		return allowed;
+	}
 }

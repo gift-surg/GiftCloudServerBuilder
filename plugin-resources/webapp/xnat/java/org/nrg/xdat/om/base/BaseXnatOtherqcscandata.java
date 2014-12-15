@@ -20,28 +20,25 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class BaseXnatOtherqcscandata extends AutoXnatOtherqcscandata {
 
-	public BaseXnatOtherqcscandata(ItemI item)
-	{
+	public BaseXnatOtherqcscandata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatOtherqcscandata(UserI user)
-	{
+	public BaseXnatOtherqcscandata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatOtherqcscandata(UserI user)
-	 **/
-	public BaseXnatOtherqcscandata()
-	{}
+	 */
+	public BaseXnatOtherqcscandata() {
+	}
 
-	public BaseXnatOtherqcscandata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatOtherqcscandata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

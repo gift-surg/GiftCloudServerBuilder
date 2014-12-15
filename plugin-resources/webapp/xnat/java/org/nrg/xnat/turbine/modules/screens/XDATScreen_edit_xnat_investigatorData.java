@@ -20,18 +20,24 @@ import org.nrg.xdat.turbine.modules.screens.EditScreenA;
  */
 public class XDATScreen_edit_xnat_investigatorData extends EditScreenA {
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#getElementName()
-     */
-    public String getElementName() {
-        return "xnat:investigatorData";
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#getElementName()
+	 */
+	public String getElementName() {
+		return "xnat:investigatorData";
+	}
 
-    /* (non-Javadoc)
-     * @see org.nrg.xdat.turbine.modules.screens.EditScreenA#finalProcessing(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public void finalProcessing(RunData data, Context context) {
-        
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xdat.turbine.modules.screens.EditScreenA#finalProcessing(org.
+	 * apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	public void finalProcessing(RunData data, Context context) {
+
+	}
 
 }

@@ -26,48 +26,54 @@ import java.util.Enumeration;
  *
  */
 public class DisplayMRSuperSearchAction extends DisplaySearchAction {
-    /* (non-Javadoc)
-     * @see org.cnl.xdat.turbine.modules.actions.SearchA#setupSearch(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    public DisplaySearch setupSearch(RunData data, Context context) throws Exception {
-        String elementName= ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("ELEMENT_0",data));
-        SchemaElement se = SchemaElement.GetElement(elementName);
-        
-        DisplaySearch ds = getSearchCriteria(se, elementName, data);
-    	//logger.error(ds.getCriteriaCollection().toString());
-        
-        return addAdditionalViews(ds,data);
-    }
-    
-    private DisplaySearch addAdditionalViews(DisplaySearch ds, RunData data)
-    {
-        ArrayList found = new ArrayList();
-   //TurbineUtils.OutputDataParameters(data);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cnl.xdat.turbine.modules.actions.SearchA#setupSearch(org.apache.turbine
+	 * .util.RunData, org.apache.velocity.context.Context)
+	 */
+	public DisplaySearch setupSearch(RunData data, Context context)
+			throws Exception {
+		String elementName = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+				.GetPassedParameter("ELEMENT_0", data));
+		SchemaElement se = SchemaElement.GetElement(elementName);
+
+		DisplaySearch ds = getSearchCriteria(se, elementName, data);
+		// logger.error(ds.getCriteriaCollection().toString());
+
+		return addAdditionalViews(ds, data);
+	}
+
+	private DisplaySearch addAdditionalViews(DisplaySearch ds, RunData data) {
+		ArrayList found = new ArrayList();
+		// TurbineUtils.OutputDataParameters(data);
 		Enumeration enumer = DisplayManager.GetInstance().getElements().keys();
-		while (enumer.hasMoreElements())
-		{
-			String key = (String)enumer.nextElement();
-			if (TurbineUtils.HasPassedParameter("super_" + key.toLowerCase() + "_detailed",data))
-			{
-			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase() + "_detailed",data));
-			    if (! s.equalsIgnoreCase(""))
-			        ds.addAdditionalView(key,s);
-			}else if(TurbineUtils.HasPassedParameter("super_" + key.toLowerCase() + "_brief",data)){
-			    String s = ((String)org.nrg.xdat.turbine.utils.TurbineUtils.GetPassedParameter("super_" + key.toLowerCase() + "_brief",data));
-			    if (! s.equalsIgnoreCase(""))
-			        ds.addAdditionalView(key,s);
-			}
-		}
-		
-		
-		if (ds.getAdditionalViews().size() > 0)
-		{
-			if (ds.getRootElement().getDisplay().getVersion("root")!=null)
-			{
-			    ds.setDisplay("root");
+		while (enumer.hasMoreElements()) {
+			String key = (String) enumer.nextElement();
+			if (TurbineUtils.HasPassedParameter("super_" + key.toLowerCase()
+					+ "_detailed", data)) {
+				String s = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+						.GetPassedParameter("super_" + key.toLowerCase()
+								+ "_detailed", data));
+				if (!s.equalsIgnoreCase(""))
+					ds.addAdditionalView(key, s);
+			} else if (TurbineUtils.HasPassedParameter(
+					"super_" + key.toLowerCase() + "_brief", data)) {
+				String s = ((String) org.nrg.xdat.turbine.utils.TurbineUtils
+						.GetPassedParameter("super_" + key.toLowerCase()
+								+ "_brief", data));
+				if (!s.equalsIgnoreCase(""))
+					ds.addAdditionalView(key, s);
 			}
 		}
 
-        return ds;
-    }
+		if (ds.getAdditionalViews().size() > 0) {
+			if (ds.getRootElement().getDisplay().getVersion("root") != null) {
+				ds.setDisplay("root");
+			}
+		}
+
+		return ds;
+	}
 }

@@ -23,33 +23,31 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-public class JSONWriter implements ResponseWriterI{
+public class JSONWriter implements ResponseWriterI {
 
 	HttpServletRequest request;
 	HttpServletResponse response;
 	Hashtable<String, ArrayList<String>> metaFields;
-	
+
 	public JSONWriter(HttpServletRequest req, HttpServletResponse resp) {
 		this.request = req;
 		this.response = resp;
-		metaFields = new Hashtable<String,ArrayList<String>>();
+		metaFields = new Hashtable<String, ArrayList<String>>();
 	}
 
-
-	
-	public   void setMetaFields(Hashtable<String, ArrayList<String>> metaFields) {
+	public void setMetaFields(Hashtable<String, ArrayList<String>> metaFields) {
 		this.metaFields = metaFields;
 	}
-	
-	public   void write(XFTTable table, String title) throws IOException  {
+
+	public void write(XFTTable table, String title) throws IOException {
 		ServletOutputStream out = response.getOutputStream();
 		OutputStreamWriter sw = new OutputStreamWriter(out);
 		BufferedWriter writer = new BufferedWriter(sw);
 		response.setContentType("application/json");
-		
+
 		writer.write("({\"ResultSet\":{\"Result\":");
 		table.toJSON(writer);
-		if (metaFields != null  && metaFields.size() > 0) {
+		if (metaFields != null && metaFields.size() > 0) {
 			writer.write(", ");
 			String appendMeta = "";
 			Enumeration<String> keys = metaFields.keys();
@@ -57,7 +55,7 @@ public class JSONWriter implements ResponseWriterI{
 				String key = keys.nextElement();
 				ArrayList<String> value = metaFields.get(key);
 				if (value != null) {
-					appendMeta += "\"" + key + "\": " ;
+					appendMeta += "\"" + key + "\": ";
 					appendMeta += flattenValue(value);
 					appendMeta += ",";
 				}
@@ -74,19 +72,21 @@ public class JSONWriter implements ResponseWriterI{
 		writer.flush();
 		writer.close();
 	}
-	
+
 	private String flattenValue(ArrayList<String> values) {
-		if (values == null) return "\"\"";
+		if (values == null)
+			return "\"\"";
 		if (values.size() == 1) {
 			String rtn = "\"" + values.get(0) + "\"";
 			return rtn;
 		}
-		int lastIndex = values.size() - 1 ; 
-		String rtn = "{\"" + values.get(lastIndex - 1) + "\":\"" + values.get(lastIndex) + "\"}";
-		for (int i = lastIndex - 2 ; i >= 0; i--) {
-			rtn = "{\""  + values.get(i) + "\":" + rtn + "}";
+		int lastIndex = values.size() - 1;
+		String rtn = "{\"" + values.get(lastIndex - 1) + "\":\""
+				+ values.get(lastIndex) + "\"}";
+		for (int i = lastIndex - 2; i >= 0; i--) {
+			rtn = "{\"" + values.get(i) + "\":" + rtn + "}";
 		}
 		return rtn;
 	}
-	
+
 }

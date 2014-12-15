@@ -26,29 +26,33 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class ProjSubjExptURI extends ProjSubjURI implements ArchiveItemURI,ExperimentURII{
-	private XnatExperimentdata expt=null;
-	
+public class ProjSubjExptURI extends ProjSubjURI implements ArchiveItemURI,
+		ExperimentURII {
+	private XnatExperimentdata expt = null;
+
 	public ProjSubjExptURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
-	protected void populateExperiment(){
+	protected void populateExperiment() {
 		super.populateSubject();
-		
-		if(expt==null){
-			final XnatProjectdata proj=getProject();
-			
-			final String exptID= (String)props.get(URIManager.EXPT_ID);
-			
-			if(proj!=null){
-				expt=XnatExperimentdata.GetExptByProjectIdentifier(proj.getId(), exptID,null, false);
+
+		if (expt == null) {
+			final XnatProjectdata proj = getProject();
+
+			final String exptID = (String) props.get(URIManager.EXPT_ID);
+
+			if (proj != null) {
+				expt = XnatExperimentdata.GetExptByProjectIdentifier(
+						proj.getId(), exptID, null, false);
 			}
-			
-			if(expt==null){
-				expt=XnatExperimentdata.getXnatExperimentdatasById(exptID, null, false);
-				if(expt!=null && (proj!=null && !expt.hasProject(proj.getId()))){
-					expt=null;
+
+			if (expt == null) {
+				expt = XnatExperimentdata.getXnatExperimentdatasById(exptID,
+						null, false);
+				if (expt != null
+						&& (proj != null && !expt.hasProject(proj.getId()))) {
+					expt = null;
 				}
 			}
 		}
@@ -58,32 +62,34 @@ public class ProjSubjExptURI extends ProjSubjURI implements ArchiveItemURI,Exper
 	public ArchivableItem getSecurityItem() {
 		return getExperiment();
 	}
-	
-	public XnatExperimentdata getExperiment(){
+
+	public XnatExperimentdata getExperiment() {
 		this.populateExperiment();
 		return expt;
 	}
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatExperimentdata expt=getExperiment();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatExperimentdata expt = getExperiment();
 		res.addAll(expt.getResources_resource());
-		
-		if(expt instanceof XnatImagesessiondata && includeAll){
-			for(XnatImagescandataI scan:((XnatImagesessiondata)expt).getScans_scan()){
+
+		if (expt instanceof XnatImagesessiondata && includeAll) {
+			for (XnatImagescandataI scan : ((XnatImagesessiondata) expt)
+					.getScans_scan()) {
 				res.addAll(scan.getFile());
 			}
-			for(XnatReconstructedimagedataI scan:((XnatImagesessiondata)expt).getReconstructions_reconstructedimage()){
+			for (XnatReconstructedimagedataI scan : ((XnatImagesessiondata) expt)
+					.getReconstructions_reconstructedimage()) {
 				res.addAll(scan.getOut_file());
 			}
-			for(XnatImageassessordataI scan:((XnatImagesessiondata)expt).getAssessors_assessor()){
+			for (XnatImageassessordataI scan : ((XnatImagesessiondata) expt)
+					.getAssessors_assessor()) {
 				res.addAll(scan.getOut_file());
 			}
 		}
-		
+
 		return res;
 	}
-	
-	
+
 }

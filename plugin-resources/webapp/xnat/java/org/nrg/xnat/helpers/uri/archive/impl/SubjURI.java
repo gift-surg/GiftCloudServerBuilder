@@ -22,25 +22,26 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class SubjURI extends ArchiveURI implements ArchiveItemURI,SubjectURII {
-	private XnatSubjectdata subj=null;
-	
+public class SubjURI extends ArchiveURI implements ArchiveItemURI, SubjectURII {
+	private XnatSubjectdata subj = null;
+
 	public SubjURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
 
-	protected void populate(){
-		if(subj==null){
-			
-			final String subjID= (String)props.get(URIManager.SUBJECT_ID);
-			
-			if(subj==null){
-				subj=XnatSubjectdata.getXnatSubjectdatasById(subjID, null, false);
+	protected void populate() {
+		if (subj == null) {
+
+			final String subjID = (String) props.get(URIManager.SUBJECT_ID);
+
+			if (subj == null) {
+				subj = XnatSubjectdata.getXnatSubjectdatasById(subjID, null,
+						false);
 			}
 		}
 	}
-	
-	public XnatSubjectdata getSubject(){
+
+	public XnatSubjectdata getSubject() {
 		this.populate();
 		return subj;
 	}
@@ -52,8 +53,8 @@ public class SubjURI extends ArchiveURI implements ArchiveItemURI,SubjectURII {
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatSubjectdata expt=getSubject();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatSubjectdata expt = getSubject();
 		res.addAll(expt.getResources_resource());
 		return res;
 	}

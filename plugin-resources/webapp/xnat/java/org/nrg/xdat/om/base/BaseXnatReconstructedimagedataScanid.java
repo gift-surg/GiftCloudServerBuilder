@@ -20,25 +20,23 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseXnatReconstructedimagedataScanid extends AutoXnatReconstructedimagedataScanid {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseXnatReconstructedimagedataScanid extends
+		AutoXnatReconstructedimagedataScanid {
 
-	public BaseXnatReconstructedimagedataScanid(ItemI item)
-	{
+	public BaseXnatReconstructedimagedataScanid(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatReconstructedimagedataScanid(UserI user)
-	{
+	public BaseXnatReconstructedimagedataScanid(UserI user) {
 		super(user);
 	}
 
-	public BaseXnatReconstructedimagedataScanid()
-	{}
+	public BaseXnatReconstructedimagedataScanid() {
+	}
 
-	public BaseXnatReconstructedimagedataScanid(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatReconstructedimagedataScanid(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }

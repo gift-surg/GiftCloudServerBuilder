@@ -19,14 +19,15 @@ import org.nrg.xdat.turbine.modules.actions.SecureAction;
 
 public class PlexiViewerSpec extends SecureAction {
 
-    static Logger logger = Logger.getLogger(PlexiViewerSpec.class);
-    
-    public void doPerform(RunData data, Context context){
-        boolean rtn = PlexiSpecDocReader.GetInstance().refresh();
-        String msg = "PlexiViewerSpec file was refreshed with " + (rtn?"success":"failure");
-        logger.info(msg);
-        data.setMessage(msg);
-        //data.getParameters().add("popup", "true");
-        //data.setScreenTemplate("ClosePage.vm");
-    }
+	static Logger logger = Logger.getLogger(PlexiViewerSpec.class);
+
+	public void doPerform(RunData data, Context context) {
+		boolean rtn = PlexiSpecDocReader.GetInstance().refresh();
+		String msg = "PlexiViewerSpec file was refreshed with "
+				+ (rtn ? "success" : "failure");
+		logger.info(msg);
+		data.setMessage(msg);
+		// data.getParameters().add("popup", "true");
+		// data.setScreenTemplate("ClosePage.vm");
+	}
 }

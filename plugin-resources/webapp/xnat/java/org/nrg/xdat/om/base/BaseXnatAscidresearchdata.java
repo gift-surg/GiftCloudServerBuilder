@@ -20,29 +20,26 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatAscidresearchdata extends AutoXnatAscidresearchdata {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatAscidresearchdata extends
+		AutoXnatAscidresearchdata {
 
-	public BaseXnatAscidresearchdata(ItemI item)
-	{
+	public BaseXnatAscidresearchdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatAscidresearchdata(UserI user)
-	{
+	public BaseXnatAscidresearchdata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatAscidresearchdata(UserI user)
-	 **/
-	public BaseXnatAscidresearchdata()
-	{}
+	 */
+	public BaseXnatAscidresearchdata() {
+	}
 
-	public BaseXnatAscidresearchdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	public BaseXnatAscidresearchdata(Hashtable properties, UserI user) {
+		super(properties, user);
 	}
 
 }
-

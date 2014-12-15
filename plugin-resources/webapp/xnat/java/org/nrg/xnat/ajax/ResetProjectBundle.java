@@ -34,99 +34,124 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ResetProjectBundle {
-    private Logger logger = Logger.getLogger(ResetProjectBundle.class);
+	private Logger logger = Logger.getLogger(ResetProjectBundle.class);
 
-    public void execute(HttpServletRequest req, HttpServletResponse response,ServletConfig sc) throws IOException{
-        String protocolID = req.getParameter("protocol");
-        XDATUser user = XDAT.getUserDetails();
-        if (user!=null){
-            XnatDatatypeprotocol protocol = XnatDatatypeprotocol.getXnatDatatypeprotocolsByXnatAbstractprotocolId(protocolID, user, true);
-            XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(protocol.getProject(), user, false);
-            
-            XdatStoredSearch xss = XdatStoredSearch.GetPreLoadedSearch(protocol.getId(), true);
-            boolean modified=false;
-            if(xss!=null){
-            	for(XnatFielddefinitiongroupI group : protocol.getDefinitions_definition()){
-                    for(XnatFielddefinitiongroupFieldI field : group.getFields_field()){
-                    	                        String fieldID=null;
-                        if (field.getType().equals("custom"))
-                        {
-                            fieldID=protocol.getDatatypeSchemaElement().getSQLName().toUpperCase() + "_FIELD_MAP="+field.getName().toLowerCase();
-                        }else{
-                            try {
-                                SchemaElement se=SchemaElement.GetElement(protocol.getDataType());
-                                
-                                try {
-                                    DisplayField df=se.getDisplayFieldForXMLPath(field.getXmlpath());
-                                    if (df!=null){
-                                        fieldID=df.getId();
-                                    }
-                                } catch (Exception e) {
-                                    logger.error("",e);
-                                }
-                            } catch (XFTInitException e) {
-                                logger.error("",e);
-                            } catch (ElementNotFoundException e) {
-                                logger.error("",e);
-                            }
-                        }
-                        
-                        if(xss.getField(protocol.getDataType(), fieldID)==null){
-                        	XdatSearchField xsf = new XdatSearchField(protocol.getUser());
-                            xsf.setElementName(protocol.getDataType());
-                            if (fieldID!=null){
-                                xsf.setFieldId(fieldID);
+	public void execute(HttpServletRequest req, HttpServletResponse response,
+			ServletConfig sc) throws IOException {
+		String protocolID = req.getParameter("protocol");
+		XDATUser user = XDAT.getUserDetails();
+		if (user != null) {
+			XnatDatatypeprotocol protocol = XnatDatatypeprotocol
+					.getXnatDatatypeprotocolsByXnatAbstractprotocolId(
+							protocolID, user, true);
+			XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(
+					protocol.getProject(), user, false);
 
-                                xsf.setHeader(field.getName());
-                                xsf.setType(field.getDatatype());
-                                xsf.setSequence(xss.getSearchField().size());
-                                if (field.getType().equals("custom"))xsf.setValue(field.getName().toLowerCase());
-                                try {
-                                    xss.setSearchField(xsf);
-                                	System.out.println("LOADED " + field.getXmlpath());
-                                	modified=true;
-                                } catch (Exception e) {
-                                    logger.error("",e);
-                                	System.out.println("FAILED to load " + field.getXmlpath());
-                                }
-                            }else{
-                            	System.out.println("FAILED to load " + field.getXmlpath());
-                            }
-                        }
-                    }
-                }
-            }
-        	
-        	if(xss!=null && modified){
-                try {
-                	SaveItemHelper.unauthorizedSave(xss,user, true, true,EventUtils.newEventInstance(EventUtils.CATEGORY.PROJECT_ADMIN, EventUtils.TYPE.WEB_FORM, "Reset project searches"));
-                    
-                    //XdatStoredSearch.ReplacePreLoadedSearch(xss);
-                    
-                    final String[] groups = {project.getId() + "_" + XnatProjectdata.OWNER_GROUP,project.getId() + "_" + XnatProjectdata.MEMBER_GROUP,project.getId() + "_" + XnatProjectdata.COLLABORATOR_GROUP};
+			XdatStoredSearch xss = XdatStoredSearch.GetPreLoadedSearch(
+					protocol.getId(), true);
+			boolean modified = false;
+			if (xss != null) {
+				for (XnatFielddefinitiongroupI group : protocol
+						.getDefinitions_definition()) {
+					for (XnatFielddefinitiongroupFieldI field : group
+							.getFields_field()) {
+						String fieldID = null;
+						if (field.getType().equals("custom")) {
+							fieldID = protocol.getDatatypeSchemaElement()
+									.getSQLName().toUpperCase()
+									+ "_FIELD_MAP="
+									+ field.getName().toLowerCase();
+						} else {
+							try {
+								SchemaElement se = SchemaElement
+										.GetElement(protocol.getDataType());
 
-                    for(int i=0;i<groups.length;i++){
-                        String group = groups[i];
-                        UserGroup g =UserGroupManager.GetGroup(group);
-                        if (g!=null && g.getStoredSearches().size()>0)
-                        {
-                            g.replacePreLoadedSearch(xss);
-                        }
-                    }
-                    response.setContentType("text/plain");
-                    response.getWriter().write("Bundle refreshed.");
-                    return;
-                } catch (Exception e) {
-                    logger.error("",e);
-                }
-        	}else{
-                response.setContentType("text/plain");
-                response.getWriter().write("Bundle not modified.");
-                return;
-        	}
-        }
+								try {
+									DisplayField df = se
+											.getDisplayFieldForXMLPath(field
+													.getXmlpath());
+									if (df != null) {
+										fieldID = df.getId();
+									}
+								} catch (Exception e) {
+									logger.error("", e);
+								}
+							} catch (XFTInitException e) {
+								logger.error("", e);
+							} catch (ElementNotFoundException e) {
+								logger.error("", e);
+							}
+						}
 
-        response.setContentType("text/plain");
-        response.getWriter().write("Bundle refresh failed.");
-    }
+						if (xss.getField(protocol.getDataType(), fieldID) == null) {
+							XdatSearchField xsf = new XdatSearchField(
+									protocol.getUser());
+							xsf.setElementName(protocol.getDataType());
+							if (fieldID != null) {
+								xsf.setFieldId(fieldID);
+
+								xsf.setHeader(field.getName());
+								xsf.setType(field.getDatatype());
+								xsf.setSequence(xss.getSearchField().size());
+								if (field.getType().equals("custom"))
+									xsf.setValue(field.getName().toLowerCase());
+								try {
+									xss.setSearchField(xsf);
+									System.out.println("LOADED "
+											+ field.getXmlpath());
+									modified = true;
+								} catch (Exception e) {
+									logger.error("", e);
+									System.out.println("FAILED to load "
+											+ field.getXmlpath());
+								}
+							} else {
+								System.out.println("FAILED to load "
+										+ field.getXmlpath());
+							}
+						}
+					}
+				}
+			}
+
+			if (xss != null && modified) {
+				try {
+					SaveItemHelper.unauthorizedSave(xss, user, true, true,
+							EventUtils.newEventInstance(
+									EventUtils.CATEGORY.PROJECT_ADMIN,
+									EventUtils.TYPE.WEB_FORM,
+									"Reset project searches"));
+
+					// XdatStoredSearch.ReplacePreLoadedSearch(xss);
+
+					final String[] groups = {
+							project.getId() + "_" + XnatProjectdata.OWNER_GROUP,
+							project.getId() + "_"
+									+ XnatProjectdata.MEMBER_GROUP,
+							project.getId() + "_"
+									+ XnatProjectdata.COLLABORATOR_GROUP };
+
+					for (int i = 0; i < groups.length; i++) {
+						String group = groups[i];
+						UserGroup g = UserGroupManager.GetGroup(group);
+						if (g != null && g.getStoredSearches().size() > 0) {
+							g.replacePreLoadedSearch(xss);
+						}
+					}
+					response.setContentType("text/plain");
+					response.getWriter().write("Bundle refreshed.");
+					return;
+				} catch (Exception e) {
+					logger.error("", e);
+				}
+			} else {
+				response.setContentType("text/plain");
+				response.getWriter().write("Bundle not modified.");
+				return;
+			}
+		}
+
+		response.setContentType("text/plain");
+		response.getWriter().write("Bundle refresh failed.");
+	}
 }

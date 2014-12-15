@@ -31,66 +31,85 @@ import org.nrg.xnat.exceptions.InvalidArchiveStructure;
  */
 public class DirectProjResourceImpl extends ResourceModifierA {
 	private final XnatProjectdata proj;
-	
-	public DirectProjResourceImpl(final XnatProjectdata proj,final boolean overwrite, final XDATUser user, final EventMetaI ci){
-		super(overwrite,user,ci);
-		this.proj=proj;
+
+	public DirectProjResourceImpl(final XnatProjectdata proj,
+			final boolean overwrite, final XDATUser user, final EventMetaI ci) {
+		super(overwrite, user, ci);
+		this.proj = proj;
 	}
-	
-	public XnatProjectdata getProject(){
+
+	public XnatProjectdata getProject() {
 		return proj;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#buildDestinationPath()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#
+	 * buildDestinationPath()
 	 */
 	@Override
 	public String buildDestinationPath() throws InvalidArchiveStructure {
-		return FileUtils.AppendRootPath(proj.getRootArchivePath(), "resources/");
+		return FileUtils
+				.AppendRootPath(proj.getRootArchivePath(), "resources/");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource(org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.DirectResourceModifierA#addResource
+	 * (org.nrg.xdat.om.XnatResource, org.nrg.xdat.security.XDATUser)
 	 */
 	@Override
-	public boolean addResource(XnatResource resource, final String type, XDATUser user) throws Exception {
+	public boolean addResource(XnatResource resource, final String type,
+			XDATUser user) throws Exception {
 		XFTItem item = XFTItem.NewItem(proj.getXSIType(), user);
-		XnatProjectdata new_proj=(XnatProjectdata) BaseElement.GetGeneratedItem(item);
+		XnatProjectdata new_proj = (XnatProjectdata) BaseElement
+				.GetGeneratedItem(item);
 		new_proj.setId(proj.getId());
-		
-		
+
 		new_proj.setResources_resource(resource);
-		
-		SaveItemHelper.authorizedSave(new_proj,user, false, false,ci);
+
+		SaveItemHelper.authorizedSave(new_proj, user, false, false, ci);
 		return true;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById(java.lang.Integer)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceById
+	 * (java.lang.Integer)
 	 */
 	@Override
 	public XnatAbstractresourceI getResourceById(Integer i, final String type) {
-		for(XnatAbstractresourceI res: this.proj.getResources_resource()){
-			if(res.getXnatAbstractresourceId().equals(i)){
+		for (XnatAbstractresourceI res : this.proj.getResources_resource()) {
+			if (res.getXnatAbstractresourceId().equals(i)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.nrg.xnat.helpers.resource.direct.ResourceModifierA#getResourceByLabel
+	 * (java.lang.String)
 	 */
 	@Override
-	public XnatAbstractresourceI getResourceByLabel(String lbl, final String type) {
-		for(XnatAbstractresourceI res: this.proj.getResources_resource()){
-			if(StringUtils.isNotEmpty(res.getLabel()) && res.getLabel().equals(lbl)){
+	public XnatAbstractresourceI getResourceByLabel(String lbl,
+			final String type) {
+		for (XnatAbstractresourceI res : this.proj.getResources_resource()) {
+			if (StringUtils.isNotEmpty(res.getLabel())
+					&& res.getLabel().equals(lbl)) {
 				return res;
 			}
 		}
-		
+
 		return null;
 	}
 }

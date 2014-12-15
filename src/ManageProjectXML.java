@@ -15,18 +15,19 @@ import org.apache.tools.ant.Task;
 import java.io.*;
 
 public class ManageProjectXML extends Task {
-    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+	public static final String FILE_SEPARATOR = System
+			.getProperty("file.separator");
 	private String src = null;
 	private String dest = null;
-    private String version = null;
-    private String basedir = null;
+	private String version = null;
+	private String basedir = null;
 	private String projdepsrc = null;
 	private String projectName = null;
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.apache.tools.ant.Task#execute()
-	 * 
 	 */
 	public void execute() throws BuildException {
 		final File srcF = new File(src);
@@ -34,62 +35,68 @@ public class ManageProjectXML extends Task {
 		addProjectSpecificResources(sbSRC);
 		handleOutput("Creating/Replacing " + dest + " with merged version.");
 		try {
-			outputToFile(sbSRC.toString().replaceAll("%PROJECT%", getProjectName()).replaceAll("%VERSION%", getVersion()), dest);
+			outputToFile(
+					sbSRC.toString().replaceAll("%PROJECT%", getProjectName())
+							.replaceAll("%VERSION%", getVersion()), dest);
 		} catch (IOException ioe) {
 			throw new BuildException(ioe);
 		}
 	}
 
-    private void addProjectSpecificResources(StringBuilder sbDEST) {
+	private void addProjectSpecificResources(StringBuilder sbDEST) {
 		// Add project-specific resources if defined
 		if (projdepsrc == null) {
 			return;
 		}
-        if (projdepsrc.trim().isEmpty()) {
-            handleOutput("No value set for projdepsrc attribute, exiting without merging.");
+		if (projdepsrc.trim().isEmpty()) {
+			handleOutput("No value set for projdepsrc attribute, exiting without merging.");
 			return;
 		}
 
-        DirectoryScanner scanner = new DirectoryScanner();
-        if (basedir != null && basedir.trim().length() > 0) {
-            handleOutput("Looking for project dependencies in base directory: " + basedir);
-            scanner.setBasedir(basedir);
-        }
-        scanner.setIncludes(projdepsrc.split("\\s*,\\s*"));
-        scanner.setCaseSensitive(false);
-        scanner.scan();
-        String[] files = scanner.getIncludedFiles();
-        if (files == null || files.length == 0) {
-            handleOutput("No files matching indicated patterns found, exiting without merging.");
-            return;
-        }
+		DirectoryScanner scanner = new DirectoryScanner();
+		if (basedir != null && basedir.trim().length() > 0) {
+			handleOutput("Looking for project dependencies in base directory: "
+					+ basedir);
+			scanner.setBasedir(basedir);
+		}
+		scanner.setIncludes(projdepsrc.split("\\s*,\\s*"));
+		scanner.setCaseSensitive(false);
+		scanner.scan();
+		String[] files = scanner.getIncludedFiles();
+		if (files == null || files.length == 0) {
+			handleOutput("No files matching indicated patterns found, exiting without merging.");
+			return;
+		}
 
-        final StringBuilder sbPDEPSRC = new StringBuilder();
-        for (String file : files) {
-            File pDepSrcF = getFileFromBasedir(file);
-            if (!pDepSrcF.exists()) {
-                handleOutput("Couldn't find file indicated by " + file + ", skipping.");
-                continue;
-            }
-            handleOutput("Processing contents of dependency file: "+ pDepSrcF.getName());
-            sbPDEPSRC.append(readFileToSB(pDepSrcF));
-        }
+		final StringBuilder sbPDEPSRC = new StringBuilder();
+		for (String file : files) {
+			File pDepSrcF = getFileFromBasedir(file);
+			if (!pDepSrcF.exists()) {
+				handleOutput("Couldn't find file indicated by " + file
+						+ ", skipping.");
+				continue;
+			}
+			handleOutput("Processing contents of dependency file: "
+					+ pDepSrcF.getName());
+			sbPDEPSRC.append(readFileToSB(pDepSrcF));
+		}
 
 		int depEndTagLoc = sbDEST.lastIndexOf("</dependencies>");
 		try {
-			while (sbDEST.charAt(depEndTagLoc-1) == '	' || sbDEST.charAt(depEndTagLoc-1) == ' ') {
+			while (sbDEST.charAt(depEndTagLoc - 1) == '	'
+					|| sbDEST.charAt(depEndTagLoc - 1) == ' ') {
 				depEndTagLoc--;
 			}
 		} catch (IndexOutOfBoundsException e) {
 			// Do nothing
 		}
-		if (depEndTagLoc>=0) {
+		if (depEndTagLoc >= 0) {
 			sbDEST.insert(depEndTagLoc, sbPDEPSRC);
-				
-			}
-		}
 
-    /**
+		}
+	}
+
+	/**
 	 * 
 	 * @return the dest
 	 * 
@@ -97,6 +104,7 @@ public class ManageProjectXML extends Task {
 	public String getDest() {
 		return dest;
 	}
+
 	/**
 	 * 
 	 * @param dest
@@ -106,7 +114,8 @@ public class ManageProjectXML extends Task {
 	public void setDest(String dest) {
 		this.dest = dest;
 	}
-    /**
+
+	/**
 	 * 
 	 * @return the version
 	 * 
@@ -114,6 +123,7 @@ public class ManageProjectXML extends Task {
 	public String getVersion() {
 		return version;
 	}
+
 	/**
 	 * 
 	 * @param version
@@ -123,6 +133,7 @@ public class ManageProjectXML extends Task {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
 	/**
 	 * 
 	 * @return the src
@@ -131,6 +142,7 @@ public class ManageProjectXML extends Task {
 	public String getSrc() {
 		return src;
 	}
+
 	/**
 	 * 
 	 * @param src
@@ -140,18 +152,23 @@ public class ManageProjectXML extends Task {
 	public void setSrc(String src) {
 		this.src = src;
 	}
+
 	/**
-     * @return The base directory for the project dependency sources.
-     */
-    public String getBasedir() {
-        return basedir;
-    }
-    /**
-     * @param basedir    The base directory from which project dependencies should be pulled.
-     */
-    public void setBasedir(String basedir) {
-        this.basedir = basedir;
-    }
+	 * @return The base directory for the project dependency sources.
+	 */
+	public String getBasedir() {
+		return basedir;
+	}
+
+	/**
+	 * @param basedir
+	 *            The base directory from which project dependencies should be
+	 *            pulled.
+	 */
+	public void setBasedir(String basedir) {
+		this.basedir = basedir;
+	}
+
 	/**
 	 * 
 	 * @return the projdepsrc
@@ -160,6 +177,7 @@ public class ManageProjectXML extends Task {
 	public String getProjdepsrc() {
 		return projdepsrc;
 	}
+
 	/**
 	 * 
 	 * @param projdepsrc
@@ -169,6 +187,7 @@ public class ManageProjectXML extends Task {
 	public void setProjdepsrc(String projdepsrc) {
 		this.projdepsrc = projdepsrc;
 	}
+
 	/**
 	 * 
 	 * @return the projectName
@@ -177,6 +196,7 @@ public class ManageProjectXML extends Task {
 	public String getProjectName() {
 		return projectName;
 	}
+
 	/**
 	 * 
 	 * @param projectName
@@ -186,10 +206,9 @@ public class ManageProjectXML extends Task {
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
-	
+
 	public static void outputToFile(String content, String filePath)
-			throws IOException
-	{
+			throws IOException {
 		File _outFile;
 		FileOutputStream _outFileStream;
 		PrintWriter _outPrintWriter;
@@ -200,26 +219,29 @@ public class ManageProjectXML extends Task {
 		_outPrintWriter.println(content);
 		_outPrintWriter.flush();
 		_outPrintWriter.close();
-			_outFileStream.close();
-		}
-	
+		_outFileStream.close();
+	}
+
 	private static StringBuilder readFileToSB(File inFile) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			final FileInputStream in = new FileInputStream(inFile);
-			final BufferedReader dis = new BufferedReader(new InputStreamReader(in));
+			final BufferedReader dis = new BufferedReader(
+					new InputStreamReader(in));
 			while (dis.ready()) {
-					// Print file line to screen
-					sb.append(dis.readLine()).append("\n");
-}
+				// Print file line to screen
+				sb.append(dis.readLine()).append("\n");
+			}
 			dis.close();
 			return sb;
 		} catch (Exception e) {
 			throw new BuildException(e);
 		}
 	}
-	
-    private File getFileFromBasedir(final String file) {
-        return new File((basedir != null && basedir.trim().length() > 0) ? basedir + FILE_SEPARATOR + file : file);
-}
+
+	private File getFileFromBasedir(final String file) {
+		return new File(
+				(basedir != null && basedir.trim().length() > 0) ? basedir
+						+ FILE_SEPARATOR + file : file);
+	}
 }

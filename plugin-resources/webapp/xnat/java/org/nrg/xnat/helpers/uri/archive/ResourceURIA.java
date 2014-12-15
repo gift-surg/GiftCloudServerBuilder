@@ -27,12 +27,12 @@ public abstract class ResourceURIA extends ArchiveURI implements ResourceURII {
 
 	@Override
 	public String getResourceLabel() {
-		return (String)props.get(URIManager.XNAME);
+		return (String) props.get(URIManager.XNAME);
 	}
 
 	@Override
 	public String getResourceFilePath() {
-		return (String)props.get(UriParserUtils._REMAINDER);
+		return (String) props.get(UriParserUtils._REMAINDER);
 	}
 
 	@Override

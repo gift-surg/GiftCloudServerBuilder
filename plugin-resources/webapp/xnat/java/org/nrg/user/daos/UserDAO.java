@@ -19,15 +19,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDAO extends AbstractHibernateDAO<User> {
 
-    /**
-     * @param name
-     * @return
-     */
-    public User getUserByName(String name) {
-        Criteria criteria = getSession().createCriteria(getParameterizedType());
-        criteria.add(Restrictions.eq("name", name));
-        criteria.add(Restrictions.eq("enabled", true));
-        return (User) criteria.list().get(0);
-    }
+	/**
+	 * @param name
+	 * @return
+	 */
+	public User getUserByName(String name) {
+		Criteria criteria = getSession().createCriteria(getParameterizedType());
+		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.eq("enabled", true));
+		return (User) criteria.list().get(0);
+	}
 
 }

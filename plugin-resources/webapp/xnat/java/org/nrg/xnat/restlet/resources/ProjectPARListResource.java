@@ -28,12 +28,13 @@ import java.util.Hashtable;
  *
  */
 public class ProjectPARListResource extends SecureResource {
-	XnatProjectdata proj=null;
+	XnatProjectdata proj = null;
 
-	public ProjectPARListResource(Context context, Request request, Response response) throws Exception {
+	public ProjectPARListResource(Context context, Request request,
+			Response response) throws Exception {
 
 		super(context, request, response);
-		String pID = (String) getParameter(request,"PROJECT_ID");
+		String pID = (String) getParameter(request, "PROJECT_ID");
 		if (pID != null) {
 			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
 		}
@@ -41,19 +42,25 @@ public class ProjectPARListResource extends SecureResource {
 		if (proj != null) {
 			getVariants().addAll(STANDARD_VARIANTS);
 
-            if (!proj.canEdit(user)) {
-                getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "The user " + user.getLogin() + " is not allowed to access this information for the project: " + pID);
-            }
+			if (!proj.canEdit(user)) {
+				getResponse()
+						.setStatus(
+								Status.CLIENT_ERROR_FORBIDDEN,
+								"The user "
+										+ user.getLogin()
+										+ " is not allowed to access this information for the project: "
+										+ pID);
+			}
 		} else {
-			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Unknown project: " + pID);
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+					"Unknown project: " + pID);
 		}
 	}
-
 
 	@Override
 	public Representation represent(Variant variant) {
 		XFTTable table = new XFTTable();
-		Hashtable<String,Object> params=new Hashtable<String,Object>();
+		Hashtable<String, Object> params = new Hashtable<String, Object>();
 		if (ProjectAccessRequest.CREATED_PAR_TABLE) {
 			try {
 				table = XFTTable

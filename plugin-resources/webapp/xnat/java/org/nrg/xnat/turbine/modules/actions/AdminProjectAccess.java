@@ -81,7 +81,7 @@ public class AdminProjectAccess extends SecureAction {
 			String message = "Projects' Accessibility was not changed. You do not have access to these projects: "
 					+ unsuccessfulArray.toString();
 			data.setMessage(message);
-		} else if (!unsuccessfulArray.isEmpty()){
+		} else if (!unsuccessfulArray.isEmpty()) {
 			data.setScreenTemplate("ActionsCompleted.vm");
 			String message = "Projects' Accessibility was changed for: "
 					+ successfulArray.toString()

@@ -25,97 +25,94 @@ import java.util.Hashtable;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class BaseXnatExperimentdataShare extends AutoXnatExperimentdataShare {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public abstract class BaseXnatExperimentdataShare extends
+		AutoXnatExperimentdataShare {
 
-	public BaseXnatExperimentdataShare(ItemI item)
-	{
+	public BaseXnatExperimentdataShare(ItemI item) {
 		super(item);
 	}
 
-	public BaseXnatExperimentdataShare(UserI user)
-	{
+	public BaseXnatExperimentdataShare(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseXnatExperimentdataShare(UserI user)
-	 **/
-	public BaseXnatExperimentdataShare()
-	{}
-
-	public BaseXnatExperimentdataShare(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseXnatExperimentdataShare() {
 	}
 
-    private String name = null;
-    private String description = null;
-    private String secondaryID = null;
-    private boolean initd = false;
+	public BaseXnatExperimentdataShare(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
 
-    public void loadProjectDetails(){
-        if (!initd)
-        {
-            initd=true;
-            try {
-                XFTTable table = XFTTable.Execute("SELECT name,description,secondary_ID FROM xnat_projectData WHERE ID ='" + this.getProject() + "';", this.getDBName(), null);
+	private String name = null;
+	private String description = null;
+	private String secondaryID = null;
+	private boolean initd = false;
 
-                if (table.size()>0)
-                {
-                    Object[] row = (Object[])table.rows().get(0);
-                    name = (String)row[0];
-                    description = (String)row[1];
-                    secondaryID = (String)row[2];
-                }
-            } catch (SQLException e) {
-                logger.error("",e);
-            } catch (DBPoolException e) {
-                logger.error("",e);
-            }
-        }
-    }
+	public void loadProjectDetails() {
+		if (!initd) {
+			initd = true;
+			try {
+				XFTTable table = XFTTable.Execute(
+						"SELECT name,description,secondary_ID FROM xnat_projectData WHERE ID ='"
+								+ this.getProject() + "';", this.getDBName(),
+						null);
 
-    public XnatProjectdataI getProjectData(){
-        return XnatProjectdata.getXnatProjectdatasById(this.getProject(), this.getUser(), false);
-    }
+				if (table.size() > 0) {
+					Object[] row = (Object[]) table.rows().get(0);
+					name = (String) row[0];
+					description = (String) row[1];
+					secondaryID = (String) row[2];
+				}
+			} catch (SQLException e) {
+				logger.error("", e);
+			} catch (DBPoolException e) {
+				logger.error("", e);
+			}
+		}
+	}
 
+	public XnatProjectdataI getProjectData() {
+		return XnatProjectdata.getXnatProjectdatasById(this.getProject(),
+				this.getUser(), false);
+	}
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        loadProjectDetails();
-        return description;
-    }
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		loadProjectDetails();
+		return description;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getProjectName() {
-        loadProjectDetails();
-        return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getProjectName() {
+		loadProjectDetails();
+		return name;
+	}
 
-    /**
-     * @return the secondaryID
-     */
-    public String getProjectSecondaryID() {
-        loadProjectDetails();
-        return secondaryID;
-    }
+	/**
+	 * @return the secondaryID
+	 */
+	public String getProjectSecondaryID() {
+		loadProjectDetails();
+		return secondaryID;
+	}
 
-
-
-    /**
-     * @return the secondaryID
-     */
-    public String getProjectDisplayID() {
-        loadProjectDetails();
-        if (secondaryID!=null){
-            return secondaryID;
-        }else{
-           return getProject();
-        }
-    }
+	/**
+	 * @return the secondaryID
+	 */
+	public String getProjectDisplayID() {
+		loadProjectDetails();
+		if (secondaryID != null) {
+			return secondaryID;
+		} else {
+			return getProject();
+		}
+	}
 }

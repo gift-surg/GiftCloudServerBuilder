@@ -35,43 +35,51 @@ public class TriggerPipelines implements Callable<Boolean> {
 	private final XDATUser user;
 	private final boolean waitFor;
 
-	public TriggerPipelines(XnatExperimentdata expt,boolean supressEmail,XDATUser user){
-		this(expt,supressEmail,user,false);
+	public TriggerPipelines(XnatExperimentdata expt, boolean supressEmail,
+			XDATUser user) {
+		this(expt, supressEmail, user, false);
 	}
-	
-	public TriggerPipelines(XnatExperimentdata expt,boolean supressEmail,XDATUser user, boolean waitFor){
-		this.expt=expt;
-		this.supressEmail=supressEmail;
-		this.user=user;
-		this.waitFor=waitFor;
+
+	public TriggerPipelines(XnatExperimentdata expt, boolean supressEmail,
+			XDATUser user, boolean waitFor) {
+		this.expt = expt;
+		this.supressEmail = supressEmail;
+		this.user = user;
+		this.waitFor = waitFor;
 	}
 
 	public Boolean call() {
-		XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher((XDATUser)user);
-        xnatPipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
-        xnatPipelineLauncher.setAlwaysEmailAdmin(ArcSpecManager.GetInstance().getEmailspecifications_pipeline());
-        String pipelineName = XNAT_TOOLS_AUTO_RUN_XML;
-        xnatPipelineLauncher.setPipelineName(pipelineName);
-        xnatPipelineLauncher.setNeedsBuildDir(false);
-        xnatPipelineLauncher.setSupressNotification(true);
-        xnatPipelineLauncher.setId(expt.getId());
-        xnatPipelineLauncher.setLabel(expt.getLabel());
-        xnatPipelineLauncher.setDataType(expt.getXSIType());
-        xnatPipelineLauncher.setExternalId(expt.getProject());
-        xnatPipelineLauncher.setWaitFor(this.waitFor);
-        xnatPipelineLauncher.setParameter(XNATRestConstants.SUPRESS_EMAIL, (new Boolean(supressEmail)).toString());
-        xnatPipelineLauncher.setParameter("session", expt.getId());
-        xnatPipelineLauncher.setParameter("sessionLabel", expt.getLabel());
-        xnatPipelineLauncher.setParameter("useremail", user.getEmail());
-        xnatPipelineLauncher.setParameter("userfullname", XnatPipelineLauncher.getUserName(user));
-        xnatPipelineLauncher.setParameter("adminemail", AdminUtils.getAdminEmailId());
-        xnatPipelineLauncher.setParameter("xnatserver", TurbineUtils.GetSystemName());
-        xnatPipelineLauncher.setParameter("mailhost", AdminUtils.getMailServer());
-        xnatPipelineLauncher.setParameter("sessionType", expt.getXSIType());
-        xnatPipelineLauncher.setParameter("xnat_project", expt.getProject());
+		XnatPipelineLauncher xnatPipelineLauncher = new XnatPipelineLauncher(
+				(XDATUser) user);
+		xnatPipelineLauncher.setAdmin_email(AdminUtils.getAdminEmailId());
+		xnatPipelineLauncher.setAlwaysEmailAdmin(ArcSpecManager.GetInstance()
+				.getEmailspecifications_pipeline());
+		String pipelineName = XNAT_TOOLS_AUTO_RUN_XML;
+		xnatPipelineLauncher.setPipelineName(pipelineName);
+		xnatPipelineLauncher.setNeedsBuildDir(false);
+		xnatPipelineLauncher.setSupressNotification(true);
+		xnatPipelineLauncher.setId(expt.getId());
+		xnatPipelineLauncher.setLabel(expt.getLabel());
+		xnatPipelineLauncher.setDataType(expt.getXSIType());
+		xnatPipelineLauncher.setExternalId(expt.getProject());
+		xnatPipelineLauncher.setWaitFor(this.waitFor);
+		xnatPipelineLauncher.setParameter(XNATRestConstants.SUPRESS_EMAIL,
+				(new Boolean(supressEmail)).toString());
+		xnatPipelineLauncher.setParameter("session", expt.getId());
+		xnatPipelineLauncher.setParameter("sessionLabel", expt.getLabel());
+		xnatPipelineLauncher.setParameter("useremail", user.getEmail());
+		xnatPipelineLauncher.setParameter("userfullname",
+				XnatPipelineLauncher.getUserName(user));
+		xnatPipelineLauncher.setParameter("adminemail",
+				AdminUtils.getAdminEmailId());
+		xnatPipelineLauncher.setParameter("xnatserver",
+				TurbineUtils.GetSystemName());
+		xnatPipelineLauncher.setParameter("mailhost",
+				AdminUtils.getMailServer());
+		xnatPipelineLauncher.setParameter("sessionType", expt.getXSIType());
+		xnatPipelineLauncher.setParameter("xnat_project", expt.getProject());
 
-
-        return xnatPipelineLauncher.launch(null);
+		return xnatPipelineLauncher.launch(null);
 
 	}
 }

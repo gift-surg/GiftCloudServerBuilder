@@ -30,81 +30,100 @@ import java.util.Hashtable;
  * @author timo
  */
 public class PARResource extends SecureResource {
-    private static final Logger _log = LoggerFactory.getLogger(PARResource.class);
-	ProjectAccessRequest par=null;
+	private static final Logger _log = LoggerFactory
+			.getLogger(PARResource.class);
+	ProjectAccessRequest par = null;
 
-    public PARResource(Context context, Request request, Response response) throws Exception {
+	public PARResource(Context context, Request request, Response response)
+			throws Exception {
 		super(context, request, response);
-		String par_id = (String) getParameter(request,"PAR_ID");
+		String par_id = (String) getParameter(request, "PAR_ID");
 		par = ProjectAccessRequest.RequestPARByGUID(par_id, user);
-        if (par == null) {
-            par = ProjectAccessRequest.RequestPARById(Integer.parseInt(par_id), user);
-        }
+		if (par == null) {
+			par = ProjectAccessRequest.RequestPARById(Integer.parseInt(par_id),
+					user);
+		}
 		if (par != null) {
-            getVariants().addAll(STANDARD_VARIANTS);
-            final String projectId = par.getProjectId();
-            if (StringUtils.isBlank(projectId)) {
-                if (!user.isSiteAdmin()) {
-                    response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only site admins can view this type of PAR.");
-                    if (_log.isWarnEnabled()) {
-                        _log.warn("Attempt by user " + user.getLogin() + " to access PAR " + par.getRequestId());
-                    }
-                }
+			getVariants().addAll(STANDARD_VARIANTS);
+			final String projectId = par.getProjectId();
+			if (StringUtils.isBlank(projectId)) {
+				if (!user.isSiteAdmin()) {
+					response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+							"Only site admins can view this type of PAR.");
+					if (_log.isWarnEnabled()) {
+						_log.warn("Attempt by user " + user.getLogin()
+								+ " to access PAR " + par.getRequestId());
+					}
+				}
+			} else {
+				XnatProjectdata project = XnatProjectdata
+						.getXnatProjectdatasById(projectId, null, false);
+				if (project == null) {
+					response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+							"The project associated with the project access request appears to be gone.");
+					_log.error("Found the PAR " + par.getRequestId()
+							+ " which is missing associated project "
+							+ par.getProjectId());
+				} else {
+					if (!user.isSiteAdmin() && !project.canEdit(user)) {
+						response.setStatus(
+								Status.CLIENT_ERROR_FORBIDDEN,
+								"You don't have the appropriate permissions to view this PAR (must be admin or have edit permissions on the associated project).");
+						if (_log.isWarnEnabled()) {
+							_log.warn("Attempt by user " + user.getLogin()
+									+ " to access PAR " + par.getRequestId()
+									+ " associated with project "
+									+ par.getProjectId());
+						}
+					}
+				}
+			}
 		} else {
-                XnatProjectdata project = XnatProjectdata.getXnatProjectdatasById(projectId, null, false);
-                if (project == null) {
-                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, "The project associated with the project access request appears to be gone.");
-                    _log.error("Found the PAR " + par.getRequestId() + " which is missing associated project " + par.getProjectId());
-                } else {
-                    if (!user.isSiteAdmin() && !project.canEdit(user)) {
-                        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, "You don't have the appropriate permissions to view this PAR (must be admin or have edit permissions on the associated project).");
-                        if (_log.isWarnEnabled()) {
-                            _log.warn("Attempt by user " + user.getLogin() + " to access PAR " + par.getRequestId() + " associated with project " + par.getProjectId());
-                        }
-                    }
-                }
-            }
-        } else {
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
 	}
-	
-	public boolean allowPut(){
+
+	public boolean allowPut() {
 		return true;
 	}
 
 	@Override
 	public void handlePut() {
-		if(par!=null){
+		if (par != null) {
 			if (par.getApproved() != null || par.getApprovalDate() != null) {
-                getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "This project invitation has already been accepted.");
+				getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,
+						"This project invitation has already been accepted.");
 				return;
-			}else{
+			} else {
 				try {
-                    if (getQueryVariable("accept") != null) {
-						par.process(user,true, getEventType(), getReason(), getComment());
-                    } else if (getQueryVariable("decline") != null) {
-						par.process(user,false, getEventType(), getReason(), getComment());
+					if (getQueryVariable("accept") != null) {
+						par.process(user, true, getEventType(), getReason(),
+								getComment());
+					} else if (getQueryVariable("decline") != null) {
+						par.process(user, false, getEventType(), getReason(),
+								getComment());
 					}
 				} catch (Exception e) {
-                    _log.error("Error trying to process PAR " + par.getRequestId(), e);
+					_log.error(
+							"Error trying to process PAR " + par.getRequestId(),
+							e);
 				}
 			}
-            returnDefaultRepresentation();
-		}else{
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+			returnDefaultRepresentation();
+		} else {
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 		}
-		
+
 	}
-	
 
 	@Override
 	public Representation represent(Variant variant) {
 		XFTTable table = new XFTTable();
-		table.initTable(new String[]{"id","proj_id","create_date","level"});
-		Hashtable<String,Object> params=new Hashtable<String,Object>();
+		table.initTable(new String[] { "id", "proj_id", "create_date", "level" });
+		Hashtable<String, Object> params = new Hashtable<String, Object>();
 		try {
-            ArrayList<ProjectAccessRequest> pars = ProjectAccessRequest.RequestPARsByUserEmail(user.getEmail(), user);
+			ArrayList<ProjectAccessRequest> pars = ProjectAccessRequest
+					.RequestPARsByUserEmail(user.getEmail(), user);
 			for (ProjectAccessRequest par : pars) {
 				Object[] row = new Object[4];
 				row[0] = par.getRequestId();
@@ -115,9 +134,9 @@ public class PARResource extends SecureResource {
 			}
 
 		} catch (Exception e) {
-            _log.error("Error retrieving PAR " + par.getRequestId(), e);
+			_log.error("Error retrieving PAR " + par.getRequestId(), e);
 		}
-		
-        return representTable(table, overrideVariant(variant), params);
+
+		return representTable(table, overrideVariant(variant), params);
 	}
 }

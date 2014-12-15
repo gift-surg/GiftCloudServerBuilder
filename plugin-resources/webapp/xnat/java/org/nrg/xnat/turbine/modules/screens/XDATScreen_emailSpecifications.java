@@ -18,13 +18,18 @@ import org.nrg.xnat.turbine.utils.ArcSpecManager;
 
 public class XDATScreen_emailSpecifications extends AdminScreen {
 
-    /* (non-Javadoc)
-     * @see org.apache.turbine.modules.screens.VelocitySecureScreen#doBuildTemplate(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    @Override
-    protected void doBuildTemplate(RunData data, Context context) throws Exception {
-        ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
-        context.put("arc", arcSpec);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.turbine.modules.screens.VelocitySecureScreen#doBuildTemplate
+	 * (org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	@Override
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		ArcArchivespecification arcSpec = ArcSpecManager.GetInstance();
+		context.put("arc", arcSpec);
+	}
 
 }

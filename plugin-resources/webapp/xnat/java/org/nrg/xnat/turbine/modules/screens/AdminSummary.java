@@ -23,47 +23,53 @@ import java.util.Hashtable;
 
 public class AdminSummary extends AdminScreen {
 	XDATUser u;
-	Hashtable tableProps ;
+	Hashtable tableProps;
+
 	@Override
 	protected void doBuildTemplate(RunData data, Context context)
 			throws Exception {
-		
-		if(TurbineUtils.HasPassedParameter("duration1", data)){
-			context.put("duration1", TurbineUtils.GetPassedParameter("duration1", data));
-		}else{
-			context.put("duration1","1 week");
+
+		if (TurbineUtils.HasPassedParameter("duration1", data)) {
+			context.put("duration1",
+					TurbineUtils.GetPassedParameter("duration1", data));
+		} else {
+			context.put("duration1", "1 week");
 		}
-		if(TurbineUtils.HasPassedParameter("duration2", data)){
-			context.put("duration2", TurbineUtils.GetPassedParameter("duration2", data));
-		}else{
-			context.put("duration2","1 second");
+		if (TurbineUtils.HasPassedParameter("duration2", data)) {
+			context.put("duration2",
+					TurbineUtils.GetPassedParameter("duration2", data));
+		} else {
+			context.put("duration2", "1 second");
 		}
-		
+
 		tableProps = new Hashtable();
-		tableProps.put("bgColor","white"); 
-		tableProps.put("border","0"); 
-		tableProps.put("cellPadding","0"); 
-		tableProps.put("cellSpacing","0"); 
-		tableProps.put("width","95%"); 
-		
+		tableProps.put("bgColor", "white");
+		tableProps.put("border", "0");
+		tableProps.put("cellPadding", "0");
+		tableProps.put("cellSpacing", "0");
+		tableProps.put("width", "95%");
+
 		u = TurbineUtils.getUser(data);
-		
-		context.put("qm", new QueryManager(u.getLogin(),u.getDBName(),tableProps));
+
+		context.put("qm", new QueryManager(u.getLogin(), u.getDBName(),
+				tableProps));
 	}
-	
-	public class QueryManager{
-		String user=null;
-		String db=null;
-		public Hashtable tp=null;
-		public QueryManager(String user,String db,Hashtable hash){
-			this.user=user;
-			this.db=db;
-			this.tp=hash;
+
+	public class QueryManager {
+		String user = null;
+		String db = null;
+		public Hashtable tp = null;
+
+		public QueryManager(String user, String db, Hashtable hash) {
+			this.user = user;
+			this.db = db;
+			this.tp = hash;
 		}
-		
-		public String execute(String sql){
+
+		public String execute(String sql) {
 			try {
-				return XFTTable.Execute(sql.replace("\\\"", "\""),db,user).toHTML(true,"FFFFFF","DEDEDE",tp,0);
+				return XFTTable.Execute(sql.replace("\\\"", "\""), db, user)
+						.toHTML(true, "FFFFFF", "DEDEDE", tp, 0);
 			} catch (SQLException e) {
 				logger.error("", e);
 				return e.getMessage();
@@ -71,37 +77,34 @@ public class AdminSummary extends AdminScreen {
 				logger.error("", e);
 				return null;
 			}
-			
+
 		}
 	}
-	
-	public class QObject{
-		public String alias=null;
-		public String description=null;
-		public String sql=null;
-		public Hashtable tp=null;
-		public XDATUser u=null;
-		
-		public QObject(String alias,String sql,Hashtable tp,XDATUser u) {
+
+	public class QObject {
+		public String alias = null;
+		public String description = null;
+		public String sql = null;
+		public Hashtable tp = null;
+		public XDATUser u = null;
+
+		public QObject(String alias, String sql, Hashtable tp, XDATUser u) {
 			super();
 			this.alias = alias;
 			this.sql = sql;
-			this.tp=tp;
-			this.u=u;
+			this.tp = tp;
+			this.u = u;
 		}
-		
-		
 
-		public QObject(String alias, String description, String sql, Hashtable tp,XDATUser u) {
+		public QObject(String alias, String description, String sql,
+				Hashtable tp, XDATUser u) {
 			super();
 			this.alias = alias;
 			this.description = description;
 			this.sql = sql;
 			this.tp = tp;
-			this.u=u;
+			this.u = u;
 		}
-
-
 
 		public String getAlias() {
 			return alias;
@@ -129,14 +132,15 @@ public class AdminSummary extends AdminScreen {
 
 		public String getData() {
 			try {
-				return XFTTable.Execute(sql,u.getDBName(),u.getLogin()).toHTML(false,"FFFFFF","DEDEDE",tp,0);
+				return XFTTable.Execute(sql, u.getDBName(), u.getLogin())
+						.toHTML(false, "FFFFFF", "DEDEDE", tp, 0);
 			} catch (SQLException e) {
 				logger.error("", e);
 			} catch (DBPoolException e) {
 				logger.error("", e);
 			}
 			return null;
-		}		
-		
+		}
+
 	}
 }

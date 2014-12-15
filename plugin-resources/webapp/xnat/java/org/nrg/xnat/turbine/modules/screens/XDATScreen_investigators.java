@@ -26,30 +26,38 @@ import java.util.Hashtable;
  */
 public class XDATScreen_investigators extends SecureScreen {
 
-    /* (non-Javadoc)
-     * @see org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org.apache.turbine.util.RunData, org.apache.velocity.context.Context)
-     */
-    protected void doBuildTemplate(RunData data, Context context)
-            throws Exception {
-        XDATUser user = TurbineUtils.getUser(data);	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.turbine.modules.screens.VelocityScreen#doBuildTemplate(org
+	 * .apache.turbine.util.RunData, org.apache.velocity.context.Context)
+	 */
+	protected void doBuildTemplate(RunData data, Context context)
+			throws Exception {
+		XDATUser user = TurbineUtils.getUser(data);
 		try {
-		    DisplaySearch search = user.getSearch("xnat:investigatorData","listing");
-			search.execute(new org.nrg.xdat.presentation.HTMLPresenter(TurbineUtils.GetContext(),false),user.getLogin());
-			
-			TurbineUtils.setSearch(data,search);
-			
+			DisplaySearch search = user.getSearch("xnat:investigatorData",
+					"listing");
+			search.execute(new org.nrg.xdat.presentation.HTMLPresenter(
+					TurbineUtils.GetContext(), false), user.getLogin());
+
+			TurbineUtils.setSearch(data, search);
+
 			XFTTableI table = search.getPresentedTable();
 
 			Hashtable tableProps = new Hashtable();
-			tableProps.put("bgColor","white"); 
-			tableProps.put("border","0"); 
-			tableProps.put("cellPadding","0"); 
-			tableProps.put("cellSpacing","0"); 
-			tableProps.put("width","95%"); 
-			context.put("dataTable",table.toHTML(false,"FFFFFF","DEDEDE",tableProps,(search.getCurrentPageNum() * search.getRowsPerPage())+ 1));
+			tableProps.put("bgColor", "white");
+			tableProps.put("border", "0");
+			tableProps.put("cellPadding", "0");
+			tableProps.put("cellSpacing", "0");
+			tableProps.put("width", "95%");
+			context.put("dataTable", table.toHTML(false, "FFFFFF", "DEDEDE",
+					tableProps,
+					(search.getCurrentPageNum() * search.getRowsPerPage()) + 1));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    }
+	}
 
 }

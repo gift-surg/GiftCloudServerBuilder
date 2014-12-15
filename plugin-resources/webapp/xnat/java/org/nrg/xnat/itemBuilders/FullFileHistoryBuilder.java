@@ -27,43 +27,53 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class FullFileHistoryBuilder extends FileHistoryBuilderAbst implements FlattenedItemModifierI {
+public class FullFileHistoryBuilder extends FileHistoryBuilderAbst implements
+		FlattenedItemModifierI {
 	static Logger logger = Logger.getLogger(FullFileHistoryBuilder.class);
-		
-		
-	public List<FlattenedItemI> handleCatFile(File catFile,boolean isHistory,Callable<Integer> idGenerator, List<FlattenedItemA.ItemObject> parents) throws Exception{
+
+	public List<FlattenedItemI> handleCatFile(File catFile, boolean isHistory,
+			Callable<Integer> idGenerator,
+			List<FlattenedItemA.ItemObject> parents) throws Exception {
 		final CatCatalogBean cat = CatalogUtils.getCatalog(catFile);
-		
-		List<FlattenedItemI> files=new ArrayList<FlattenedItemI>();
-		
-		if(cat!=null){
-			final Collection<CatEntryI> entries=CatalogUtils.getEntriesByFilter(cat, null);
-			for(final CatEntryI entry:entries){
-				if(!isHistory || FileUtils.IsAbsolutePath(entry.getUri())){
-					files.add(BuildFlattenedFile(entry, isHistory, idGenerator, parents));
+
+		List<FlattenedItemI> files = new ArrayList<FlattenedItemI>();
+
+		if (cat != null) {
+			final Collection<CatEntryI> entries = CatalogUtils
+					.getEntriesByFilter(cat, null);
+			for (final CatEntryI entry : entries) {
+				if (!isHistory || FileUtils.IsAbsolutePath(entry.getUri())) {
+					files.add(BuildFlattenedFile(entry, isHistory, idGenerator,
+							parents));
 				}
 			}
 		}
-		
+
 		return files;
 	}
 
-	public static FlattenedItem.FlattenedFile BuildFlattenedFile(CatEntryI entry, boolean isHistory,Callable<Integer> idGenerator,List<FlattenedItemA.ItemObject> parents) throws Exception{
-		FlattenedItemA.FieldTracker ft=new FlattenedItemA.FieldTracker();
-		
-		Date last_modified=FlattenedItemA.parseDate(entry.getModifiedtime());
-		Date insert_date=FlattenedItemA.parseDate(entry.getCreatedtime());
+	public static FlattenedItem.FlattenedFile BuildFlattenedFile(
+			CatEntryI entry, boolean isHistory, Callable<Integer> idGenerator,
+			List<FlattenedItemA.ItemObject> parents) throws Exception {
+		FlattenedItemA.FieldTracker ft = new FlattenedItemA.FieldTracker();
 
-		return new FlattenedItem.FlattenedFile(ft,isHistory,last_modified,insert_date,idGenerator.call(),"system:file",entry.getCreatedby(),entry.getModifiedeventid(),entry.getCreatedeventid(),getLabel(entry),parents,entry.getCreatedby());
+		Date last_modified = FlattenedItemA.parseDate(entry.getModifiedtime());
+		Date insert_date = FlattenedItemA.parseDate(entry.getCreatedtime());
+
+		return new FlattenedItem.FlattenedFile(ft, isHistory, last_modified,
+				insert_date, idGenerator.call(), "system:file",
+				entry.getCreatedby(), entry.getModifiedeventid(),
+				entry.getCreatedeventid(), getLabel(entry), parents,
+				entry.getCreatedby());
 	}
 
-	public static String getLabel(CatEntryI entry){
-		if(entry.getName()!=null){
+	public static String getLabel(CatEntryI entry) {
+		if (entry.getName() != null) {
 			return entry.getName();
-		}else{
-			if(FileUtils.IsAbsolutePath(entry.getUri())){
+		} else {
+			if (FileUtils.IsAbsolutePath(entry.getUri())) {
 				return new File(entry.getUri()).getName();
-			}else{
+			} else {
 				return entry.getUri();
 			}
 		}

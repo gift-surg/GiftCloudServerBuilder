@@ -38,244 +38,277 @@ import java.util.*;
  * @author XDAT
  *
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements PersistentWorkflowI{
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements
+		PersistentWorkflowI {
 
-    public static final String AWAITING_ACTION = "AWAITING ACTION";
-    public static final String FAILED = "FAILED";
-    public static final String RUNNING = "RUNNING";
-    public static final String COMPLETE = "COMPLETE";
-    public static final String ERROR = "ERROR";
-    public static final String QUEUED = "QUEUED";
-    public static final String FAILED_DISMISSED = "FAILED (DISMISSED)";
+	public static final String AWAITING_ACTION = "AWAITING ACTION";
+	public static final String FAILED = "FAILED";
+	public static final String RUNNING = "RUNNING";
+	public static final String COMPLETE = "COMPLETE";
+	public static final String ERROR = "ERROR";
+	public static final String QUEUED = "QUEUED";
+	public static final String FAILED_DISMISSED = "FAILED (DISMISSED)";
 
-	public BaseWrkWorkflowdata(ItemI item)
-	{
+	public BaseWrkWorkflowdata(ItemI item) {
 		super(item);
 	}
 
-	public BaseWrkWorkflowdata(UserI user)
-	{
+	public BaseWrkWorkflowdata(UserI user) {
 		super(user);
 	}
 
 	/*
 	 * @deprecated Use BaseWrkWorkflowdata(UserI user)
-	 **/
-	public BaseWrkWorkflowdata()
-	{}
-
-	public BaseWrkWorkflowdata(Hashtable properties, UserI user)
-	{
-		super(properties,user);
+	 */
+	public BaseWrkWorkflowdata() {
 	}
 
+	public BaseWrkWorkflowdata(Hashtable properties, UserI user) {
+		super(properties, user);
+	}
 
-    public boolean isActive(){
-        if(this.getStatus().equalsIgnoreCase(COMPLETE))
-            return false;
-        if(this.getStatus().equalsIgnoreCase(ERROR))
-            return false;
-        if(this.getStatus().equalsIgnoreCase(FAILED))
-            return false;
-        if(this.getStatus().equalsIgnoreCase(FAILED_DISMISSED))
-            return false;
+	public boolean isActive() {
+		if (this.getStatus().equalsIgnoreCase(COMPLETE))
+			return false;
+		if (this.getStatus().equalsIgnoreCase(ERROR))
+			return false;
+		if (this.getStatus().equalsIgnoreCase(FAILED))
+			return false;
+		if (this.getStatus().equalsIgnoreCase(FAILED_DISMISSED))
+			return false;
 
-        return true;
-    }
+		return true;
+	}
 
-    public static ArrayList getWrkWorkflowdatasByField(org.nrg.xft.search.CriteriaCollection criteria, org.nrg.xft.security.UserI user,boolean preLoad, String sortField, String sortOrder)
-    {
-        ArrayList al = new ArrayList();
-        try {
-            org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(criteria,user,preLoad);
-            Iterator iter = null;
-            if (sortField != null && sortOrder != null) {
-                iter = items.getItems(sortField,sortOrder).iterator();
-            }else {
-                iter = items.getItemIterator();
-            }
-            while (iter.hasNext())
-            {
-                WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem)iter.next());
-                al.add(vrc);
-            }
-        } catch (Exception e) {
-            logger.error("",e);
-        }
+	public static ArrayList getWrkWorkflowdatasByField(
+			org.nrg.xft.search.CriteriaCollection criteria,
+			org.nrg.xft.security.UserI user, boolean preLoad, String sortField,
+			String sortOrder) {
+		ArrayList al = new ArrayList();
+		try {
+			org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch
+					.GetItems(criteria, user, preLoad);
+			Iterator iter = null;
+			if (sortField != null && sortOrder != null) {
+				iter = items.getItems(sortField, sortOrder).iterator();
+			} else {
+				iter = items.getItemIterator();
+			}
+			while (iter.hasNext()) {
+				WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem) iter.next());
+				al.add(vrc);
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 
-        al.trimToSize();
-        return al;
-    }
+		al.trimToSize();
+		return al;
+	}
 
-    public String getOnlyPipelineName() {
-        String rtn = getPipelineName();
-        if (rtn.endsWith(File.separator)) rtn = rtn.substring(0,rtn.length());
-        int lastIndexOfSlash = rtn.lastIndexOf(File.separator);
-        if (lastIndexOfSlash != -1) {
-            rtn = rtn.substring(lastIndexOfSlash + 1);
-        }else {
-           lastIndexOfSlash = rtn.lastIndexOf("/");
-           if (lastIndexOfSlash != -1) 
-               rtn = rtn.substring(lastIndexOfSlash + 1);
-        }
-        int lastIndexOfDot = rtn.lastIndexOf(".");
-        if (lastIndexOfDot != -1 ) {
-            rtn = rtn.substring(0,lastIndexOfDot);
-        }
-        return rtn;
-    }
+	public String getOnlyPipelineName() {
+		String rtn = getPipelineName();
+		if (rtn.endsWith(File.separator))
+			rtn = rtn.substring(0, rtn.length());
+		int lastIndexOfSlash = rtn.lastIndexOf(File.separator);
+		if (lastIndexOfSlash != -1) {
+			rtn = rtn.substring(lastIndexOfSlash + 1);
+		} else {
+			lastIndexOfSlash = rtn.lastIndexOf("/");
+			if (lastIndexOfSlash != -1)
+				rtn = rtn.substring(lastIndexOfSlash + 1);
+		}
+		int lastIndexOfDot = rtn.lastIndexOf(".");
+		if (lastIndexOfDot != -1) {
+			rtn = rtn.substring(0, lastIndexOfDot);
+		}
+		return rtn;
+	}
 
+	/**
+	 * Constructs the XnatPipelineLauncher object for the most recent pipeline
+	 * entry
+	 *
+	 * @param id
+	 *            The id that needs to be relaunched
+	 * @param dataType
+	 *            The Datatype of the id
+	 * @param pipeline
+	 *            The pipeline which needs to be launched
+	 * @param user
+	 *            The user who needs to relaunch the pipeline
+	 * @return XnatPipelineLauncher to relaunch the pipeline or null if the
+	 *         pipeline is not waiting
+	 */
 
-    /**
-     * Constructs the XnatPipelineLauncher object for the most recent pipeline entry
-     *
-     * @param id The id that needs to be relaunched
-     * @param dataType The Datatype of the id
-     * @param pipeline The pipeline which needs to be launched
-     * @param user The user who needs to relaunch the pipeline
-     * @return XnatPipelineLauncher to relaunch the pipeline or null if the pipeline is not waiting
-     */
+	public XnatPipelineLauncher getLatestLauncherByStatus(UserI user) {
+		XnatPipelineLauncher rtn = null;
+		// Look for the latest workflow entry for this pipeline
+		// If its status is matches then construct the workflow
+		String _status = getStatus();
+		WrkAbstractexecutionenvironmentI absExecutionEnv = getExecutionenvironment();
+		try {
+			WrkXnatexecutionenvironment xnatExecutionEnv = (WrkXnatexecutionenvironment) absExecutionEnv;
+			rtn = xnatExecutionEnv.getLauncher(user);
+			if (_status.equalsIgnoreCase(AWAITING_ACTION)) {
+				rtn.setStartAt(getNextStepId());
+			}
+		} catch (ClassCastException cse) {
 
+		}
+		return rtn;
 
-    public  XnatPipelineLauncher getLatestLauncherByStatus(UserI user) {
-       XnatPipelineLauncher rtn = null;
-       //Look for the latest workflow entry for this pipeline
-       //If its status is matches then construct the workflow
-       String _status = getStatus();
-       WrkAbstractexecutionenvironmentI absExecutionEnv = getExecutionenvironment();
-       try {
-           WrkXnatexecutionenvironment xnatExecutionEnv = (WrkXnatexecutionenvironment)absExecutionEnv;
-           rtn = xnatExecutionEnv.getLauncher(user);
-           if (_status.equalsIgnoreCase(AWAITING_ACTION)) {
-               rtn.setStartAt(getNextStepId());
-           }
-       }catch(ClassCastException cse) {
+	}
 
-       }
-        return rtn;
+	/**
+	 * Constructs the XnatPipelineLauncher object to be used to restart a FAILED
+	 * pipeline
+	 *
+	 * @param id
+	 *            The Workflow id that needs to be restarted
+	 * @param dataType
+	 *            The Datatype of the id
+	 * @param pipeline
+	 *            The pipeline which needs to be launched
+	 * @param user
+	 *            The user who needs to relaunch the pipeline
+	 * @return XnatPipelineLauncher to relaunch the pipeline or null if the
+	 *         pipeline hasnt failed
+	 */
 
-    }
+	public XnatPipelineLauncher restartWorkflow(UserI user) {
+		return getLatestLauncherByStatus(user);
+	}
 
-    /**
-     * Constructs the XnatPipelineLauncher object to be used to restart a FAILED pipeline
-     *
-     * @param id The Workflow id that needs to be restarted
-     * @param dataType The Datatype of the id
-     * @param pipeline The pipeline which needs to be launched
-     * @param user The user who needs to relaunch the pipeline
-     * @return XnatPipelineLauncher to relaunch the pipeline or null if the pipeline hasnt failed
-     */
+	/**
+	 * Constructs the XnatPipelineLauncher object to be used to resume an
+	 * awaiting pipeline
+	 *
+	 * @param id
+	 *            The Workflow id that needs to be resumed
+	 * @param dataType
+	 *            The Datatype of the id
+	 * @param pipeline
+	 *            The pipeline which needs to be launched
+	 * @param user
+	 *            The user who needs to relaunch the pipeline
+	 * @return XnatPipelineLauncher to relaunch the pipeline or null if the
+	 *         pipeline is not waiting
+	 */
 
-    public  XnatPipelineLauncher restartWorkflow(UserI user) {
-        return getLatestLauncherByStatus(user);
-    }
+	public XnatPipelineLauncher resumeWorkflow(UserI user) {
+		return getLatestLauncherByStatus(user);
+	}
 
-    /**
-     * Constructs the XnatPipelineLauncher object to be used to resume an awaiting pipeline
-     *
-     * @param id The Workflow id that needs to be resumed
-     * @param dataType The Datatype of the id
-     * @param pipeline The pipeline which needs to be launched
-     * @param user The user who needs to relaunch the pipeline
-     * @return XnatPipelineLauncher to relaunch the pipeline or null if the pipeline is not waiting
-     */
+	/**
+	 * Returns the most recent workflow status
+	 * 
+	 * @param id
+	 * @param data_type
+	 * @param external_id
+	 * @param user
+	 * @return
+	 */
 
-    public XnatPipelineLauncher resumeWorkflow(UserI user) {
-       return getLatestLauncherByStatus(user);
-    }
+	public static String GetLatestWorkFlowStatus(String id, String data_type,
+			String external_id, org.nrg.xft.security.UserI user) {
+		ArrayList wrkFlows = GetWorkFlowsOrderByLaunchTimeDesc(id, data_type,
+				external_id, null, user);
+		String rtn = "";
+		if (wrkFlows != null && wrkFlows.size() > 0) {
+			rtn = ((WrkWorkflowdata) wrkFlows.get(0)).getStatus();
+		}
+		return rtn;
+	}
 
-    /**
-     * Returns the most recent workflow status
-     * @param id
-     * @param data_type
-     * @param external_id
-     * @param user
-     * @return
-     */
+	/**
+	 * Returns the most recent workflow status for a pipeline
+	 * 
+	 * @param id
+	 * @param data_type
+	 * @param external_id
+	 * @param user
+	 * @return
+	 */
 
-    public static String GetLatestWorkFlowStatus(String id, String data_type, String external_id,org.nrg.xft.security.UserI user) {
-        ArrayList wrkFlows = GetWorkFlowsOrderByLaunchTimeDesc(id,data_type,external_id,null, user);
-        String rtn = "";
-        if (wrkFlows != null && wrkFlows.size() > 0) {
-            rtn = ((WrkWorkflowdata)wrkFlows.get(0)).getStatus();
-        }
-        return rtn;
-    }
+	public static String GetLatestWorkFlowStatus(String id, String data_type,
+			String external_id, String pipelineName,
+			org.nrg.xft.security.UserI user) {
+		ArrayList wrkFlows = GetWorkFlowsOrderByLaunchTimeDesc(id, data_type,
+				external_id, pipelineName, user);
+		String rtn = "";
+		if (wrkFlows != null && wrkFlows.size() > 0) {
+			rtn = ((WrkWorkflowdata) wrkFlows.get(0)).getStatus();
+		}
+		return rtn;
+	}
 
-    /**
-     * Returns the most recent workflow status for a pipeline
-     * @param id
-     * @param data_type
-     * @param external_id
-     * @param user
-     * @return
-     */
+	/**
+	 * Returns the most recent workflow status for a pipeline
+	 * 
+	 * @param id
+	 * @param data_type
+	 * @param external_id
+	 * @param user
+	 * @return
+	 */
 
-    public static String GetLatestWorkFlowStatus(String id, String data_type, String external_id,String pipelineName,org.nrg.xft.security.UserI user) {
-        ArrayList wrkFlows = GetWorkFlowsOrderByLaunchTimeDesc(id,data_type,external_id,pipelineName,user);
-        String rtn = "";
-        if (wrkFlows != null && wrkFlows.size() > 0) {
-            rtn = ((WrkWorkflowdata)wrkFlows.get(0)).getStatus();
-        }
-        return rtn;
-    }
+	public static String GetLatestWorkFlowStatusByPipeline(String id,
+			String data_type, String pipelineName, String external_id,
+			org.nrg.xft.security.UserI user) {
+		ArrayList wrkFlows = GetWorkFlowsOrderByLaunchTimeDesc(id, data_type,
+				external_id, pipelineName, user);
+		String rtn = "";
+		if (wrkFlows != null && wrkFlows.size() > 0) {
+			rtn = ((WrkWorkflowdata) wrkFlows.get(0)).getStatus();
+		}
+		return rtn;
+	}
 
-    /**
-     * Returns the most recent workflow status for a pipeline
-     * @param id
-     * @param data_type
-     * @param external_id
-     * @param user
-     * @return
-     */
+	public static ArrayList GetWorkFlowsOrderByLaunchTimeDesc(String id,
+			String dataType, String externalId, String pipelineName,
+			org.nrg.xft.security.UserI user) {
+		ArrayList workflows = new ArrayList();
+		org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
+		cc.addClause("wrk:workflowData.ID", id);
+		cc.addClause("wrk:workflowData.data_type", dataType);
+		if (externalId != null)
+			cc.addClause("wrk:workflowData.ExternalID", externalId);
+		if (pipelineName != null)
+			cc.addClause("wrk:workflowData.pipeline_name", pipelineName);
+		// Sort by Launch Time
+		try {
+			org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch
+					.GetItems(cc, user, false);
+			ArrayList workitems = items.getItems(
+					"wrk:workflowData.launch_time", "DESC");
+			Iterator iter = workitems.iterator();
+			while (iter.hasNext()) {
+				WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem) iter.next());
+				workflows.add(vrc);
+			}
+		} catch (Exception e) {
+			logger.debug("", e);
+		}
+		logger.info("Workflows by Ordered by Launch Time " + workflows.size());
+		return workflows;
+	}
 
-    public static String GetLatestWorkFlowStatusByPipeline(String id, String data_type, String pipelineName, String external_id,org.nrg.xft.security.UserI user) {
-        ArrayList wrkFlows = GetWorkFlowsOrderByLaunchTimeDesc(id,data_type,external_id, pipelineName,user);
-        String rtn = "";
-        if (wrkFlows != null && wrkFlows.size() > 0) {
-            rtn = ((WrkWorkflowdata)wrkFlows.get(0)).getStatus();
-        }
-        return rtn;
-    }
+	public synchronized EventMetaI buildEvent() {
+		Date d = Calendar.getInstance().getTime();
+		return new WorkflowEvent((String) null, d, this.getUser(),
+				this.getEventId(), FileUtils.getTimestamp(d));
+	}
 
-    public static ArrayList GetWorkFlowsOrderByLaunchTimeDesc(String id, String dataType, String externalId, String pipelineName, org.nrg.xft.security.UserI user) {
-        ArrayList workflows = new ArrayList();
-        org.nrg.xft.search.CriteriaCollection cc = new CriteriaCollection("AND");
-        cc.addClause("wrk:workflowData.ID",id);
-        cc.addClause("wrk:workflowData.data_type",dataType);
-        if (externalId != null) cc.addClause("wrk:workflowData.ExternalID",externalId);
-        if (pipelineName != null) cc.addClause("wrk:workflowData.pipeline_name",pipelineName);
-        //Sort by Launch Time
-        try {
-            org.nrg.xft.collections.ItemCollection items = org.nrg.xft.search.ItemSearch.GetItems(cc,user,false);
-            ArrayList workitems = items.getItems("wrk:workflowData.launch_time","DESC");
-            Iterator iter = workitems.iterator();
-            while (iter.hasNext())
-            {
-                WrkWorkflowdata vrc = new WrkWorkflowdata((XFTItem)iter.next());
-                workflows.add(vrc);
-            }
-        }catch(Exception e) {
-            logger.debug("",e);
-        }
-       logger.info("Workflows by Ordered by Launch Time " + workflows.size());
-        return workflows;
-    }
-    
-    public synchronized EventMetaI buildEvent(){
-    	Date d=Calendar.getInstance().getTime();
-    	return new WorkflowEvent((String)null,d,this.getUser(),this.getEventId(),FileUtils.getTimestamp(d));
-    }
-    
-    public class WorkflowEvent implements EventMetaI, Serializable {
-        private static final long serialVersionUID = 42L;
-    	final String message;
-    	final Date d;
-    	final UserI user;
-    	final Number id;
-    	final String timestamp;
-    	
+	public class WorkflowEvent implements EventMetaI, Serializable {
+		private static final long serialVersionUID = 42L;
+		final String message;
+		final Date d;
+		final UserI user;
+		final Number id;
+		final String timestamp;
+
 		public WorkflowEvent(String message, Date d, UserI user, Number id,
 				String timestamp) {
 			super();
@@ -310,43 +343,45 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
 		public Number getEventId() {
 			return id;
 		}
-    	
-    }
+
+	}
 
 	public Number getEventId() {
-		Number i= getWrkWorkflowdataId();
-		if(i==null){
+		Number i = getWrkWorkflowdataId();
+		if (i == null) {
 			try {
-				i=(Number)getNextWorkflowID();
+				i = (Number) getNextWorkflowID();
 				setWrkWorkflowdataId(new Integer(i.intValue()));
 			} catch (Exception e) {
-				logger.error("",e);
+				logger.error("", e);
 			}
 		}
-		
+
 		return i;
 	}
 
+	private static String __table = null;
+	private static String __dbName = null;
+	private static final String __pk = "wrk_workflowData_id";
+	private static String __sequence = null;
 
-    private static String __table=null;
-    private static String __dbName=null;
-    private static final String __pk="wrk_workflowData_id";
-    private static String __sequence=null;
-    private synchronized static Number getNextWorkflowID() throws Exception{
-        if(__table==null){
-        	try {
-				GenericWrapperElement element=GenericWrapperElement.GetElement(WrkWorkflowdata.SCHEMA_ELEMENT_NAME);
-				__dbName=element.getDbName();
-				__table=element.getSQLName();
-				__sequence=element.getSequenceName();
+	private synchronized static Number getNextWorkflowID() throws Exception {
+		if (__table == null) {
+			try {
+				GenericWrapperElement element = GenericWrapperElement
+						.GetElement(WrkWorkflowdata.SCHEMA_ELEMENT_NAME);
+				__dbName = element.getDbName();
+				__table = element.getSQLName();
+				__sequence = element.getSequenceName();
 			} catch (XFTInitException e) {
-				logger.error("",e);
+				logger.error("", e);
 			} catch (ElementNotFoundException e) {
-				logger.error("",e);
+				logger.error("", e);
 			}
-        }
-    	return (Number)PoolDBUtils.GetNextID(__dbName, __table, __pk, __sequence);
-    }
+		}
+		return (Number) PoolDBUtils.GetNextID(__dbName, __table, __pk,
+				__sequence);
+	}
 
 	@Override
 	public Integer getWorkflowId() {
@@ -358,15 +393,15 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
 		try {
 			return getDateProperty("launch_time");
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 			return null;
 		}
 	}
-    
-	public String getUsername(){
-		if(this.getInsertUser()!=null){
+
+	public String getUsername() {
+		if (this.getInsertUser() != null) {
 			return this.getInsertUser().getLogin();
-		}else{
+		} else {
 			return null;
 		}
 	}
@@ -380,19 +415,20 @@ public class BaseWrkWorkflowdata extends AutoWrkWorkflowdata implements Persiste
 	public void setCategory(CATEGORY v) {
 		this.setCategory(v.toString());
 	}
-	
 
 	/*
-	 * This method is called anytime a workflow entry is saved to the database.  It will trigger an event entry.
+	 * This method is called anytime a workflow entry is saved to the database.
+	 * It will trigger an event entry.
 	 */
 	@Override
 	public void postSave() throws Exception {
 		super.postSave();
-		
-		if(getStatus()!=null){			
-			//status changed
-			if(this.getWorkflowId()!=null){
-				EventManager.Trigger(SCHEMA_ELEMENT_NAME, this.getWorkflowId().toString(), this, getStatus());
+
+		if (getStatus() != null) {
+			// status changed
+			if (this.getWorkflowId() != null) {
+				EventManager.Trigger(SCHEMA_ELEMENT_NAME, this.getWorkflowId()
+						.toString(), this, getStatus());
 			}
 		}
 	}

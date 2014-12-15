@@ -25,122 +25,140 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 
-public class XnatDatabaseAuthenticationProvider extends DaoAuthenticationProvider implements XnatAuthenticationProvider {
+public class XnatDatabaseAuthenticationProvider extends
+		DaoAuthenticationProvider implements XnatAuthenticationProvider {
 
-    public XnatDatabaseAuthenticationProvider() {
-        super();
-        this.setPreAuthenticationChecks(new PreAuthenticationChecks());
-    }
+	public XnatDatabaseAuthenticationProvider() {
+		super();
+		this.setPreAuthenticationChecks(new PreAuthenticationChecks());
+	}
 
-    /**
-     * Indicates whether the provider should be visible to and selectable by users. <b>false</b> usually indicates an
-     * internal authentication provider, e.g. token authentication.
-     *
-     * @return <b>true</b> if the provider should be visible to and usable by users.
-     */
-    @Override
-    public boolean isVisible() {
-        return true;
-    }
-	
+	/**
+	 * Indicates whether the provider should be visible to and selectable by
+	 * users. <b>false</b> usually indicates an internal authentication
+	 * provider, e.g. token authentication.
+	 *
+	 * @return <b>true</b> if the provider should be visible to and usable by
+	 *         users.
+	 */
 	@Override
-    public boolean supports(Class<?> authentication) {
-        return XnatDatabaseUsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
-	
+	public boolean isVisible() {
+		return true;
+	}
+
 	@Override
-	public String toString(){
+	public boolean supports(Class<?> authentication) {
+		return XnatDatabaseUsernamePasswordAuthenticationToken.class
+				.isAssignableFrom(authentication);
+	}
+
+	@Override
+	public String toString() {
 		return getName();
 	}
 
-    @Override
-    public String getName() {
+	@Override
+	public String getName() {
 		return displayName;
 	}
-	
-	public void setName(String newName){
+
+	public void setName(String newName) {
 		displayName = newName;
 	}
-	
-    @Override
-    public String getProviderId() {
-        return _providerId;
+
+	@Override
+	public String getProviderId() {
+		return _providerId;
 	}
-	
-    public void setProviderId(String providerId) {
-        _providerId = providerId;
+
+	public void setProviderId(String providerId) {
+		_providerId = providerId;
 	}
-	
-    @Override
-    public String getAuthMethod() {
-        return XdatUserAuthService.LOCALDB;
-    }
 
-    @Override
-    protected void additionalAuthenticationChecks(final UserDetails userDetails, final UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        if (!XDATUserDetails.class.isAssignableFrom(userDetails.getClass())) {
-            throw new AuthenticationServiceException("User details class is not of a type I know how to handle: " + userDetails.getClass());
-        }
-        final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
-        if ( (XDAT.verificationOn() && !xdatUserDetails.isVerified() && xdatUserDetails.isEnabled()) || !xdatUserDetails.isAccountNonLocked()) {
-            throw new CredentialsExpiredException("Attempted login to unverified or locked account: " + xdatUserDetails.getUsername(), this);
-        }
-        super.additionalAuthenticationChecks(userDetails, authentication);
-    }
+	@Override
+	public String getAuthMethod() {
+		return XdatUserAuthService.LOCALDB;
+	}
 
-    public boolean isPlainText() {
-        return (this.getPasswordEncoder().getClass() == plainText);
-    }
+	@Override
+	protected void additionalAuthenticationChecks(
+			final UserDetails userDetails,
+			final UsernamePasswordAuthenticationToken authentication)
+			throws AuthenticationException {
+		if (!XDATUserDetails.class.isAssignableFrom(userDetails.getClass())) {
+			throw new AuthenticationServiceException(
+					"User details class is not of a type I know how to handle: "
+							+ userDetails.getClass());
+		}
+		final XDATUserDetails xdatUserDetails = (XDATUserDetails) userDetails;
+		if ((XDAT.verificationOn() && !xdatUserDetails.isVerified() && xdatUserDetails
+				.isEnabled()) || !xdatUserDetails.isAccountNonLocked()) {
+			throw new CredentialsExpiredException(
+					"Attempted login to unverified or locked account: "
+							+ xdatUserDetails.getUsername(), this);
+		}
+		super.additionalAuthenticationChecks(userDetails, authentication);
+	}
 
-    private String displayName = "";
-    private String _providerId = "";
-    private Class plainText = PlaintextPasswordEncoder.class;
+	public boolean isPlainText() {
+		return (this.getPasswordEncoder().getClass() == plainText);
+	}
 
-    private class PreAuthenticationChecks implements UserDetailsChecker {
-        public void check(UserDetails user) {
-            if (!user.isAccountNonLocked()) {
-                logger.debug("User account is locked");
+	private String displayName = "";
+	private String _providerId = "";
+	private Class plainText = PlaintextPasswordEncoder.class;
 
-                throw new LockedException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.locked",
-                        "User account is locked"), user);
-            }
+	private class PreAuthenticationChecks implements UserDetailsChecker {
+		public void check(UserDetails user) {
+			if (!user.isAccountNonLocked()) {
+				logger.debug("User account is locked");
 
-            if (!user.isEnabled() && !disabledDueToInactivity(user)) {
-                logger.debug("User account is disabled");
+				throw new LockedException(messages.getMessage(
+						"AbstractUserDetailsAuthenticationProvider.locked",
+						"User account is locked"), user);
+			}
 
-                throw new DisabledException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled",
-                        "User is disabled"), user);
-            }
+			if (!user.isEnabled() && !disabledDueToInactivity(user)) {
+				logger.debug("User account is disabled");
 
-            if (!user.isAccountNonExpired()) {
-                logger.debug("User account is expired");
+				throw new DisabledException(messages.getMessage(
+						"AbstractUserDetailsAuthenticationProvider.disabled",
+						"User is disabled"), user);
+			}
 
-                throw new AccountExpiredException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.expired",
-                        "User account has expired"), user);
-            }
-        }
+			if (!user.isAccountNonExpired()) {
+				logger.debug("User account is expired");
 
-        private boolean disabledDueToInactivity(UserDetails user) {
-            try {
-                XDATUserDetails xdatUserDetails = (XDATUserDetails) user;
-                if (!xdatUserDetails.isEnabled()) {
-                    String query = "SELECT COUNT(*) AS count " +
-                            "FROM xdat_user_history " +
-                            "WHERE xdat_user_id=" + xdatUserDetails.getXdatUserId() + " " +
-                            "AND change_user=" + xdatUserDetails.getXdatUserId() + " " +
-                            "AND change_date = (SELECT MAX(change_date) " +
-                            "FROM xdat_user_history " +
-                            "WHERE xdat_user_id=" + xdatUserDetails.getXdatUserId() + " " +
-                            "AND enabled=1)";
-                    Long result = (Long) PoolDBUtils.ReturnStatisticQuery(query, "count", xdatUserDetails.getDBName(), xdatUserDetails.getUsername());
+				throw new AccountExpiredException(messages.getMessage(
+						"AbstractUserDetailsAuthenticationProvider.expired",
+						"User account has expired"), user);
+			}
+		}
 
-                    return result > 0;
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
+		private boolean disabledDueToInactivity(UserDetails user) {
+			try {
+				XDATUserDetails xdatUserDetails = (XDATUserDetails) user;
+				if (!xdatUserDetails.isEnabled()) {
+					String query = "SELECT COUNT(*) AS count "
+							+ "FROM xdat_user_history " + "WHERE xdat_user_id="
+							+ xdatUserDetails.getXdatUserId() + " "
+							+ "AND change_user="
+							+ xdatUserDetails.getXdatUserId() + " "
+							+ "AND change_date = (SELECT MAX(change_date) "
+							+ "FROM xdat_user_history " + "WHERE xdat_user_id="
+							+ xdatUserDetails.getXdatUserId() + " "
+							+ "AND enabled=1)";
+					Long result = (Long) PoolDBUtils.ReturnStatisticQuery(
+							query, "count", xdatUserDetails.getDBName(),
+							xdatUserDetails.getUsername());
 
-            return false;
-        }
-    }
+					return result > 0;
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			}
+
+			return false;
+		}
+	}
 }

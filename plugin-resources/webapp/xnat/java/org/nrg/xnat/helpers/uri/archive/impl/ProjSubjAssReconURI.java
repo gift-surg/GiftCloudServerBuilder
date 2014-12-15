@@ -23,9 +23,10 @@ import org.nrg.xnat.turbine.utils.ArchivableItem;
 import java.util.List;
 import java.util.Map;
 
-public class ProjSubjAssReconURI extends ProjSubjSessionURIA  implements ArchiveItemURI,AssessedURII,ReconURII{
-	private XnatReconstructedimagedata recon=null;
-	
+public class ProjSubjAssReconURI extends ProjSubjSessionURIA implements
+		ArchiveItemURI, AssessedURII, ReconURII {
+	private XnatReconstructedimagedata recon = null;
+
 	public ProjSubjAssReconURI(Map<String, Object> props, String uri) {
 		super(props, uri);
 	}
@@ -33,16 +34,18 @@ public class ProjSubjAssReconURI extends ProjSubjSessionURIA  implements Archive
 	protected void populateRecon() {
 		super.populateSession();
 
-		if(recon==null){
-			final String reconID= (String)props.get(URIManager.RECON_ID);
-			
-			if(recon==null&& reconID!=null){
-				recon=(XnatReconstructedimagedata)XnatReconstructedimagedata.getXnatReconstructedimagedatasById(reconID, null, false);
+		if (recon == null) {
+			final String reconID = (String) props.get(URIManager.RECON_ID);
+
+			if (recon == null && reconID != null) {
+				recon = (XnatReconstructedimagedata) XnatReconstructedimagedata
+						.getXnatReconstructedimagedatasById(reconID, null,
+								false);
 			}
 		}
 	}
 
-	public XnatReconstructedimagedata getRecon(){
+	public XnatReconstructedimagedata getRecon() {
 		this.populateRecon();
 		return this.recon;
 	}
@@ -54,8 +57,8 @@ public class ProjSubjAssReconURI extends ProjSubjSessionURIA  implements Archive
 
 	@Override
 	public List<XnatAbstractresourceI> getResources(boolean includeAll) {
-		List<XnatAbstractresourceI> res=Lists.newArrayList();
-		final XnatReconstructedimagedata expt=getRecon();
+		List<XnatAbstractresourceI> res = Lists.newArrayList();
+		final XnatReconstructedimagedata expt = getRecon();
 		res.addAll(expt.getOut_file());
 		return res;
 	}

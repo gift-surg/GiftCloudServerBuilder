@@ -20,23 +20,29 @@ import org.nrg.xnat.itemBuilders.WorkflowBasedHistoryBuilder.WorkflowView;
 
 import java.util.*;
 
-
 public class WorkflowHistorySummary extends SecureReport {
- 
+
 	@Override
 	public void finalProcessing(final RunData data, Context context) {
 		try {
-			final String id=(TurbineUtils.HasPassedParameter("key", data))?(String)TurbineUtils.GetPassedParameter("key", data):item.getStringProperty("ID");
-			List<WorkflowView> wvs=new ArrayList<WorkflowView>();
-			
-			Object o=TurbineUtils.GetPassedParameter("includeFiles", data);
-			Object details=TurbineUtils.GetPassedParameter("includeDetails", data);
-			final boolean includeFiles=(o==null || Boolean.valueOf(o.toString()));
-			final boolean includedetails=(details==null || Boolean.valueOf(details.toString()));
-			
-			Map<Number,WorkflowView> map=(new WorkflowBasedHistoryBuilder(item,id,TurbineUtils.getUser(data),includeFiles,includedetails)).call();
+			final String id = (TurbineUtils.HasPassedParameter("key", data)) ? (String) TurbineUtils
+					.GetPassedParameter("key", data) : item
+					.getStringProperty("ID");
+			List<WorkflowView> wvs = new ArrayList<WorkflowView>();
+
+			Object o = TurbineUtils.GetPassedParameter("includeFiles", data);
+			Object details = TurbineUtils.GetPassedParameter("includeDetails",
+					data);
+			final boolean includeFiles = (o == null || Boolean.valueOf(o
+					.toString()));
+			final boolean includedetails = (details == null || Boolean
+					.valueOf(details.toString()));
+
+			Map<Number, WorkflowView> map = (new WorkflowBasedHistoryBuilder(
+					item, id, TurbineUtils.getUser(data), includeFiles,
+					includedetails)).call();
 			wvs.addAll(map.values());
-			
+
 			Collections.sort(wvs, new Comparator<WorkflowView>() {
 				@Override
 				public int compare(WorkflowView arg0, WorkflowView arg1) {
@@ -47,14 +53,15 @@ public class WorkflowHistorySummary extends SecureReport {
 					}
 				}
 			});
-			context.put("change_sets",wvs);
-			
-			if(TurbineUtils.HasPassedParameter("hideTopBar",data)){
-				context.put("hideTopBar", Boolean.valueOf((String)TurbineUtils.GetPassedParameter(("hideTopBar"), data)));
+			context.put("change_sets", wvs);
+
+			if (TurbineUtils.HasPassedParameter("hideTopBar", data)) {
+				context.put("hideTopBar", Boolean.valueOf((String) TurbineUtils
+						.GetPassedParameter(("hideTopBar"), data)));
 			}
 		} catch (Exception e) {
-			logger.error("",e);
+			logger.error("", e);
 		}
-		
+
 	}
 }

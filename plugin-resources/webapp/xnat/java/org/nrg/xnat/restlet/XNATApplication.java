@@ -203,6 +203,12 @@ public class XNATApplication extends Application {
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}",
 				SubjectResource.class);
 		attachArchiveURI(router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/pseudonyms",
+				SubjectPseudonymList.class);
+		attachArchiveURI(router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/pseudonyms/{PSEUDONYM}",
+				SubjectPseudonymResource.class);
+		attachArchiveURI(router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments",
 				ProjSubExptList.class);
 		attachArchiveURI(

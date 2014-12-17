@@ -3,37 +3,21 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.nrg.action.ActionException;
-import org.nrg.transaction.TransactionException;
-import org.nrg.xdat.model.XnatProjectdataI;
-import org.nrg.xdat.model.XnatProjectparticipantI;
+import org.nrg.action.ClientException;
+import org.nrg.action.ServerException;
 import org.nrg.xdat.om.ExtPseudonymizedsubjectdata;
-import org.nrg.xdat.om.XnatExperimentdata;
-import org.nrg.xdat.om.XnatImagesessiondata;
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatProjectparticipant;
 import org.nrg.xdat.om.ExtSubjectpseudonym;
-import org.nrg.xdat.om.base.BaseExtPseudonymizedsubjectdata;
+import org.nrg.xdat.om.XnatDatatypeprotocol;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xft.XFTItem;
-import org.nrg.xft.XFTTable;
 import org.nrg.xft.db.MaterializedView;
-import org.nrg.xft.event.EventMetaI;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
-import org.nrg.xft.exception.InvalidValueException;
-import org.nrg.xft.security.UserI;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.InvalidItemException;
 import org.nrg.xft.utils.SaveItemHelper;
-import org.nrg.xft.utils.StringUtils;
-import org.nrg.xft.utils.ValidationUtils.ValidationResults;
-import org.nrg.xnat.helpers.merge.ProjectAnonymizer;
-import org.nrg.xnat.helpers.xmlpath.XMLPathShortcuts;
-import org.nrg.xnat.restlet.representations.TurbineScreenRepresentation;
-import org.nrg.xnat.utils.WorkflowUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -48,62 +32,26 @@ import org.xml.sax.SAXParseException;
  *
  */
 public class SubjectPseudonymResource extends SecureResource {
-
-	XnatProjectdata proj = null;
-	ExtPseudonymizedsubjectdata subject = null;
-	ExtSubjectpseudonym pseudonym = null;
-	String pseudonymID = null;
-	ExtSubjectpseudonym existingPseudonym;
-	String subID = null;
+	String pseudoId;
+	ExtPseudonymizedsubjectdata subject;
+	ExtSubjectpseudonym existingPseudonym, pseudonym;
 
 	public SubjectPseudonymResource(Context context, Request request,
 			Response response) {
 		super(context, request, response);
 
-		String pID = (String) getParameter(request, "PROJECT_ID");
-		if (pID != null) {
-			proj = XnatProjectdata.getProjectByIDorAlias(pID, user, false);
-		}
-
-		if (proj == null) {
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-			return;
-		}
-
-		subID = (String) getParameter(request, "SUBJECT_ID");
-		if (subID != null) {
-			subject = (ExtPseudonymizedsubjectdata) ExtPseudonymizedsubjectdata
-					.GetSubjectByProjectIdentifier(proj.getId(), subID, user,
-							false);
-
-			if (subject == null) {
-				subject = ExtPseudonymizedsubjectdata
-						.getExtPseudonymizedsubjectdatasById(subID, user, false);
-				if (subject != null
-						&& (proj != null && !subject.hasProject(proj.getId()))) {
-					subject = null;
-				}
+		String subjectId = (String) getParameter(request, "SUBJECT_ID");
+		pseudoId = (String) getParameter(request, "PSEUDONYM");
+		if (subjectId != null && pseudoId != null && !pseudoId.isEmpty()) {
+			subject = ExtPseudonymizedsubjectdata
+					.GetPseudonymizedSubjectByLabel(subjectId, user, false);
+			if (subject != null) {
+				existingPseudonym = ExtSubjectpseudonym.GetPseudonym(subject,
+						pseudoId, user, false);
 			}
 		}
 
-		pseudonymID = (String) getParameter(request, "PSEUDONYM_ID");
-		if (pseudonymID != null) {
-			if (existingPseudonym == null) {
-				existingPseudonym = ExtSubjectpseudonym
-						.getExtSubjectpseudonymsByExtSubjectpseudonymId(
-								pseudonymID, user, false);
-			}
-
-			// TODO ___ 1.999) why are these needed ?
-			// org.nrg.xnat.restlet.resources.SubjectPseudoymResource.SubjectPseudoymResource(Context,
-			// Request, Response)
-			this.getVariants().add(new Variant(MediaType.TEXT_HTML));
-			this.getVariants().add(new Variant(MediaType.TEXT_XML));
-		} else {
-			response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-		}
-		this.fieldMapping.putAll(XMLPathShortcuts.getInstance().getShortcuts(
-				XMLPathShortcuts.EXPERIMENT_DATA, false));
+		this.getVariants().add(new Variant(MediaType.TEXT_XML));
 	}
 
 	@Override
@@ -113,8 +61,67 @@ public class SubjectPseudonymResource extends SecureResource {
 
 	@Override
 	public void handlePut() {
-		// TODO ___ 2)
-		// org.nrg.xnat.restlet.resources.SubjectPseudoymResource.handlePut()
+		XFTItem template = null;
+		if (existingPseudonym != null) {
+			template = existingPseudonym.getItem().getCurrentDBVersion();
+		}
+
+		try {
+			XFTItem item = this.loadItem("ext:subjectPseudonym", true, template);
+			if (item.instanceOf("ext:subjectPseudonym")) {
+				pseudonym = new ExtSubjectpseudonym(item);
+			}
+			
+			if (existingPseudonym != null) {
+				this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Submitted pseudonym exists");
+				return;
+			}
+			else {
+				if (!user.canEdit(subject)) {
+					this.getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+										"Specified user account has insufficient edit privileges for this project.");
+					return;
+				}
+				else {
+					if (!pseudoId.isEmpty()) {
+						pseudonym.setId(pseudoId);
+						pseudonym.setIdentifier(pseudoId);
+						pseudonym.setProperty("pseudonymized_subject_ID", subject.getId());
+					}
+					else {
+						this.getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty pseudo ID string provided");
+						return;
+					}
+				}
+			}
+			
+			PersistentWorkflowI wrk = PersistentWorkflowUtils
+					.getOrCreateWorkflowData(null, user, pseudonym.getItem(),
+							this.newEventInstance(
+									EventUtils.CATEGORY.DATA,
+									"Inserted new pseudonym for a subject."));
+			try {
+				if (SaveItemHelper.authorizedSave(pseudonym.getItem(), user, false,
+						true, wrk.buildEvent())) {
+					PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
+					MaterializedView.DeleteByUser(user);
+				}
+
+				this.returnXML(pseudonym.getItem());
+			} catch (Exception e) {
+				PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
+				throw e;
+			}
+		} catch (ClientException | ServerException | ElementNotFoundException e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			logger.error("", e);
+		} catch (InvalidItemException e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			logger.error("", e);
+		} catch (Exception e) {
+			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			logger.error("", e);
+		}
 	}
 
 	@Override

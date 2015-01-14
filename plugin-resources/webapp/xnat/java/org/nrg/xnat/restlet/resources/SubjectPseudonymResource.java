@@ -3,13 +3,13 @@
  */
 package org.nrg.xnat.restlet.resources;
 
-import org.nrg.xdat.om.ExtPseudonymizedsubjectdata;
-import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.exceptions.IllegalAccessException;
+import org.nrg.xnat.restlet.util.DefaultResourceUtil;
+import org.nrg.xnat.restlet.util.ResourceUtilI;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-
-import com.google.common.base.Strings;
+import org.restlet.data.Status;
 
 /**
  * Base class for all subject-pseudonym processing.
@@ -18,24 +18,36 @@ import com.google.common.base.Strings;
  *
  */
 public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
-	ExtPseudonymizedsubjectdata subject;
-	ExtSubjectpseudonym pseudonym;
+	protected ResourceUtilI resourceUtil;
 	
-	public SubjectPseudonymResource(Context context, Request request,
+	/**
+	 * 
+	 * @param context
+	 * @param request
+	 * @param response
+	 */
+	protected SubjectPseudonymResource(Context context, Request request,
 			Response response) {
 		super(context, request, response);
+		init();
 	}
 	
-	protected void populate(String rid, String ppid) {
-		if (!Strings.isNullOrEmpty(rid))
-			subject = ExtPseudonymizedsubjectdata.getExtPseudonymizedsubjectdatasById(pseudonym.getPseudonymizedSubjectId(), user, false);
+	/**
+	 * 
+	 */
+	protected void init() {
+		resourceUtil = new DefaultResourceUtil(user);
+	}
+	
+	/**
+	 * Handle how standard exceptions are propagated to user.
+	 * 
+	 * @param t
+	 */
+	protected void handle(Throwable t) {
+		if (t instanceof IllegalAccessException)
+			getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "Insufficient access permissions");
 		else
-			subject = null;
-		
-		if (!Strings.isNullOrEmpty(ppid)) {
-			pseudonym = ExtSubjectpseudonym.GetPseudonym(subject, ppid, user, false);
-			if (pseudonym != null && subject == null)
-				subject = ExtPseudonymizedsubjectdata.getExtPseudonymizedsubjectdatasById(pseudonym.getPseudonymizedSubjectId(), user, false);
-		}
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, t.getMessage());
 	}
 }

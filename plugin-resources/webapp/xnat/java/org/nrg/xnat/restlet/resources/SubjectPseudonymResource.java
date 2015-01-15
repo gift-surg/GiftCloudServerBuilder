@@ -14,7 +14,7 @@ import org.restlet.data.Status;
 /**
  * Base class for all subject-pseudonym processing.
  * 
- * @author Dzhoshkun Shakir
+ * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
 public abstract class SubjectPseudonymResource extends QueryOrganizerResource {

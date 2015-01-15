@@ -5,7 +5,6 @@ package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
 
-import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
@@ -17,7 +16,7 @@ import org.restlet.data.Status;
 /**
  * Does the relevant processing when entering a new pseudonym.
  * 
- * @author Dzhoshkun Shakir
+ * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
 public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
@@ -32,7 +31,7 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	public SubjectPseudonymProcessor(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		rid = new String((String) getParameter(request, "RID"));
+		rid = new String((String) getParameter(request, "SUBJECT_ID"));
 		ppid = new String((String) getParameter(request, "PPID"));
 	}
 	

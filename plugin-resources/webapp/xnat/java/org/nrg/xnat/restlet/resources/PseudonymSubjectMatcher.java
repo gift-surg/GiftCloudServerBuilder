@@ -5,7 +5,6 @@ package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
 
-import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
@@ -24,7 +23,7 @@ import com.google.common.base.Strings;
 /**
  * Does the pseudonym-to-subject matching.
  * 
- * @author Dzhoshkun Shakir
+ * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
 public class PseudonymSubjectMatcher extends SubjectPseudonymResource {

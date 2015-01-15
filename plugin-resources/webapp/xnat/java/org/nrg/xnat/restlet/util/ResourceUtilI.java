@@ -9,7 +9,7 @@ import org.nrg.xdat.om.XnatSubjectdata;
 /**
  * Interface for commonly used functionality such as querying subjects.
  * 
- * @author Dzhoshkun Shakir
+ * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
 public interface ResourceUtilI {

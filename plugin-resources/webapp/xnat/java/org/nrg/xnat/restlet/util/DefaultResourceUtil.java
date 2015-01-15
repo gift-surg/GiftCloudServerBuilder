@@ -22,7 +22,7 @@ import org.restlet.data.Status;
 import com.google.common.base.Strings;
 
 /**
- * @author dzhoshkun
+ * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
 public class DefaultResourceUtil implements ResourceUtilI {

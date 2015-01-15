@@ -14,6 +14,18 @@
 	<xs:element name="SubjectPseudonym" type="ext:subjectPseudonym"/>
 	
 	<xs:complexType name="subjectPseudonym"> <!-- imageScanData -->
+		<xs:attribute name="id" use="required">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field>
+						<xdat:sqlField primaryKey="true"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
 		<xs:attribute name="subject" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:appinfo>

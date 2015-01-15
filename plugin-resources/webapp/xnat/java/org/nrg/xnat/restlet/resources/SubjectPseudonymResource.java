@@ -36,7 +36,7 @@ public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
 	 * 
 	 */
 	protected void init() {
-		resourceUtil = new DefaultResourceUtil(user);
+		resourceUtil = new DefaultResourceUtil(user, this);
 	}
 	
 	/**

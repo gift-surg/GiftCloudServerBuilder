@@ -4,6 +4,7 @@
 package org.nrg.xnat.restlet.util;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.jms.IllegalStateException;
 
@@ -41,17 +42,17 @@ public class DefaultResourceUtil implements ResourceUtilI {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getSubject(java.lang.String)
 	 */
 	@Override
-	public XnatSubjectdata getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception {
+	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception {
 		CriteriaCollection criteria = new CriteriaCollection("OR");
 		criteria.addClause("xnat:subjectData/label", descriptor);
 		criteria.addClause("xnat:subjectData/id", descriptor);
 		ArrayList<XnatSubjectdata> subjects = XnatSubjectdata.getXnatSubjectdatasByField(criteria, user, false);
 		if (subjects.isEmpty())
-			return null;
+			return Optional.empty();
 		else if (subjects.size() > 1)
 			throw new IllegalStateException("More than one subject with same label");
 		else
-			return subjects.get(0);
+			return Optional.of(subjects.get(0));
 	}
 
 	/* (non-Javadoc)
@@ -59,11 +60,11 @@ public class DefaultResourceUtil implements ResourceUtilI {
 	 */
 	@Override
 	public XnatSubjectdata getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception {
-		ExtSubjectpseudonym pseudonym = getPseudonym(pseudoId);
-		if (pseudonym == null)
+		Optional<ExtSubjectpseudonym> pseudonym = getPseudonym(pseudoId);
+		if (!pseudonym.isPresent())
 			return null;
 		else
-			return getMatchingSubject(pseudonym);
+			return getMatchingSubject(pseudonym.get());
 	}
 
 	/* (non-Javadoc)
@@ -75,15 +76,19 @@ public class DefaultResourceUtil implements ResourceUtilI {
 		if (pseudonym == null)
 			return null;
 		else
-			return getSubjectByLabelOrId(pseudonym.getSubject());
+			return getSubjectByLabelOrId(pseudonym.getSubject()).get();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getPseudonym(java.lang.String)
 	 */
 	@Override
-	public ExtSubjectpseudonym getPseudonym(String pseudoId) throws IllegalAccessException, Exception {
-		return ExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, user, false); // TODO where is the user checking ?
+	public Optional<ExtSubjectpseudonym> getPseudonym(String pseudoId) throws IllegalAccessException, Exception {
+		ExtSubjectpseudonym pseudonym = ExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, user, false); // TODO where is the user checking ?
+		if (pseudonym == null)
+			return Optional.empty();
+		else
+			return Optional.of(pseudonym);
 	}
 
 	/* (non-Javadoc)

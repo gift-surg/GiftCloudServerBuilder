@@ -4,6 +4,7 @@
 package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
@@ -44,20 +45,20 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	public void handlePut() {
 		try {
 			// population & sanity checks
-			ExtSubjectpseudonym pseudonym = resourceUtil.getPseudonym(ppid);
-			if (pseudonym != null) {
+			Optional<ExtSubjectpseudonym> pseudonym = resourceUtil.getPseudonym(ppid);
+			if (pseudonym.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Provided PPID exists");
 				return;
 			}
 			
-			XnatSubjectdata subject = resourceUtil.getSubjectByLabelOrId(rid);
-			if (subject == null) {
+			Optional<XnatSubjectdata> subject = resourceUtil.getSubjectByLabelOrId(rid);
+			if (!subject.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Subject not found");
 				return;
 			}
 			
 			// add PPID
-			resourceUtil.addPseudoId(subject, ppid);
+			resourceUtil.addPseudoId(subject.get(), ppid);
 		} catch (Throwable t) {
 			handle(t);
 		}

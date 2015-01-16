@@ -3,6 +3,8 @@
  */
 package org.nrg.xnat.restlet.util;
 
+import java.util.Optional;
+
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
 
@@ -21,7 +23,7 @@ public interface ResourceUtilI {
 	 * @throws IllegalAccessException
 	 * @throws Exception
 	 */
-	public XnatSubjectdata getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception;
+	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception;
 	
 	/**
 	 * Fetches subject associated to provided pseudo ID.
@@ -53,7 +55,7 @@ public interface ResourceUtilI {
 	 * @throws IllegalAccessException
 	 * @throws Exception
 	 */
-	public ExtSubjectpseudonym getPseudonym(String pseudoId) throws IllegalAccessException, Exception;
+	public Optional<ExtSubjectpseudonym> getPseudonym(String pseudoId) throws IllegalAccessException, Exception;
 	
 	/**
 	 * Adds provided pseudo ID to provided subject.

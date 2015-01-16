@@ -1,0 +1,122 @@
+/**
+ * 
+ */
+package org.nrg.xnat.restlet.util;
+
+import java.util.ArrayList;
+
+import javax.jms.IllegalStateException;
+
+import org.nrg.xdat.exceptions.IllegalAccessException;
+import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.db.MaterializedView;
+import org.nrg.xft.event.EventUtils;
+import org.nrg.xft.event.persist.PersistentWorkflowI;
+import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.utils.SaveItemHelper;
+import org.nrg.xnat.restlet.resources.SecureResource;
+
+/**
+ * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
+ *
+ */
+public class DefaultResourceUtil implements ResourceUtilI {
+	XDATUser user;
+	SecureResource resource;
+	
+	/**
+	 * 
+	 * @param user
+	 * @param resource
+	 */
+	public DefaultResourceUtil(XDATUser user, SecureResource resource) {
+		this.user = user;
+		this.resource = resource;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getSubject(java.lang.String)
+	 */
+	@Override
+	public XnatSubjectdata getSubject(String label) throws IllegalAccessException, Exception {
+		ArrayList<XnatSubjectdata> subjects = XnatSubjectdata.getXnatSubjectdatasByField("xnat:subjectData/label", label, user, false);
+		if (subjects.isEmpty())
+			return null;
+		else if (subjects.size() > 1)
+			throw new IllegalStateException("More than one subject with same label");
+		else
+			return subjects.get(0);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getMatchingSubject(java.lang.String)
+	 */
+	@Override
+	public XnatSubjectdata getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception {
+		ExtSubjectpseudonym pseudonym = getPseudonym(pseudoId);
+		if (pseudonym == null)
+			return null;
+		else
+			return getMatchingSubject(pseudonym);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getMatchingSubject(org.nrg.xdat.om.ExtSubjectpseudonym)
+	 */
+	@Override
+	public XnatSubjectdata getMatchingSubject(ExtSubjectpseudonym pseudonym)
+			throws IllegalAccessException, Exception {
+		if (pseudonym == null)
+			return null;
+		else
+			return getSubject(pseudonym.getSubject());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getPseudonym(java.lang.String)
+	 */
+	@Override
+	public ExtSubjectpseudonym getPseudonym(String pseudoId) throws IllegalAccessException, Exception {
+		return ExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, user, false); // TODO where is the user checking ?
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#addPseudonym(org.nrg.xdat.om.XnatSubjectdata, org.nrg.xdat.om.ExtSubjectpseudonym)
+	 */
+	@Override
+	public void addPseudoId(XnatSubjectdata subject,
+			String pseudoId) throws IllegalAccessException, Exception {
+		// check user's access rights
+		if (!user.canEdit(subject)) {
+			throw new IllegalAccessException("User "+user.getUsername()+" has insufficient access rights");
+		}
+		
+		// put the new pseudonym
+		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym();
+		newPseudonym.setId(pseudoId);
+		newPseudonym.setSubject(subject.getId());
+		
+		PersistentWorkflowI wrk = PersistentWorkflowUtils
+				.getOrCreateWorkflowData(null, user, newPseudonym.getItem(), 
+						EventUtils.newEventInstance(
+								EventUtils.CATEGORY.DATA, 
+								resource.getEventType(), 
+								resource.getAction(), 
+								pseudoId, 
+								"Inserted new pseudonym for a subject."));
+		try {
+			if (SaveItemHelper.authorizedSave(newPseudonym.getItem(), user, false,
+					true, wrk.buildEvent())) {
+				PersistentWorkflowUtils.complete(wrk, wrk.buildEvent());
+				MaterializedView.DeleteByUser(user);
+			}
+		} catch (Exception e) {
+			PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
+			throw e;
+		}
+
+		resource.returnXML(newPseudonym.getItem()); // TODO what is this for ?
+	}
+}

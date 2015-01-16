@@ -11,58 +11,29 @@
   -->
 <xs:schema targetNamespace="http://nrg.wustl.edu/ext" xmlns:ext="http://nrg.wustl.edu/ext" xmlns:xdat="http://nrg.wustl.edu/xdat" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xnat="http://nrg.wustl.edu/xnat" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://nrg.wustl.edu/xnat" schemaLocation="../xnat/xnat.xsd"/>
-	<xs:element name="PseudonymizedSubjectData" type="ext:pseudonymizedSubjectData"/>
 	<xs:element name="SubjectPseudonym" type="ext:subjectPseudonym"/>
-	<!-- /data/archive/search/elements/ext:pseudonymizedSubjectData?columns=subject_id&project=PROJECT_ID&hashedPatientId=HASHED_PATIENT_ID -->
-	
-	<xs:complexType name="pseudonymizedSubjectData"> <!-- imageSessionData -->
-		<xs:complexContent>
-			<xs:extension base="xnat:subjectData"> <!-- xnat:subjectAssessorData -->
-				<xs:sequence>
-					<xs:element name="pseudonyms" minOccurs="0"> <!-- scans -->
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="pseudonym" type="ext:subjectPseudonym" minOccurs="0" maxOccurs="unbounded"> <!-- scan, xnat:imageScanData -->
-									<xs:annotation>
-										<xs:appinfo>
-											<xdat:field>
-												<xdat:sqlField name="pseudonymized_subject_id"/> <!-- image_session_id -->
-												<xdat:relation uniqueComposite="sd_p_r" relationType="single"/> <!-- mr_id_fk -->
-											</xdat:field>
-										</xs:appinfo>
-									</xs:annotation>
-								</xs:element>
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
 	
 	<xs:complexType name="subjectPseudonym"> <!-- imageScanData -->
-		<xs:annotation>
-			<xs:appinfo>
-				<xdat:element displayIdentifiers="ID"/>
-			</xs:appinfo>
-			<xs:documentation>Pseudonym (e.g. encrypted / hashed patient ID) of a subject.</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="pseudonymized_subject_ID" type="xs:string" minOccurs="0"> <!-- image_session_ID -->
-				<xs:annotation>
-					<xs:appinfo>
-						<xdat:field baseElement="ext:pseudonymizedSubjectData" baseCol="ID" uniqueComposite="sd_p_r"/> <!-- mr_id_fk -->
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute name="ID" type="xs:string" use="required">
+		<xs:attribute name="id" use="required">
 			<xs:annotation>
 				<xs:appinfo>
-					<xdat:field uniqueComposite="sd_p_r"/> <!-- mr_id_fk -->
+					<xdat:field>
+						<xdat:sqlField primaryKey="true"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="subject" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field baseElement="xnat:subjectData" baseCol="id">
+						<xdat:sqlField name="subject_id"/>
+					</xdat:field>
 				</xs:appinfo>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="identifier" type="xs:string" use="required"/>
 	</xs:complexType>
 </xs:schema>

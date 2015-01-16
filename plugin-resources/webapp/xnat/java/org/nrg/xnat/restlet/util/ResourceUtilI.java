@@ -16,12 +16,12 @@ public interface ResourceUtilI {
 	/**
 	 * Fetches subject with specified label.
 	 * 
-	 * @param label
+	 * @param descriptor
 	 * @return null if no subject with specified label
 	 * @throws IllegalAccessException
 	 * @throws Exception
 	 */
-	public XnatSubjectdata getSubject(String label) throws IllegalAccessException, Exception;
+	public XnatSubjectdata getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception;
 	
 	/**
 	 * Fetches subject associated to provided pseudo ID.

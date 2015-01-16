@@ -50,7 +50,7 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 				return;
 			}
 			
-			XnatSubjectdata subject = resourceUtil.getSubject(rid);
+			XnatSubjectdata subject = resourceUtil.getSubjectByLabelOrId(rid);
 			if (subject == null) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Subject not found");
 				return;

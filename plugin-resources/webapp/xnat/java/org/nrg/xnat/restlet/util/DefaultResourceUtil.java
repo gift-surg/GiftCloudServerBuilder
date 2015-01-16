@@ -15,6 +15,7 @@ import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils;
+import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.resources.SecureResource;
 
@@ -40,8 +41,11 @@ public class DefaultResourceUtil implements ResourceUtilI {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getSubject(java.lang.String)
 	 */
 	@Override
-	public XnatSubjectdata getSubject(String label) throws IllegalAccessException, Exception {
-		ArrayList<XnatSubjectdata> subjects = XnatSubjectdata.getXnatSubjectdatasByField("xnat:subjectData/label", label, user, false);
+	public XnatSubjectdata getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception {
+		CriteriaCollection criteria = new CriteriaCollection("OR");
+		criteria.addClause("xnat:subjectData/label", descriptor);
+		criteria.addClause("xnat:subjectData/id", descriptor);
+		ArrayList<XnatSubjectdata> subjects = XnatSubjectdata.getXnatSubjectdatasByField(criteria, user, false);
 		if (subjects.isEmpty())
 			return null;
 		else if (subjects.size() > 1)
@@ -71,7 +75,7 @@ public class DefaultResourceUtil implements ResourceUtilI {
 		if (pseudonym == null)
 			return null;
 		else
-			return getSubject(pseudonym.getSubject());
+			return getSubjectByLabelOrId(pseudonym.getSubject());
 	}
 
 	/* (non-Javadoc)

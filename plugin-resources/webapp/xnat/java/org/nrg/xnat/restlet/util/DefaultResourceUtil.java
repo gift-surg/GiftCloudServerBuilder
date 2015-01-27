@@ -1,6 +1,22 @@
-/**
- * 
- */
+/*=============================================================================
+
+  GIFT-Cloud: A data storage and collaboration platform
+
+  Copyright (c) University College London (UCL). All rights reserved.
+
+  Parts of this software are derived from XNAT
+    http://www.xnat.org
+    Copyright (c) 2014, Washington University School of Medicine
+    All Rights Reserved
+    Released under the Simplified BSD.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+  See LICENSE.txt in the top level directory for details.
+
+=============================================================================*/
 package org.nrg.xnat.restlet.util;
 
 import java.util.ArrayList;
@@ -59,12 +75,12 @@ public class DefaultResourceUtil implements ResourceUtilI {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getMatchingSubject(java.lang.String)
 	 */
 	@Override
-	public XnatSubjectdata getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception {
+	public Optional<XnatSubjectdata> getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception {
 		Optional<ExtSubjectpseudonym> pseudonym = getPseudonym(pseudoId);
 		if (!pseudonym.isPresent())
-			return null;
+			return Optional.empty();
 		else
-			return getMatchingSubject(pseudonym.get());
+			return Optional.of(getMatchingSubject(pseudonym.get()));
 	}
 
 	/* (non-Javadoc)
@@ -126,6 +142,6 @@ public class DefaultResourceUtil implements ResourceUtilI {
 			throw e;
 		}
 
-		resource.returnXML(newPseudonym.getItem()); // TODO what is this for ?
+		resource.returnXML(newPseudonym.getItem()); // TODO what is this for ? resource.returnDefaultRepresentation();
 	}
 }

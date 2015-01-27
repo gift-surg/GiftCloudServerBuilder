@@ -1,12 +1,28 @@
-/**
- * 
- */
+/*=============================================================================
+
+  GIFT-Cloud: A data storage and collaboration platform
+
+  Copyright (c) University College London (UCL). All rights reserved.
+
+  Parts of this software are derived from XNAT
+    http://www.xnat.org
+    Copyright (c) 2014, Washington University School of Medicine
+    All Rights Reserved
+    Released under the Simplified BSD.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+  See LICENSE.txt in the top level directory for details.
+
+=============================================================================*/
 package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xft.XFTItem;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -57,7 +73,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		}
 		
 		// get subject
-		XnatSubjectdata subject = null;
+		Optional<XnatSubjectdata> subject;
 		try {
 			subject = resourceUtil.getMatchingSubject(ppid);
 		} catch (Throwable t) {
@@ -66,12 +82,11 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		}
 		
 		// represent subject after sanity check
-		if (subject == null) {
-			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "PPID not found");
-			return null;
+		if (!subject.isPresent()) {
+			return Representation.createEmpty();
 		}
 		else {
-			return representItem(subject.getItem(), variant.getMediaType());
+			return representItem(subject.get().getItem(), variant.getMediaType());
 		}
 	}
 	
@@ -83,16 +98,6 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 	public Representation represent(Variant variant) throws ResourceException {
 		return getRepresentation(variant);
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.nrg.xnat.restlet.resources.SecureResource#representItem(org.nrg.xft.XFTItem, org.restlet.data.MediaType)
-	 */
-	@Override
-	public Representation representItem(XFTItem item, MediaType mt) {
-		// TODO strip subject of children, and emphasise label, at the very least.
-		return super.representItem(item, mt);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -100,7 +105,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 	 */
 	@Override
 	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
-		// TODO
+		// TODO - this is merely copied from SubjectResource
 		ArrayList<String> al = new ArrayList<String>();
 
 		al.add("ID");

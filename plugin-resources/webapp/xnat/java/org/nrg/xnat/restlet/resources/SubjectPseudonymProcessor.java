@@ -1,6 +1,22 @@
-/**
- * 
- */
+/*=============================================================================
+
+  GIFT-Cloud: A data storage and collaboration platform
+
+  Copyright (c) University College London (UCL). All rights reserved.
+
+  Parts of this software are derived from XNAT
+    http://www.xnat.org
+    Copyright (c) 2014, Washington University School of Medicine
+    All Rights Reserved
+    Released under the Simplified BSD.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+  See LICENSE.txt in the top level directory for details.
+
+=============================================================================*/
 package org.nrg.xnat.restlet.resources;
 
 import java.util.ArrayList;
@@ -13,6 +29,8 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+
+import com.google.common.base.Strings;
 
 /**
  * Does the relevant processing when entering a new pseudonym.
@@ -45,6 +63,11 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	public void handlePut() {
 		try {
 			// population & sanity checks
+			if (Strings.isNullOrEmpty(ppid)) {
+				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PPID provided");
+				return;
+			}
+			
 			Optional<ExtSubjectpseudonym> pseudonym = resourceUtil.getPseudonym(ppid);
 			if (pseudonym.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Provided PPID exists");
@@ -66,23 +89,20 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	
 	@Override
 	public boolean allowDelete() {
-		return true;
-	}
-	
-	@Override
-	public void handleDelete() {
-		// TODO
+		return false;
 	}
 
 	@Override
 	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO - are these fields supposed to match the DB fields ?
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add("id");
+		fields.add("subject_id");
+		return fields;
 	}
 
 	@Override
 	public String getDefaultElementName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "ext:subjectPseudonym";
 	}
 }

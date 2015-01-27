@@ -1,10 +1,26 @@
-/**
- * 
- */
+/*=============================================================================
+
+  GIFT-Cloud: A data storage and collaboration platform
+
+  Copyright (c) University College London (UCL). All rights reserved.
+
+  Parts of this software are derived from XNAT
+    http://www.xnat.org
+    Copyright (c) 2014, Washington University School of Medicine
+    All Rights Reserved
+    Released under the Simplified BSD.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+  See LICENSE.txt in the top level directory for details.
+
+=============================================================================*/
 package org.nrg.xnat.restlet.resources;
 
 import org.nrg.xdat.exceptions.IllegalAccessException;
-import org.nrg.xnat.restlet.util.DefaultResourceUtil;
+import org.nrg.xnat.restlet.util.ResourceUtilFactory;
 import org.nrg.xnat.restlet.util.ResourceUtilI;
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -36,7 +52,7 @@ public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
 	 * 
 	 */
 	protected void init() {
-		resourceUtil = new DefaultResourceUtil(user, this);
+		resourceUtil = ResourceUtilFactory.getInstance(user, this);
 	}
 	
 	/**

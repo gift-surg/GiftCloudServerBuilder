@@ -1,6 +1,22 @@
-/**
- * 
- */
+/*=============================================================================
+
+  GIFT-Cloud: A data storage and collaboration platform
+
+  Copyright (c) University College London (UCL). All rights reserved.
+
+  Parts of this software are derived from XNAT
+    http://www.xnat.org
+    Copyright (c) 2014, Washington University School of Medicine
+    All Rights Reserved
+    Released under the Simplified BSD.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+  See LICENSE.txt in the top level directory for details.
+
+=============================================================================*/
 package org.nrg.xnat.restlet.util;
 
 import java.util.Optional;
@@ -29,11 +45,11 @@ public interface ResourceUtilI {
 	 * Fetches subject associated to provided pseudo ID.
 	 * 
 	 * @param pseudoId
-	 * @return null if no subject matches
+	 * @return null if {@code pseudoId} does not exist
 	 * @throws IllegalAccessException
 	 * @throws Exception
 	 */
-	public XnatSubjectdata getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception;
+	public Optional<XnatSubjectdata> getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception;
 	
 	/**
 	 * Fetches subject associated to provided pseudonym.

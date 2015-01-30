@@ -57,7 +57,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
-		ppid = new String((String) getParameter(request, "PPID"));
+		ppid = (String) getParameter(request, "PPID");
 	}
 	
 	/*
@@ -75,10 +75,10 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		// get subject
 		Optional<XnatSubjectdata> subject;
 		try {
-			subject = resourceUtil.getMatchingSubject(ppid);
+			subject = secureItemUtil.getMatchingSubject(ppid);
 		} catch (Throwable t) {
 			handle(t);
-			return null;
+			subject = Optional.empty();
 		}
 		
 		// represent subject after sanity check

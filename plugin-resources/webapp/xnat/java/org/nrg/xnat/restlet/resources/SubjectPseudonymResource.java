@@ -20,8 +20,9 @@
 package org.nrg.xnat.restlet.resources;
 
 import org.nrg.xdat.exceptions.IllegalAccessException;
-import org.nrg.xnat.restlet.util.ResourceUtilFactory;
-import org.nrg.xnat.restlet.util.ResourceUtilI;
+import org.nrg.xnat.restlet.util.ISecureItemUtil;
+import org.nrg.xnat.restlet.util.SecureUtilFactory;
+import org.nrg.xnat.security.ISecurityUtil;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -34,7 +35,7 @@ import org.restlet.data.Status;
  *
  */
 public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
-	protected ResourceUtilI resourceUtil;
+	protected ISecureItemUtil secureItemUtil = null;
 	
 	/**
 	 * 
@@ -52,7 +53,10 @@ public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
 	 * 
 	 */
 	protected void init() {
-		resourceUtil = ResourceUtilFactory.getInstance(user, this);
+		ISecurityUtil securityUtil = SecureUtilFactory.getSecurityUtilInstance();
+		securityUtil.setUser(user);
+		securityUtil.setResource(this);
+		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(securityUtil);
 	}
 	
 	/**

@@ -50,8 +50,8 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	public SubjectPseudonymProcessor(Context context, Request request,
 			Response response) {
 		super(context, request, response);
-		rid = new String((String) getParameter(request, "SUBJECT_ID"));
-		ppid = new String((String) getParameter(request, "PPID"));
+		rid = (String) getParameter(request, "SUBJECT_ID");
+		ppid = (String) getParameter(request, "PPID");
 	}
 	
 	@Override
@@ -68,20 +68,24 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 				return;
 			}
 			
-			Optional<ExtSubjectpseudonym> pseudonym = resourceUtil.getPseudonym(ppid);
+			Optional<ExtSubjectpseudonym> pseudonym = secureItemUtil.getPseudonym(ppid);
 			if (pseudonym.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Provided PPID exists");
 				return;
 			}
 			
-			Optional<XnatSubjectdata> subject = resourceUtil.getSubjectByLabelOrId(rid);
+			Optional<XnatSubjectdata> subject = secureItemUtil.getSubjectByLabelOrId(rid);
 			if (!subject.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Subject not found");
 				return;
 			}
 			
 			// add PPID
-			resourceUtil.addPseudoId(subject.get(), ppid);
+			Optional<ExtSubjectpseudonym> newPseudonym = secureItemUtil.addPseudoId(subject.get(), ppid);
+			if (newPseudonym.isPresent())
+				returnXML(newPseudonym.get().getItem()); // TODO what is this for ? resource.returnDefaultRepresentation();
+			else
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "Unknown error occured when adding new pseudonym to subject " + subject.get().getLabel());
 		} catch (Throwable t) {
 			handle(t);
 		}

@@ -20,28 +20,36 @@
 package org.nrg.xnat.restlet.util;
 
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.security.DefaultSecurityUtil;
+import org.nrg.xnat.security.ISecurityUtil;
 
 /**
- * Provides {@link ResourceUtilI} implementations.
+ * 
  * 
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public class ResourceUtilFactory {
-	static ResourceUtilI instance = null;
-	
+public final class SecureUtilFactory {
+
 	/**
 	 * 
-	 * @param user
-	 * @param resource
 	 * @return
 	 */
-	public static ResourceUtilI getInstance(XDATUser user, SecureResource resource) {
-		if (instance == null) {
-			instance = new DefaultResourceUtil(user, resource);
-		}
-		return instance;
+	public static ISecurityUtil getSecurityUtilInstance() {
+		return new DefaultSecurityUtil();
 	}
 
+	/**
+	 * 
+	 * @param securityUtil
+	 * @return
+	 */
+	public static ISecureItemUtil getSecureItemUtilInstance(
+			ISecurityUtil securityUtil) {
+		ISecureItemUtil secureItemUtil = new SecureItemUtil();
+		secureItemUtil.setSecurityUtil(securityUtil);
+		return secureItemUtil;
+	}
 }

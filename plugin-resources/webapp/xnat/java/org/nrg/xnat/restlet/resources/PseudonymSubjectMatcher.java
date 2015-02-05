@@ -82,12 +82,14 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		}
 		
 		// represent subject after sanity check
+		XnatSubjectdata result = null;
 		if (!subject.isPresent()) {
-			return Representation.createEmpty();
+			result = new XnatSubjectdata(); // this is because we simply do not return an empty HTTP response, but rather, something that "stands for" empty
 		}
 		else {
-			return representItem(subject.get().getItem(), variant.getMediaType());
+			result = subject.get();
 		}
+		return representItem(result.getItem(), variant.getMediaType());
 	}
 	
 	/*

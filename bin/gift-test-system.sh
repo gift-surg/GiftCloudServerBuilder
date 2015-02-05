@@ -10,6 +10,7 @@ PG_STATUS="pg_ctl -D /usr/local/var/postgres status"
 TOMCAT_DIR=~/tomcat
 LOG_FILE=bin/gift-test-system/output.log
 REPORT_FILE=bin/gift-test-system/report.log
+RUN_TESTS="ruby -I test:lib bin/gift-test-system/ruby/gift_test.rb"
 
 # environment ************************************
 export CATALINA_PID=$TOMCAT_DIR/tomcat.pid
@@ -81,7 +82,7 @@ function setUpXnat {
 # actual work ************************************
 if [ $# -lt 1 ];
 then
-	echo "Usage : $0 setup|clean|test"
+	echo "Usage : $0 setup|clean|test|quicktest"
 	exit
 fi
 
@@ -118,8 +119,12 @@ test)	echo "Testing..."
 			startTomcat
 		} > $LOG_FILE
 		{
-			ruby bin/gift-test-system/ruby/gift_test.rb
+			eval $RUN_TESTS
 		} > $REPORT_FILE
 		echo "...done"
     	;;
+quicktest)	echo "Testing with no sanity checks..."
+			eval $RUN_TESTS
+			echo "...done"
+			;;
 esac

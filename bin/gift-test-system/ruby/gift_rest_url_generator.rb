@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 class GiftRestUrlGenerator
-  ROOT_URI = "http://admin:admin@localhost:8080/dummycloud/data/archive/"
+  ROOT_URI = "http://admin:admin@localhost:8080/dummycloud/REST/"
   DELIM = "/"
   PROJ = "projects"+DELIM
   SUBJ = "subjects"+DELIM

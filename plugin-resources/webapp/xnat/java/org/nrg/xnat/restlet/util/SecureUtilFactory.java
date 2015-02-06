@@ -19,9 +19,6 @@
 =============================================================================*/
 package org.nrg.xnat.restlet.util;
 
-import org.nrg.xdat.security.XDATUser;
-import org.nrg.xft.XFTItem;
-import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.DefaultSecurityUtil;
 import org.nrg.xnat.security.ISecurityUtil;
 
@@ -45,11 +42,18 @@ public final class SecureUtilFactory {
 	 * 
 	 * @param securityUtil
 	 * @return
+	 * @throws IllegalArgumentException
 	 */
 	public static ISecureItemUtil getSecureItemUtilInstance(
-			ISecurityUtil securityUtil) {
-		ISecureItemUtil secureItemUtil = new SecureItemUtil();
-		secureItemUtil.setSecurityUtil(securityUtil);
-		return secureItemUtil;
+			ISecurityUtil securityUtil) throws IllegalArgumentException {
+		if (securityUtil == null)
+			throw new IllegalArgumentException("No secure item util without security util!");
+		else if (securityUtil.getUser() == null || securityUtil.getResource() == null)
+			throw new IllegalArgumentException("Security util not initialised properly");
+		else {
+			ISecureItemUtil secureItemUtil = new SecureItemUtil();
+			secureItemUtil.setSecurityUtil(securityUtil);
+			return secureItemUtil;
+		}
 	}
 }

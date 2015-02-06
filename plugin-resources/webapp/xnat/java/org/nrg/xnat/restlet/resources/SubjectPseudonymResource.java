@@ -56,6 +56,7 @@ public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
 		ISecurityUtil securityUtil = SecureUtilFactory.getSecurityUtilInstance();
 		securityUtil.setUser(user);
 		securityUtil.setResource(this);
+		// IllegalArgumentException not caught here, based on advice in http://stackoverflow.com/questions/15208544/when-should-an-illegalargumentexception-be-thrown
 		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(securityUtil);
 	}
 	

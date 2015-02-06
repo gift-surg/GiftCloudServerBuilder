@@ -96,9 +96,8 @@ setup)	echo "Setting up XNAT instance AND Database..."
 			setUpDb
 			setUpXnat clean
 			startTomcat
-			echo "TomCat running! DO NOT FORGET TO CONFIGURE SERVER!"
 		} > $LOG_FILE
-		echo "...done"
+		echo "...TomCat running! DO NOT FORGET TO CONFIGURE SERVER!"
     	;;
 clean)  echo "Cleaning up XNAT instance AND Database..."
 		echo "log file: $LOG_FILE"

@@ -1,14 +1,11 @@
 package org.nrg.xnat.restlet.util;
 
-import java.util.Optional;
+import static org.mockito.Mockito.mock;
 
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.ISecurityUtil;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class SecureUtilFactoryTest {
 

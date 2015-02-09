@@ -19,7 +19,10 @@
 =============================================================================*/
 package org.nrg.xnat.security;
 
-import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.fail;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.nrg.xdat.security.XDATUser;
@@ -29,17 +32,14 @@ import org.nrg.xnat.restlet.util.SecureUtilFactory;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.*;
-import static org.testng.Assert.*;
-
 public class ISecurityUtilTest {
 	SecureResource mockResource;
 	XDATUser mockUser;
 	
 	@BeforeTest
 	public void populate() {
-		mockResource = Mockito.mock(SecureResource.class);
-		mockUser = Mockito.mock(XDATUser.class);
+		mockResource = mock(SecureResource.class);
+		mockUser = mock(XDATUser.class);
 	}
 	
 	@Test

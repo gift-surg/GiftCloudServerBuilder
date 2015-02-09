@@ -24,7 +24,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.fail;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -34,7 +33,8 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.ISecurityUtil;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
 public class ISecureItemUtilTest {
@@ -43,8 +43,9 @@ public class ISecureItemUtilTest {
 	SecureResource mockResource;
 	ISecureItemUtil secureItemUtil;
 	String pseudoId;
+	XnatSubjectdata mockSubject;
 	
-	@BeforeTest
+	@BeforeClass
 	public void populate() {
 		mockSecurityUtil = mock(ISecurityUtil.class);
 		mockUser = mock(XDATUser.class);
@@ -63,73 +64,60 @@ public class ISecureItemUtilTest {
 				return mockResource;
 			}
 		});
+		
 		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(mockSecurityUtil);
+		mockSubject = mock(XnatSubjectdata.class);
+		when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
+			@Override
+			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
+				return new XFTItem();
+			}
+		});
 		pseudoId = "dummy";
 	}
-
-	@Test
-	public void addPseudoId() {
-		XnatSubjectdata mockSubject = mock(XnatSubjectdata.class);
-		String pseudoId = "dummy";
+	
+	@BeforeGroups( groups = { "affirmative" } )
+	public void configureAffirmative() {
 		when(mockSecurityUtil.canEdit(isA(XFTItem.class))).thenAnswer(new Answer<Boolean>() {
 			@Override
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
 				return true;
 			}
 		});
-		when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
-			@Override
-			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
-				return new XFTItem();
-			}
-		});
-		// TODO mocking the static stuff comes in here
-		try {
-			secureItemUtil.addPseudoId(mockSubject, pseudoId);
-		} catch (IllegalAccessException e) {
-			fail("Illegal access thrown, whereas everything is perfectly legal");
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		verify(mockSecurityUtil, times(1)).canEdit(mockSubject.getItem());
 	}
 	
-	@Test(expectedExceptions = { IllegalAccessException.class })
-	public void addPseudoIdWithIllegalAccess() throws Exception {
-		XnatSubjectdata mockSubject = mock(XnatSubjectdata.class);
-		String pseudoId = "dummy";
+	@BeforeGroups( groups = { "exception" } )
+	public void configureException() {
 		when(mockSecurityUtil.canEdit(isA(XFTItem.class))).thenAnswer(new Answer<Boolean>() {
 			@Override
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
 				return false;
 			}
 		});
-		when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
-			@Override
-			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
-				return new XFTItem();
-			}
-		});
+	}
+
+	@Test( groups = { "affirmative" } )
+	public void addPseudoId() throws IllegalAccessException {
 		// TODO mocking the static stuff comes in here
 		try {
-			secureItemUtil.addPseudoId(mockSubject, pseudoId);
-		} catch (NullPointerException e) {
+			secureItemUtil.addPseudoId(mockSubject, "dummy");
+		} catch (NullPointerException e) { // this is only for ignoring parts of the class we're not interested in
 			e.printStackTrace();
 		}
 		verify(mockSecurityUtil, times(1)).canEdit(mockSubject.getItem());
 	}
-
-	@Test
-	public void getMatchingSubject() {
-		String pseudoId = "dummy";
+	
+	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	public void addPseudoIdWithIllegalAccess() throws Exception {
+		// TODO mocking the static stuff comes in here
 		try {
-			secureItemUtil.getMatchingSubject(pseudoId);
-			verify(secureItemUtil, times(1)).getPseudonym(pseudoId);
-		} catch (Throwable e) {
-			// no need to do anything, just print the stack
+			secureItemUtil.addPseudoId(mockSubject, pseudoId);
+		} catch (NullPointerException e) { // this is only for ignoring parts of the class we're not interested in
 			e.printStackTrace();
 		}
 	}
+
+	// TODO public void getMatchingSubject()
 
 	// TODO public void getPseudonym()
 

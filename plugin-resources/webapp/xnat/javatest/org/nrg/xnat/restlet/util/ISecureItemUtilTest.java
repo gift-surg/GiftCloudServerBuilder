@@ -33,6 +33,7 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.ISecurityUtil;
+import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -94,6 +95,16 @@ public class ISecureItemUtilTest {
 				return false;
 			}
 		});
+	}
+	
+	@AfterGroups( groups = { "affirmative", "exception" } )
+	public void teardown() {
+		mockSecurityUtil = null;
+		mockUser = null;
+		mockResource = null;
+		secureItemUtil = null;
+		pseudoId = null;
+		mockSubject = null;
 	}
 
 	@Test( groups = { "affirmative" } )

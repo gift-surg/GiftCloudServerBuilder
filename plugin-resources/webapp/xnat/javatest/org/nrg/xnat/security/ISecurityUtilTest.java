@@ -21,7 +21,6 @@ package org.nrg.xnat.security;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.fail;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -29,86 +28,87 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.restlet.util.SecureUtilFactory;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class ISecurityUtilTest {
-	SecureResource mockResource;
-	XDATUser mockUser;
 	
-	@BeforeTest
-	public void populate() {
-		mockResource = mock(SecureResource.class);
-		mockUser = mock(XDATUser.class);
-	}
-	
-	@Test
-	public void canRead() {
-		ISecurityUtil util = SecureUtilFactory.getSecurityUtilInstance();
-		util.setUser(mockUser);
+	@DataProvider( name = "canDo" )
+	public Object[][] getCanDoData() throws Exception {
 		XFTItem item = new XFTItem();
-		try {
-			when(mockUser.canRead(item)).thenAnswer(new Answer<Boolean>() {
-				@Override
-				public Boolean answer(InvocationOnMock invocation) throws Throwable {
-					return false;
-				}
-			});
-			assert !util.canRead(item);
-			
-			when(mockUser.canRead(item)).thenAnswer(new Answer<Boolean>() {
-				@Override
-				public Boolean answer(InvocationOnMock invocation) throws Throwable {
-					return true;
-				}
-			});
-			assert util.canRead(item);
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
+		XDATUser mockUserThatCan = mock(XDATUser.class);
+		when(mockUserThatCan.canRead(item)).thenAnswer(new Answer<Boolean>() {
+			@Override
+			public Boolean answer(InvocationOnMock invocation) throws Throwable {
+				return true;
+			}
+		});
+		when(mockUserThatCan.canEdit(item)).thenAnswer(new Answer<Boolean>() {
+			@Override
+			public Boolean answer(InvocationOnMock invocation) throws Throwable {
+				return true;
+			}
+		});
+		ISecurityUtil utilThatCan = SecureUtilFactory.getSecurityUtilInstance();
+		utilThatCan.setUser(mockUserThatCan);
+
+		XDATUser mockUserThatCannot = mock(XDATUser.class);
+		when(mockUserThatCannot.canRead(item)).thenAnswer(new Answer<Boolean>() {
+			@Override
+			public Boolean answer(InvocationOnMock invocation) throws Throwable {
+				return false;
+			}
+		});
+		when(mockUserThatCannot.canEdit(item)).thenAnswer(new Answer<Boolean>() {
+			@Override
+			public Boolean answer(InvocationOnMock invocation) throws Throwable {
+				return false;
+			}
+		});
+		ISecurityUtil utilThatCannot = SecureUtilFactory.getSecurityUtilInstance();
+		utilThatCannot.setUser(mockUserThatCannot);
+		
+		return new Object[][]{
+				{ utilThatCan, item, true },
+				{ utilThatCannot, item, false }
+		};
 	}
 	
-	@Test
-	public void canEdit() {
-		ISecurityUtil util = SecureUtilFactory.getSecurityUtilInstance();
-		util.setUser(mockUser);
-		XFTItem item = new XFTItem();
-		try {
-			when(mockUser.canEdit(item)).thenAnswer(new Answer<Boolean>() {
-				@Override
-				public Boolean answer(InvocationOnMock invocation) throws Throwable {
-					return false;
-				}
-			});
-			assert !util.canEdit(item);
-			
-			when(mockUser.canEdit(item)).thenAnswer(new Answer<Boolean>() {
-				@Override
-				public Boolean answer(InvocationOnMock invocation) throws Throwable {
-					return true;
-				}
-			});
-			assert util.canEdit(item);
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
+	@DataProvider( name = "setGetUser" )
+	public Object[][] getSetGetUserData() {
+		return new Object[][]{
+				{SecureUtilFactory.getSecurityUtilInstance(), mock(XDATUser.class)},
+				{SecureUtilFactory.getSecurityUtilInstance(), mock(XDATUser.class)}
+		};
 	}
 	
-	@Test
-	public void setGetUser() {
-		ISecurityUtil util = SecureUtilFactory.getSecurityUtilInstance();
-		XDATUser user1 = new XDATUser();
-		util.setUser(user1);
-		assert user1==util.getUser();
-		XDATUser user2 = new XDATUser();
-		util.setUser(user2);
-		assert user2==util.getUser();
+	@DataProvider( name = "setGetResource" )
+	public Object[][] getSetGetResourceData() {
+		return new Object[][]{
+				{SecureUtilFactory.getSecurityUtilInstance(), mock(SecureResource.class)},
+				{SecureUtilFactory.getSecurityUtilInstance(), mock(SecureResource.class)}
+		};
 	}
-	
-	@Test
-	public void setGetResource() {
-		ISecurityUtil util = SecureUtilFactory.getSecurityUtilInstance();
-		util.setResource(mockResource);
-		assert mockResource == util.getResource();
+
+	@Test( dataProvider = "canDo" )
+	public void canRead(ISecurityUtil util, XFTItem item, boolean expected) {
+		assert util.canRead(item) == expected;
+	}
+
+	@Test( dataProvider = "canDo" )
+	public void canEdit(ISecurityUtil util, XFTItem item, boolean expected) throws Exception {
+		assert util.canEdit(item) == expected;
+	}
+
+	@Test( dataProvider = "setGetUser" )
+	public void setGetUser(ISecurityUtil util, XDATUser user) {
+		util.setUser(user);
+		assert user == util.getUser();
+	}
+
+	@Test( dataProvider = "setGetResource" )
+	public void setGetResource(ISecurityUtil util, SecureResource resource) {
+		util.setResource(resource);
+		assert resource == util.getResource();
 	}
 }

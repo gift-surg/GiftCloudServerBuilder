@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.base.auto.AutoExtSubjectpseudonym;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
@@ -112,7 +113,7 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	 */
 	@Override
 	public Optional<ExtSubjectpseudonym> getPseudonym(String pseudoId) throws IllegalAccessException {
-		ExtSubjectpseudonym tmp = ExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, securityUtil.getUser(), false);
+		ExtSubjectpseudonym tmp = AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, securityUtil.getUser(), false);
 		Optional<ExtSubjectpseudonym> pseudonym;
 		if (tmp == null)
 			pseudonym = Optional.empty();

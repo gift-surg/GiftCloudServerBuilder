@@ -19,12 +19,7 @@
 =============================================================================*/
 package org.nrg.xnat.restlet.util;
 
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.nrg.xdat.exceptions.IllegalAccessException;
@@ -33,11 +28,12 @@ import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
 import org.nrg.xnat.security.ISecurityUtil;
-import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
+//TODO - commented out because of the PowerMock initializer problem, see https://code.google.com/p/powermock/issues/detail?id=414
+//@PrepareForTest(AutoExtSubjectpseudonym.class)
 public class ISecureItemUtilTest {
 	ISecurityUtil mockSecurityUtil;
 	XDATUser mockUser;
@@ -45,20 +41,21 @@ public class ISecureItemUtilTest {
 	ISecureItemUtil secureItemUtil;
 	String pseudoId;
 	XnatSubjectdata mockSubject;
+	XFTItem xftItem;
 	
 	@BeforeClass
-	public void populate() {
-		mockSecurityUtil = mock(ISecurityUtil.class);
-		mockUser = mock(XDATUser.class);
-		mockResource = mock(SecureResource.class);
-		when(mockSecurityUtil.getUser()).thenAnswer(new Answer<XDATUser>() {
+	public final void populate() { //TODO - user of "final" because of the PowerMock initializer problem, see https://code.google.com/p/powermock/issues/detail?id=414
+		mockSecurityUtil = Mockito.mock(ISecurityUtil.class);
+		mockUser = Mockito.mock(XDATUser.class);
+		mockResource = Mockito.mock(SecureResource.class);
+		Mockito.when(mockSecurityUtil.getUser()).thenAnswer(new Answer<XDATUser>() {
 			@Override
 			public XDATUser answer(InvocationOnMock invocation)
 					throws Throwable {
 				return mockUser;
 			}
 		});
-		when(mockSecurityUtil.getResource()).thenAnswer(new Answer<SecureResource>() {
+		Mockito.when(mockSecurityUtil.getResource()).thenAnswer(new Answer<SecureResource>() {
 			@Override
 			public SecureResource answer(InvocationOnMock invocation)
 					throws Throwable {
@@ -67,11 +64,12 @@ public class ISecureItemUtilTest {
 		});
 		
 		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(mockSecurityUtil);
-		mockSubject = mock(XnatSubjectdata.class);
-		when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
+		mockSubject = Mockito.mock(XnatSubjectdata.class);
+		xftItem = new XFTItem();
+		Mockito.when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
 			@Override
 			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
-				return new XFTItem();
+				return xftItem;
 			}
 		});
 		pseudoId = "dummy";
@@ -79,7 +77,7 @@ public class ISecureItemUtilTest {
 	
 	@BeforeGroups( groups = { "affirmative" } )
 	public void configureAffirmative() {
-		when(mockSecurityUtil.canEdit(isA(XFTItem.class))).thenAnswer(new Answer<Boolean>() {
+		Mockito.when(mockSecurityUtil.canEdit(xftItem)).thenAnswer(new Answer<Boolean>() {
 			@Override
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
 				return true;
@@ -89,38 +87,26 @@ public class ISecureItemUtilTest {
 	
 	@BeforeGroups( groups = { "exception" } )
 	public void configureException() {
-		when(mockSecurityUtil.canEdit(isA(XFTItem.class))).thenAnswer(new Answer<Boolean>() {
+		Mockito.when(mockSecurityUtil.canEdit(xftItem)).thenAnswer(new Answer<Boolean>() {
 			@Override
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
 				return false;
 			}
 		});
 	}
-	
-	@AfterGroups( groups = { "affirmative", "exception" } )
-	public void teardown() {
-		mockSecurityUtil = null;
-		mockUser = null;
-		mockResource = null;
-		secureItemUtil = null;
-		pseudoId = null;
-		mockSubject = null;
-	}
 
 	@Test( groups = { "affirmative" } )
 	public void addPseudoId() throws IllegalAccessException {
-		// TODO mocking the static stuff comes in here
 		try {
 			secureItemUtil.addPseudoId(mockSubject, "dummy");
 		} catch (NullPointerException e) { // this is only for ignoring parts of the class we're not interested in
 			e.printStackTrace();
 		}
-		verify(mockSecurityUtil, times(1)).canEdit(mockSubject.getItem());
+		Mockito.verify(mockSecurityUtil, Mockito.times(1)).canEdit(mockSubject.getItem());
 	}
 	
 	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
 	public void addPseudoIdWithIllegalAccess() throws Exception {
-		// TODO mocking the static stuff comes in here
 		try {
 			secureItemUtil.addPseudoId(mockSubject, pseudoId);
 		} catch (NullPointerException e) { // this is only for ignoring parts of the class we're not interested in
@@ -128,9 +114,26 @@ public class ISecureItemUtilTest {
 		}
 	}
 
-	// TODO public void getMatchingSubject()
+	// TODO - commented out because of the PowerMock initializer problem, see https://code.google.com/p/powermock/issues/detail?id=414
+//	@ObjectFactory
+//	/**
+//	 * Configure TestNG to use the PowerMock object factory.
+//	 */
+//	public IObjectFactory getObjectFactory() {
+//		return new org.powermock.modules.testng.PowerMockObjectFactory();
+//	}
+//	
+//	@Test( groups = { "affirmative" } )
+//	public final void getPseudonym() throws Exception {	// written based on guidelines in https://code.google.com/p/powermock/wiki/MockitoUsage13	
+//		PowerMockito.spy(AutoExtSubjectpseudonym.class);
+//		Mockito.when(AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, mockUser, false)).thenReturn(new ExtSubjectpseudonym());
+//		secureItemUtil.getPseudonym(pseudoId);
+////		PowerMockito.verifyStatic(Mockito.times(1));
+////		AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, mockUser, false);		
+//		Mockito.verify(mockSecurityUtil, Mockito.times(1)).canRead(mockSubject.getItem());
+//	}
 
-	// TODO public void getPseudonym()
+	// TODO public void getMatchingSubject()
 
 	// TODO public void getSubjectByLabelOrId()
 }

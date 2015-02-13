@@ -22,6 +22,7 @@ package org.nrg.xnat.restlet.resources;
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xnat.restlet.util.ISecureItemUtil;
 import org.nrg.xnat.restlet.util.SecureUtilFactory;
+import org.nrg.xnat.restlet.util.IItemUtil;
 import org.nrg.xnat.security.ISecurityUtil;
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -53,11 +54,14 @@ public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
 	 * 
 	 */
 	protected void init() {
+		IItemUtil itemUtil = SecureUtilFactory.getItemUtilInstance();
+		itemUtil.setUser(user);
+		itemUtil.setResource(this);
 		ISecurityUtil securityUtil = SecureUtilFactory.getSecurityUtilInstance();
 		securityUtil.setUser(user);
 		securityUtil.setResource(this);
 		// IllegalArgumentException not caught here, based on advice in http://stackoverflow.com/questions/15208544/when-should-an-illegalargumentexception-be-thrown
-		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(securityUtil);
+		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(itemUtil, securityUtil);
 	}
 	
 	/**

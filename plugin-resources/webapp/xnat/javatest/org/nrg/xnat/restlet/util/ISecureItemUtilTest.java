@@ -19,10 +19,14 @@
 =============================================================================*/
 package org.nrg.xnat.restlet.util;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.nrg.xdat.exceptions.IllegalAccessException;
+import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
@@ -32,108 +36,194 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
-//TODO - commented out because of the PowerMock initializer problem, see https://code.google.com/p/powermock/issues/detail?id=414
-//@PrepareForTest(AutoExtSubjectpseudonym.class)
 public class ISecureItemUtilTest {
-	ISecurityUtil mockSecurityUtil;
 	XDATUser mockUser;
 	SecureResource mockResource;
+	
+	IItemUtil mockItemUtil;
+	ISecurityUtil mockSecurityUtil;
 	ISecureItemUtil secureItemUtil;
-	String pseudoId;
+	
+	String pseudoId, existingPseudoId;
 	XnatSubjectdata mockSubject;
-	XFTItem xftItem;
+	XFTItem mockSubjectItem;
+	String mockSubjectLabel;
+	
+	ExtSubjectpseudonym mockPseudonym;
+	XFTItem mockPseudonymItem;
+	
+	Answer<Boolean> affirm, deny;
+	ArrayList<XFTItem> items;
 	
 	@BeforeClass
-	public final void populate() { //TODO - user of "final" because of the PowerMock initializer problem, see https://code.google.com/p/powermock/issues/detail?id=414
-		mockSecurityUtil = Mockito.mock(ISecurityUtil.class);
+	public void populate() {
+		items = new ArrayList<XFTItem>();
+		pseudoId = "dummyPseudoId";
+		existingPseudoId = "existingDummyPseudoId";
+		mockSubjectLabel = "dummySubject";
+		
+		// mockPseudonym
+		mockPseudonymItem = new XFTItem();
+		items.add(mockPseudonymItem);
+		mockPseudonym = Mockito.mock(ExtSubjectpseudonym.class);
+		Mockito.when(mockPseudonym.getItem()).thenAnswer(new Answer<XFTItem>() {
+			@Override
+			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
+				return mockPseudonymItem;
+			}
+		});
+		Mockito.when(mockPseudonym.getSubject()).thenAnswer(new Answer<String>() {
+			@Override
+			public String answer(InvocationOnMock invocation) throws Throwable {
+				return mockSubjectLabel;
+			}
+		});
+		Answer< Optional<ExtSubjectpseudonym> > mockPseudonymAnswer = new Answer< Optional<ExtSubjectpseudonym> >() {
+			@Override
+			public Optional<ExtSubjectpseudonym> answer(InvocationOnMock invocation)
+					throws Throwable {
+				return Optional.of(mockPseudonym);
+			}
+		};
+		// ====================
+		
+		// mockSubject
+		mockSubjectItem = new XFTItem();
+		items.add(mockSubjectItem);
+		mockSubject = Mockito.mock(XnatSubjectdata.class);
+		Mockito.when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
+			@Override
+			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
+				return mockSubjectItem;
+			}
+		});
+		Answer< Optional<XnatSubjectdata> > mockSubjectAnswer = new Answer< Optional<XnatSubjectdata> >() {
+			@Override
+			public Optional<XnatSubjectdata> answer(InvocationOnMock invocation)
+					throws Throwable {
+				return Optional.of(mockSubject);
+			}
+		};
+		// ====================
+		
+		// mockUser & mockResource
 		mockUser = Mockito.mock(XDATUser.class);
-		mockResource = Mockito.mock(SecureResource.class);
-		Mockito.when(mockSecurityUtil.getUser()).thenAnswer(new Answer<XDATUser>() {
+		Answer<XDATUser> answerGetUser = new Answer<XDATUser>() {
 			@Override
 			public XDATUser answer(InvocationOnMock invocation)
 					throws Throwable {
 				return mockUser;
 			}
-		});
-		Mockito.when(mockSecurityUtil.getResource()).thenAnswer(new Answer<SecureResource>() {
+		};
+		mockResource = Mockito.mock(SecureResource.class);
+		Answer<SecureResource> answerGetResource = new Answer<SecureResource>() {
 			@Override
 			public SecureResource answer(InvocationOnMock invocation)
 					throws Throwable {
 				return mockResource;
 			}
-		});
+		};
+		// ====================
 		
-		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(mockSecurityUtil);
-		mockSubject = Mockito.mock(XnatSubjectdata.class);
-		xftItem = new XFTItem();
-		Mockito.when(mockSubject.getItem()).thenAnswer(new Answer<XFTItem>() {
-			@Override
-			public XFTItem answer(InvocationOnMock invocation) throws Throwable {
-				return xftItem;
-			}
-		});
-		pseudoId = "dummy";
-	}
-	
-	@BeforeGroups( groups = { "affirmative" } )
-	public void configureAffirmative() {
-		Mockito.when(mockSecurityUtil.canEdit(xftItem)).thenAnswer(new Answer<Boolean>() {
+		// mockItemUtil
+		mockItemUtil = Mockito.mock(IItemUtil.class);
+		Mockito.when(mockItemUtil.getUser()).thenAnswer(answerGetUser);
+		Mockito.when(mockItemUtil.getResource()).thenAnswer(answerGetResource);
+		
+		Mockito.when(mockItemUtil.getMatchingSubjectImpl(pseudoId)).thenAnswer(mockSubjectAnswer);
+		Mockito.when(mockItemUtil.getPseudonymImpl(pseudoId)).thenAnswer(mockPseudonymAnswer);
+		Mockito.when(mockItemUtil.getSubjectByLabelOrIdImpl(mockSubjectLabel)).thenAnswer(mockSubjectAnswer);
+		Mockito.when(mockItemUtil.addPseudoIdImpl(mockSubject, pseudoId)).thenAnswer(mockPseudonymAnswer);
+		Mockito.when(mockItemUtil.addPseudoIdImpl(mockSubject, existingPseudoId)).thenThrow(new IllegalStateException("Pseudonym "+existingPseudoId+" already exists"));
+		// ====================
+		
+		// mockSecurityUtil
+		mockSecurityUtil = Mockito.mock(ISecurityUtil.class);
+		Mockito.when(mockSecurityUtil.getUser()).thenAnswer(answerGetUser);
+		Mockito.when(mockSecurityUtil.getResource()).thenAnswer(answerGetResource);
+		// ====================
+		
+		// mockSecureItemUtil
+		secureItemUtil = SecureUtilFactory.getSecureItemUtilInstance(mockItemUtil, mockSecurityUtil);
+		// ====================
+		
+		
+		affirm = new Answer<Boolean>() {
 			@Override
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
 				return true;
 			}
-		});
-	}
-	
-	@BeforeGroups( groups = { "exception" } )
-	public void configureException() {
-		Mockito.when(mockSecurityUtil.canEdit(xftItem)).thenAnswer(new Answer<Boolean>() {
+		};
+		deny = new Answer<Boolean>() {
 			@Override
 			public Boolean answer(InvocationOnMock invocation) throws Throwable {
 				return false;
 			}
-		});
+		};
+	}
+	
+	@BeforeGroups( groups = { "affirmative" } )
+	public void configureAffirmative() {
+		for (XFTItem item : items) {
+			Mockito.when(mockSecurityUtil.canRead(item)).thenAnswer(affirm);
+			Mockito.when(mockSecurityUtil.canEdit(item)).thenAnswer(affirm);
+		}
+	}
+	
+	@BeforeGroups( groups = { "exception" } )
+	public void configureException() {
+		for (XFTItem item : items) {
+			Mockito.when(mockSecurityUtil.canRead(item)).thenAnswer(deny);
+			Mockito.when(mockSecurityUtil.canEdit(item)).thenAnswer(deny);
+		}
+	}
+	
+	@Test( groups = { "affirmative" } )
+	public void getPseudonym() throws IllegalAccessException {
+		secureItemUtil.getPseudonym(pseudoId);
+		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockPseudonymItem);
+	}
+	
+	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	public void getPseudonymWithIllegalAccess() throws Exception {
+		secureItemUtil.getPseudonym(pseudoId);
+	}
+
+	@Test( groups = { "affirmative" } )
+	public void getMatchingSubject() throws IllegalAccessException {
+		secureItemUtil.getMatchingSubject(pseudoId);
+		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockSubjectItem);
+	}
+	
+	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	public void getMatchingSubjectWithIllegalAccess() throws Exception {
+		secureItemUtil.getMatchingSubject(pseudoId);
+	}
+
+	@Test( groups = { "affirmative" } )
+	public void getSubjectByLabelOrId() throws IllegalAccessException {
+		secureItemUtil.getSubjectByLabelOrId(mockSubjectLabel);
+		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockSubjectItem);
+	}
+	
+	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	public void getSubjectByLabelOrIdWithIllegalAccess() throws Exception {
+		secureItemUtil.getSubjectByLabelOrId(mockSubjectLabel);
 	}
 
 	@Test( groups = { "affirmative" } )
 	public void addPseudoId() throws IllegalAccessException {
-		try {
-			secureItemUtil.addPseudoId(mockSubject, "dummy");
-		} catch (NullPointerException e) { // this is only for ignoring parts of the class we're not interested in
-			e.printStackTrace();
-		}
-		Mockito.verify(mockSecurityUtil, Mockito.times(1)).canEdit(mockSubject.getItem());
+		secureItemUtil.addPseudoId(mockSubject, pseudoId);
+		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canEdit(mockSubjectItem);
 	}
 	
 	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
 	public void addPseudoIdWithIllegalAccess() throws Exception {
-		try {
-			secureItemUtil.addPseudoId(mockSubject, pseudoId);
-		} catch (NullPointerException e) { // this is only for ignoring parts of the class we're not interested in
-			e.printStackTrace();
-		}
+		secureItemUtil.addPseudoId(mockSubject, pseudoId);
 	}
-
-	// TODO - commented out because of the PowerMock initializer problem, see https://code.google.com/p/powermock/issues/detail?id=414
-//	@ObjectFactory
-//	/**
-//	 * Configure TestNG to use the PowerMock object factory.
-//	 */
-//	public IObjectFactory getObjectFactory() {
-//		return new org.powermock.modules.testng.PowerMockObjectFactory();
-//	}
-//	
-//	@Test( groups = { "affirmative" } )
-//	public final void getPseudonym() throws Exception {	// written based on guidelines in https://code.google.com/p/powermock/wiki/MockitoUsage13	
-//		PowerMockito.spy(AutoExtSubjectpseudonym.class);
-//		Mockito.when(AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, mockUser, false)).thenReturn(new ExtSubjectpseudonym());
-//		secureItemUtil.getPseudonym(pseudoId);
-////		PowerMockito.verifyStatic(Mockito.times(1));
-////		AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, mockUser, false);		
-//		Mockito.verify(mockSecurityUtil, Mockito.times(1)).canRead(mockSubject.getItem());
-//	}
-
-	// TODO public void getMatchingSubject()
-
-	// TODO public void getSubjectByLabelOrId()
+	
+	@Test( groups = { "affirmative" }, expectedExceptions = { IllegalStateException.class } ) // can edit, however pseudonym already exists!
+	public void addPseudoIdAtIllegalState() throws Exception {
+		secureItemUtil.addPseudoId(mockSubject, existingPseudoId);
+	}
 }

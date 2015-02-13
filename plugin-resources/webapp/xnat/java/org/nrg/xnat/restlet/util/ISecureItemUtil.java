@@ -27,14 +27,25 @@ import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xnat.security.ISecurityUtil;
 
 /**
- * Interface for commonly used, security-involving functionality pertaining to DB items.
+ * Interface for commonly used, security-involving functionality pertaining to DB items. Always
+ * use the {@link SecureUtilFactory#getSecureItemUtilInstance(IItemUtil, ISecurityUtil)} method
+ * to get an instance of this interface.
  * 
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
 public interface ISecureItemUtil {
 	/**
-	 * This method must be called right after an object is created.
+	 * This method must be called right after an object is created,
+	 * in conjunction with {@link #setSecurityUtil(ISecurityUtil)}.
+	 * 
+	 * @param itemUtil
+	 */
+	public void setItemUtil(IItemUtil itemUtil);
+	
+	/**
+	 * This method must be called right after an object is created,
+	 * in conjunction with {@link #setItemUtil(IItemUtil)}.
 	 * 
 	 * @param securityUtil
 	 */
@@ -72,8 +83,9 @@ public interface ISecureItemUtil {
 	 * 
 	 * @param subject
 	 * @param pseudoId
-	 * @return
+	 * @return the newly created pseudonym
 	 * @throws IllegalAccessException
+	 * @throws IllegalStateException if pseudonym already exists
 	 */
-	public Optional<ExtSubjectpseudonym> addPseudoId(XnatSubjectdata subject, String pseudoId) throws IllegalAccessException;
+	public Optional<ExtSubjectpseudonym> addPseudoId(XnatSubjectdata subject, String pseudoId) throws IllegalAccessException, IllegalStateException;
 }

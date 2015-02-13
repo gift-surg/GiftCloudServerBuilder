@@ -21,6 +21,7 @@ package org.nrg.xnat.restlet.util;
 
 import org.nrg.xnat.security.DefaultSecurityUtil;
 import org.nrg.xnat.security.ISecurityUtil;
+import org.nrg.xnat.restlet.util.IItemUtil;
 
 /**
  * 
@@ -29,7 +30,14 @@ import org.nrg.xnat.security.ISecurityUtil;
  *
  */
 public final class SecureUtilFactory {
-
+	/**
+	 * 
+	 * @return
+	 */
+	public static IItemUtil getItemUtilInstance() {
+		return new DefaultItemUtil();
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -40,18 +48,31 @@ public final class SecureUtilFactory {
 
 	/**
 	 * 
+	 * @param itemUtil
 	 * @param securityUtil
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
 	public static ISecureItemUtil getSecureItemUtilInstance(
-			ISecurityUtil securityUtil) throws IllegalArgumentException {
-		if (securityUtil == null)
+			IItemUtil itemUtil, ISecurityUtil securityUtil) throws IllegalArgumentException {
+		if (itemUtil == null)
 			throw new IllegalArgumentException("No secure item util without security util!");
-		else if (securityUtil.getUser() == null || securityUtil.getResource() == null)
-			throw new IllegalArgumentException("Security util not initialised properly");
+		else if (securityUtil == null)
+			throw new IllegalArgumentException("No secure item util without security util!");
 		else {
+			try {
+				if (itemUtil.getUser() == null || itemUtil.getResource() == null)
+					throw new IllegalArgumentException("Item util not initialised properly");
+				else if (securityUtil.getUser() == null || securityUtil.getResource() == null)
+					throw new IllegalArgumentException("Security util not initialised properly");
+				else if (itemUtil.getUser() != securityUtil.getUser() || itemUtil.getResource() != securityUtil.getResource())
+					throw new IllegalArgumentException("Item util not matching security util");
+			}
+			catch (IllegalStateException e) { // something not set properly, i.e. getter called before setter
+				throw new IllegalArgumentException(e);
+			}
 			ISecureItemUtil secureItemUtil = new SecureItemUtil();
+			secureItemUtil.setItemUtil(itemUtil);
 			secureItemUtil.setSecurityUtil(securityUtil);
 			return secureItemUtil;
 		}

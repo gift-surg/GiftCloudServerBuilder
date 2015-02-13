@@ -110,9 +110,10 @@ public interface IItemUtil {
 	 * 
 	 * @param subject
 	 * @param pseudoId
-	 * @return
+	 * @return null if pseudonym could not be added
+	 * @throws IllegalStateException if pseudonym already exists
 	 * 
 	 * @see ISecureItemUtil#addPseudoId(XnatSubjectdata, String)
 	 */
-	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(XnatSubjectdata subject, String pseudoId);
+	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(XnatSubjectdata subject, String pseudoId) throws IllegalStateException;
 }

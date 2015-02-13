@@ -61,11 +61,11 @@ public final class SecureUtilFactory {
 			throw new IllegalArgumentException("No secure item util without security util!");
 		else {
 			try {
-				if (itemUtil.getUser() == null || itemUtil.getResource() == null)
-					throw new IllegalArgumentException("Item util not initialised properly");
-				else if (securityUtil.getUser() == null || securityUtil.getResource() == null)
-					throw new IllegalArgumentException("Security util not initialised properly");
-				else if (itemUtil.getUser() != securityUtil.getUser() || itemUtil.getResource() != securityUtil.getResource())
+				itemUtil.getUser();
+				itemUtil.getResource();
+				securityUtil.getUser();
+				securityUtil.getResource();
+				if (itemUtil.getUser() != securityUtil.getUser() || itemUtil.getResource() != securityUtil.getResource())
 					throw new IllegalArgumentException("Item util not matching security util");
 			}
 			catch (IllegalStateException e) { // something not set properly, i.e. getter called before setter

@@ -170,7 +170,7 @@ public class ISecureItemUtilTest {
 		}
 	}
 	
-	@BeforeGroups( groups = { "exception" } )
+	@BeforeGroups( groups = { "exception" }, dependsOnGroups = { "affirmative" } )
 	public void configureException() {
 		for (XFTItem item : items) {
 			Mockito.when(mockSecurityUtil.canRead(item)).thenAnswer(deny);
@@ -184,7 +184,7 @@ public class ISecureItemUtilTest {
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockPseudonymItem);
 	}
 	
-	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	@Test( groups = { "exception" }, dependsOnGroups = { "affirmative" }, expectedExceptions = { IllegalAccessException.class } )
 	public void getPseudonymWithIllegalAccess() throws Exception {
 		secureItemUtil.getPseudonym(pseudoId);
 	}
@@ -192,10 +192,10 @@ public class ISecureItemUtilTest {
 	@Test( groups = { "affirmative" } )
 	public void getMatchingSubject() throws IllegalAccessException {
 		assert mockSubject == secureItemUtil.getMatchingSubject(pseudoId).get();
-		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockSubjectItem);
+		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockPseudonymItem);
 	}
 	
-	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	@Test( groups = { "exception" }, dependsOnGroups = { "affirmative" }, expectedExceptions = { IllegalAccessException.class } )
 	public void getMatchingSubjectWithIllegalAccess() throws Exception {
 		secureItemUtil.getMatchingSubject(pseudoId);
 	}
@@ -206,7 +206,7 @@ public class ISecureItemUtilTest {
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockSubjectItem);
 	}
 	
-	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	@Test( groups = { "exception" }, dependsOnGroups = { "affirmative" }, expectedExceptions = { IllegalAccessException.class } )
 	public void getSubjectByLabelOrIdWithIllegalAccess() throws Exception {
 		secureItemUtil.getSubjectByLabelOrId(mockSubjectLabel);
 	}
@@ -217,7 +217,7 @@ public class ISecureItemUtilTest {
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canEdit(mockSubjectItem);
 	}
 	
-	@Test( groups = { "exception" }, expectedExceptions = { IllegalAccessException.class } )
+	@Test( groups = { "exception" }, dependsOnGroups = { "affirmative" }, expectedExceptions = { IllegalAccessException.class } )
 	public void addPseudoIdWithIllegalAccess() throws Exception {
 		secureItemUtil.addPseudoId(mockSubject, pseudoId);
 	}

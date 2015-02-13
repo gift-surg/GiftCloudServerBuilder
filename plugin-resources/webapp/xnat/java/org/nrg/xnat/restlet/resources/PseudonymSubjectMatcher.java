@@ -57,7 +57,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
-		ppid = new String((String) getParameter(request, "PPID"));
+		ppid = (String) getParameter(request, "PPID");
 	}
 	
 	/*
@@ -75,19 +75,21 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		// get subject
 		Optional<XnatSubjectdata> subject;
 		try {
-			subject = resourceUtil.getMatchingSubject(ppid);
+			subject = secureItemUtil.getMatchingSubject(ppid);
 		} catch (Throwable t) {
 			handle(t);
-			return null;
+			subject = Optional.empty();
 		}
 		
 		// represent subject after sanity check
+		XnatSubjectdata result = null;
 		if (!subject.isPresent()) {
-			return Representation.createEmpty();
+			result = new XnatSubjectdata(); // this is because we simply do not return an empty HTTP response, but rather, something that "stands for" empty
 		}
 		else {
-			return representItem(subject.get().getItem(), variant.getMediaType());
+			result = subject.get();
 		}
+		return representItem(result.getItem(), variant.getMediaType());
 	}
 	
 	/*

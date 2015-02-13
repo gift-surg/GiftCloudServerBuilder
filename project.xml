@@ -1,12 +1,19 @@
 <!--
-  ~ D:/Development/XNAT/1.6/xnat_builder_1_6dev/project.xml
-  ~ XNAT http://www.xnat.org
-  ~ Copyright (c) 2014, Washington University School of Medicine
-  ~ All Rights Reserved
-  ~
-  ~ Released under the Simplified BSD.
-  ~
-  ~ Last modified 2/3/14 11:12 AM
+	~ GIFT-Cloud: A data storage and collaboration platform
+	~
+  	~ Copyright (c) University College London (UCL). All rights reserved.
+	~
+  	~ Parts of this software are derived from XNAT
+    ~	http://www.xnat.org
+    ~	Copyright (c) 2014, Washington University School of Medicine
+    ~	All Rights Reserved
+    ~	Released under the Simplified BSD.
+	~
+  	~ This software is distributed WITHOUT ANY WARRANTY; without even
+  	~ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  	~ PURPOSE.
+	~
+  	~ See LICENSE.txt in the top level directory for details.
   -->
 <project>
 	<pomVersion>3</pomVersion>

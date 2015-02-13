@@ -23,23 +23,42 @@ import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.exceptions.IllegalAccessException;
+import org.nrg.xnat.security.ISecurityUtil;
 
 /**
- * Interface for commonly used functionality such as querying subjects.
+ * Interface for commonly used, security-involving functionality pertaining to DB items. Always
+ * use the {@link SecureUtilFactory#getSecureItemUtilInstance(IItemUtil, ISecurityUtil)} method
+ * to get an instance of this interface.
  * 
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public interface ResourceUtilI {
+public interface ISecureItemUtil {
+	/**
+	 * This method must be called right after an object is created,
+	 * in conjunction with {@link #setSecurityUtil(ISecurityUtil)}.
+	 * 
+	 * @param itemUtil
+	 */
+	public void setItemUtil(IItemUtil itemUtil);
+	
+	/**
+	 * This method must be called right after an object is created,
+	 * in conjunction with {@link #setItemUtil(IItemUtil)}.
+	 * 
+	 * @param securityUtil
+	 */
+	public void setSecurityUtil(ISecurityUtil securityUtil);
+	
 	/**
 	 * Fetches subject with specified label.
 	 * 
 	 * @param descriptor
 	 * @return null if no subject with specified label
 	 * @throws IllegalAccessException
-	 * @throws Exception
 	 */
-	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException, Exception;
+	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException;
 	
 	/**
 	 * Fetches subject associated to provided pseudo ID.
@@ -47,21 +66,8 @@ public interface ResourceUtilI {
 	 * @param pseudoId
 	 * @return null if {@code pseudoId} does not exist
 	 * @throws IllegalAccessException
-	 * @throws Exception
 	 */
-	public Optional<XnatSubjectdata> getMatchingSubject(String pseudoId) throws IllegalAccessException, Exception;
-	
-	/**
-	 * Fetches subject associated to provided pseudonym.
-	 * 
-	 * @param pseudonym
-	 * @return null if no subject matches
-	 * @throws IllegalAccessException
-	 * @throws Exception
-	 * 
-	 * @see #getMatchingSubject(String)
-	 */
-	public XnatSubjectdata getMatchingSubject(ExtSubjectpseudonym pseudonym) throws IllegalAccessException, Exception;
+	public Optional<XnatSubjectdata> getMatchingSubject(String pseudoId) throws IllegalAccessException;
 	
 	/**
 	 * Fetches pseudonym as object.
@@ -69,17 +75,17 @@ public interface ResourceUtilI {
 	 * @param pseudoId
 	 * @return null if provided parameter not existing
 	 * @throws IllegalAccessException
-	 * @throws Exception
 	 */
-	public Optional<ExtSubjectpseudonym> getPseudonym(String pseudoId) throws IllegalAccessException, Exception;
+	public Optional<ExtSubjectpseudonym> getPseudonym(String pseudoId) throws IllegalAccessException;
 	
 	/**
 	 * Adds provided pseudo ID to provided subject.
 	 * 
 	 * @param subject
 	 * @param pseudoId
+	 * @return the newly created pseudonym
 	 * @throws IllegalAccessException
-	 * @throws Exception
+	 * @throws IllegalStateException if pseudonym already exists
 	 */
-	public void addPseudoId(XnatSubjectdata subject, String pseudoId) throws IllegalAccessException, Exception;
+	public Optional<ExtSubjectpseudonym> addPseudoId(XnatSubjectdata subject, String pseudoId) throws IllegalAccessException, IllegalStateException;
 }

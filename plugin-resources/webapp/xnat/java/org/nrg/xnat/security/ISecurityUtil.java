@@ -24,9 +24,11 @@ import org.nrg.xdat.om.base.auto.AutoXdatUser;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.restlet.resources.SecureResource;
+import org.nrg.xnat.restlet.util.SecureUtilFactory;
 
 /**
- * Performs security checks.
+ * Performs security checks. Always use the {@link SecureUtilFactory#getSecurityUtilInstance()} 
+ * method to get an instance of this interface.
  * 
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
@@ -50,29 +52,33 @@ public interface ISecurityUtil {
 	 * This setter method must be called right after creating an object, in conjunction with {@link #setResource(SecureResource)}.
 	 * 
 	 * @param user should ideally be a higher-level class, such as {@link BaseXdatUser} or {@link AutoXdatUser}, but provided for compatibility with current XNAT version (1.6).
+	 * @throws IllegalArgumentException when parameter null
 	 */
-	public void setUser(XDATUser user);
+	public void setUser(XDATUser user) throws IllegalArgumentException;
 	
 	/**
 	 * This setter method must be called right after creating an object, in conjunction with {@link #setUser(XDATUser)}.
 	 * 
 	 * @param resource
+	 * @throws IllegalArgumentException when parameter null
 	 */
-	public void setResource(SecureResource resource);
+	public void setResource(SecureResource resource) throws IllegalArgumentException;
 	
 	/**
 	 * 
 	 * @return
+	 * @throws IllegalStateException if called before setter.
 	 * 
 	 * @see #setUser(XDATUser)
 	 */
-	public XDATUser getUser();
+	public XDATUser getUser() throws IllegalStateException;
 	
 	/**
 	 * 
 	 * @return
+	 * @throws IllegalStateException if called before setter.
 	 * 
 	 * @see #setResource(SecureResource)
 	 */
-	public SecureResource getResource();
+	public SecureResource getResource() throws IllegalStateException;
 }

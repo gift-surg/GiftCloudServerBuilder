@@ -82,11 +82,25 @@ public class ISecurityUtilTest {
 		};
 	}
 	
+	@DataProvider( name = "illegalUser" )
+	public Object[][] getIllegalUser() {
+		return new Object[][]{
+				{SecureUtilFactory.getSecurityUtilInstance(), null},
+		};
+	}
+	
 	@DataProvider( name = "setGetResource" )
 	public Object[][] getSetGetResourceData() {
 		return new Object[][]{
 				{SecureUtilFactory.getSecurityUtilInstance(), mock(SecureResource.class)},
 				{SecureUtilFactory.getSecurityUtilInstance(), mock(SecureResource.class)}
+		};
+	}
+	
+	@DataProvider( name = "illegalResource" )
+	public Object[][] getIllegalResource() {
+		return new Object[][]{
+				{SecureUtilFactory.getSecurityUtilInstance(), null},
 		};
 	}
 
@@ -96,7 +110,7 @@ public class ISecurityUtilTest {
 	}
 
 	@Test( dataProvider = "canDo" )
-	public void canEdit(ISecurityUtil util, XFTItem item, boolean expected) throws Exception {
+	public void canEdit(ISecurityUtil util, XFTItem item, boolean expected) {
 		assert util.canEdit(item) == expected;
 	}
 
@@ -105,10 +119,32 @@ public class ISecurityUtilTest {
 		util.setUser(user);
 		assert user == util.getUser();
 	}
+	
+	@Test( dataProvider = "illegalUser", expectedExceptions = { IllegalArgumentException.class } )
+	public void setUserWithIllegalArgument(ISecurityUtil util, XDATUser user) {
+		util.setUser(user);
+	}
+	
+	@Test( expectedExceptions = { IllegalStateException.class } )
+	public void getUserAtIllegalState() throws Exception {
+		ISecurityUtil securityUtil = SecureUtilFactory.getSecurityUtilInstance();
+		securityUtil.getUser();
+	}
 
 	@Test( dataProvider = "setGetResource" )
 	public void setGetResource(ISecurityUtil util, SecureResource resource) {
 		util.setResource(resource);
 		assert resource == util.getResource();
+	}
+	
+	@Test( dataProvider = "illegalResource", expectedExceptions = { IllegalArgumentException.class } )
+	public void setResourceWithIllegalArgument(ISecurityUtil util, SecureResource resource) {
+		util.setResource(resource);
+	}
+	
+	@Test( expectedExceptions = { IllegalStateException.class } )
+	public void getResourceAtIllegalState() throws Exception {
+		ISecurityUtil securityUtil = SecureUtilFactory.getSecurityUtilInstance();
+		securityUtil.getResource();
 	}
 }

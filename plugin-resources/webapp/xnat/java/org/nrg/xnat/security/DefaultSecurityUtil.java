@@ -63,32 +63,44 @@ public class DefaultSecurityUtil implements ISecurityUtil {
 	 * @see org.nrg.xnat.security.ISecurityUtil#setUser(org.nrg.xdat.security.XDATUser)
 	 */
 	@Override
-	public void setUser(XDATUser user) {
-		this.user = user;
+	public void setUser(XDATUser user) throws IllegalArgumentException {
+		if (user==null)
+			throw new IllegalArgumentException("Provided user is null");
+		else
+			this.user = user;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.security.ISecurityUtil#setResource(org.nrg.xnat.restlet.resources.SecureResource)
 	 */
 	@Override
-	public void setResource(SecureResource resource) {
-		this.resource = resource;
+	public void setResource(SecureResource resource) throws IllegalArgumentException {
+		if (resource==null)
+			throw new IllegalArgumentException("Provided resource is null");
+		else
+			this.resource = resource;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.security.ISecurityUtil#getUser()
 	 */
 	@Override
-	public XDATUser getUser() {
-		return user;
+	public XDATUser getUser() throws IllegalStateException {
+		if (user==null)
+			throw new IllegalStateException("Getter called before setter");
+		else
+			return user;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.security.ISecurityUtil#getResource()
 	 */
 	@Override
-	public SecureResource getResource() {
-		return resource;
+	public SecureResource getResource() throws IllegalStateException {
+		if (resource==null)
+			throw new IllegalStateException("Getter called before setter");
+		else
+			return resource;
 	}
 
 }

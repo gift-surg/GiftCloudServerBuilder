@@ -180,7 +180,7 @@ public class ISecureItemUtilTest {
 	
 	@Test( groups = { "affirmative" } )
 	public void getPseudonym() throws IllegalAccessException {
-		secureItemUtil.getPseudonym(pseudoId);
+		assert mockPseudonym == secureItemUtil.getPseudonym(pseudoId).get();
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockPseudonymItem);
 	}
 	
@@ -191,7 +191,7 @@ public class ISecureItemUtilTest {
 
 	@Test( groups = { "affirmative" } )
 	public void getMatchingSubject() throws IllegalAccessException {
-		secureItemUtil.getMatchingSubject(pseudoId);
+		assert mockSubject == secureItemUtil.getMatchingSubject(pseudoId).get();
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockSubjectItem);
 	}
 	
@@ -202,7 +202,7 @@ public class ISecureItemUtilTest {
 
 	@Test( groups = { "affirmative" } )
 	public void getSubjectByLabelOrId() throws IllegalAccessException {
-		secureItemUtil.getSubjectByLabelOrId(mockSubjectLabel);
+		assert mockSubject == secureItemUtil.getSubjectByLabelOrId(mockSubjectLabel).get();
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canRead(mockSubjectItem);
 	}
 	
@@ -213,7 +213,7 @@ public class ISecureItemUtilTest {
 
 	@Test( groups = { "affirmative" } )
 	public void addPseudoId() throws IllegalAccessException {
-		secureItemUtil.addPseudoId(mockSubject, pseudoId);
+		assert mockPseudonym == secureItemUtil.addPseudoId(mockSubject, pseudoId).get();
 		Mockito.verify(mockSecurityUtil, Mockito.atLeastOnce()).canEdit(mockSubjectItem);
 	}
 	

@@ -11,6 +11,7 @@
 package org.nrg.xnat.restlet;
 
 import com.google.common.base.Joiner;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nrg.config.exceptions.ConfigServiceException;
@@ -202,6 +203,12 @@ public class XNATApplication extends Application {
 		attachArchiveURI(router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}",
 				SubjectResource.class);
+		attachArchiveURI(router,
+				"/projects/{PROJECT_ID}/pseudonyms/{PPID}",
+				PseudonymSubjectMatcher.class);
+		attachArchiveURI(router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/pseudonyms/{PPID}",
+				SubjectPseudonymProcessor.class);
 		attachArchiveURI(router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments",
 				ProjSubExptList.class);

@@ -1,37 +1,40 @@
 #!/usr/bin/ruby
 
-class GiftRestUrlGenerator
-  ROOT_URI = "http://admin:admin@localhost:8080/dummycloud/REST/"
-  DELIM = "/"
-  PROJ = "projects"+DELIM
-  SUBJ = "subjects"+DELIM
-  PSEUD = "pseudonyms"+DELIM
+class RestUriGenerator
+  @@DELIM = '/'
+  @@PROJ = 'projects' + @@DELIM
+  @@SUBJ = 'subjects' + @@DELIM
+  @@PSEUD = 'pseudonyms' + @@DELIM
   
-  def genProjectsLister
-    return ROOT_URI+PROJ
+  def initialize(protocol, host, app, user, pass)
+    @root_uri = "#{protocol}://#{user}:#{pass}@#{host}/#{app}/REST/"
   end
   
-  def genProjectInserter(project)
-    return ROOT_URI+PROJ+prepare(project)
+  def gen_projects_lister
+    return @root_uri + @@PROJ
   end
   
-  def genSubjectsLister(project)
-    return ROOT_URI+PROJ+prepare(project)+SUBJ
+  def gen_project_inserter(project)
+    return@root_uri + @@PROJ + prepare(project)
   end
   
-  def genSubjectInserter(project, subject)
-    return ROOT_URI+PROJ+prepare(project)+SUBJ+prepare(subject)
+  def gen_subjects_lister(project)
+    return @root_uri + @@PROJ + prepare(project) + @@SUBJ
   end
   
-  def genSubjectQuery(project, pseudonym)
-    return ROOT_URI+PROJ+prepare(project)+PSEUD+prepare(pseudonym)
+  def gen_subject_inserter(project, subject)
+    return @root_uri + @@PROJ + prepare(project) + @@SUBJ + prepare(subject)
   end
   
-  def genPseudonymInserter(project, subject, pseudonym)
-    return ROOT_URI+PROJ+prepare(project)+SUBJ+prepare(subject)+PSEUD+prepare(pseudonym)
+  def gen_subject_query(project, pseudonym)
+    return @root_uri + @@PROJ + prepare(project) + @@PSEUD + prepare(pseudonym)
+  end
+  
+  def gen_pseudonym_inserter(project, subject, pseudonym)
+    return @root_uri + @@PROJ + prepare(project) + @@SUBJ + prepare(subject) + @@PSEUD + prepare(pseudonym)
   end
   
   def prepare(identifier)
-    return identifier+DELIM
+    return identifier + @@DELIM
   end
 end

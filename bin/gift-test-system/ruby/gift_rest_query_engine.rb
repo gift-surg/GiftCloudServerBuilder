@@ -3,10 +3,10 @@
 require 'rest_client'
 require 'json'
 
-class GiftRestQueryEngine
-  def get(url)
+class RestQueryEngine
+  def get(uri)
     begin
-      response = RestClient.get(url,
+      response = RestClient.get(uri,
       {
         "Content-Type" => "application/json"
       }
@@ -14,21 +14,21 @@ class GiftRestQueryEngine
       if !response.body.nil? && !response.body.empty?
         return JSON.parse response.body
       else
-        $stderr.print "response.body nil or empty for #{url}"
-        return nil
+        raise RestQueryException, "No response for #{uri}"
       end
     rescue RestClient::Exception => e
-      $stderr.print "\n\n\nThe following error occured:\n#{e}\nduring get(#{url})\n\n\n"
-      return nil
+      raise RestQueryException, e.to_s
     end
   end
   
-  def put(url)
+  def put(uri)
     begin
-      RestClient.put(url, {})
+      RestClient.put(uri, {})
     rescue RestClient::Exception => e
-      $stderr.print "\n\n\nThe following error occured:\n#{e}\nduring put(#{url})\n\n\n"
-      return nil
+      raise RestQueryException, e.to_s
     end
   end
+end
+
+class RestQueryException < Exception
 end

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
-require_relative 'gift_rest_url_generator'
-require_relative 'gift_rest_query_engine'
+require_relative 'rest_uri_generator'
+require_relative 'rest_query_engine'
 
 class GiftEntityProcessor
   def initialize(protocol, host, app, user, pass)

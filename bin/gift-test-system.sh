@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # specs ******************************************
+DB_HOST=localhost
 DB_USER=dummy
+DB_PASS=123456
 DB_NAME=dummydb
 APP_NAME=DummyCloud
 
@@ -66,12 +68,22 @@ function setUpXnat {
 		tearDownXnat
 		# run setup.sh
 		bin/setup.sh
+		if [ -z "$PGPASSFILE" ]; then
+			ACTUAL_PGPASSFILE=$PGPASSFILE
+		fi
+		export PGPASSFILE=bin/gift-test-system/.pgpass
+		echo "$DB_HOST:*:$DB_NAME:$DB_USER:$DB_PASS" > $PGPASSFILE
+		chmod 0600 $PGPASSFILE
 		# store datatypes
 		cd deployments/$APP_NAME
-		psql -f sql/$APP_NAME.sql -h localhost -W $DB_NAME $DB_USER
+		psql --file=sql/$APP_NAME.sql --host=$DB_HOST --no-password $DB_NAME $DB_USER
 		../../bin/StoreXML -project $APP_NAME -l security/security.xml -allowDataDeletion true
 		../../bin/StoreXML -dir ./work/field_groups/ -u admin -p admin -allowDataDeletion true
 		cd ../..
+		rm $PGPASSFILE
+		if [ -z "$ACTUAL_PGPASSFILE" ]; then
+			PGPASSFILE=$ACTUAL_PGPASSFILE
+		fi
 		# put projects/web.xml file
 		cp bin/gift-test-system/web-projectMerge.xml projects/$APP_NAME/src/web-conf/
 	fi

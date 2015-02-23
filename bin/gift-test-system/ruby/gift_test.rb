@@ -28,7 +28,7 @@ class TestGiftCloud < Minitest::Test
   end
   
   ## tests
-  context 'GiftCloud server' do
+  context 'GiftCloud upload client' do
     setup do
       @entity_proc = GiftEntityProcessor.new(@@PROTOCOL, @@HOST, @@APP, @@USER, @@PASS)
       
@@ -37,7 +37,17 @@ class TestGiftCloud < Minitest::Test
       @n_pi = @n_p  # no of pseudonyms per subject
     end
     
-    should 'insert non-existing projects' do
+    ## authentication
+    should 'sign in and out' do
+      skip 'not implemented'
+    end
+    
+    ## projects
+    should 'list projects' do
+      skip 'not implemented'
+    end
+    
+    should 'create a new project' do
       begin
         @n_p.times do
           project = generate_project_name
@@ -50,7 +60,17 @@ class TestGiftCloud < Minitest::Test
       end
     end
     
-    should 'insert non-existing subjects' do
+    should 'not re-create an existing project' do
+      skip 'not implemented'
+    end
+    
+    ## projects/subjects
+    should 'list subjects in a project' do
+      skip 'not implemented'
+    end
+    
+    should 'create a new subject in a project' do
+      # TODO - XML?
       begin
         @n_p.times do
           project = generate_project_name
@@ -68,15 +88,34 @@ class TestGiftCloud < Minitest::Test
       end
     end
     
-    should 'not insert existing subjects' do
-      skip "waiting for suitable methods to be implemented"
+    should 'not re-create an existing subject' do
+      skip 'not implemented'
       # @entity_proc.insertSubject(@projects[1], @subjects[@projects[0]][0])
       # refute @entity_proc.subjectExists(@projects[1], @subjects[@projects[1]][1])
       # @entity_proc.insertSubject(@projects[1], @subjects[@projects[1]][0])
       # assert @entity_proc.subjectExists(@projects[1], @subjects[@projects[1]][0])
     end
     
-    should 'insert non-existing pseudonyms' do
+    ## projects/sessions
+    should 'list sessions in a project' do
+      skip 'not implemented'
+    end
+    
+    should 'create a new session in a project' do
+      skip 'not implemented'
+    end
+    
+    should 'not re-create an existing session' do
+      skip 'not implemented'
+    end
+    
+    ## projects/subjects/experiments
+    should 'upload a ZIP file' do
+      skip 'not implemented'
+    end
+    
+    ## projects/subjects/pseudonyms
+    should 'create a new pseudonym for a subject' do
       begin
         @n_p.times do
           project = generate_project_name
@@ -99,8 +138,8 @@ class TestGiftCloud < Minitest::Test
       end
     end
     
-    should 'not insert existing pseudonyms' do
-      skip "waiting for suitable methods to be implemented"
+    should 'not re-create an existing pseudonym' do
+      skip 'not implemented'
       # refute @entity_proc.insertPseudonym(@projects[0], @subjects[@projects[0]][0], @pseudonyms[ @subjects[ @projects[0] ][1] ])
       # refute @entity_proc.insertPseudonym(@projects[0], @subjects[@projects[0]][0], @pseudonyms[ @subjects[ @projects[1] ][0] ])
     end

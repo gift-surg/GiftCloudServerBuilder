@@ -12,7 +12,7 @@ PG_STATUS="pg_ctl -D /usr/local/var/postgres status"
 TOMCAT_DIR=~/tomcat
 LOG_FILE=bin/gift-test-system/output.log
 REPORT_FILE=bin/gift-test-system/report.log
-RUN_TESTS="ruby -I test:lib -w bin/gift-test-system/ruby/gift_test.rb"
+RUN_TESTS="ruby -I test:lib -w bin/gift-test-system/ruby/gift_cloud_test.rb"
 
 # environment ************************************
 export CATALINA_PID=$TOMCAT_DIR/tomcat.pid

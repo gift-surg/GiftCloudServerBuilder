@@ -4,7 +4,7 @@ require 'minitest/autorun'
 require 'minitest/reporters'
 require 'shoulda/context'
 require_relative 'helpers'
-require_relative 'gift_entity_processor'
+require_relative 'entity_processor'
 
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new # spec-like progress
 

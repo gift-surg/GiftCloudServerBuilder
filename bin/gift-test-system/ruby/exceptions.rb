@@ -11,6 +11,10 @@ module GiftCloud
   
   ##
   # Raised when a REST query returns an error.
-  class RestQueryException < StandardError; end
+  class RestQueryException < StandardError; end # TODO - modify name to ____Error
+  
+  ##
+  # Represents HTTP 5xx (server error).
+  class ServerError < StandardError; end
   
 end

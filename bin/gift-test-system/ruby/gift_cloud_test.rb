@@ -191,12 +191,10 @@ class TestGiftCloud < Minitest::Test
     should 'create a new pseudonym for a subject' do
       begin
         @projects.each do |project|
-          
           @subjects[ project ].each do |subject|
-            
             @n_pi.times do
               pseudonym = GiftCloud::Pseudonym.new
-              assert_nil @entity_proc.get_matching_subject project, pseudonym
+              assert_nil @entity_proc.get_matching_subject( project, pseudonym )
               @entity_proc.insert_pseudonym project, subject, pseudonym
               assert_equal @entity_proc.get_matching_subject( project, pseudonym ), subject
             end

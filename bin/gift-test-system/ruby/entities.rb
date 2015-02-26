@@ -47,6 +47,14 @@ module GiftCloud
       @label
     end
     
+    def to_xml project
+      # TODO - this is really ugly, but quick
+      xml = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'
+      xml += '<xnat:Subject label="' + @label + 
+             '" project="' + project.to_str + 
+             '" xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
+    end
+    
     def == other
       @label == other.label
     end

@@ -19,9 +19,9 @@ module GiftCloud
 
     ##
     # Make an HTTP POST request with specified +resource+.
-    def put uri, resource = nil
+    def put uri, *resource
       begin
-        RestClient.put uri, {} # TODO handle resource
+        RestClient.put uri, *resource
       rescue RestClient::Exception => e
         raise RestQueryException, e.to_s
       end

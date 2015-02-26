@@ -39,9 +39,9 @@ module GiftCloud
         [ entity ].included_in? entities
       end
       
-      @insert_entity = lambda do |uri, resource|
+      @insert_entity = lambda do |uri, *resource|
         check_auth_and_raise!
-        handle_post_response @rest_query_eng.put( uri, resource )
+        handle_post_response @rest_query_eng.put( uri, *resource )
       end
       
       @json_decoder_method = lambda do |json_array|
@@ -85,6 +85,7 @@ module GiftCloud
 
     # subjects
     def list_subjects project
+      # TODO: columns 'label' and 'ID' are used in JSON-decoding
       @list_entities.call @url_gen.gen_subjects_lister( project ), @json_decoder_method, Subject.method( "parse" )
     end
     
@@ -93,7 +94,9 @@ module GiftCloud
     end
     
     def insert_subject project, subject
-      @insert_entity.call @url_gen.gen_subject_inserter( project, subject ), nil
+      @insert_entity.call @url_gen.gen_subject_inserter( project, subject ), 
+                          subject.to_xml( project ),
+                          :content_type => 'text/xml'
     end
 
     # pseudonyms    

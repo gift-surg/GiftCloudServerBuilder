@@ -6,7 +6,7 @@ require_relative 'exceptions'
 require_relative 'file_collection'
 
 RSpec.describe GiftCloud::Client do
-  subject( :client ) { GiftCloud::Client.new 'http://localhost:8080' }
+  subject( :client ) { GiftCloud::Client.new 'http://localhost:8080/dummycloud' }
   
   before( :each ) do
     client.sign_in 'admin', 'admin'
@@ -32,25 +32,28 @@ RSpec.describe GiftCloud::Client do
   describe '(project)' do
     before( :each ) do
       @projects = Array.new
-      5.times do
-        client.add_project( ( @projects << GiftCloud::Project.new ).last )
+      2.times do
+        new_project = GiftCloud::Project.new
+        client.add_project( new_project )
+        @projects << new_project
       end
       @existing_project = @projects.last
     end
     
     it 'creates new' do
       new_project = GiftCloud::Project.new # random data
-      expect( client.list_projects ).to_not include( new_project )
+      expect( client.list_projects.include? new_project ).to be_falsy
       client.add_project new_project
-      expect( client.list_projects ).to include( new_project )
+      expect( client.list_projects.include? new_project ).to be_truthy
     end
     
     it 'does not re-create existing' do
+      puts 'existing = ' + @existing_project.to_str
       expect{ client.add_project @existing_project }.to raise_error( GiftCloud::EntityExistsError )
     end
     
     it 'lists all accessible to user' do
-      expect( client.list_projects ).to contain_exactly( *@projects )
+      expect( client.list_projects.include_array? @projects ).to be_truthy
     end
     
     it 'does not list any not accessible to user' do

@@ -5,4 +5,6 @@ module GiftCloud
   # on an existing one.
   class EntityExistsError < StandardError; end
   
+  class AuthenticationError < StandardError; end
+  
 end

@@ -1,80 +1,151 @@
 require 'rspec'
 
 require_relative 'client'
+require_relative 'entities'
+require_relative 'exceptions'
+require_relative 'file_collection'
 
 RSpec.describe GiftCloud::Client do
+  subject( :client ) { GiftCloud::Client.new 'http://localhost:8080' }
+  
+  before( :all ) do
+    # TODO sign in ?
+  end
+  
+  after( :all ) do
+    # TODO sign out ?
+  end
+  
   # AUTHENTICATION ===================================
   describe '(authentication)' do
     it 'signs in' do
-      skip 'not implemented'
+      skip 'implement in multi-user'
     end
     
     it 'signs out' do
-      skip 'not implemented'
+      skip 'implement in multi-user'
     end
   end
   # ==================================================
   
   # PROJECT ==========================================
   describe '(project)' do
+    
+    before( :example ) do
+      @projects = Array.new
+      5.times do
+        client.add_project( ( @projects << GiftCloud::Project.new ).last )
+      end
+    end
+    
+    after( :example ) do
+      client.sign_out
+    end
+    
     it 'creates new' do
-      skip 'not implemented'
+      new_project = GiftCloud::Project.new # random data
+      expect( client.list_projects ).to_not include( new_project )
+      client.add_project new_project
+      expect( client.list_projects ).to include( new_project )
     end
     
     it 'does not re-create existing' do
-      skip 'not implemented'
+      expect{ client.add_project @project }.to raise_error( GiftCloud::EntityExistsError )
     end
     
     it 'lists all accessible to user' do
-      skip 'not implemented'
+      expect( client.list_projects ).to contain_exactly( *@projects )
     end
     
     it 'does not list any not accessible to user' do
-      skip 'not implemented'
+      skip 'implement in multi-user'
     end
   end
   # ==================================================
   
   # SUBJECT ==========================================
   describe '(subject)' do
+    before( :each ) do
+      client.add_project @project = GiftCloud::Project.new
+      client.add_subject @subject = GiftCloud::Subject.new, @project
+      ( @subjects = Array.new ) << @subject
+      5.times do
+        client.add_subject( ( @subjects << GiftCloud::Subject.new ).last, @project )
+      end
+    end
+    
     it 'creates new' do
-      skip 'not implemented'
+      new_subject = GiftCloud::Subject.new
+      expect( client.list_subjects @project ).to_not include( new_subject )
+      client.add_subject new_subject, @project
+      expect( client.list_subjects @project ).to include( new_subject )
     end
     
     it 'does not re-create existing' do
-      skip 'not implemented'
+      expect{ client.add_subject @subject, @project }.to raise_error( GiftCloud::EntityExistsError )
     end
     
     it 'lists all in a project' do
-      skip 'not implemented'
+      expect( client.list_subjects @project ).to contain_exactly( *@subjects )
     end
   end
   # ==================================================
   
   # UPLOAD ===========================================
   describe '(session)' do
+    before( :each ) do
+      client.add_project( @project = GiftCloud::Project.new )
+      client.add_subject( @subject = GiftCloud::Subject.new, @project )
+      @session = GiftCloud::Session.new
+      @path = '../resources/Goldmarker_17Sep09/'
+      @files = Array.new
+      @files << @path + 't1_vibe_cor_p2_bh_384_uro_MIP_COR.zip'
+      @files << @path + 't1_vibe_cor_p2_bh_384_uro.zip'
+      @files << @path + 'REPORT_GOLDMARKER_17SEP09.SR.FILIPCLAUS_CLINICAL.99.3.2009.09.17.18.53.39.984375.208094471.SR.zip'
+      @files << @path + 't2_spc_3D_cor_2mm.zip'
+      @files.each do |filename|
+        client.upload_file File.new( filename ), @project, @subject, @session
+      end
+    end
+    
     it 'uploads zipped DICOM studies of a subject to new' do
-      skip 'not implemented'
+      new_session = GiftCloud::Session.new
+      new_file = ( @files << @path + 't2_trufi_obl_bh_pat.zip' ).last
+      client.upload_file File.new( new_file ), @project, @subject, new_session
+      downloaded_files = client.download_files @project, @subject, new_session
+      expect( GiftCloud::FileCollection.new( downloaded_files ).match? @files ).to be_truthy
     end
     
     it 'uploads zipped DICOM studies of a subject to existing' do
-      skip 'not implemented'
+      new_file = @path + 't2_trufi_obl_bh_pat.zip'
+      client.upload_file new_file, @project, @subject, @session
+      downloaded_files = client.download_files @project, @subject, @session
+      expect( GiftCloud::FileCollection.new( downloaded_files ).include? new_file ).to be_truthy
     end
   end
   # ==================================================
   
   # PSEUDONYM ========================================
   describe '(pseudonym)' do
+    before( :each ) do
+      client.add_project( @project = GiftCloud::Project.new )
+      client.add_subject( @subject = GiftCloud::Subject.new, @project )
+      client.add_pseudonym( @pseudonym = GiftCloud::Pseudonym.new, @project, @subject )
+    end
+    
     it 'creates new for a subject' do
-      skip 'not implemented'
+      new_pseudonym = GiftCloud::Pseudonym.new
+      expect( client.match_subject new_pseudonym, @project ).to be_nil
+      client.add_pseudonym new_pseudonym, @project, @subject
+      expect( client.match_subject new_pseudonym, @project ).to eq( @subject )
     end
     
     it 'retrieves subject corresponding to existing' do
-      skip 'not implemented'
+      expect( client.match_subject @pseudonym, @project ).to eq( @subject )
     end
     
     it 'does not re-create existing' do
-      skip 'not implemented'
+      expect{ client.add_pseudonym @pseudonym, @project, @subject }.to raise_error( GiftCloud::EntityExistsError )
     end
   end
   # ==================================================

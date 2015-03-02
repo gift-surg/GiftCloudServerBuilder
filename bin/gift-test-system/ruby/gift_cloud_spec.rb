@@ -8,12 +8,12 @@ require_relative 'file_collection'
 RSpec.describe GiftCloud::Client do
   subject( :client ) { GiftCloud::Client.new 'http://localhost:8080' }
   
-  before( :all ) do
-    # TODO sign in ?
+  before( :each ) do
+    client.sign_in 'admin', 'admin'
   end
   
-  after( :all ) do
-    # TODO sign out ?
+  after( :each ) do
+    client.sign_out
   end
   
   # AUTHENTICATION ===================================

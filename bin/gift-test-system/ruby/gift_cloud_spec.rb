@@ -30,16 +30,12 @@ RSpec.describe GiftCloud::Client do
   
   # PROJECT ==========================================
   describe '(project)' do
-    
-    before( :example ) do
+    before( :each ) do
       @projects = Array.new
       5.times do
         client.add_project( ( @projects << GiftCloud::Project.new ).last )
       end
-    end
-    
-    after( :example ) do
-      client.sign_out
+      @existing_project = @projects.last
     end
     
     it 'creates new' do
@@ -50,7 +46,7 @@ RSpec.describe GiftCloud::Client do
     end
     
     it 'does not re-create existing' do
-      expect{ client.add_project @project }.to raise_error( GiftCloud::EntityExistsError )
+      expect{ client.add_project @existing_project }.to raise_error( GiftCloud::EntityExistsError )
     end
     
     it 'lists all accessible to user' do
@@ -67,11 +63,11 @@ RSpec.describe GiftCloud::Client do
   describe '(subject)' do
     before( :each ) do
       client.add_project @project = GiftCloud::Project.new
-      client.add_subject @subject = GiftCloud::Subject.new, @project
-      ( @subjects = Array.new ) << @subject
+      @subjects = Array.new
       5.times do
         client.add_subject( ( @subjects << GiftCloud::Subject.new ).last, @project )
       end
+      @existing_subject = @subjects.last
     end
     
     it 'creates new' do
@@ -82,7 +78,7 @@ RSpec.describe GiftCloud::Client do
     end
     
     it 'does not re-create existing' do
-      expect{ client.add_subject @subject, @project }.to raise_error( GiftCloud::EntityExistsError )
+      expect{ client.add_subject @existing_subject, @project }.to raise_error( GiftCloud::EntityExistsError )
     end
     
     it 'lists all in a project' do

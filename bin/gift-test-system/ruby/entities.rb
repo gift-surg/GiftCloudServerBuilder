@@ -43,7 +43,12 @@ module GiftCloud
   
   ##
   # Class encapsulating an XNAT subject pseudonym.
-  class Pseudonym; end
+  class Pseudonym < Entity
+    protected
+    def generate_label
+      'i_' + generate_unique_string
+    end
+  end
   
   ##
   # Class encapsulating an XNAT session.

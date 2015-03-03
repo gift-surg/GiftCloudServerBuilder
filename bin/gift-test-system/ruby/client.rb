@@ -62,12 +62,16 @@ module GiftCloud
     end
     
     def match_subject project, pseudonym
-      # TODO
-      nil
+      check_auth!
+      json_response = try_get! gen_uri( 'REST', 'projects', project.label, 
+                                        'pseudonyms', pseudonym.label + '?format=json' + '&columns=DEFAULT' )
+      entities = json_response['items'][0]['data_fields']
+      entities.empty? ? nil : Subject.new( entities['label'] )
     end
     
     def add_pseudonym pseudonym, project, subject
-      # TODO
+      check_auth!
+      try_put! gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
     end
     
     private

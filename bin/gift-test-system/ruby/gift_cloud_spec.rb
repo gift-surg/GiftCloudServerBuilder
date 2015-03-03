@@ -134,13 +134,13 @@ RSpec.describe GiftCloud::Client do
     
     it 'creates new for a subject' do
       new_pseudonym = GiftCloud::Pseudonym.new
-      expect( client.match_subject new_pseudonym, @project ).to be_nil
+      expect( client.match_subject @project, new_pseudonym ).to be_nil
       client.add_pseudonym new_pseudonym, @project, @subject
-      expect( client.match_subject new_pseudonym, @project ).to eq( @subject )
+      expect( client.match_subject @project, new_pseudonym ).to eq( @subject )
     end
     
     it 'retrieves subject corresponding to existing' do
-      expect( client.match_subject @pseudonym, @project ).to eq( @subject )
+      expect( client.match_subject @project, @pseudonym ).to eq( @subject )
     end
     
     it 'does not re-create existing' do

@@ -1,25 +1,14 @@
 ##
-# Extending for defining an +included_in?+ method.
+# Extending for defining an +include_array?+ method.
 class Array
-  def included_in? array
-    if array.nil?
-      return false
-    end
+  def include_array? array
+    raise ArgumentError if array.nil?
     
-    self.each do |e|
-      if ( array.find { |ae| ae == e } ).nil?
-        return false
-      end
+    includes = true
+    array.each do |e|
+      includes = false unless self.include? e
     end
-    return true
-  end
-end
-
-##
-# Extending for defining an +included_in?+ method as the +Array+ class above.
-class File
-  def included_in? file_collection
-    raise RuntimeError, 'not implemented' # TODO
+    return includes
   end
 end
 

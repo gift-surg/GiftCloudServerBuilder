@@ -48,7 +48,7 @@ RSpec.describe GiftCloud::Client do
     end
     
     it 'does not re-create existing' do
-      puts 'existing = ' + @existing_project.to_str
+      puts 'existing = ' + @existing_project.label
       expect{ client.add_project @existing_project }.to raise_error( GiftCloud::EntityExistsError )
     end
     

@@ -2,31 +2,44 @@ require_relative 'helpers'
 
 module GiftCloud
   
-  ##
-  # Class encapsulating an XNAT project.
-  class Project
+  class Entity
     attr_reader :label
     
     def initialize label = nil
       if label.nil?
-        @label = 'p_' + generate_unique_string
+        @label = generate_label
       else
         @label = label
       end
     end
     
-    def to_str
-      @label
-    end
-    
     def == other
       @label == other.label
+    end
+    
+    protected
+    def generate_label
+      generate_unique_string
+    end
+  end
+  
+  ##
+  # Class encapsulating an XNAT project.
+  class Project < Entity
+    protected
+    def generate_label
+      'p_' + generate_unique_string
     end
   end
   
   ##
   # Class encapsulating an XNAT subject.
-  class Subject; end
+  class Subject < Entity
+    protected
+    def generate_label
+      's_' + generate_unique_string
+    end
+  end
   
   ##
   # Class encapsulating an XNAT subject pseudonym.

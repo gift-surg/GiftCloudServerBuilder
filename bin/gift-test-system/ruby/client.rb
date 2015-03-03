@@ -22,8 +22,7 @@ module GiftCloud
     
     def list_projects
       check_auth!
-      uri = gen_uri( 'REST', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
-      json_response = try_get! uri
+      json_response = try_get! gen_uri( 'REST', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
       projects = Array.new
       json_response['ResultSet']['Result'].each do |project|
         projects << Project.new( project['name'] )
@@ -33,17 +32,24 @@ module GiftCloud
     
     def add_project project
       check_auth!
-      uri = gen_uri( 'REST', 'projects', project.to_str )
-      json_response = try_post! uri
+      try_put! gen_uri( 'REST', 'projects', project.label )
     end
     
     def list_subjects project
-      # TODO
-      []
+      check_auth!
+      json_response = try_get! gen_uri( 'REST', 'projects', project.label, 'subjects' + '?format=json' + '&columns=DEFAULT' )
+      subjects = Array.new
+      json_response['ResultSet']['Result'].each do |subject|
+        subjects << Subject.new( subject['label'] )
+      end
+      subjects
     end
     
     def add_subject subject, project
-      # TODO
+      check_auth!
+      try_put! gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label ),
+                '<?xml version="1.0" encoding"UTF-8" standalone="no"?>' +
+                '<xnat:Subject label="' + subject.label + '" project="' + project.label + ' xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
     end
     
     def upload_file file, project, subject, session
@@ -85,19 +91,33 @@ module GiftCloud
     end
     
     def try_post! uri, *resource
-      warn "POST\t#{uri}"
+      warn "POST\t#{uri}\nresource\t#{resource}"
+      response = RestClient.post uri, resource
+      
+      handle_postput_response response
+      response.body
+    end
+    
+    def try_put! uri, *resource
+      warn "PUT\t#{uri}\nresource\t#{resource}"
       response = RestClient.put uri, resource
+      
+      handle_postput_response response
+      response.body
+    end
+    
+    def handle_postput_response response
       if response.body.empty?
-        warn "POST-Response body empty"
+        warn "POST/PUT-Response body empty"
       end
       
       case response.code
       when 201 # Created (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        return response.body
+        return
       when 200 # OK (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        msg = 'POST returned 200 (OK)'
+        msg = 'POST/PUT returned 200 (OK)'
       when 204 # No Content (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        msg = 'POST returned 204 (No Content)'
+        msg = 'POST/PUT returned 204 (No Content)'
       when 400, # Bad Request
            500, 501, 502, 503, 504, 505 # Server Error
         raise response.code
@@ -106,9 +126,7 @@ module GiftCloud
       when 403 # Forbidden
         raise EntityExistsError, response.to_s
       end
-      
       warn msg += ' rather than 201 (Created)'
-      response.body
     end
     
     def check_auth!

@@ -15,5 +15,5 @@ end
 ## helper methods
 
 def generate_unique_string
-  Time.now.strftime("%Y%m%d_%H%M%S_") + (0...4).map { (65 + rand(26)).chr }.join
+  Time.now.strftime("%H%M%S_") + Array.new(2){[*'A'..'Z'].sample}.join
 end

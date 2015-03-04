@@ -38,9 +38,19 @@ module GiftCloud
       check_auth!
       
       uri = gen_uri( 'REST', 'projects', project.label )
-      result = try_put! uri, {}, 200
+      result = try_put uri, {}
       
-      warn "200 (OK) returned rather than 201 (Created)"
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        # nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      else
+        raise result
+      end
+      
       return result
     end
     
@@ -65,7 +75,18 @@ module GiftCloud
       xml = '<?xml version="1.0" encoding"UTF-8" standalone="no"?>' +
             '<xnat:Subject label="' + subject.label + '" project="' + 
             project.label + ' xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
-      try_put! uri, xml, 201
+      result = try_put uri, xml
+      
+      case result.code
+      when 201 # Created
+        # nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      else
+        raise result
+      end
+      
+      return result
     end
     
     def upload_files filenames, project, subject, session
@@ -151,9 +172,19 @@ module GiftCloud
       check_auth!
       
       uri = gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
-      result = try_put! uri, {}, 200
+      result = try_put uri, {}
       
-      warn "200 (OK) returned rather than 201 (Created)"
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        # nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      else
+        raise result
+      end
+      
       return result
     end
     
@@ -192,19 +223,14 @@ module GiftCloud
       end
     end
     
-    def try_put! uri, parameters, expected_code
-      warn "PUT\t#{uri}\nwith parameters\t#{parameters}\tand expected code\t#{expected_code}"
-      
+    def try_put uri, parameters
+      warn "PUT\t#{uri}\nwith parameters\t#{parameters}"
+           
       r = nil
       RestClient.put( uri,
                       parameters
                     ) { |response, request, result| r = response }
-      case r.code
-      when expected_code
-        return r.body
-      else
-        raise r
-      end
+      return r
     end
     
     def check_auth!

@@ -99,7 +99,16 @@ module GiftCloud
       commit_path.strip!.sub! '/', ''
       
       uri = gen_uri( commit_path + '?action=commit' + '&SOURCE=applet' )
-      try_post! uri, {}, 301
+      result = try_post uri, {}
+      
+      case result.code
+      when 301 # Moved Permanently
+        # nop
+      else
+        raise result
+      end
+      
+      return result
     end
     
     def upload_file filename, project, subject, session
@@ -114,12 +123,19 @@ module GiftCloud
                        '&rename=true' + '&prevent_anon=true' + 
                        '&prevent_auto_commit=true' + '&SOURCE=applet'
                    )
-      result = try_post! uri,
+      result = try_post uri,
                         { :file => File.new( filename, 'rb' ),
-                          :content_type => 'multipart/mixed' },
-                        200
+                          :content_type => 'multipart/mixed' }
+                          
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        # nop
+      else
+        raise result
+      end
       
-      warn "200 (OK) returned rather than 201 (Created)"
       return result
     end
     
@@ -208,19 +224,12 @@ module GiftCloud
       end
     end
     
-    def try_post! uri, parameters, expected_code
-      warn "POST\t#{uri}\nwith parameters\t#{parameters}\tand expected code\t#{expected_code}"
-      
+    def try_post uri, parameters
       r = nil
       RestClient.post( uri,
                        parameters
                      ) { |response, request, result| r = response }
-      case r.code
-      when expected_code
-        return r.body
-      else
-        raise r
-      end
+      return r
     end
     
     def try_put uri, parameters

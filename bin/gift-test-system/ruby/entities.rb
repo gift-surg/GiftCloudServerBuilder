@@ -52,6 +52,11 @@ module GiftCloud
   
   ##
   # Class encapsulating an XNAT session.
-  class Session; end
+  class Session < Entity
+    protected
+    def generate_label
+      'e_' + generate_unique_string
+    end
+  end
   
 end # module

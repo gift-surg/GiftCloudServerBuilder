@@ -99,26 +99,27 @@ RSpec.describe GiftCloud::Client do
       @path = '../resources/Goldmarker_17Sep09/'
       @files = Array.new
       @files << @path + 't1_vibe_cor_p2_bh_384_uro_MIP_COR.zip'
+      @files << @path + 'Localizers.zip'
+      @files << @path + 'PhoenixZIPReport.zip'
       @files << @path + 't1_vibe_cor_p2_bh_384_uro.zip'
-      @files << @path + 'REPORT_GOLDMARKER_17SEP09.SR.FILIPCLAUS_CLINICAL.99.3.2009.09.17.18.53.39.984375.208094471.SR.zip'
-      @files << @path + 't2_spc_3D_cor_2mm.zip'
-      @files.each do |filename|
-        client.upload_file File.new( filename ), @project, @subject, @session
-      end
+      @files << @path + 't2_trufi_obl_bh_pat.zip'
+      client.upload_files @files, @project, @subject, @session
     end
     
     it 'uploads zipped DICOM studies of a subject to new' do
       new_session = GiftCloud::Session.new
-      new_file = ( @files << @path + 't2_trufi_obl_bh_pat.zip' ).last
-      client.upload_file File.new( new_file ), @project, @subject, new_session
-      downloaded_files = client.download_files @project, @subject, new_session
-      expect( GiftCloud::FileCollection.new( downloaded_files ).match? @files ).to be_truthy
+      new_filename = ( @files << @path + 't2_spc_3D_cor_2mm.zip' ).last
+      client.upload_files [ new_filename ], @project, @subject, new_session
+      download_path = '../tmp/' + generate_unique_string
+      downloaded_filenames = client.download_files @project, @subject, new_session, download_path
+      expect( GiftCloud::FileCollection.new( downloaded_filenames ).match? @files ).to be_truthy
     end
     
     it 'uploads zipped DICOM studies of a subject to existing' do
-      new_file = @path + 't2_trufi_obl_bh_pat.zip'
-      client.upload_file new_file, @project, @subject, @session
-      downloaded_files = client.download_files @project, @subject, @session
+      new_file = @path + 't2_spc_3D_cor_2mm.zip'
+      client.upload_files [ new_file ], @project, @subject, @session
+      download_path = '../tmp/' + generate_unique_string
+      downloaded_files = client.download_files @project, @subject, @session, download_path
       expect( GiftCloud::FileCollection.new( downloaded_files ).include? new_file ).to be_truthy
     end
   end

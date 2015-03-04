@@ -57,6 +57,7 @@ bin\initXnatDb.bat
 
 .launches/tomcat-startup.launch
 test-output
+bin/gift-test-system/tmp
 syntax: regexp
 ^.idea
 ^.*\.[ei]ml

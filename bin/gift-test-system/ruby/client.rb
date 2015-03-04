@@ -33,7 +33,12 @@ module GiftCloud
     
     def add_project project
       check_auth!
-      try_put! gen_uri( 'REST', 'projects', project.label )
+      
+      uri = gen_uri( 'REST', 'projects', project.label )
+      result = try_put! uri, {}, 200
+      
+      warn "200 (OK) returned rather than 201 (Created)"
+      return result
     end
     
     def list_subjects project
@@ -49,12 +54,17 @@ module GiftCloud
     
     def add_subject subject, project
       check_auth!
-      try_put! gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label ),
-                '<?xml version="1.0" encoding"UTF-8" standalone="no"?>' +
-                '<xnat:Subject label="' + subject.label + '" project="' + project.label + ' xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
+      
+      uri = gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label )
+      xml = '<?xml version="1.0" encoding"UTF-8" standalone="no"?>' +
+            '<xnat:Subject label="' + subject.label + '" project="' + 
+            project.label + ' xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
+      try_put! uri, xml, 201
     end
     
     def upload_files filenames, project, subject, session
+      check_auth!
+      
       commit_path = ''
       filenames.each do |filename|
         commit_path = upload_file filename, project, subject, session
@@ -62,18 +72,12 @@ module GiftCloud
       commit_path.strip!.sub! '/', ''
       
       uri = gen_uri( commit_path + '?action=commit' + '&SOURCE=applet' )
-      r = nil
-      RestClient.post( uri, {} ) { |response, request, result| r = response }
-      case r.code
-      when 301 # Moved Permanently (= expected)
-        return r.body
-      else
-        raise r
-      end
+      try_post! uri, {}, 301
     end
     
     def upload_file filename, project, subject, session
       check_auth!
+      
       uri = gen_uri( 'REST',
                      'services',
                      'import' + '?import-handler=DICOM-zip' +
@@ -83,19 +87,13 @@ module GiftCloud
                        '&rename=true' + '&prevent_anon=true' + 
                        '&prevent_auto_commit=true' + '&SOURCE=applet'
                    )
-      warn "POST\t#{uri}\nfilename #{filename}"
-      r = nil
-      RestClient.post( uri,
-                       :file => File.new( filename, 'rb' ),
-                       :content_type => 'multipart/mixed'
-                     ) { |response, request, result| r = response }
-      case r.code
-      when 200 # OK (= expected, but should eventually be 201 Created)
-        warn "200 (OK) returned rather than 201 (Created)"
-        return r.body
-      else
-        raise r
-      end
+      result = try_post! uri,
+                        { :file => File.new( filename, 'rb' ),
+                          :content_type => 'multipart/mixed' },
+                        200
+      
+      warn "200 (OK) returned rather than 201 (Created)"
+      return result
     end
     
     def download_files project, subject, session, filename_prefix
@@ -136,7 +134,12 @@ module GiftCloud
     
     def add_pseudonym pseudonym, project, subject
       check_auth!
-      try_put! gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
+      
+      uri = gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
+      result = try_put! uri, {}, 200
+      
+      warn "200 (OK) returned rather than 201 (Created)"
+      return result
     end
     
     private
@@ -165,53 +168,34 @@ module GiftCloud
       end
     end
     
-    def try_post! uri, *resource
-      warn "POST\t#{uri}\nresource\t#{resource}"
-      begin
-        response = RestClient.post uri, resource
-      rescue => e
-        warn e.to_s
-        return nil
-      end
+    def try_post! uri, parameters, expected_code
+      warn "POST\t#{uri}\nwith parameters\t#{parameters}\tand expected code\t#{expected_code}"
       
-      handle_postput_response response
-      response.body
+      r = nil
+      RestClient.post( uri,
+                       parameters
+                     ) { |response, request, result| r = response }
+      case r.code
+      when expected_code
+        return r.body
+      else
+        raise r
+      end
     end
     
-    def try_put! uri, *resource
-      warn "PUT\t#{uri}\nresource\t#{resource}"
-      begin
-        response = RestClient.put uri, resource
-      rescue => e
-        warn e.to_s
-        return nil
-      end
+    def try_put! uri, parameters, expected_code
+      warn "PUT\t#{uri}\nwith parameters\t#{parameters}\tand expected code\t#{expected_code}"
       
-      handle_postput_response response
-      response.body
-    end
-    
-    def handle_postput_response response
-      if response.body.empty?
-        warn "POST/PUT-Response body empty"
+      r = nil
+      RestClient.put( uri,
+                      parameters
+                    ) { |response, request, result| r = response }
+      case r.code
+      when expected_code
+        return r.body
+      else
+        raise r
       end
-      
-      case response.code
-      when 201 # Created (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        return
-      when 200 # OK (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        msg = 'POST/PUT returned 200 (OK)'
-      when 204 # No Content (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        msg = 'POST/PUT returned 204 (No Content)'
-      when 400, # Bad Request
-           500, 501, 502, 503, 504, 505 # Server Error
-        raise response.code
-      when 401 # Unauthorized
-        raise AuthenticationError, response.to_s
-      when 403 # Forbidden
-        raise EntityExistsError, response.to_s
-      end
-      warn msg += ' rather than 201 (Created)'
     end
     
     def check_auth!

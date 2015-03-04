@@ -114,14 +114,6 @@ RSpec.describe GiftCloud::Client do
       downloaded_filenames = client.download_files @project, @subject, new_session, download_path
       expect( GiftCloud::FileCollection.new( downloaded_filenames ).match? @files ).to be_truthy
     end
-    
-    it 'uploads zipped DICOM studies of a subject to existing' do
-      new_file = @path + 't2_spc_3D_cor_2mm.zip'
-      client.upload_files [ new_file ], @project, @subject, @session
-      download_path = '../tmp/' + generate_unique_string
-      downloaded_files = client.download_files @project, @subject, @session, download_path
-      expect( GiftCloud::FileCollection.new( downloaded_files ).include? new_file ).to be_truthy
-    end
   end
   # ==================================================
   

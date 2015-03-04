@@ -22,10 +22,13 @@ module GiftCloud
     
     def list_projects
       check_auth!
-      json_response = try_get! gen_uri( 'REST', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
-      json_response = JSON.parse json_response
+      
+      uri = gen_uri( 'REST', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
+      result = try_get! uri, {}, 200
+      
+      json = JSON.parse result
       projects = Array.new
-      json_response['ResultSet']['Result'].each do |project|
+      json['ResultSet']['Result'].each do |project|
         projects << Project.new( project['name'] )
       end
       projects
@@ -43,10 +46,13 @@ module GiftCloud
     
     def list_subjects project
       check_auth!
-      json_response = try_get! gen_uri( 'REST', 'projects', project.label, 'subjects' + '?format=json' + '&columns=DEFAULT' )
-      json_response = JSON.parse json_response
+      
+      uri = gen_uri( 'REST', 'projects', project.label, 'subjects' + '?format=json' + '&columns=DEFAULT' )
+      result = try_get! uri, {}, 200
+      
+      json = JSON.parse result
       subjects = Array.new
-      json_response['ResultSet']['Result'].each do |subject|
+      json['ResultSet']['Result'].each do |subject|
         subjects << Subject.new( subject['label'] )
       end
       subjects
@@ -98,12 +104,16 @@ module GiftCloud
     
     def download_files project, subject, session, filename_prefix
       check_auth!
-      response = try_get! gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label,
-                                           'experiments', session.label + '?format=json' )
-      response = JSON.parse response
-      session_id = response['items'][0]['data_fields']['ID']
+      
+      uri = gen_uri( 'REST',
+                     'projects', project.label, 'subjects', subject.label,
+                     'experiments', session.label + '?format=json' )
+      result = try_get! uri, {}, 200
+      
+      json = JSON.parse result
+      session_id = json['items'][0]['data_fields']['ID']
       scan_ids = Array.new
-      response['items'][0]['children'].each do |scan|
+      json['items'][0]['children'].each do |scan|
         next unless scan['field'] == 'scans/scan'
         scan['items'].each do |file|
           next unless file['children'][0]['field'] == 'file'
@@ -113,22 +123,27 @@ module GiftCloud
       
       filenames = Array.new
       scan_ids.each do |scan_id|
-        response = try_get! gen_uri( 'data', 'experiments', session_id, 
-                                             'scans', scan_id, 
-                                             'resources', 'DICOM', 
-                                             'files' + '?format=zip' ) # + '&structure=simplified'  TODO
+        uri = gen_uri( 'data', 'experiments', session_id, 
+                       'scans', scan_id, 
+                       'resources', 'DICOM', 
+                       'files' + '?format=zip' ) # + '&structure=simplified'  TODO
+        result = try_get! uri, {}, 200
+        
         filenames << "#{filename_prefix}_#{session_id}_#{scan_id}"
-        File.new( filenames.last, 'wb' ).write( response )
+        File.new( filenames.last, 'wb' ).write( result )
       end
       filenames
     end
     
     def match_subject project, pseudonym
       check_auth!
-      json_response = try_get! gen_uri( 'REST', 'projects', project.label, 
-                                        'pseudonyms', pseudonym.label + '?format=json' + '&columns=DEFAULT' )
-      json_response = JSON.parse json_response
-      entities = json_response['items'][0]['data_fields']
+      
+      uri = gen_uri( 'REST',
+                     'projects', project.label, 
+                     'pseudonyms', pseudonym.label + '?format=json' + '&columns=DEFAULT' )
+      result = try_get! uri, {}, 200
+      json = JSON.parse result
+      entities = json['items'][0]['data_fields']
       entities.empty? ? nil : Subject.new( entities['label'] )
     end
     
@@ -147,24 +162,18 @@ module GiftCloud
       [ @host.sub('//', "//#{@user}:#{@pass}@"), *args ].join('/')
     end
     
-    def try_get! uri
-      warn "GET\t#{uri}"
-      begin
-        response = RestClient.get uri
-      rescue => e
-        warn e.to_s
-        return nil
-      end
+    def try_get! uri, parameters, expected_code
+      warn "GET\t#{uri}\nwith parameters\t#{parameters}\tand expected code\t#{expected_code}"
       
-      case response.code
-      when 200 # OK (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html for a use in conj with POST)
-        response.body
-      when 401 # Unauthorized
-        raise AuthenticationError, response.to_s
-      when 400, # Bad Request
-           404, # Not Found
-           500, 501, 502, 503, 504, 505 # Server Error
-        raise response.code
+      r = nil
+      RestClient.get( uri,
+                      parameters
+                    ) { |response, request, result| r = response }
+      case r.code
+      when expected_code
+        return r.body
+      else
+        raise r
       end
     end
     

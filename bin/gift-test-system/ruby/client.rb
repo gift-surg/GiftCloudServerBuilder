@@ -166,7 +166,7 @@ module GiftCloud
                        'files' + '?format=zip' ) # + '&structure=simplified'  TODO
         result = try_get! uri, {}, 200
         
-        filenames << "#{filename_prefix}_#{session_id}_#{scan_id}"
+        filenames << "#{filename_prefix}#{session_id}_#{scan_id}"
         File.new( filenames.last, 'wb' ).write( result )
       end
       filenames

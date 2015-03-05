@@ -58,6 +58,8 @@ bin\initXnatDb.bat
 .launches/tomcat-startup.launch
 test-output
 bin/gift-test-system/tmp
+bin/gift-test-system/ruby/dicom_series_*
+bin/gift-test-system/ruby/downloaded_files_*
 syntax: regexp
 ^.idea
 ^.*\.[ei]ml

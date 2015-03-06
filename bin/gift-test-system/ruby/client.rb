@@ -178,21 +178,27 @@ module GiftCloud
       uri = gen_uri( 'REST',
                      'projects', project.label, 
                      'pseudonyms', pseudonym.label + '?format=json' + '&columns=DEFAULT' )
-      result = try_get! uri, {}, 200
-      json = JSON.parse result
-      entities = json['items'][0]['data_fields']
-      entities.empty? ? nil : Subject.new( entities['label'] )
+      result = try_get uri, {}
+      
+      case result.code
+      when 200 # OK
+        json = JSON.parse result
+        entities = json['items'][0]['data_fields']
+        entities.empty? ? raise( 'please correct me!' ) : Subject.new( entities['label'] )
+      when 204 # No Content
+        return nil
+      else
+        raise r
+      end
     end
     
     def add_pseudonym pseudonym, project, subject
       check_auth!
       
       uri = gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
-      result = try_put uri, {}
+      result = try_post uri, {}
       
       case result.code
-      when 200 # OK
-        warn "200 (OK) returned rather than 201 (Created)"
       when 201 # Created
         # nop
       when 403 # Forbidden
@@ -207,6 +213,16 @@ module GiftCloud
     private
     def gen_uri *args
       [ @host.sub('//', "//#{@user}:#{@pass}@"), *args ].join('/')
+    end
+    
+    def try_get uri, parameters
+      warn "GET\t#{uri}\nwith parameters\t#{parameters}"
+      
+      r = nil
+      RestClient.get( uri,
+                      parameters 
+                    ) { |response, request, result| r = response }
+      return r
     end
     
     def try_get! uri, parameters, expected_code
@@ -225,6 +241,8 @@ module GiftCloud
     end
     
     def try_post uri, parameters
+      warn "POST\t#{uri}\nwith parameters\t#{parameters}"
+      
       r = nil
       RestClient.post( uri,
                        parameters

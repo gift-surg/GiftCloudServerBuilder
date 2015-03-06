@@ -55,12 +55,12 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	}
 	
 	@Override
-	public boolean allowPut() {
+	public boolean allowPost() {
 		return true;
 	}
 	
 	@Override
-	public void handlePut() {
+	public void handlePost() {
 		try {
 			// population & sanity checks
 			if (Strings.isNullOrEmpty(ppid)) {
@@ -70,7 +70,7 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 			
 			Optional<ExtSubjectpseudonym> pseudonym = secureItemUtil.getPseudonym(ppid);
 			if (pseudonym.isPresent()) {
-				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Provided PPID exists");
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided PPID exists");
 				return;
 			}
 			
@@ -82,8 +82,10 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 			
 			// add PPID
 			Optional<ExtSubjectpseudonym> newPseudonym = secureItemUtil.addPseudoId(subject.get(), ppid);
-			if (newPseudonym.isPresent())
+			if (newPseudonym.isPresent()) {
 				returnXML(newPseudonym.get().getItem()); // TODO what is this for ? resource.returnDefaultRepresentation();
+				getResponse().setStatus(Status.SUCCESS_CREATED);
+			}
 			else
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "Unknown error occured when adding new pseudonym to subject " + subject.get().getLabel());
 		} catch (Throwable t) {

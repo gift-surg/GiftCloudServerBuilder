@@ -109,11 +109,13 @@ RSpec.describe GiftCloud::Client do
     it 'uploads zipped DICOM studies of a subject to new' do
       new_session = GiftCloud::Session.new
       client.upload_files @files, @project, @subject, new_session
-      download_path = 'downloaded_files_' + generate_unique_string + '/'; Dir.mkdir download_path
+      download_path = '../tmp/downloaded_files_' + generate_unique_string + '/'; Dir.mkdir download_path
       downloaded_filenames = client.download_files @project, @subject, new_session, download_path
       expect(
         GiftCloud::ZippedDicomSeriesCollection.new( downloaded_filenames ).
           match? GiftCloud::ZippedDicomSeriesCollection.new( @files ) ).to be_truthy
+      File.delete( *downloaded_filenames )
+      Dir.delete download_path
     end
   end
   # ==================================================

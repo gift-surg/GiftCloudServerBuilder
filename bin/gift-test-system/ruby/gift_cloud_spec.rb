@@ -90,30 +90,51 @@ RSpec.describe GiftCloud::Client do
   # ==================================================
   
   # UPLOAD ===========================================
-  describe '(session)' do
+  describe '(upload - session, scan)' do
     before( :each ) do
       client.add_project( @project = GiftCloud::Project.new )
       client.add_subject( @subject = GiftCloud::Subject.new, @project )
-      @session = GiftCloud::Session.new
+      client.add_session( @session = GiftCloud::Session.new, @project, @subject )
+      client.add_scan( @scan = GiftCloud::Scan.new, @project, @subject, @session )
       path = '../resources/Goldmarker_17Sep09/'
-      @files = Array.new
-      @files << path + 't1_vibe_cor_p2_bh_384_uro_MIP_COR.zip'
-      @files << path + 'Localizers.zip'
-      @files << path + 'PhoenixZIPReport.zip'
-      @files << path + 't1_vibe_cor_p2_bh_384_uro.zip'
-      @files << path + 't2_trufi_obl_bh_pat.zip'
-      @files << path + 't2_spc_3D_cor_2mm.zip'
-      client.upload_files @files, @project, @subject, @session
+      files = Dir.entries( path ).select { |x| x[/[\w|\.]*\.zip$/] }
+      files.map! { |x| x = path + x }
+      l = ( files.length / 2.0 )
+      i = l.floor
+      j = l.ceil
+      @uploaded_files = files[ 0, i ]
+      @files_to_upload = files[ i, j ]
+      @uploaded_files.each do |filename|
+        client.upload_file filename, @project, @subject, @session, @scan
+      end
     end
     
-    it 'uploads zipped DICOM studies of a subject to new' do
-      new_session = GiftCloud::Session.new
-      client.upload_files @files, @project, @subject, new_session
-      download_path = 'downloaded_files_' + generate_unique_string + '/'; Dir.mkdir download_path
-      downloaded_filenames = client.download_files @project, @subject, new_session, download_path
+    it 'uploads zipped DICOM studies of a subject to new scan' do
+      client.add_session( new_session = GiftCloud::Session.new, @project, @subject )
+      client.add_scan( new_scan = GiftCloud::Scan.new, @project, @subject, new_session )
+      ( @uploaded_files + @files_to_upload ).each do |filename|
+        client.upload_file filename, @project, @subject, new_session, new_scan
+      end
+      download_path = '../tmp/downloaded_files_' + generate_unique_string + '/'; Dir.mkdir download_path
+      downloaded_filenames = client.download_files @project, @subject, new_session, new_scan, download_path
       expect(
         GiftCloud::ZippedDicomSeriesCollection.new( downloaded_filenames ).
-          match? GiftCloud::ZippedDicomSeriesCollection.new( @files ) ).to be_truthy
+          match? GiftCloud::ZippedDicomSeriesCollection.new( @uploaded_files + @files_to_upload ) ).to be_truthy
+      File.delete( *downloaded_filenames )
+      Dir.delete download_path
+    end
+    
+    it 'uploads zipped DICOM studies of a subject to existing scan' do
+      @files_to_upload.each do |filename|
+        client.upload_file filename, @project, @subject, @session, @scan
+      end
+      download_path = '../tmp/downloaded_files_' + generate_unique_string + '/'; Dir.mkdir download_path
+      downloaded_filenames = client.download_files @project, @subject, @session, @scan, download_path
+      expect(
+        GiftCloud::ZippedDicomSeriesCollection.new( downloaded_filenames ).
+          match? GiftCloud::ZippedDicomSeriesCollection.new( @uploaded_files + @files_to_upload ) ).to be_truthy
+      File.delete( *downloaded_filenames )
+      Dir.delete download_path
     end
   end
   # ==================================================

@@ -89,6 +89,54 @@ module GiftCloud
       return result
     end
     
+    def add_session session, project, subject
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label + '?xnat:mrSessionData/date=01/02/07'
+                   )
+      warn 'Creating only MR sessions, /date=01/02/07 hard-coded'
+      
+      result = try_put uri, {}
+      
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        #nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      else
+        raise result
+      end
+    end
+    
+    def add_scan scan, project, subject, session
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans', scan.label + '?xsiType=xnat:mrScanData' + '&xnat:mrScanData/type=T1')
+      warn 'Creating only MR scans, xnat:mrScanData/type=T1 hard-coded'
+      
+      result = try_put uri, {}
+      
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        #nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      else
+        raise result
+      end
+    end
+    
     def upload_files filenames, project, subject, session
       check_auth!
       
@@ -139,6 +187,39 @@ module GiftCloud
       return result
     end
     
+    def upload_file filename, project, subject, session, scan
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects',
+                     project.label,
+                     'subjects',
+                     subject.label,
+                     'experiments',
+                     session.label,
+                     'scans',
+                     scan.label,
+                     'resources',
+                     'DICOM',
+                     'files',
+                     filename[/[-\w|\.]*\.zip$/] + '?extract=true'
+                   )
+      result = try_post uri,
+                        { :file => File.new( filename, 'rb' ),
+                          :content_type => 'multipart/mixed' }
+                          
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        # nop
+      else
+        raise result
+      end
+      
+      return result
+    end
+    
     def download_files project, subject, session, filename_prefix
       check_auth!
       
@@ -169,6 +250,30 @@ module GiftCloud
         filenames << "#{filename_prefix}#{session_id}_#{scan_id}"
         File.new( filenames.last, 'wb' ).write( result )
       end
+      filenames
+    end
+    
+    def download_files project, subject, session, scan, filename_prefix
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans', scan.label,
+                     'resources', 'DICOM', 
+                     'files' + '?format=json' ) # + '&structure=simplified'  TODO
+      result = try_get! uri, {}, 200
+      json = JSON.parse result
+      
+      filenames = Array.new
+      json['ResultSet']['Result'].each do |f|
+        filenames << filename_prefix + f['URI'][/[-\w|\.]*$/] + '.zip'
+        uri = gen_uri( f['URI'].sub( '/', '' ) + '?format=zip' )
+        result = try_get! uri, {}, 200
+        File.new( filenames.last, 'wb' ).write result
+      end
+      
       filenames
     end
     

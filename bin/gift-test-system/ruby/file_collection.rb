@@ -54,7 +54,6 @@ module GiftCloud
           zip_file.each do |entry|
             filename = pool_folder + '/' + ( ctr += 1 ).to_s
             entry.extract filename
-            puts entry
             if File.directory? filename
               Dir.rmdir filename
             else

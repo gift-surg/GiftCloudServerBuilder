@@ -59,4 +59,13 @@ module GiftCloud
     end
   end
   
+  ##
+  # Class encapsulating an XNAT scan.
+  class Scan < Entity
+    protected
+    def generate_label
+      'c_' + generate_unique_string
+    end
+  end
+  
 end # module

@@ -30,6 +30,7 @@ RSpec.describe GiftCloud::Client do
     before( :each ) do
       client.sign_in owner.name, owner.pass
       client.add_project( @owner_project = GiftCloud::Project.new )
+      client.add_subject( @owner_subject = GiftCloud::Subject.new, @owner_project )
       client.sign_out
       
       client.sign_in other.name, other.pass
@@ -44,14 +45,14 @@ RSpec.describe GiftCloud::Client do
     end
     
     it "can't list inaccessible project's subjects" do
+      expect{ client.list_subjects @owner_project }.to raise_error( GiftCloud::AuthenticationError )
+    end
+    
+    it "can't list inaccessible subject's sessions" do
       skip 'not implemented'
     end
     
-    it "can't list inaccessible subject's experiments" do
-      skip 'not implemented'
-    end
-    
-    it "can't list inaccessible experiment's scans" do
+    it "can't list inaccessible session's scans" do
       skip 'not implemented'
     end
     
@@ -59,15 +60,15 @@ RSpec.describe GiftCloud::Client do
       skip 'not implemented'
     end
     
-    it "can't create new experiment for inaccessible subject" do
+    it "can't create a new subject for inaccessible project" do
+      expect{ client.add_subject GiftCloud::Subject.new, @owner_project }.to raise_error( GiftCloud::AuthenticationError )
+    end
+    
+    it "can't create a new session for inaccessible subject" do
       skip 'not implemented'
     end
     
-    it "can't create new session for inaccessible experiment" do
-      skip 'not implemented'
-    end
-    
-    it "can't create new scan for inaccessible session" do
+    it "can't create a new scan for inaccessible session" do
       skip 'not implemented'
     end
     

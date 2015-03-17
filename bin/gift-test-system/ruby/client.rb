@@ -23,7 +23,7 @@ module GiftCloud
     def list_projects
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
+      uri = gen_uri( 'data', 'archive', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
       result = try_get! uri, {}, 200
       
       json = JSON.parse result
@@ -37,7 +37,7 @@ module GiftCloud
     def add_project project
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects', project.label )
+      uri = gen_uri( 'data', 'archive', 'projects', project.label )
       result = try_put uri, {}
       
       case result.code
@@ -57,7 +57,7 @@ module GiftCloud
     def list_subjects project
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects', project.label, 'subjects' + '?format=json' + '&columns=DEFAULT' )
+      uri = gen_uri( 'data', 'archive', 'projects', project.label, 'subjects' + '?format=json' + '&columns=DEFAULT' )
       result = try_get! uri, {}, 200
       
       json = JSON.parse result
@@ -71,7 +71,7 @@ module GiftCloud
     def add_subject subject, project
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label )
+      uri = gen_uri( 'data', 'archive', 'projects', project.label, 'subjects', subject.label )
       xml = '<?xml version="1.0" encoding"UTF-8" standalone="no"?>' +
             '<xnat:Subject label="' + subject.label + '" project="' + 
             project.label + ' xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
@@ -298,7 +298,7 @@ module GiftCloud
     def match_subject project, pseudonym
       check_auth!
       
-      uri = gen_uri( 'REST',
+      uri = gen_uri( 'data', 'archive',
                      'projects', project.label, 
                      'pseudonyms', pseudonym.label + '?format=json' + '&columns=DEFAULT' )
       result = try_get uri, {}
@@ -318,7 +318,7 @@ module GiftCloud
     def add_pseudonym pseudonym, project, subject
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
+      uri = gen_uri( 'data', 'archive', 'projects', project.label, 'subjects', subject.label, 'pseudonyms', pseudonym.label )
       result = try_post uri, {}
       
       case result.code

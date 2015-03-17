@@ -94,8 +94,8 @@ RSpec.describe GiftCloud::Client do
     before( :each ) do
       client.add_project( @project = GiftCloud::Project.new )
       client.add_subject( @subject = GiftCloud::Subject.new, @project )
-      client.add_session( @session = GiftCloud::Session.new, @project, @subject )
-      client.add_scan( @scan = GiftCloud::Scan.new, @project, @subject, @session )
+      client.add_session( @session = GiftCloud::Session.new( :mri ), @project, @subject )
+      client.add_scan( @scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session )
       path = '../resources/Goldmarker_17Sep09/'
       files = Dir.entries( path ).select { |x| x[/[\w|\.]*\.zip$/] }
       files.map! { |x| x = path + x }
@@ -110,8 +110,8 @@ RSpec.describe GiftCloud::Client do
     end
     
     it 'uploads zipped DICOM studies of a subject to new scan' do
-      client.add_session( new_session = GiftCloud::Session.new, @project, @subject )
-      client.add_scan( new_scan = GiftCloud::Scan.new, @project, @subject, new_session )
+      client.add_session( new_session = GiftCloud::Session.new( :mri ), @project, @subject )
+      client.add_scan( new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, new_session )
       ( @uploaded_files + @files_to_upload ).each do |filename|
         client.upload_file filename, @project, @subject, new_session, new_scan
       end

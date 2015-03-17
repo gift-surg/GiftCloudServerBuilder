@@ -92,12 +92,21 @@ module GiftCloud
     def add_session session, project, subject
       check_auth!
       
+      case session.type
+      when :mri
+        xnat_type = 'xnat:mrSessionData'
+      when :uss
+        xnat_type = 'xnat:usSessionData'
+      when :evs
+        xnat_type = 'xnat:esvSessionData'
+      else
+        raise ArgumentError, "Session datatype #{session.type} not recognised"
+      end
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
-                     'experiments', session.label + '?xnat:mrSessionData/date=01/02/07'
+                     'experiments', session.label + "?xsiType=#{xnat_type}"
                    )
-      warn 'Creating only MR sessions, /date=01/02/07 hard-coded'
       
       result = try_put uri, {}
       
@@ -116,12 +125,21 @@ module GiftCloud
     def add_scan scan, project, subject, session
       check_auth!
       
+      case scan.type
+      when :mri
+        xnat_type = 'xnat:mrScanData'
+      when :uss
+        xnat_type = 'xnat:usScanData'
+      when :esv
+        xnat_type = 'xnat:esvScanData'
+      else
+        raise ArgumentError, "Scan type #{scan.type} not recognised"
+      end
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
                      'experiments', session.label,
-                     'scans', scan.label + '?xsiType=xnat:mrScanData' + '&xnat:mrScanData/type=T1')
-      warn 'Creating only MR scans, xnat:mrScanData/type=T1 hard-coded'
+                     'scans', scan.label + "?xsiType=#{xnat_type}")
       
       result = try_put uri, {}
       

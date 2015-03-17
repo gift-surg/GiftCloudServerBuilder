@@ -24,7 +24,56 @@ RSpec.describe GiftCloud::Client do
   
   # MULTI-USER =======================================
   describe '(multi-user)' do
+    let( :owner ) { GiftCloud::User.new 'authuser', '123456' }
+    let( :other ) { GiftCloud::User.new 'otheruser', '789012' }
     
+    before( :each ) do
+      client.sign_in owner.name, owner.pass
+      client.add_project( @owner_project = GiftCloud::Project.new )
+      client.sign_out
+      
+      client.sign_in other.name, other.pass
+    end
+    
+    after( :each ) do
+      client.sign_out
+    end
+    
+    it "doesn't list inaccessible project" do
+      expect( client.list_projects.include? @owner_project ).to be_falsy
+    end
+    
+    it "can't list inaccessible project's subjects" do
+      skip 'not implemented'
+    end
+    
+    it "can't list inaccessible subject's experiments" do
+      skip 'not implemented'
+    end
+    
+    it "can't list inaccessible experiment's scans" do
+      skip 'not implemented'
+    end
+    
+    it "can't list inaccessible scan's files" do
+      skip 'not implemented'
+    end
+    
+    it "can't create new experiment for inaccessible subject" do
+      skip 'not implemented'
+    end
+    
+    it "can't create new session for inaccessible experiment" do
+      skip 'not implemented'
+    end
+    
+    it "can't create new scan for inaccessible session" do
+      skip 'not implemented'
+    end
+    
+    it "can't upload to inaccessible scan" do
+      skip 'not implemented'
+    end
   end
   # ==================================================
   
@@ -64,10 +113,6 @@ RSpec.describe GiftCloud::Client do
       
       it 'lists all accessible to user' do
         expect( client.list_projects.include_array? @projects ).to be_truthy
-      end
-      
-      it 'does not list any not accessible to user' do
-        skip 'implement in multi-user'
       end
     end
     # ==================================================

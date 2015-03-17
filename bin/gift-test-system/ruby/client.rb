@@ -23,7 +23,7 @@ module GiftCloud
     def list_projects
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
+      uri = gen_uri( 'data', 'archive', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
       result = try_get! uri, {}, 200
       
       json = JSON.parse result
@@ -37,7 +37,7 @@ module GiftCloud
     def add_project project
       check_auth!
       
-      uri = gen_uri( 'REST', 'projects', project.label )
+      uri = gen_uri( 'data', 'archive', 'projects', project.label )
       result = try_put uri, {}
       
       case result.code

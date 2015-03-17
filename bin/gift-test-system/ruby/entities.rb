@@ -2,6 +2,18 @@ require_relative 'helpers'
 
 module GiftCloud
   
+  ##
+  # Class encapsulating user credentials.
+  class User
+    attr_reader :name
+    attr_reader :pass
+    
+    def initialize name, pass
+      @name = name
+      @pass = pass
+    end
+  end
+  
   class Entity
     attr_reader :label
     

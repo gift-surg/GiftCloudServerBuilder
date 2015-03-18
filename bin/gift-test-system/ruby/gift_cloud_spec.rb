@@ -31,8 +31,8 @@ RSpec.describe GiftCloud::Client do
       client.sign_in owner.name, owner.pass
       client.add_project( @owner_project = GiftCloud::Project.new )
       client.add_subject( @owner_subject = GiftCloud::Subject.new, @owner_project )
-      client.add_session( @owner_session = GiftCloud::Session.new, @owner_project, @owner_subject )
-      client.add_scan( @owner_scan = GiftCloud::Scan.new, @owner_project, @owner_subject, @owner_session )
+      client.add_session( @owner_session = GiftCloud::Session.new( :mri ), @owner_project, @owner_subject )
+      client.add_scan( @owner_scan = GiftCloud::Scan.new( :mri ), @owner_project, @owner_subject, @owner_session )
       # randomly-selected files, but belonging to same scan
       filepath = '../resources/Goldmarker_17Sep09/'
       @owner_filename = filepath + '2.25.201894920086755898241014608991310884067-9-1-sks45b.dcm.zip'
@@ -85,13 +85,13 @@ RSpec.describe GiftCloud::Client do
     end
     
     it "may not create a new session for inaccessible subject" do
-      expect{ client.add_session GiftCloud::Session.new, 
+      expect{ client.add_session GiftCloud::Session.new( :mri ), 
                                  @owner_project, 
                                  @owner_subject }.to raise_error( GiftCloud::AuthenticationError )
     end
     
     it "may not create a new scan for inaccessible session" do
-      expect{ client.add_scan GiftCloud::Scan.new, 
+      expect{ client.add_scan GiftCloud::Scan.new( :mri ), 
                               @owner_project, 
                               @owner_subject, 
                               @owner_session }.to raise_error( GiftCloud::AuthenticationError )
@@ -174,14 +174,86 @@ RSpec.describe GiftCloud::Client do
       end
     end
     # ==================================================
+  
+    # SESSION ==========================================
+    describe '(session)' do
+      before( :each ) do
+        client.add_project @project = GiftCloud::Project.new
+        client.add_subject @subject = GiftCloud::Subject.new, @project
+        @sessions = Array.new
+        3.times do
+          client.add_session new_session = GiftCloud::Session.new( :mri ), @project, @subject
+          @sessions << new_session
+        end
+      end
+      
+      it 'lists sessions of a subject' do
+        expect( client.list_sessions( @project, @subject ).include_array? @sessions ).to be_truthy
+      end
+      
+      it 'adds a new session to subject' do
+        client.add_session new_session = GiftCloud::Session.new( :mri ), @project, @subject
+        expect( client.list_sessions @project, @subject ).to include( new_session )
+      end
+    end
+    # ==================================================
+    
+    # SCAN =============================================
+    describe '(scan)' do
+      before( :each ) do
+        client.add_project @project = GiftCloud::Project.new
+        client.add_subject @subject = GiftCloud::Subject.new, @project
+        client.add_session @session = GiftCloud::Session.new( :mri ), @project, @subject
+        @scans = Array.new
+        3.times do
+          client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+          @scans << new_scan
+        end
+      end
+      
+      it 'lists scans of a session' do
+        expect( client.list_scans( @project, @subject, @session ).include_array? @scans ).to be_truthy
+      end
+      
+      it 'adds a new scan to session' do
+        client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+        expect( client.list_scans @project, @subject, @session ).to include( new_scan )
+      end
+    end
+    # ==================================================
+    
+    # RESOURCE =========================================
+    describe '(resource)' do
+      before( :each ) do
+        client.add_project @project = GiftCloud::Project.new
+        client.add_subject @subject = GiftCloud::Subject.new, @project
+        client.add_session @session = GiftCloud::Session.new( :mri ), @project, @subject
+        client.add_scan @scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+        @resources = Array.new
+        3.times do
+          client.add_resource new_resource = GiftCloud::Resource.new, @project, @subject, @session, @scan
+          @resources << new_resource
+        end
+      end
+      
+      it 'lists resources of a scan' do
+        expect( client.list_resources( @project, @subject, @session, @scan ).include_array? @resources ).to be_truthy
+      end
+      
+      it 'adds a new resource to scan' do
+        client.add_resource new_resource = GiftCloud::Resource.new, @project, @subject, @session, @scan
+        expect( client.list_resources @project, @subject, @session, @scan ).to include( new_resource )
+      end
+    end
+    # ==================================================
     
     # UPLOAD ===========================================
     describe '(upload - session, scan)' do
       before( :each ) do
         client.add_project( @project = GiftCloud::Project.new )
         client.add_subject( @subject = GiftCloud::Subject.new, @project )
-        client.add_session( @session = GiftCloud::Session.new, @project, @subject )
-        client.add_scan( @scan = GiftCloud::Scan.new, @project, @subject, @session )
+        client.add_session( @session = GiftCloud::Session.new( :mri ), @project, @subject )
+        client.add_scan( @scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session )
         path = '../resources/Goldmarker_17Sep09/'
         files = Dir.entries( path ).select { |x| x[/[\w|\.]*\.zip$/] }
         files.map! { |x| x = path + x }
@@ -196,8 +268,8 @@ RSpec.describe GiftCloud::Client do
       end
       
       it 'uploads zipped DICOM studies of a subject to new scan' do
-        client.add_session( new_session = GiftCloud::Session.new, @project, @subject )
-        client.add_scan( new_scan = GiftCloud::Scan.new, @project, @subject, new_session )
+        client.add_session( new_session = GiftCloud::Session.new( :mri ), @project, @subject )
+        client.add_scan( new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, new_session )
         ( @uploaded_files + @files_to_upload ).each do |filename|
           client.upload_file filename, @project, @subject, new_session, new_scan
         end

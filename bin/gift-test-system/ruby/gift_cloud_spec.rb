@@ -101,7 +101,7 @@ RSpec.describe GiftCloud::Client do
       end
     end
     
-    it 'lists sessions accessible to user' do
+    it 'lists sessions of a subject' do
       expect( client.list_sessions( @project, @subject ).include_array? @sessions ).to be_truthy
     end
     
@@ -125,7 +125,7 @@ RSpec.describe GiftCloud::Client do
       end
     end
     
-    it 'lists scans accessible to user' do
+    it 'lists scans of a session' do
       expect( client.list_scans( @project, @subject, @session ).include_array? @scans ).to be_truthy
     end
     
@@ -133,9 +133,30 @@ RSpec.describe GiftCloud::Client do
       client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
       expect( client.list_scans @project, @subject, @session ).to include( new_scan )
     end
+  end
+  # ==================================================
+  
+  # RESOURCE =========================================
+  describe '(resource)' do
+    before( :each ) do
+      client.add_project @project = GiftCloud::Project.new
+      client.add_subject @subject = GiftCloud::Subject.new, @project
+      client.add_session @session = GiftCloud::Session.new( :mri ), @project, @subject
+      client.add_scan @scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+      @resources = Array.new
+      3.times do
+        client.add_resource new_resource = GiftCloud::Resource.new, @project, @subject, @session, @scan
+        @resources << new_resource
+      end
+    end
     
     it 'lists resources of a scan' do
-      skip 'not implemented'
+      expect( client.list_resources( @project, @subject, @session, @scan ).include_array? @resources ).to be_truthy
+    end
+    
+    it 'adds a new resource to scan' do
+      client.add_resource new_resource = GiftCloud::Resource.new, @project, @subject, @session, @scan
+      expect( client.list_resources @project, @subject, @session, @scan ).to include( new_resource )
     end
   end
   # ==================================================

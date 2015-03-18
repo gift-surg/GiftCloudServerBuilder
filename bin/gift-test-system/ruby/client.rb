@@ -186,6 +186,50 @@ module GiftCloud
       end
     end
     
+    def list_resources project, subject, session, scan
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans', scan.label,
+                     'resources' + '?format=json' )
+      result = try_get! uri, {}, 200
+      
+      json = JSON.parse result
+      resources = Array.new
+      json['ResultSet']['Result'].each do |resource|
+        resources << Resource.new( resource['label'] )
+      end
+      resources
+    end
+    
+    def add_resource resource, project, subject, session, scan
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans', scan.label,
+                     'resources', resource.label + "?format=#{resource.format}" # TODO any additional parameters here ?
+                     )
+      
+      result = try_put uri, {}
+      
+      case result.code
+      when 200 # OK
+        warn "200 (OK) returned rather than 201 (Created)"
+      when 201 # Created
+        #nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      else
+        raise result
+      end
+    end
+    
     def upload_files filenames, project, subject, session
       check_auth!
       

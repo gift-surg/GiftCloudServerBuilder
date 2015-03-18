@@ -83,4 +83,20 @@ module GiftCloud
     end
   end
   
+  ##
+  # Class representing any XNAT resource.
+  class Resource < Entity
+    attr_reader :format
+    
+    def initialize label = nil
+      super label
+      @format = 'DICOM' # TODO others ?
+    end
+    
+    protected
+    def generate_label
+      'r_' + generate_unique_string
+    end
+  end
+  
 end # module

@@ -89,6 +89,46 @@ RSpec.describe GiftCloud::Client do
   end
   # ==================================================
   
+  # SESSION ==========================================
+  describe '(session)' do
+    before( :each ) do
+      client.add_project @project = GiftCloud::Project.new
+      client.add_subject @subject = GiftCloud::Subject.new, @project
+      @sessions = Array.new
+      3.times do
+        client.add_session new_session = GiftCloud::Session.new( :mri ), @project, @subject
+        @sessions << new_session
+      end
+    end
+    
+    it 'lists sessions accessible to user' do
+      expect( client.list_sessions( @project, @subject ).include_array? @sessions ).to be_truthy
+    end
+    
+    it 'adds a new session to subject' do
+      client.add_session new_session = GiftCloud::Session.new( :mri ), @project, @subject
+      expect( client.list_sessions @project, @subject ).to include( new_session )
+    end
+  end
+  # ==================================================
+  
+  # SCAN =============================================
+  describe '(scan)' do
+    
+    it 'lists scans accessible to user' do
+      skip 'not implemented'
+    end
+    
+    it 'adds a new scan to session' do
+      skip 'not implemented'
+    end
+    
+    it 'lists files of a scan' do
+      skip 'not implemented'
+    end
+  end
+  # ==================================================
+  
   # UPLOAD ===========================================
   describe '(upload - session, scan)' do
     before( :each ) do

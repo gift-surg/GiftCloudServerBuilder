@@ -89,6 +89,31 @@ module GiftCloud
       return result
     end
     
+    def list_sessions project, subject
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'experiments' + '?format=json' ) # TODO: restServer.getAliases
+      result = try_get! uri, {}, 200
+      
+      json = JSON.parse result
+      sessions = Array.new
+      json['ResultSet']['Result'].each do |session|
+        case session['xsiType']
+        when 'xnat:mrSessionData'
+          sessions << Session.new( :mri, session['label'] ) # TODO standardise + centralise later
+        when 'xnat:usSessionData'
+          sessions << Session.new( :uss, session['label'] )
+        when 'xnat:esvSessionData'
+          sessions << Session.new( :esv, session['label'] )
+        else
+          raise ArgumentError, "Session type #{session['xsiType']} not recognised"
+        end
+      end
+      sessions
+    end
+    
     def add_session session, project, subject
       check_auth!
       

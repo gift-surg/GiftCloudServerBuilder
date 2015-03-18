@@ -2,6 +2,9 @@ require 'rest_client'
 
 module GiftCloud
   class Client
+    @@xnat_session_types = { :mri => 'xnat:mrSessionData', :uss => 'xnat:usSessionData', :esv => 'xnat:esvSessionData' }
+    @@xnat_scan_types = { :mri => 'xnat:mrScanData', :uss => 'xnat:usScanData', :esv => 'xnat:esvScanData' }
+    
     def initialize host
       @host = host
       @user = ''
@@ -100,16 +103,10 @@ module GiftCloud
       json = JSON.parse result
       sessions = Array.new
       json['ResultSet']['Result'].each do |session|
-        case session['xsiType']
-        when 'xnat:mrSessionData'
-          sessions << Session.new( :mri, session['label'] ) # TODO standardise + centralise later
-        when 'xnat:usSessionData'
-          sessions << Session.new( :uss, session['label'] )
-        when 'xnat:esvSessionData'
-          sessions << Session.new( :esv, session['label'] )
-        else
+        unless @@xnat_session_types.has_value? session['xsiType']
           raise ArgumentError, "Session type #{session['xsiType']} not recognised"
         end
+        sessions << Session.new( @@xnat_session_types.key( session['xsiType'] ), session['label'] )
       end
       sessions
     end
@@ -117,20 +114,14 @@ module GiftCloud
     def add_session session, project, subject
       check_auth!
       
-      case session.type
-      when :mri
-        xnat_type = 'xnat:mrSessionData'
-      when :uss
-        xnat_type = 'xnat:usSessionData'
-      when :evs
-        xnat_type = 'xnat:esvSessionData'
-      else
+      unless @@xnat_session_types.has_key? session.type
         raise ArgumentError, "Session datatype #{session.type} not recognised"
       end
+      
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
-                     'experiments', session.label + "?xsiType=#{xnat_type}"
+                     'experiments', session.label + "?xsiType=#{@@xnat_session_types[ session.type ]}"
                    )
       
       result = try_put uri, {}
@@ -150,21 +141,15 @@ module GiftCloud
     def add_scan scan, project, subject, session
       check_auth!
       
-      case scan.type
-      when :mri
-        xnat_type = 'xnat:mrScanData'
-      when :uss
-        xnat_type = 'xnat:usScanData'
-      when :esv
-        xnat_type = 'xnat:esvScanData'
-      else
+      unless @@xnat_scan_types.has_key? scan.type
         raise ArgumentError, "Scan type #{scan.type} not recognised"
       end
+      
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
                      'experiments', session.label,
-                     'scans', scan.label + "?xsiType=#{xnat_type}")
+                     'scans', scan.label + "?xsiType=#{@@xnat_scan_types[ scan.type ]}")
       
       result = try_put uri, {}
       

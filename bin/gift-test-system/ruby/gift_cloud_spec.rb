@@ -114,16 +114,27 @@ RSpec.describe GiftCloud::Client do
   
   # SCAN =============================================
   describe '(scan)' do
+    before( :each ) do
+      client.add_project @project = GiftCloud::Project.new
+      client.add_subject @subject = GiftCloud::Subject.new, @project
+      client.add_session @session = GiftCloud::Session.new( :mri ), @project, @subject
+      @scans = Array.new
+      3.times do
+        client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+        @scans << new_scan
+      end
+    end
     
     it 'lists scans accessible to user' do
-      skip 'not implemented'
+      expect( client.list_scans( @project, @subject, @session ).include_array? @scans ).to be_truthy
     end
     
     it 'adds a new scan to session' do
-      skip 'not implemented'
+      client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+      expect( client.list_scans @project, @subject, @session ).to include( new_scan )
     end
     
-    it 'lists files of a scan' do
+    it 'lists resources of a scan' do
       skip 'not implemented'
     end
   end

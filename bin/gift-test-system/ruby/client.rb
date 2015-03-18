@@ -138,6 +138,27 @@ module GiftCloud
       end
     end
     
+    def list_scans project, subject, session
+      check_auth!
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans' + '?format=json' )
+      result = try_get! uri, {}, 200
+      
+      json = JSON.parse result
+      scans = Array.new
+      json['ResultSet']['Result'].each do |scan|
+        unless @@xnat_scan_types.has_value? scan['xsiType']
+          raise ArgumentError, "Scan type #{scan['xsiType']} not recognised"
+        end
+        scans << Scan.new( @@xnat_scan_types.key( scan['xsiType'] ), scan['ID'] )
+      end
+      scans
+    end
+    
     def add_scan scan, project, subject, session
       check_auth!
       

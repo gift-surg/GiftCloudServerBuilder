@@ -31,6 +31,17 @@ RSpec.describe GiftCloud::Client do
       client.sign_in owner.name, owner.pass
       client.add_project( @owner_project = GiftCloud::Project.new )
       client.add_subject( @owner_subject = GiftCloud::Subject.new, @owner_project )
+      client.add_session( @owner_session = GiftCloud::Session.new, @owner_project, @owner_subject )
+      client.add_scan( @owner_scan = GiftCloud::Scan.new, @owner_project, @owner_subject, @owner_session )
+      # randomly-selected files, but belonging to same scan
+      filepath = '../resources/Goldmarker_17Sep09/'
+      @owner_filename = filepath + '2.25.201894920086755898241014608991310884067-9-1-sks45b.dcm.zip'
+      @other_filename = filepath + '2.25.201894920086755898241014608991310884067-9-2-sks46c.dcm.zip'
+      client.upload_file( @owner_filename, 
+                          @owner_project, 
+                          @owner_subject, 
+                          @owner_session, 
+                          @owner_scan )
       client.sign_out
       
       client.sign_in other.name, other.pass
@@ -40,40 +51,58 @@ RSpec.describe GiftCloud::Client do
       client.sign_out
     end
     
-    it "doesn't list inaccessible project" do
+    it "doesn't list any project inaccessible to user" do
       expect( client.list_projects.include? @owner_project ).to be_falsy
     end
     
-    it "can't list inaccessible project's subjects" do
+    it "may not list inaccessible project's subjects" do
       expect{ client.list_subjects @owner_project }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't list inaccessible subject's sessions" do
+    it "may not list inaccessible subject's sessions" do
       skip 'not implemented'
+      # expect{ client.list_sessions @owner_project, @owner_subject }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't list inaccessible session's scans" do
+    it "may not list inaccessible session's scans" do
       skip 'not implemented'
+      # expect{ client.list_scans @owner_project, 
+                                # @owner_subject, 
+                                # @owner_session }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't list inaccessible scan's files" do
+    it "may not list inaccessible scan's files" do
       skip 'not implemented'
+      # expect{ client.list_files @owner_project,
+                                # @owner_subject,
+                                # @owner_session,
+                                # @owner_scan }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't create a new subject for inaccessible project" do
-      expect{ client.add_subject GiftCloud::Subject.new, @owner_project }.to raise_error( GiftCloud::AuthenticationError )
+    it "may not create a new subject for inaccessible project" do
+      expect{ client.add_subject GiftCloud::Subject.new, 
+                                 @owner_project }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't create a new session for inaccessible subject" do
-      skip 'not implemented'
+    it "may not create a new session for inaccessible subject" do
+      expect{ client.add_session GiftCloud::Session.new, 
+                                 @owner_project, 
+                                 @owner_subject }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't create a new scan for inaccessible session" do
-      skip 'not implemented'
+    it "may not create a new scan for inaccessible session" do
+      expect{ client.add_scan GiftCloud::Scan.new, 
+                              @owner_project, 
+                              @owner_subject, 
+                              @owner_session }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "can't upload to inaccessible scan" do
-      skip 'not implemented'
+    it "may not upload to inaccessible scan" do
+      expect{ client.upload_file @other_filename, 
+                                 @owner_project,
+                                 @owner_subject,
+                                 @owner_session,
+                                 @owner_scan }.to raise_error( GiftCloud::AuthenticationError )
     end
   end
   # ==================================================

@@ -2,6 +2,18 @@ require_relative 'helpers'
 
 module GiftCloud
   
+  ##
+  # Class encapsulating user credentials.
+  class User
+    attr_reader :name
+    attr_reader :pass
+    
+    def initialize name, pass
+      @name = name
+      @pass = pass
+    end
+  end
+  
   class Entity
     attr_reader :label
     
@@ -51,11 +63,51 @@ module GiftCloud
   end
   
   ##
+  # Entity that must have a type specified explicitly.
+  class TypedEntity < Entity
+    attr_reader :type
+    
+    def initialize label = nil
+      raise ArgumentError, 'Must be called with a type'
+    end
+    
+    def initialize type, label = nil
+      super label
+      @type = type
+    end
+  end
+  
+  ##
   # Class encapsulating an XNAT session.
-  class Session < Entity
+  class Session < TypedEntity    
     protected
     def generate_label
       'e_' + generate_unique_string
+    end
+  end
+  
+  ##
+  # Class encapsulating an XNAT scan.
+  class Scan < TypedEntity
+    protected
+    def generate_label
+      'c_' + generate_unique_string
+    end
+  end
+  
+  ##
+  # Class representing any XNAT resource.
+  class Resource < Entity
+    attr_reader :format
+    
+    def initialize label = nil
+      super label
+      @format = 'DICOM' # TODO others ?
+    end
+    
+    protected
+    def generate_label
+      'r_' + generate_unique_string
     end
   end
   

@@ -35,13 +35,14 @@ module GiftCloud
     
     def match? other
       folder_id = generate_unique_string
-      pool_folder_1 = 'dicom_series_' + folder_id + '_1'; Dir.mkdir pool_folder_1
-      pool_folder_2 = 'dicom_series_' + folder_id + '_2'; Dir.mkdir pool_folder_2
+      pool_folder_1 = '../tmp/dicom_series_' + folder_id + '_1'; Dir.mkdir pool_folder_1
+      pool_folder_2 = '../tmp/dicom_series_' + folder_id + '_2'; Dir.mkdir pool_folder_2
       filenames_1 = extract_to_pool pool_folder_1
       filenames_2 = other.extract_to_pool pool_folder_2
       FileCollection.new( filenames_1 ).match? filenames_2
-      # TODO Dir.delete pool_folder_1
-      # Dir.delete pool_folder_2
+      File.delete( *( filenames_1 + filenames_2 ) )
+      Dir.delete pool_folder_1
+      Dir.delete pool_folder_2
     end
     
     def extract_to_pool pool_folder
@@ -53,7 +54,6 @@ module GiftCloud
           zip_file.each do |entry|
             filename = pool_folder + '/' + ( ctr += 1 ).to_s
             entry.extract filename
-            puts entry
             if File.directory? filename
               Dir.rmdir filename
             else

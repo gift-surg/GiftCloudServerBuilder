@@ -76,7 +76,7 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 			
 			Optional<XnatSubjectdata> subject = secureItemUtil.getSubjectByLabelOrId(rid);
 			if (!subject.isPresent()) {
-				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Subject not found");
+				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Subject not found");
 				return;
 			}
 			

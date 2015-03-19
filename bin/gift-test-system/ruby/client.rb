@@ -53,8 +53,8 @@ module GiftCloud
       result = try_put uri, {}
       
       case result.code
-      when 200 # OK
-        warn "200 (OK) returned rather than 201 (Created)"
+      when 200, 204 # OK, No Content
+        warn "Existing project (possibly) overwritten, response code was #{result.code}"
       when 201 # Created
         # nop
       when 403 # Forbidden
@@ -101,6 +101,8 @@ module GiftCloud
       result = try_put uri, xml
       
       case result.code
+      when 200, 204 # OK, No Content
+        warn "Existing subject (possibly) overwritten, response code was #{result.code}"
       when 201 # Created
         # nop
       when 403 # Forbidden
@@ -158,8 +160,8 @@ module GiftCloud
       result = try_put uri, {}
       
       case result.code
-      when 200 # OK
-        warn "200 (OK) returned rather than 201 (Created)"
+      when 200, 204 # OK, No Content
+        warn "Existing session (possibly) overwritten, response code was #{result.code}"
       when 201 # Created
         #nop
       when 403 # Forbidden
@@ -217,8 +219,8 @@ module GiftCloud
       result = try_put uri, {}
       
       case result.code
-      when 200 # OK
-        warn "200 (OK) returned rather than 201 (Created)"
+      when 200, 204 # OK, No Content
+        warn "Existing scan (possibly) overwritten, response code was #{result.code}"
       when 201 # Created
         #nop
       when 403 # Forbidden
@@ -272,8 +274,8 @@ module GiftCloud
       result = try_put uri, {}
       
       case result.code
-      when 200 # OK
-        warn "200 (OK) returned rather than 201 (Created)"
+      when 200, 204 # OK, No Content
+        warn "Existing resource (possibly) overwritten, response code was #{result.code}"
       when 201 # Created
         #nop
       when 403 # Forbidden
@@ -352,13 +354,13 @@ module GiftCloud
                      'files',
                      filename[/[-\w|\.]*\.zip$/] + '?extract=true'
                    )
-      result = try_post uri,
+      result = try_put  uri,
                         { :file => File.new( filename, 'rb' ),
                           :content_type => 'multipart/mixed' }
                           
       case result.code
-      when 200 # OK
-        warn "200 (OK) returned rather than 201 (Created)"
+      when 200, 204 # OK, No Content
+        warn "Existing file (possibly) overwritten, response code was #{result.code}"
       when 201 # Created
         # nop
       when 401 # Unauthorized
@@ -450,7 +452,7 @@ module GiftCloud
         json = JSON.parse result
         entities = json['items'][0]['data_fields']
         entities.empty? ? raise( 'please correct me!' ) : Subject.new( entities['label'] )
-      when 204 # No Content
+      when 404 # Not Found
         return nil
       when 401 # Unauthorized
         raise AuthenticationError

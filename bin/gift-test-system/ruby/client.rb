@@ -32,7 +32,7 @@ module GiftCloud
       case result.code
       when 200 # OK
         #nop
-      when 401, 403 # Unauthorized, Forbidden
+      when 401 # Unauthorized
         raise AuthenticationError
       else
         raise result
@@ -59,6 +59,8 @@ module GiftCloud
         # nop
       when 403 # Forbidden
         raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end
@@ -75,7 +77,7 @@ module GiftCloud
       case result.code
       when 200 # OK
         #nop
-      when 401, 403 # Unauthorized, Forbidden
+      when 401 # Unauthorized
         raise AuthenticationError
       else
         raise result
@@ -103,6 +105,8 @@ module GiftCloud
         # nop
       when 403 # Forbidden
         raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end
@@ -121,7 +125,7 @@ module GiftCloud
       case result.code
       when 200 # OK
         #nop
-      when 401, 403 # Unauthorized, Forbidden
+      when 401 # Unauthorized
         raise AuthenticationError
       else
         raise result
@@ -160,6 +164,8 @@ module GiftCloud
         #nop
       when 403 # Forbidden
         raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end
@@ -217,6 +223,8 @@ module GiftCloud
         #nop
       when 403 # Forbidden
         raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end
@@ -270,6 +278,8 @@ module GiftCloud
         #nop
       when 403 # Forbidden
         raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end
@@ -351,6 +361,8 @@ module GiftCloud
         warn "200 (OK) returned rather than 201 (Created)"
       when 201 # Created
         # nop
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end
@@ -401,8 +413,18 @@ module GiftCloud
                      'scans', scan.label,
                      'resources', 'DICOM', 
                      'files' + '?format=json' ) # + '&structure=simplified'  TODO
-      result = try_get! uri, {}, 200
-      json = JSON.parse result
+      result = try_get uri, {}
+      
+      case result.code
+      when 200 # OK
+        #nop
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise result
+      end
+      
+      json = JSON.parse result.body
       
       filenames = Array.new
       json['ResultSet']['Result'].each do |f|
@@ -448,6 +470,8 @@ module GiftCloud
         # nop
       when 403 # Forbidden
         raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise result
       end

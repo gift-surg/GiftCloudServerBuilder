@@ -27,9 +27,18 @@ module GiftCloud
       check_auth!
       
       uri = gen_uri( 'data', 'archive', 'projects' + '?format=json' + '&owner=true' + '&member=true' )
-      result = try_get! uri, {}, 200
+      result = try_get uri, {}
       
-      json = JSON.parse result
+      case result.code
+      when 200 # OK
+        #nop
+      when 401, 403 # Unauthorized, Forbidden
+        raise AuthenticationError
+      else
+        raise result
+      end
+      
+      json = JSON.parse result.body
       projects = Array.new
       json['ResultSet']['Result'].each do |project|
         projects << Project.new( project['name'] )
@@ -61,9 +70,18 @@ module GiftCloud
       check_auth!
       
       uri = gen_uri( 'data', 'archive', 'projects', project.label, 'subjects' + '?format=json' + '&columns=DEFAULT' )
-      result = try_get! uri, {}, 200
+      result = try_get uri, {}
       
-      json = JSON.parse result
+      case result.code
+      when 200 # OK
+        #nop
+      when 401, 403 # Unauthorized, Forbidden
+        raise AuthenticationError
+      else
+        raise result
+      end
+      
+      json = JSON.parse result.body
       subjects = Array.new
       json['ResultSet']['Result'].each do |subject|
         subjects << Subject.new( subject['label'] )
@@ -98,9 +116,18 @@ module GiftCloud
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'experiments' + '?format=json' ) # TODO: restServer.getAliases
-      result = try_get! uri, {}, 200
+      result = try_get uri, {}
       
-      json = JSON.parse result
+      case result.code
+      when 200 # OK
+        #nop
+      when 401, 403 # Unauthorized, Forbidden
+        raise AuthenticationError
+      else
+        raise result
+      end
+      
+      json = JSON.parse result.body
       sessions = Array.new
       json['ResultSet']['Result'].each do |session|
         unless @@xnat_session_types.has_value? session['xsiType']
@@ -146,7 +173,16 @@ module GiftCloud
                      'subjects', subject.label,
                      'experiments', session.label,
                      'scans' + '?format=json' )
-      result = try_get! uri, {}, 200
+      result = try_get uri, {}
+      
+      case result.code
+      when 200 # OK
+        #nop
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise result
+      end
       
       json = JSON.parse result
       scans = Array.new
@@ -195,9 +231,18 @@ module GiftCloud
                      'experiments', session.label,
                      'scans', scan.label,
                      'resources' + '?format=json' )
-      result = try_get! uri, {}, 200
+      result = try_get uri, {}
       
-      json = JSON.parse result
+      case result.code
+      when 200 # OK
+        #nop
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise result
+      end
+      
+      json = JSON.parse result.body
       resources = Array.new
       json['ResultSet']['Result'].each do |resource|
         resources << Resource.new( resource['label'] )
@@ -385,6 +430,8 @@ module GiftCloud
         entities.empty? ? raise( 'please correct me!' ) : Subject.new( entities['label'] )
       when 204 # No Content
         return nil
+      when 401 # Unauthorized
+        raise AuthenticationError
       else
         raise r
       end

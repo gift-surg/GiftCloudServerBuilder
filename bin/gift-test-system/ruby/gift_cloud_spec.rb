@@ -60,23 +60,20 @@ RSpec.describe GiftCloud::Client do
     end
     
     it "may not list inaccessible subject's sessions" do
-      skip 'not implemented'
-      # expect{ client.list_sessions @owner_project, @owner_subject }.to raise_error( GiftCloud::AuthenticationError )
+      expect{ client.list_sessions @owner_project, @owner_subject }.to raise_error( GiftCloud::AuthenticationError )
     end
     
     it "may not list inaccessible session's scans" do
-      skip 'not implemented'
-      # expect{ client.list_scans @owner_project, 
-                                # @owner_subject, 
-                                # @owner_session }.to raise_error( GiftCloud::AuthenticationError )
+      expect{ client.list_scans @owner_project, 
+                                @owner_subject, 
+                                @owner_session }.to raise_error( GiftCloud::AuthenticationError )
     end
     
-    it "may not list inaccessible scan's files" do
-      skip 'not implemented'
-      # expect{ client.list_files @owner_project,
-                                # @owner_subject,
-                                # @owner_session,
-                                # @owner_scan }.to raise_error( GiftCloud::AuthenticationError )
+    it "may not list inaccessible scan's resources" do
+      expect{ client.list_resources @owner_project,
+                                    @owner_subject,
+                                    @owner_session,
+                                    @owner_scan }.to raise_error( GiftCloud::AuthenticationError )
     end
     
     it "may not create a new subject for inaccessible project" do

@@ -84,7 +84,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		// represent subject after sanity check
 		XnatSubjectdata result = null;
 		if (!subject.isPresent()) {
-			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
 		}
 		else {

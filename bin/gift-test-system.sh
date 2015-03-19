@@ -109,7 +109,12 @@ setup)	echo "Setting up XNAT instance AND Database..."
 			setUpXnat clean
 			startTomcat
 		} > $LOG_FILE
-		echo "...TomCat running! DO NOT FORGET TO CONFIGURE SERVER!"
+		echo "...TomCat running! FOLLOWING CONFIGURATION NEEDED before running system tests:"
+		echo "0. Enable app in the TomCat server configuration file (contrary to everything else below, only the first time)"
+		echo "1. Log in using admin credentials"
+		echo "2. Set site ID"
+		echo "3. Disable site-wide anonymisation"
+		echo "4. Create (AND SUBSEQUENTLY ENABLE) the following two users (password in parantheses): authuser (123456), otheruser (789012)"
     	;;
 clean)  echo "Cleaning up XNAT instance AND Database..."
 		echo "log file: $LOG_FILE"

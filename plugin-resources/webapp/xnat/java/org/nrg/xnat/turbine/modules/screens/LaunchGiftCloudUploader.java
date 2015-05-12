@@ -13,6 +13,10 @@ package org.nrg.xnat.turbine.modules.screens;
 import org.nrg.xdat.turbine.modules.screens.SecureScreen;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
+import org.nrg.xnat.turbine.utils.ArcSpecManager;
+import org.nrg.xdat.om.ArcArchivespecification;
+import java.net.URL;
+import java.net.MalformedURLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +25,8 @@ public class LaunchGiftCloudUploader extends SecureScreen {
 			.getLogger(LaunchGiftCloudUploader.class);
 	
 	@Override
-	public void doBuildTemplate(RunData data, Context context) {
-		// nop
+	public void doBuildTemplate(RunData data, Context context)
+			throws MalformedURLException {
+		context.put("xdatUrl", new URL(ArcSpecManager.GetInstance().getSiteUrl()));
 	}
 }

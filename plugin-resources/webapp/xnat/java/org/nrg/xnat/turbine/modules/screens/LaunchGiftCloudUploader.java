@@ -27,6 +27,9 @@ public class LaunchGiftCloudUploader extends SecureScreen {
 	@Override
 	public void doBuildTemplate(RunData data, Context context)
 			throws MalformedURLException {
-		context.put("xdatUrl", new URL(ArcSpecManager.GetInstance().getSiteUrl()));
+		URL xdatUrl = new URL(ArcSpecManager.GetInstance().getSiteUrl());
+		int urlLength = xdatUrl.toString().length();
+		int pathLength = xdatUrl.getPath().length();
+		context.put("serverUrl", xdatUrl.toString().substring(0, urlLength - pathLength));
 	}
 }

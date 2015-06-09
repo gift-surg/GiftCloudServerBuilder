@@ -22,6 +22,50 @@ RSpec.describe GiftCloud::Client do
   end
   # ==================================================
   
+  describe '(pseudonym-based subject identification)' do
+    let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
+    let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }
+    
+    it "can assign the same pseudonym to two subjects in two projects" do
+      pseud = GiftCloud::Pseudonym.new
+      [user1, user2].each do |user|
+        client.sign_in user.name, user.pass
+        client.add_project( proj = GiftCloud::Project.new )
+        client.add_subject( subj = GiftCloud::Subject.new, proj )
+        expect( client.match_subject( proj, pseud ) ).to be_nil
+        client.add_pseudonym( pseud, proj, subj )
+        expect( client.match_subject proj, pseud ).to eq( subj )
+        client.sign_out
+      end
+    end
+    
+    it "can't assign the same pseudonym to two subjects in the same project" do
+      pseud = GiftCloud::Pseudonym.new
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj1 = GiftCloud::Subject.new, proj )
+      expect( client.match_subject( proj, pseud ) ).to be_nil
+      client.add_pseudonym( pseud, proj, subj1 )
+      expect( client.match_subject proj, pseud ).to eq( subj1 )
+      client.add_subject( subj2 = GiftCloud::Subject.new, proj )
+      expect{ client.add_pseudonym pseud, proj, subj2 }.to raise_error( GiftCloud::EntityExistsError )
+      expect( client.match_subject proj, pseud ).to eq( subj1 )
+      client.sign_out
+    end
+    
+    it "can assign two pseudonyms to the same subject in the same project" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      [GiftCloud::Pseudonym.new, GiftCloud::Pseudonym.new].each do |pseud|
+        expect( client.match_subject( proj, pseud ) ).to be_nil
+        client.add_pseudonym( pseud, proj, subj )
+        expect( client.match_subject proj, pseud ).to eq( subj )
+      end
+      client.sign_out
+    end
+  end
+  
   # MULTI-USER =======================================
   describe '(multi-user)' do
     let( :owner ) { GiftCloud::User.new 'authuser', '123456' }

@@ -28,15 +28,22 @@ RSpec.describe GiftCloud::Client do
     
     it "can assign the same pseudonym to two subjects in two projects" do
       pseud = GiftCloud::Pseudonym.new
-      [user1, user2].each do |user|
+      comb1 = [user1, proj1 = GiftCloud::Project.new]
+      comb2 = [user2, proj2 = GiftCloud::Project.new]
+      [comb1, comb2].each do |comb|
+        user = comb[0]
+        proj = comb[1]
         client.sign_in user.name, user.pass
-        client.add_project( proj = GiftCloud::Project.new )
+        client.add_project( proj )
         client.add_subject( subj = GiftCloud::Subject.new, proj )
         expect( client.match_subject( proj, pseud ) ).to be_nil
         client.add_pseudonym( pseud, proj, subj )
         expect( client.match_subject proj, pseud ).to eq( subj )
         client.sign_out
       end
+      client.sign_in user1.name, user1.pass
+      expect( client.match_subject proj1, pseud ).not_to be_nil
+      client.sign_out
     end
     
     it "can't assign the same pseudonym to two subjects in the same project" do

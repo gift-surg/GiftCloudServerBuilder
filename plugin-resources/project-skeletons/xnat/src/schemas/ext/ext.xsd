@@ -17,7 +17,9 @@
 		<xs:attribute name="id" use="required">
 			<xs:annotation>
 				<xs:appinfo>
-					<xdat:field uniqueComposite="PROJ_IDENTITY"/>
+					<xdat:field uniqueComposite="PROJ_IDENTITY">
+						<xdat:sqlField name="id"/>
+					</xdat:field>
 				</xs:appinfo>
 			</xs:annotation>
 			<xs:simpleType>

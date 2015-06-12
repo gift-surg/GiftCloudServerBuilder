@@ -1,0 +1,8 @@
+Current migrations are:
+=======================
+ALTER TABLE ext_subjectPseudonym  ADD COLUMN project_id VARCHAR(255) ;
+UPDATE ext_subjectPseudonym SET project_id = ( SELECT project FROM xnat_subjectData WHERE id=ext_subjectPseudonym.subject_id ) ;
+ALTER TABLE ext_subjectPseudonym  ALTER COLUMN project_id SET NOT NULL ;
+
+Previous migrations are:
+========================

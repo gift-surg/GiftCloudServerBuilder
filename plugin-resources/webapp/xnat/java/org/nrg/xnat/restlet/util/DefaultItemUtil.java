@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.auto.AutoExtSubjectpseudonym;
 import org.nrg.xdat.security.XDATUser;
@@ -90,6 +91,27 @@ public final class DefaultItemUtil implements IItemUtil {
 		else
 			return resource;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.IItemUtil#getProjectByLabelOrIdImpl(java.lang.String)
+	 */
+	@Override
+	public Optional<XnatProjectdata> getProjectByLabelOrIdImpl(String descriptor) {
+		CriteriaCollection criteria = new CriteriaCollection("OR");
+		criteria.addClause("xnat:projectData/name", descriptor);
+		criteria.addClause("xnat:projectData/id", descriptor);
+		ArrayList<XnatProjectdata> projects = XnatProjectdata.getXnatProjectdatasByField(criteria, user, false);
+		Optional<XnatProjectdata> project;
+		if (projects.isEmpty())
+			project = Optional.empty();
+		else if (projects.size() > 1)
+			// TODO throw new IllegalStateException("More then one project with same label");
+			project = Optional.empty();
+		else
+			project = Optional.of(projects.get(0));
+		return project;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getSubjectByLabelOrIdImpl(java.lang.String)
@@ -115,8 +137,8 @@ public final class DefaultItemUtil implements IItemUtil {
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getMatchingSubjectImpl(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getMatchingSubjectImpl(String pseudoId) {
-		Optional<ExtSubjectpseudonym> pseudonym = getPseudonymImpl(pseudoId);
+	public Optional<XnatSubjectdata> getMatchingSubjectImpl(String projectId, String pseudoId) {
+		Optional<ExtSubjectpseudonym> pseudonym = getPseudonymImpl(projectId, pseudoId);
 		if (!pseudonym.isPresent())
 			return Optional.empty();
 		else {
@@ -128,13 +150,19 @@ public final class DefaultItemUtil implements IItemUtil {
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getPseudonymImpl(java.lang.String)
 	 */
 	@Override
-	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String pseudoId) {
-		ExtSubjectpseudonym tmp = AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, user, false);
+	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String projectId, String pseudoId) {
+		CriteriaCollection criteria = new CriteriaCollection("AND");
+		criteria.addClause("ext:subjectPseudonym/id", pseudoId);
+		criteria.addClause("ext:subjectPseudonym/project", projectId);
+		ArrayList<ExtSubjectpseudonym> pseudonyms = ExtSubjectpseudonym.getExtSubjectpseudonymsByField(criteria, user, false);
 		Optional<ExtSubjectpseudonym> pseudonym;
-		if (tmp == null)
+		if (pseudonyms.isEmpty())
+			pseudonym = Optional.empty();
+		else if (pseudonyms.size() > 1)
+			// TODO throw new IllegalStateException("More than one pseudonym with same id and project");
 			pseudonym = Optional.empty();
 		else
-			pseudonym = Optional.of(tmp);
+			pseudonym = Optional.of(pseudonyms.get(0));
 		return pseudonym;
 	}
 
@@ -143,14 +171,15 @@ public final class DefaultItemUtil implements IItemUtil {
 	 */
 	@Override
 	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(
-			XnatSubjectdata subject, String pseudoId) throws IllegalStateException {
+			XnatProjectdata project, XnatSubjectdata subject, String pseudoId) throws IllegalStateException {
 		
-		if (getPseudonymImpl(pseudoId).isPresent())
-			throw new IllegalStateException("Pseudonym "+pseudoId+" already exists");
+		if (getPseudonymImpl(project.getId(), pseudoId).isPresent())
+			throw new IllegalStateException("Pseudonym "+pseudoId+" with project "+project.getId()+" already exists");
 		
 		// put the new pseudonym
 		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym();
 		newPseudonym.setId(pseudoId);
+		newPseudonym.setProject(project.getId());
 		newPseudonym.setSubject(subject.getId());
 		
 		PersistentWorkflowI wrk;

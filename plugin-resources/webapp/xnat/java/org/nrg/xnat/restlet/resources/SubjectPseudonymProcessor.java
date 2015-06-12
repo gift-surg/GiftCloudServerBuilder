@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.restlet.Context;
@@ -39,7 +40,7 @@ import com.google.common.base.Strings;
  *
  */
 public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
-	String rid, ppid;
+	String projectId, rid, ppid;
 	
 	/**
 	 * 
@@ -50,6 +51,7 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	public SubjectPseudonymProcessor(Context context, Request request,
 			Response response) {
 		super(context, request, response);
+		projectId = (String) getParameter(request, "PROJECT_ID");
 		rid = (String) getParameter(request, "SUBJECT_ID");
 		ppid = (String) getParameter(request, "PPID");
 	}
@@ -63,14 +65,28 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 	public void handlePost() {
 		try {
 			// population & sanity checks
+			if (Strings.isNullOrEmpty(projectId)) {
+				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PROJECT_ID provided");
+				return;
+			}
+			if (Strings.isNullOrEmpty(rid)) {
+				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty SUBJECT_ID provided");
+				return;
+			}
 			if (Strings.isNullOrEmpty(ppid)) {
 				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PPID provided");
 				return;
 			}
 			
-			Optional<ExtSubjectpseudonym> pseudonym = secureItemUtil.getPseudonym(ppid);
+			Optional<ExtSubjectpseudonym> pseudonym = secureItemUtil.getPseudonym(projectId, ppid);
 			if (pseudonym.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided PPID exists");
+				return;
+			}
+			
+			Optional<XnatProjectdata> project = secureItemUtil.getProjectByLabelOrId(projectId);
+			if (!project.isPresent()) {
+				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Project not found");
 				return;
 			}
 			
@@ -80,8 +96,13 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 				return;
 			}
 			
+			if (subject.get().getProject(project.get().getId(), false) == null) {
+				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Subject not in project");
+				return;
+			}
+			
 			// add PPID
-			Optional<ExtSubjectpseudonym> newPseudonym = secureItemUtil.addPseudoId(subject.get(), ppid);
+			Optional<ExtSubjectpseudonym> newPseudonym = secureItemUtil.addPseudoId(project.get(), subject.get(), ppid);
 			if (newPseudonym.isPresent()) {
 				returnXML(newPseudonym.get().getItem()); // TODO what is this for ? resource.returnDefaultRepresentation();
 				getResponse().setStatus(Status.SUCCESS_CREATED);

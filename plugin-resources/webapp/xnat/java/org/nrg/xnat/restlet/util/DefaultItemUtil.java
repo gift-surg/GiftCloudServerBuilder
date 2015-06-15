@@ -27,6 +27,7 @@ import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.auto.AutoExtSubjectpseudonym;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -34,6 +35,8 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.ActionNameAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.IDAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.XFTInitException;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -152,7 +155,7 @@ public final class DefaultItemUtil implements IItemUtil {
 	@Override
 	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String projectId, String pseudoId) {
 		CriteriaCollection criteria = new CriteriaCollection("AND");
-		criteria.addClause("ext:subjectPseudonym/id", pseudoId);
+		criteria.addClause("ext:subjectPseudonym/ppid", pseudoId);
 		criteria.addClause("ext:subjectPseudonym/project", projectId);
 		ArrayList<ExtSubjectpseudonym> pseudonyms = ExtSubjectpseudonym.getExtSubjectpseudonymsByField(criteria, user, false);
 		Optional<ExtSubjectpseudonym> pseudonym;
@@ -176,9 +179,19 @@ public final class DefaultItemUtil implements IItemUtil {
 		if (getPseudonymImpl(project.getId(), pseudoId).isPresent())
 			throw new IllegalStateException("Pseudonym "+pseudoId+" with project "+project.getId()+" already exists");
 		
+		XFTItem item = null;
+		try {
+			item = XFTItem.NewItem("ext:subjectPseudonym", user);
+		} catch (XFTInitException | ElementNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			return Optional.empty();
+		}
+		
 		// put the new pseudonym
-		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym();
-		newPseudonym.setId(pseudoId);
+		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym(item);
+		newPseudonym.setId(project.getId()+pseudoId);
+		newPseudonym.setPpid(pseudoId);
 		newPseudonym.setProject(project.getId());
 		newPseudonym.setSubject(subject.getId());
 		

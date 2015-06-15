@@ -17,8 +17,8 @@
 		<xs:attribute name="id" use="required">
 			<xs:annotation>
 				<xs:appinfo>
-					<xdat:field uniqueComposite="PROJ_IDENTITY">
-						<xdat:sqlField name="id"/>
+					<xdat:field>
+						<xdat:sqlField primaryKey="true"/>
 					</xdat:field>
 				</xs:appinfo>
 			</xs:annotation>
@@ -39,9 +39,9 @@
 		<xs:attribute name="project" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:appinfo>
-					<xdat:field baseElement="xnat:projectData" baseCol="id" uniqueComposite="PROJ_IDENTITY">
+					<xdat:field baseElement="xnat:projectData" baseCol="id">
 						<xdat:relation onDelete="CASCADE"/>
-						<xdat:sqlField name="project_id"/>
+						<xdat:sqlField name="project_id" primaryKey="true"/>
 					</xdat:field>
 				</xs:appinfo>
 			</xs:annotation>

@@ -37,6 +37,8 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils.IDAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
 import org.nrg.xft.exception.ElementNotFoundException;
 import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.identifier.IDGeneratorFactory;
+import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -190,7 +192,10 @@ public final class DefaultItemUtil implements IItemUtil {
 		
 		// put the new pseudonym
 		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym(item);
-		newPseudonym.setId(project.getId()+pseudoId);
+		Optional<String> id = generateId("ext_subjectPseudonym", "id");
+		if (!id.isPresent())
+			return Optional.empty();
+		newPseudonym.setId(id.get());
 		newPseudonym.setPpid(pseudoId);
 		newPseudonym.setProject(project.getId());
 		newPseudonym.setSubject(subject.getId());
@@ -230,6 +235,26 @@ public final class DefaultItemUtil implements IItemUtil {
 		}
 		
 		return Optional.of(newPseudonym);
+	}
+	
+	/**
+	 * Generates a unique identifier, esp. for use with primary keys in tables.
+	 * 
+	 * @param tableName eg. "xnat_subjectData"
+	 * @param tableColumnName eg. "id"
+	 * @return generated identifier, or null in case of a generic exception from the XNAT base
+	 */
+	protected static Optional<String> generateId(String tableName, String tableColumnName) {
+		try {
+			IDGeneratorI generator = IDGeneratorFactory
+					.GetIDGenerator("org.nrg.xnat.turbine.utils.IDGenerator");
+			generator.setTable(tableName);
+			generator.setDigits(5);
+			generator.setColumn(tableColumnName);
+			return Optional.of(generator.generateIdentifier());
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 }

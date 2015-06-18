@@ -25,7 +25,6 @@ import java.util.Optional;
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.base.auto.AutoExtSubjectpseudonym;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
@@ -104,14 +103,10 @@ public final class DefaultItemUtil implements IItemUtil {
 	@Override
 	public Optional<XnatProjectdata> getProjectByLabelOrIdImpl(String descriptor) {
 		CriteriaCollection criteria = new CriteriaCollection("OR");
-		criteria.addClause("xnat:projectData/name", descriptor);
 		criteria.addClause("xnat:projectData/id", descriptor);
 		ArrayList<XnatProjectdata> projects = XnatProjectdata.getXnatProjectdatasByField(criteria, user, false);
 		Optional<XnatProjectdata> project;
 		if (projects.isEmpty())
-			project = Optional.empty();
-		else if (projects.size() > 1)
-			// TODO throw new IllegalStateException("More then one project with same label");
 			project = Optional.empty();
 		else
 			project = Optional.of(projects.get(0));
@@ -163,9 +158,6 @@ public final class DefaultItemUtil implements IItemUtil {
 		Optional<ExtSubjectpseudonym> pseudonym;
 		if (pseudonyms.isEmpty())
 			pseudonym = Optional.empty();
-		else if (pseudonyms.size() > 1)
-			// TODO throw new IllegalStateException("More than one pseudonym with same id and project");
-			pseudonym = Optional.empty();
 		else
 			pseudonym = Optional.of(pseudonyms.get(0));
 		return pseudonym;
@@ -184,8 +176,7 @@ public final class DefaultItemUtil implements IItemUtil {
 		XFTItem item = null;
 		try {
 			item = XFTItem.NewItem("ext:subjectPseudonym", user);
-		} catch (XFTInitException | ElementNotFoundException e2) {
-			// TODO Auto-generated catch block
+		} catch (XFTInitException | ElementNotFoundException e2) { // should never happen
 			e2.printStackTrace();
 			return Optional.empty();
 		}
@@ -212,7 +203,6 @@ public final class DefaultItemUtil implements IItemUtil {
 									"Inserted new pseudonym for a subject."));
 			
 		} catch (JustificationAbsent | ActionNameAbsent | IDAbsent e1) { // from PersistentWorkflowUtils.getOrCreateWorkflowData
-			// TODO this looks like a server-side exception, so is this the proper way of handling it?
 			e1.printStackTrace();
 			return Optional.empty();
 		}
@@ -224,13 +214,12 @@ public final class DefaultItemUtil implements IItemUtil {
 				MaterializedView.DeleteByUser(user);
 			}
 		} catch (Exception e) { // from SaveItemHelper.authorizedSave, PersistentWorkflowUtils.complete, or MaterializedView.DeleteByUser
+			e.printStackTrace();
 			try {
 				PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
 			} catch (Exception e1) {
-				// TODO this is becoming uglier, but we have to stop unspecific exceptions somewhere right ?
 				e1.printStackTrace();
 			}
-//			throw e; // TODO originally part of code
 			return Optional.empty();
 		}
 		

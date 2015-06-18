@@ -26,11 +26,31 @@
 				<xs:restriction base="xs:string"/>
 			</xs:simpleType>
 		</xs:attribute>
+		<xs:attribute name="ppid" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field uniqueComposite="PROJ_PPID">
+						<xdat:sqlField name="ppid"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="subject" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:appinfo>
 					<xdat:field baseElement="xnat:subjectData" baseCol="id">
+						<xdat:relation onDelete="CASCADE"/>
 						<xdat:sqlField name="subject_id"/>
+					</xdat:field>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="project" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:appinfo>
+					<xdat:field baseElement="xnat:projectData" baseCol="id" uniqueComposite="PROJ_PPID">
+						<xdat:relation onDelete="CASCADE"/>
+						<xdat:sqlField name="project_id"/>
 					</xdat:field>
 				</xs:appinfo>
 			</xs:annotation>

@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
 import org.nrg.xnat.security.ISecurityUtil;
@@ -72,13 +73,26 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	public void setSecurityUtil(ISecurityUtil securityUtil) {
 		this.securityUtil = securityUtil;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ISecureItemUtil#getProjectByLabelOrId(java.lang.String)
+	 */
+	@Override
+	public Optional<XnatProjectdata> getProjectByLabelOrId(String descriptor)
+			throws IllegalAccessException {
+		Optional<XnatProjectdata> project = itemUtil.getProjectByLabelOrIdImpl(descriptor);
+		if (project.isPresent())
+			checkCanReadAndThrow(project.get().getItem());
+		return project;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getSubject(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException {
-		Optional<XnatSubjectdata> subject = itemUtil.getSubjectByLabelOrIdImpl(descriptor);
+	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String projectId, String descriptor) throws IllegalAccessException {
+		Optional<XnatSubjectdata> subject = itemUtil.getSubjectByLabelOrIdImpl(projectId, descriptor);
 		if (subject.isPresent())
 			checkCanReadAndThrow(subject.get().getItem());
 		return subject;
@@ -88,13 +102,13 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getMatchingSubject(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getMatchingSubject(String pseudoId) throws IllegalAccessException {
-		Optional<ExtSubjectpseudonym> pseudonym = itemUtil.getPseudonymImpl(pseudoId);
+	public Optional<XnatSubjectdata> getMatchingSubject(String projectId, String pseudoId) throws IllegalAccessException {
+		Optional<ExtSubjectpseudonym> pseudonym = itemUtil.getPseudonymImpl(projectId, pseudoId);
 		if (!pseudonym.isPresent())
 			return Optional.empty();
 		else {
 			checkCanReadAndThrow(pseudonym.get().getItem());
-			return itemUtil.getSubjectByLabelOrIdImpl(pseudonym.get().getSubject());
+			return itemUtil.getSubjectByLabelOrIdImpl(projectId, pseudonym.get().getSubject());
 		}
 	}
 
@@ -102,8 +116,8 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getPseudonym(java.lang.String)
 	 */
 	@Override
-	public Optional<ExtSubjectpseudonym> getPseudonym(String pseudoId) throws IllegalAccessException {
-		Optional<ExtSubjectpseudonym> pseudonym = itemUtil.getPseudonymImpl(pseudoId);
+	public Optional<ExtSubjectpseudonym> getPseudonym(String projectId, String pseudoId) throws IllegalAccessException {
+		Optional<ExtSubjectpseudonym> pseudonym = itemUtil.getPseudonymImpl(projectId, pseudoId);
 		if (pseudonym.isPresent())
 			checkCanReadAndThrow(pseudonym.get().getItem());
 		return pseudonym;
@@ -113,9 +127,10 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#addPseudonym(org.nrg.xdat.om.XnatSubjectdata, org.nrg.xdat.om.ExtSubjectpseudonym)
 	 */
 	@Override
-	public Optional<ExtSubjectpseudonym> addPseudoId(XnatSubjectdata subject,
+	public Optional<ExtSubjectpseudonym> addPseudoId(XnatProjectdata project, XnatSubjectdata subject,
 			String pseudoId) throws IllegalAccessException, IllegalStateException {
+		checkCanEditAndThrow(project.getItem());
 		checkCanEditAndThrow(subject.getItem());
-		return itemUtil.addPseudoIdImpl(subject, pseudoId);
+		return itemUtil.addPseudoIdImpl(project, subject, pseudoId);
 	}
 }

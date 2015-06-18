@@ -91,12 +91,13 @@ public interface IItemUtil {
 	
 	/**
 	 * 
+	 * @param projectId
 	 * @param descriptor
 	 * @return
 	 * 
-	 * @see ISecureItemUtil#getSubjectByLabelOrId(String)
+	 * @see ISecureItemUtil#getSubjectByLabelOrId(String, String)
 	 */
-	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String descriptor);
+	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String projectId, String descriptor);
 
 	/**
 	 * 
@@ -114,7 +115,7 @@ public interface IItemUtil {
 	 * @param pseudoId
 	 * @return
 	 * 
-	 * @see ISecureItemUtil#getPseudonym(String)
+	 * @see ISecureItemUtil#getPseudonym(String, String)
 	 */
 	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String projectId, String pseudoId);
 
@@ -126,7 +127,7 @@ public interface IItemUtil {
 	 * @return null if pseudonym could not be added
 	 * @throws IllegalStateException if pseudonym already exists
 	 * 
-	 * @see ISecureItemUtil#addPseudoId(XnatSubjectdata, String)
+	 * @see ISecureItemUtil#addPseudoId(XnatProjectdata, XnatSubjectdata, String)
 	 */
 	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(XnatProjectdata project, XnatSubjectdata subject, String pseudoId) throws IllegalStateException;
 }

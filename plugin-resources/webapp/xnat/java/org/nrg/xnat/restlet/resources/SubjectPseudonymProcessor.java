@@ -78,26 +78,21 @@ public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
 				return;
 			}
 			
-			Optional<ExtSubjectpseudonym> pseudonym = secureItemUtil.getPseudonym(projectId, ppid);
-			if (pseudonym.isPresent()) {
-				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided PPID exists");
-				return;
-			}
-			
 			Optional<XnatProjectdata> project = secureItemUtil.getProjectByLabelOrId(projectId);
 			if (!project.isPresent()) {
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Project not found");
 				return;
 			}
 			
-			Optional<XnatSubjectdata> subject = secureItemUtil.getSubjectByLabelOrId(rid);
-			if (!subject.isPresent()) {
-				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Subject not found");
+			Optional<ExtSubjectpseudonym> pseudonym = secureItemUtil.getPseudonym(projectId, ppid);
+			if (pseudonym.isPresent()) {
+				getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided PPID exists");
 				return;
 			}
 			
-			if (subject.get().getProject(project.get().getId(), false) == null) {
-				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Subject not in project");
+			Optional<XnatSubjectdata> subject = secureItemUtil.getSubjectByLabelOrId(project.get().getId(), rid);
+			if (!subject.isPresent()) {
+				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Subject not found in project");
 				return;
 			}
 			

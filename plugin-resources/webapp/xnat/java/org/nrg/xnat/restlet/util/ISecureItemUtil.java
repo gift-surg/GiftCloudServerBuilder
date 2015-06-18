@@ -62,13 +62,14 @@ public interface ISecureItemUtil {
 	public Optional<XnatProjectdata> getProjectByLabelOrId(String descriptor) throws IllegalAccessException;
 	
 	/**
-	 * Fetches subject with specified label.
+	 * Fetches subject with specified label within specified project.
 	 * 
+	 * @param projectId
 	 * @param descriptor
 	 * @return null if no subject with specified label
 	 * @throws IllegalAccessException
 	 */
-	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException;
+	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String projectId, String descriptor) throws IllegalAccessException;
 	
 	/**
 	 * Fetches subject associated to provided pseudo ID.

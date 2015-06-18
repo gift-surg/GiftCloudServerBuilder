@@ -117,19 +117,18 @@ public final class DefaultItemUtil implements IItemUtil {
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getSubjectByLabelOrIdImpl(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String descriptor) {		
+	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String projectId, String descriptor) {		
 		CriteriaCollection criteria = new CriteriaCollection("OR");
 		criteria.addClause("xnat:subjectData/label", descriptor);
 		criteria.addClause("xnat:subjectData/id", descriptor);
 		ArrayList<XnatSubjectdata> subjects = XnatSubjectdata.getXnatSubjectdatasByField(criteria, user, false);
-		Optional<XnatSubjectdata> subject;
-		if (subjects.isEmpty())
-			subject = Optional.empty();
-		else if (subjects.size() > 1)
-			// TODO throw new IllegalStateException("More than one subject with same label");
-			subject = Optional.empty();
-		else
-			subject = Optional.of(subjects.get(0));
+		Optional<XnatSubjectdata> subject = Optional.empty();
+		if (!subjects.isEmpty()) {
+			for (XnatSubjectdata current : subjects) {
+				if (current.getProject().equals(projectId))
+					subject = Optional.of(current);
+			}
+		}
 		return subject;
 	}
 
@@ -142,7 +141,7 @@ public final class DefaultItemUtil implements IItemUtil {
 		if (!pseudonym.isPresent())
 			return Optional.empty();
 		else {
-			return getSubjectByLabelOrIdImpl(pseudonym.get().getSubject());
+			return getSubjectByLabelOrIdImpl(projectId, pseudonym.get().getSubject());
 		}
 	}
 

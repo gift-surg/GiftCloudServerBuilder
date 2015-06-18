@@ -91,8 +91,8 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	 * @see org.nrg.xnat.restlet.util.ResourceUtilI#getSubject(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String descriptor) throws IllegalAccessException {
-		Optional<XnatSubjectdata> subject = itemUtil.getSubjectByLabelOrIdImpl(descriptor);
+	public Optional<XnatSubjectdata> getSubjectByLabelOrId(String projectId, String descriptor) throws IllegalAccessException {
+		Optional<XnatSubjectdata> subject = itemUtil.getSubjectByLabelOrIdImpl(projectId, descriptor);
 		if (subject.isPresent())
 			checkCanReadAndThrow(subject.get().getItem());
 		return subject;
@@ -108,7 +108,7 @@ public final class SecureItemUtil implements ISecureItemUtil {
 			return Optional.empty();
 		else {
 			checkCanReadAndThrow(pseudonym.get().getItem());
-			return itemUtil.getSubjectByLabelOrIdImpl(pseudonym.get().getSubject());
+			return itemUtil.getSubjectByLabelOrIdImpl(projectId, pseudonym.get().getSubject());
 		}
 	}
 

@@ -173,6 +173,14 @@ module GiftCloud
       end
     end
     
+    def add_session session, label, project, subject
+      # TODO
+    end
+    
+    def match_session project, subject, label
+      # TODO
+    end
+    
     def list_scans project, subject, session
       check_auth!
       

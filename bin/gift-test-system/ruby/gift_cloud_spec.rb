@@ -22,6 +22,51 @@ RSpec.describe GiftCloud::Client do
   end
   # ==================================================
   
+  describe '(label-based experiment identification)' do
+    let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
+    let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }
+    
+    it "can retrieve existing experiment" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      3.times do
+        client.add_session( expt = GiftCloud::Session.new( :mri ), label = GiftCloud::Pseudonym.new, proj, subj )
+        expect( client.match_session proj, subj, label ).to eq( expt )
+      end
+      client.sign_out
+    end
+    
+    it "can't use same label for two experiments" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      label = GiftCloud::Pseudonym.new
+      expect{ client.add_session( GiftCloud::Session.new( :mri ), label, proj, subj ) }.not_to raise_error
+      expect{ client.add_session( GiftCloud::Session.new( :mri ), label, proj, subj ) }.to raise_error( GiftCloud::EntityExistsError )
+      client.sign_out
+    end
+    
+    it "can't retrieve other user's experiment" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), label = GiftCloud::Pseudonym.new, proj, subj )
+      client.sign_out
+      client.sign_in user2.name, user2.pass
+      expect{ client.match_session proj, subj, label }.to raise_error( GiftCloud::AuthenticationError )
+      client.sign_out
+    end
+  end
+  
+  describe '(label-based scan identification)' do
+    it "can retrieve existing scan" do
+    end
+    
+    it "can't use same label for two scans" do
+    end
+  end
+  
   describe '(pseudonym-based subject identification)' do
     let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
     let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }

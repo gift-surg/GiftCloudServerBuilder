@@ -22,6 +22,7 @@ package org.nrg.xnat.restlet.util;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.exceptions.IllegalAccessException;
@@ -102,4 +103,15 @@ public interface ISecureItemUtil {
 	 * @throws IllegalStateException if pseudonym already exists
 	 */
 	public Optional<ExtSubjectpseudonym> addPseudoId(XnatProjectdata project, XnatSubjectdata subject, String pseudoId) throws IllegalAccessException, IllegalStateException;
+	
+	/**
+	 * Fetches matching experiment data as object.
+	 * 
+	 * @param projectId
+	 * @param subjectId
+	 * @param uid
+	 * @return null if provided parameter not existing
+	 * @throws IllegalAccessException
+	 */
+	public Optional<XnatImagesessiondata> getMatchingExperiment(String projectId, String subjectId, String uid) throws IllegalAccessException;
 }

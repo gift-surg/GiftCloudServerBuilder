@@ -218,6 +218,11 @@ public class XNATApplication extends Application {
 				SubjAssessmentResource.class);
 		attachArchiveURI(
 				router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/uids/{UID}",
+				UidExperimentMatcher.class
+				);
+		attachArchiveURI(
+				router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors",
 				ProjSubExptAsstList.class);
 		attachArchiveURI(

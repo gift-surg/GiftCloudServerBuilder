@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.nrg.xdat.exceptions.IllegalAccessException;
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.XFTItem;
@@ -132,5 +133,19 @@ public final class SecureItemUtil implements ISecureItemUtil {
 		checkCanEditAndThrow(project.getItem());
 		checkCanEditAndThrow(subject.getItem());
 		return itemUtil.addPseudoIdImpl(project, subject, pseudoId);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.ISecureItemUtil#getMatchingExperiment(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Optional<XnatImagesessiondata> getMatchingExperiment(
+			String projectId, String subjectId, String uid)
+			throws IllegalAccessException {
+		Optional<XnatImagesessiondata> experiment = itemUtil.getMatchingExperimentImpl(projectId, subjectId, uid);
+		if (experiment.isPresent())
+			checkCanReadAndThrow(experiment.get().getItem());
+		return experiment;
 	}
 }

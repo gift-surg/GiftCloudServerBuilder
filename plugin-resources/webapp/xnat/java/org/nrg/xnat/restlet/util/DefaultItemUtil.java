@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
@@ -223,6 +224,15 @@ public final class DefaultItemUtil implements IItemUtil {
 		}
 		
 		return Optional.of(newPseudonym);
+	}
+	
+	/*
+	 */
+	@Override
+	public Optional<XnatImagesessiondata> getMatchingExperimentImpl(
+			String projectId, String subjectId, String uid) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	/**

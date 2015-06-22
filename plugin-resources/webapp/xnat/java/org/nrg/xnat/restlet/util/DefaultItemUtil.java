@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatExperimentdata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
+import org.nrg.xdat.om.XnatSubjectassessordata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.security.XDATUser;
 import org.nrg.xft.XFTItem;
@@ -231,8 +233,28 @@ public final class DefaultItemUtil implements IItemUtil {
 	@Override
 	public Optional<XnatImagesessiondata> getMatchingExperimentImpl(
 			String projectId, String subjectId, String uid) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<XnatImagesessiondata> experiments = XnatImagesessiondata.getXnatImagesessiondatasByField("xnat:imageSessionData/uid", uid, user, false);
+		Optional<XnatSubjectdata> subject = getSubjectByLabelOrIdImpl(projectId, subjectId);
+		if (!subject.isPresent())
+			return Optional.empty();
+		
+		for (XnatImagesessiondata experiment : experiments) {
+			CriteriaCollection cc1 = new CriteriaCollection("AND");
+			cc1.addClause("xnat:experimentData/id", experiment.getId());
+			cc1.addClause("xnat:experimentData/project", projectId);
+			ArrayList<XnatExperimentdata> results1 = XnatExperimentdata.getXnatExperimentdatasByField(cc1, user, false);
+			if (!results1.isEmpty())
+				for (XnatExperimentdata result1 : results1) {
+					CriteriaCollection cc2 = new CriteriaCollection("AND");
+					cc2.addClause("xnat:subjectAssessorData/id", result1.getId());
+					cc2.addClause("xnat:subjectAssessorData/subject_id", subject.get().getId());
+					ArrayList<XnatSubjectassessordata> results2 = XnatSubjectassessordata.getXnatSubjectassessordatasByField(cc2, user, false);
+					if (results2.size()==1)
+						return Optional.of(experiment);
+				}
+		}
+		
+		return Optional.empty();
 	}
 	
 	/**

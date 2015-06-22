@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -54,6 +55,9 @@ public class UidExperimentMatcher extends SubjectPseudonymResource {
 	public UidExperimentMatcher(Context context, Request request,
 			Response response) {
 		super(context, request, response);
+		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+		getVariants().add(new Variant(MediaType.TEXT_HTML));
+		getVariants().add(new Variant(MediaType.TEXT_XML));
 		projectId = (String) getParameter(request, "PROJECT_ID");
 		rid = (String) getParameter(request, "SUBJECT_ID");
 		uid = (String) getParameter(request, "UID");

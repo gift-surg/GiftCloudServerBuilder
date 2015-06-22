@@ -173,12 +173,56 @@ module GiftCloud
       end
     end
     
-    def add_session session, label, project, subject
-      # TODO
+    def add_session session, uid, project, subject
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label + "?xsiType=#{@@xnat_session_types[ session.type ]}&uid=#{uid.label}"
+                   )
+      result = try_put uri, {}
+      case result.code
+      when 200, 204 # OK, No Content
+        warn "Existing session (possibly) overwritten, response code was #{result.code}"
+      when 201 # Created
+        #nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise result
+      end
     end
     
-    def match_session project, subject, label
-      # TODO
+    def match_session project, subject, uid
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', 'uids', uid.label + '?format=json' + '&columns=DEFAULT' )
+      result = try_get uri, {}
+      
+      case result.code
+      when 200 # OK
+        json = JSON.parse result
+        entities = json['items'][0]['data_fields']
+        if entities.empty? 
+          nil
+        elsif entities.size > 1
+          warn "something's wrong, got #{entities.size} results rather than 1"
+          nil
+        else
+          unless @@xnat_session_types.has_value? session['xsiType']
+            raise ArgumentError, "Session type #{session['xsiType']} not recognised"
+          end
+          Session.new( @@xnat_session_types.key( entities['xsiType'] ), entities['label'] )
+        end
+      when 404 # Not Found
+        return nil
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise r
+      end
     end
     
     def list_scans project, subject, session

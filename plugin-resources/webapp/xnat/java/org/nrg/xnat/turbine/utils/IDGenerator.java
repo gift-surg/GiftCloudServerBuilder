@@ -53,6 +53,8 @@ public class IDGenerator implements IDGeneratorI {
 				site += "_E";
 			} else if (tableName.equalsIgnoreCase("xnat_pvisitData")) {
 				site += "_V";
+			} else if (tableName.equalsIgnoreCase("ext_subjectPseudonym")) {
+				site += "_Pi";
 			}
 
 			String temp_id = null;

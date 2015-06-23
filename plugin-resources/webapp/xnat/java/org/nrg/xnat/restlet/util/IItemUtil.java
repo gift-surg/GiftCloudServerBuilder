@@ -22,6 +22,7 @@ package org.nrg.xnat.restlet.util;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXdatUser;
 import org.nrg.xdat.om.base.auto.AutoXdatUser;
@@ -84,36 +85,49 @@ public interface IItemUtil {
 	 * @param descriptor
 	 * @return
 	 * 
-	 * @see ISecureItemUtil#getSubjectByLabelOrId(String)
+	 * @see ISecureItemUtil#getProjectByLabelOrId(String)
 	 */
-	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String descriptor);
+	public Optional<XnatProjectdata> getProjectByLabelOrIdImpl(String descriptor);
+	
+	/**
+	 * 
+	 * @param projectId
+	 * @param descriptor
+	 * @return
+	 * 
+	 * @see ISecureItemUtil#getSubjectByLabelOrId(String, String)
+	 */
+	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String projectId, String descriptor);
 
 	/**
 	 * 
+	 * @param projectId
 	 * @param pseudoId
 	 * @return
 	 * 
 	 * @see ISecureItemUtil#getMatchingSubject(String)
 	 */
-	public Optional<XnatSubjectdata> getMatchingSubjectImpl(String pseudoId);
+	public Optional<XnatSubjectdata> getMatchingSubjectImpl(String projectId, String pseudoId);
 
 	/**
 	 * 
+	 * @param projectId
 	 * @param pseudoId
 	 * @return
 	 * 
-	 * @see ISecureItemUtil#getPseudonym(String)
+	 * @see ISecureItemUtil#getPseudonym(String, String)
 	 */
-	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String pseudoId);
+	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String projectId, String pseudoId);
 
 	/**
 	 * 
+	 * @param project
 	 * @param subject
 	 * @param pseudoId
 	 * @return null if pseudonym could not be added
 	 * @throws IllegalStateException if pseudonym already exists
 	 * 
-	 * @see ISecureItemUtil#addPseudoId(XnatSubjectdata, String)
+	 * @see ISecureItemUtil#addPseudoId(XnatProjectdata, XnatSubjectdata, String)
 	 */
-	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(XnatSubjectdata subject, String pseudoId) throws IllegalStateException;
+	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(XnatProjectdata project, XnatSubjectdata subject, String pseudoId) throws IllegalStateException;
 }

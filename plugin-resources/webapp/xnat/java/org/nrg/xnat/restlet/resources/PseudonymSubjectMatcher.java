@@ -22,6 +22,7 @@ package org.nrg.xnat.restlet.resources;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.restlet.Context;
@@ -44,6 +45,7 @@ import com.google.common.base.Strings;
  */
 public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 	String ppid;
+	String projectId;
 	
 	/**
 	 * 
@@ -57,6 +59,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
+		projectId = (String) getParameter(request, "PROJECT_ID");
 		ppid = (String) getParameter(request, "PPID");
 	}
 	
@@ -67,6 +70,10 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 	@Override
 	public Representation getRepresentation(Variant variant) {
 		// sanity check
+		if (Strings.isNullOrEmpty(projectId)) {
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PROJECT_ID provided");
+			return null;
+		}
 		if (Strings.isNullOrEmpty(ppid)) {
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PPID provided");
 			return null;
@@ -75,7 +82,7 @@ public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
 		// get subject
 		Optional<XnatSubjectdata> subject;
 		try {
-			subject = secureItemUtil.getMatchingSubject(ppid);
+			subject = secureItemUtil.getMatchingSubject(projectId, ppid);
 		} catch (Throwable t) {
 			handle(t);
 			subject = Optional.empty();

@@ -49,7 +49,7 @@ function startDb {
 }
 
 function tearDownDb {
-	if [ $(psql -l | grep $DB_NAME | wc -l) -eq 1 ]; # checking whether DB exists
+	if [ $(psql -l | grep -w $DB_NAME | wc -l) -eq 1 ]; # checking whether DB exists
 	then dropdb -h localhost -U $DB_USER $DB_NAME;
 	fi
 }

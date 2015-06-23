@@ -97,7 +97,7 @@ module GiftCloud
       uri = gen_uri( 'data', 'archive', 'projects', project.label, 'subjects', subject.label )
       xml = '<?xml version="1.0" encoding"UTF-8" standalone="no"?>' +
             '<xnat:Subject label="' + subject.label + '" project="' + 
-            project.label + ' xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
+            project.label + '" xmlns:xnat="http://nrg.wustl.edu/xnat"/>'
       result = try_put uri, xml
       
       case result.code

@@ -23,9 +23,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
-import org.nrg.xdat.om.base.auto.AutoExtSubjectpseudonym;
 import org.nrg.xdat.security.XDATUser;
+import org.nrg.xft.XFTItem;
 import org.nrg.xft.db.MaterializedView;
 import org.nrg.xft.event.EventUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowI;
@@ -33,6 +34,10 @@ import org.nrg.xft.event.persist.PersistentWorkflowUtils;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.ActionNameAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.IDAbsent;
 import org.nrg.xft.event.persist.PersistentWorkflowUtils.JustificationAbsent;
+import org.nrg.xft.exception.ElementNotFoundException;
+import org.nrg.xft.exception.XFTInitException;
+import org.nrg.xft.identifier.IDGeneratorFactory;
+import org.nrg.xft.identifier.IDGeneratorI;
 import org.nrg.xft.search.CriteriaCollection;
 import org.nrg.xft.utils.SaveItemHelper;
 import org.nrg.xnat.restlet.resources.SecureResource;
@@ -90,24 +95,40 @@ public final class DefaultItemUtil implements IItemUtil {
 		else
 			return resource;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.IItemUtil#getProjectByLabelOrIdImpl(java.lang.String)
+	 */
+	@Override
+	public Optional<XnatProjectdata> getProjectByLabelOrIdImpl(String descriptor) {
+		CriteriaCollection criteria = new CriteriaCollection("OR");
+		criteria.addClause("xnat:projectData/id", descriptor);
+		ArrayList<XnatProjectdata> projects = XnatProjectdata.getXnatProjectdatasByField(criteria, user, false);
+		Optional<XnatProjectdata> project;
+		if (projects.isEmpty())
+			project = Optional.empty();
+		else
+			project = Optional.of(projects.get(0));
+		return project;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getSubjectByLabelOrIdImpl(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String descriptor) {		
+	public Optional<XnatSubjectdata> getSubjectByLabelOrIdImpl(String projectId, String descriptor) {		
 		CriteriaCollection criteria = new CriteriaCollection("OR");
 		criteria.addClause("xnat:subjectData/label", descriptor);
 		criteria.addClause("xnat:subjectData/id", descriptor);
 		ArrayList<XnatSubjectdata> subjects = XnatSubjectdata.getXnatSubjectdatasByField(criteria, user, false);
-		Optional<XnatSubjectdata> subject;
-		if (subjects.isEmpty())
-			subject = Optional.empty();
-		else if (subjects.size() > 1)
-			// TODO throw new IllegalStateException("More than one subject with same label");
-			subject = Optional.empty();
-		else
-			subject = Optional.of(subjects.get(0));
+		Optional<XnatSubjectdata> subject = Optional.empty();
+		if (!subjects.isEmpty()) {
+			for (XnatSubjectdata current : subjects) {
+				if (current.getProject().equals(projectId))
+					subject = Optional.of(current);
+			}
+		}
 		return subject;
 	}
 
@@ -115,12 +136,12 @@ public final class DefaultItemUtil implements IItemUtil {
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getMatchingSubjectImpl(java.lang.String)
 	 */
 	@Override
-	public Optional<XnatSubjectdata> getMatchingSubjectImpl(String pseudoId) {
-		Optional<ExtSubjectpseudonym> pseudonym = getPseudonymImpl(pseudoId);
+	public Optional<XnatSubjectdata> getMatchingSubjectImpl(String projectId, String pseudoId) {
+		Optional<ExtSubjectpseudonym> pseudonym = getPseudonymImpl(projectId, pseudoId);
 		if (!pseudonym.isPresent())
 			return Optional.empty();
 		else {
-			return getSubjectByLabelOrIdImpl(pseudonym.get().getSubject());
+			return getSubjectByLabelOrIdImpl(projectId, pseudonym.get().getSubject());
 		}
 	}
 
@@ -128,13 +149,16 @@ public final class DefaultItemUtil implements IItemUtil {
 	 * @see org.nrg.xnat.restlet.util.IItemUtil#getPseudonymImpl(java.lang.String)
 	 */
 	@Override
-	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String pseudoId) {
-		ExtSubjectpseudonym tmp = AutoExtSubjectpseudonym.getExtSubjectpseudonymsById(pseudoId, user, false);
+	public Optional<ExtSubjectpseudonym> getPseudonymImpl(String projectId, String pseudoId) {
+		CriteriaCollection criteria = new CriteriaCollection("AND");
+		criteria.addClause("ext:subjectPseudonym/ppid", pseudoId);
+		criteria.addClause("ext:subjectPseudonym/project", projectId);
+		ArrayList<ExtSubjectpseudonym> pseudonyms = ExtSubjectpseudonym.getExtSubjectpseudonymsByField(criteria, user, false);
 		Optional<ExtSubjectpseudonym> pseudonym;
-		if (tmp == null)
+		if (pseudonyms.isEmpty())
 			pseudonym = Optional.empty();
 		else
-			pseudonym = Optional.of(tmp);
+			pseudonym = Optional.of(pseudonyms.get(0));
 		return pseudonym;
 	}
 
@@ -143,14 +167,27 @@ public final class DefaultItemUtil implements IItemUtil {
 	 */
 	@Override
 	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(
-			XnatSubjectdata subject, String pseudoId) throws IllegalStateException {
+			XnatProjectdata project, XnatSubjectdata subject, String pseudoId) throws IllegalStateException {
 		
-		if (getPseudonymImpl(pseudoId).isPresent())
-			throw new IllegalStateException("Pseudonym "+pseudoId+" already exists");
+		if (getPseudonymImpl(project.getId(), pseudoId).isPresent())
+			throw new IllegalStateException("Pseudonym "+pseudoId+" with project "+project.getId()+" already exists");
+		
+		XFTItem item = null;
+		try {
+			item = XFTItem.NewItem("ext:subjectPseudonym", user);
+		} catch (XFTInitException | ElementNotFoundException e2) { // should never happen
+			e2.printStackTrace();
+			return Optional.empty();
+		}
 		
 		// put the new pseudonym
-		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym();
-		newPseudonym.setId(pseudoId);
+		ExtSubjectpseudonym newPseudonym = new ExtSubjectpseudonym(item);
+		Optional<String> id = generateId("ext_subjectPseudonym", "id");
+		if (!id.isPresent())
+			return Optional.empty();
+		newPseudonym.setId(id.get());
+		newPseudonym.setPpid(pseudoId);
+		newPseudonym.setProject(project.getId());
 		newPseudonym.setSubject(subject.getId());
 		
 		PersistentWorkflowI wrk;
@@ -165,7 +202,6 @@ public final class DefaultItemUtil implements IItemUtil {
 									"Inserted new pseudonym for a subject."));
 			
 		} catch (JustificationAbsent | ActionNameAbsent | IDAbsent e1) { // from PersistentWorkflowUtils.getOrCreateWorkflowData
-			// TODO this looks like a server-side exception, so is this the proper way of handling it?
 			e1.printStackTrace();
 			return Optional.empty();
 		}
@@ -177,17 +213,36 @@ public final class DefaultItemUtil implements IItemUtil {
 				MaterializedView.DeleteByUser(user);
 			}
 		} catch (Exception e) { // from SaveItemHelper.authorizedSave, PersistentWorkflowUtils.complete, or MaterializedView.DeleteByUser
+			e.printStackTrace();
 			try {
 				PersistentWorkflowUtils.fail(wrk, wrk.buildEvent());
 			} catch (Exception e1) {
-				// TODO this is becoming uglier, but we have to stop unspecific exceptions somewhere right ?
 				e1.printStackTrace();
 			}
-//			throw e; // TODO originally part of code
 			return Optional.empty();
 		}
 		
 		return Optional.of(newPseudonym);
+	}
+	
+	/**
+	 * Generates a unique identifier, esp. for use with primary keys in tables.
+	 * 
+	 * @param tableName eg. "xnat_subjectData"
+	 * @param tableColumnName eg. "id"
+	 * @return generated identifier, or null in case of a generic exception from the XNAT base
+	 */
+	protected static Optional<String> generateId(String tableName, String tableColumnName) {
+		try {
+			IDGeneratorI generator = IDGeneratorFactory
+					.GetIDGenerator("org.nrg.xnat.turbine.utils.IDGenerator");
+			generator.setTable(tableName);
+			generator.setDigits(5);
+			generator.setColumn(tableColumnName);
+			return Optional.of(generator.generateIdentifier());
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 }

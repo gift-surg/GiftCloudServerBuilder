@@ -286,12 +286,65 @@ module GiftCloud
       end
     end
     
-    def add_scan scan, uid, project, subject, session
-      # TODO
+    def add_scan scan, uid, project, subject, session      
+      unless @@xnat_scan_types.has_key? scan.type
+        raise ArgumentError, "Scan type #{scan.type} not recognised"
+      end
+      
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans', scan.label + "?xsiType=#{@@xnat_scan_types[ scan.type ]}&UID=#{uid.label}")
+      
+      result = try_put uri, {}
+      
+      case result.code
+      when 200, 204 # OK, No Content
+        warn "Existing scan (possibly) overwritten, response code was #{result.code}"
+      when 201 # Created
+        #nop
+      when 403 # Forbidden
+        raise EntityExistsError
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise result
+      end
     end
     
     def match_scan project, subject, session, uid
-      # TODO
+      uri = gen_uri( 'data', 'archive',
+                     'projects', project.label,
+                     'subjects', subject.label,
+                     'experiments', session.label,
+                     'scans', 'uids', uid.label + '?format=json' )
+      result = try_get uri, {}
+      
+      case result.code
+      when 200 # OK
+        json = JSON.parse result
+        if json['items'].empty?
+          nil
+        elsif json['items'].size > 1
+          warn "something's wrong, got #{json['items'].size} results rather than 1"
+          nil
+        else
+          header = json['items'][0]['meta']
+          entity = json['items'][0]['data_fields']
+          
+          unless @@xnat_scan_types.has_value? header['xsi:type']
+            raise ArgumentError, "Scan type #{header['xsi:type']} not recognised"
+          end
+          Scan.new( @@xnat_scan_types.key( header['xsi:type'] ), entity['label'] )
+        end
+      when 404 # Not Found
+        return nil
+      when 401 # Unauthorized
+        raise AuthenticationError
+      else
+        raise r
+      end
     end
     
     def list_resources project, subject, session, scan

@@ -286,6 +286,14 @@ module GiftCloud
       end
     end
     
+    def add_scan scan, uid, project, subject, session
+      # TODO
+    end
+    
+    def match_scan project, subject, session, uid
+      # TODO
+    end
+    
     def list_resources project, subject, session, scan
       check_auth!
       

@@ -59,11 +59,43 @@ RSpec.describe GiftCloud::Client do
     end
   end
   
-  describe '(label-based scan identification)' do
+  describe '(UID-based scan identification)' do
+    let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
+    let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }
+    
     it "can retrieve existing scan" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
+      3.times do
+        client.add_scan( scan = GiftCloud::Scan.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj, expt )
+        expect( client.match_scan proj, subj, expt, uid ).to eq( expt )
+      end
+      client.sign_out
     end
     
-    it "can't use same label for two scans" do
+    it "can't use same UID for two scans" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
+      uid = GiftCloud::Pseudonym.new
+      expect{ client.add_scan( GiftCloud::Scan.new( :mri ), uid, proj, subj, expt ) }.not_to raise_error
+      expect{ client.add_scan( GiftCloud::Scan.new( :mri ), uid, proj, subj, expt ) }.to raise_error( GiftCloud::EntityExistsError )
+      client.sign_out
+    end
+    
+    it "can't retrieve other user's scan" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
+      client.add_scan( scan = GiftCloud::Scan.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj, expt )
+      client.sign_out
+      client.sign_in user2.name, user2.pass
+      expect{ client.match_scan proj, subj, expt, uid }.to raise_error( GiftCloud::AuthenticationError )
+      client.sign_out
     end
   end
   

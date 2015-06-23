@@ -682,6 +682,10 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 										"Submitted experiment record must include the subject.");
 						return;
 					}
+					
+					if (item.instanceOf("xnat:imageSessionData") && getQueryVariable("UID")!=null) {
+						((XnatImagesessiondata) expt).setUid(getQueryVariable("UID"));
+					}
 
 					boolean allowDataDeletion = false;
 					if (this.getQueryVariable("allowDataDeletion") != null

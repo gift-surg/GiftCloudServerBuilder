@@ -177,7 +177,7 @@ module GiftCloud
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
-                     'experiments', session.label + "?xsiType=#{@@xnat_session_types[ session.type ]}&uid=#{uid.label}"
+                     'experiments', session.label + "?xsiType=#{@@xnat_session_types[ session.type ]}&UID=#{uid.label}"
                    )
       result = try_put uri, {}
       case result.code
@@ -204,17 +204,19 @@ module GiftCloud
       case result.code
       when 200 # OK
         json = JSON.parse result
-        entities = json['items'][0]['data_fields']
-        if entities.empty? 
+        if json['items'].empty?
           nil
-        elsif entities.size > 1
-          warn "something's wrong, got #{entities.size} results rather than 1"
+        elsif json['items'].size > 1
+          warn "something's wrong, got #{json['items'].size} results rather than 1"
           nil
         else
-          unless @@xnat_session_types.has_value? session['xsiType']
-            raise ArgumentError, "Session type #{session['xsiType']} not recognised"
+          header = json['items'][0]['meta']
+          entity = json['items'][0]['data_fields']
+          
+          unless @@xnat_session_types.has_value? header['xsi:type']
+            raise ArgumentError, "Session type #{header['xsi:type']} not recognised"
           end
-          Session.new( @@xnat_session_types.key( entities['xsiType'] ), entities['label'] )
+          Session.new( @@xnat_session_types.key( header['xsi:type'] ), entity['label'] )
         end
       when 404 # Not Found
         return nil

@@ -233,6 +233,8 @@ public final class DefaultItemUtil implements IItemUtil {
 	@Override
 	public Optional<XnatImagesessiondata> getMatchingExperimentImpl(
 			String projectId, String subjectId, String uid) {
+		if (!getProjectByLabelOrIdImpl(projectId).isPresent())
+			return Optional.empty();
 		ArrayList<XnatImagesessiondata> experiments = XnatImagesessiondata.getXnatImagesessiondatasByField("xnat:imageSessionData/uid", uid, user, false);
 		Optional<XnatSubjectdata> subject = getSubjectByLabelOrIdImpl(projectId, subjectId);
 		if (!subject.isPresent())

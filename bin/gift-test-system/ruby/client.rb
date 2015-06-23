@@ -49,7 +49,7 @@ module GiftCloud
     def add_project project
       check_auth!
       
-      uri = gen_uri( 'data', 'archive', 'projects', project.label )
+      uri = gen_uri( 'data', 'archive', 'projects', project.label + "?accessibility=private" )
       result = try_put uri, {}
       
       case result.code

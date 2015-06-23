@@ -684,6 +684,15 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 					}
 					
 					if (item.instanceOf("xnat:imageSessionData") && getQueryVariable("UID")!=null) {
+						String uid = getQueryVariable("UID");
+						ArrayList<XnatImagesessiondata> sessions = XnatImagesessiondata.getXnatImagesessiondatasByField("xnat:imageSessionData/UID", uid, user, false);
+						if (!sessions.isEmpty())
+							for (XnatImagesessiondata session : sessions) {
+								if (XnatExperimentdata.getXnatExperimentdatasById(session.getId(), user, false).getProject().equals(proj.getId())) {
+									getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided UID " + uid + " already used in project");
+									return;
+								}
+							}
 						((XnatImagesessiondata) expt).setUid(getQueryVariable("UID"));
 					}
 

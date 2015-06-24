@@ -144,36 +144,13 @@ module GiftCloud
       sessions
     end
     
-    def add_session session, project, subject
+    def add_session session, uid, project, subject
       check_auth!
       
       unless @@xnat_session_types.has_key? session.type
         raise ArgumentError, "Session datatype #{session.type} not recognised"
       end
       
-      uri = gen_uri( 'data', 'archive',
-                     'projects', project.label,
-                     'subjects', subject.label,
-                     'experiments', session.label + "?xsiType=#{@@xnat_session_types[ session.type ]}"
-                   )
-      
-      result = try_put uri, {}
-      
-      case result.code
-      when 200, 204 # OK, No Content
-        warn "Existing session (possibly) overwritten, response code was #{result.code}"
-      when 201 # Created
-        #nop
-      when 403 # Forbidden
-        raise EntityExistsError
-      when 401 # Unauthorized
-        raise AuthenticationError
-      else
-        raise result
-      end
-    end
-    
-    def add_session session, uid, project, subject
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
@@ -195,6 +172,8 @@ module GiftCloud
     end
     
     def match_session project, subject, uid
+      check_auth!
+      
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,
@@ -257,36 +236,13 @@ module GiftCloud
       scans
     end
     
-    def add_scan scan, project, subject, session
+    def add_scan scan, uid, project, subject, session
       check_auth!
       
       unless @@xnat_scan_types.has_key? scan.type
         raise ArgumentError, "Scan type #{scan.type} not recognised"
       end
       
-      uri = gen_uri( 'data', 'archive',
-                     'projects', project.label,
-                     'subjects', subject.label,
-                     'experiments', session.label,
-                     'scans', scan.label + "?xsiType=#{@@xnat_scan_types[ scan.type ]}")
-      
-      result = try_put uri, {}
-      
-      case result.code
-      when 200, 204 # OK, No Content
-        warn "Existing scan (possibly) overwritten, response code was #{result.code}"
-      when 201 # Created
-        #nop
-      when 403 # Forbidden
-        raise EntityExistsError
-      when 401 # Unauthorized
-        raise AuthenticationError
-      else
-        raise result
-      end
-    end
-    
-    def add_scan scan, uid, project, subject, session      
       unless @@xnat_scan_types.has_key? scan.type
         raise ArgumentError, "Scan type #{scan.type} not recognised"
       end
@@ -314,6 +270,8 @@ module GiftCloud
     end
     
     def match_scan project, subject, session, uid
+      check_auth!
+      
       uri = gen_uri( 'data', 'archive',
                      'projects', project.label,
                      'subjects', subject.label,

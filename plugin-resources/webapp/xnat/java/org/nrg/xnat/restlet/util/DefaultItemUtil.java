@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
 import org.nrg.xdat.om.XnatExperimentdata;
+import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectassessordata;
@@ -257,6 +258,55 @@ public final class DefaultItemUtil implements IItemUtil {
 		}
 		
 		return Optional.empty();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.util.IItemUtil#getMatchingScanImpl(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Optional<XnatImagescandata> getMatchingScanImpl(String projectId,
+			String subjectId, String exptId, String uid) {
+		Optional<XnatSubjectassessordata> experiment = getExperimentByLabel(projectId, subjectId, exptId);
+		if (!experiment.isPresent())
+			return Optional.empty();
+		
+		CriteriaCollection cc1 = new CriteriaCollection("AND");
+		cc1.addClause("xnat:imageScanData/project", projectId);
+		cc1.addClause("xnat:imageScanData/image_session_id", experiment.get().getId());
+		cc1.addClause("xnat:imageScanData/uid", uid);
+		ArrayList<XnatImagescandata> scans = XnatImagescandata.getXnatImagescandatasByField(cc1, user, false);
+		
+		if (scans.size()==1) // because above criteria collection is unique as per ScanResource#handlePut()
+			return Optional.of(scans.get(0));
+		else
+			return Optional.empty();
+	}
+	
+	/**
+	 * 
+	 * @param projectId
+	 * @param subjectId
+	 * @param exptId this is label (see xnat.xsd) rather than the ID
+	 * @return
+	 */
+	protected Optional<XnatSubjectassessordata> getExperimentByLabel(String projectId, String subjectId, String exptId) {
+		CriteriaCollection cc1 = new CriteriaCollection("AND");
+		cc1.addClause("xnat:experimentData/label", exptId);
+		cc1.addClause("xnat:experimentData/project", projectId);
+		ArrayList<XnatExperimentdata> experiments = XnatExperimentdata.getXnatExperimentdatasByField(cc1, user, false);
+		if (experiments.size()!=1) // because above criteria is unique as per xnat.xsd
+			return Optional.empty();
+		Optional<XnatSubjectdata> subject = getSubjectByLabelOrIdImpl(projectId, subjectId);
+		if (!subject.isPresent())
+			return Optional.empty();
+		
+		CriteriaCollection cc2 = new CriteriaCollection("AND");
+		cc2.addClause("xnat:subjectAssessorData/id", experiments.get(0).getId());
+		cc2.addClause("xnat:subjectAssessorData/subject_ID", subject.get().getId());
+		ArrayList<XnatSubjectassessordata> subjectAssessors = XnatSubjectassessordata.getXnatSubjectassessordatasByField(cc2, user, false);
+		
+		return subjectAssessors.isEmpty() ? Optional.empty() : Optional.of(subjectAssessors.get(0));
 	}
 	
 	/**

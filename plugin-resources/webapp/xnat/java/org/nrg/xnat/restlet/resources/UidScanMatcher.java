@@ -22,7 +22,7 @@ package org.nrg.xnat.restlet.resources;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.nrg.xdat.om.XnatImagesessiondata;
+import org.nrg.xdat.om.XnatImagescandata;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -41,9 +41,10 @@ import com.google.common.base.Strings;
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public class UidExperimentMatcher extends SubjectPseudonymResource {
+public class UidScanMatcher extends SubjectPseudonymResource {
 	String projectId;
 	String rid;
+	String exptId;
 	String uid;
 
 	/**
@@ -52,14 +53,14 @@ public class UidExperimentMatcher extends SubjectPseudonymResource {
 	 * @param request
 	 * @param response
 	 */
-	public UidExperimentMatcher(Context context, Request request,
-			Response response) {
+	public UidScanMatcher(Context context, Request request, Response response) {
 		super(context, request, response);
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
 		projectId = (String) getParameter(request, "PROJECT_ID");
 		rid = (String) getParameter(request, "SUBJECT_ID");
+		exptId = (String) getParameter(request, "ASSESSED_ID");
 		uid = (String) getParameter(request, "UID");
 	}
 
@@ -73,7 +74,8 @@ public class UidExperimentMatcher extends SubjectPseudonymResource {
 		al.add("id");
 		al.add("project");
 		al.add("uid");
-		al.add("label");
+		al.add("series_description");
+		al.add("image_session_id");
 		al.add("insert_date");
 		al.add("insert_user");
 
@@ -85,9 +87,9 @@ public class UidExperimentMatcher extends SubjectPseudonymResource {
 	 */
 	@Override
 	public String getDefaultElementName() {
-		return "xnat:imageSessionData";
+		return "xnat:imageScanData";
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nrg.xnat.restlet.resources.QueryOrganizerResource#getRepresentation(org.restlet.resource.Variant)
@@ -103,28 +105,32 @@ public class UidExperimentMatcher extends SubjectPseudonymResource {
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty SUBJECT_ID provided");
 			return null;
 		}
+		if (Strings.isNullOrEmpty(exptId)) {
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty ASSESSED_ID (EXPT_ID) provided");
+			return null;
+		}
 		if (Strings.isNullOrEmpty(uid)) {
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty UID provided");
 			return null;
 		}
 		
 		// get subject
-		Optional<XnatImagesessiondata> experiment;
+		Optional<XnatImagescandata> scan;
 		try {
-			experiment = secureItemUtil.getMatchingExperiment(projectId, rid, uid);
+			scan = secureItemUtil.getMatchingScan(projectId, rid, exptId, uid);
 		} catch (Throwable t) {
 			handle(t);
-			experiment = Optional.empty();
+			scan = Optional.empty();
 		}
 		
 		// represent subject after sanity check
-		XnatImagesessiondata result = null;
-		if (!experiment.isPresent()) {
+		XnatImagescandata result = null;
+		if (!scan.isPresent()) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
 		}
 		else {
-			result = experiment.get();
+			result = scan.get();
 		}
 		return representItem(result.getItem(), variant.getMediaType());
 	}
@@ -137,7 +143,5 @@ public class UidExperimentMatcher extends SubjectPseudonymResource {
 	public Representation represent(Variant variant) throws ResourceException {
 		return getRepresentation(variant);
 	}
-	
-	
 
 }

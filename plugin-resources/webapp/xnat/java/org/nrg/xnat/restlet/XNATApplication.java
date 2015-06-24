@@ -239,6 +239,10 @@ public class XNATApplication extends Application {
 				ScanResource.class);
 		attachArchiveURI(
 				router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/uids/{UID}",
+				UidScanMatcher.class);
+		attachArchiveURI(
+				router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",
 				ScanDIRResource.class);
 		attachArchiveURI(

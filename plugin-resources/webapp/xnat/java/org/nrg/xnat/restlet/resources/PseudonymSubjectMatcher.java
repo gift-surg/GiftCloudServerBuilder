@@ -43,7 +43,7 @@ import com.google.common.base.Strings;
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public class PseudonymSubjectMatcher extends SubjectPseudonymResource {
+public class PseudonymSubjectMatcher extends SecureQueryOrganizerResource {
 	String ppid;
 	String projectId;
 	

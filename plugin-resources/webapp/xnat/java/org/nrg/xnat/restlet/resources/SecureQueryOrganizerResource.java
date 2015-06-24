@@ -30,12 +30,12 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
- * Base class for all subject-pseudonym processing.
+ * Base class for all standard secure items processing.
  * 
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
+public abstract class SecureQueryOrganizerResource extends QueryOrganizerResource {
 	protected ISecureItemUtil secureItemUtil = null;
 	
 	/**
@@ -44,7 +44,7 @@ public abstract class SubjectPseudonymResource extends QueryOrganizerResource {
 	 * @param request
 	 * @param response
 	 */
-	protected SubjectPseudonymResource(Context context, Request request,
+	protected SecureQueryOrganizerResource(Context context, Request request,
 			Response response) {
 		super(context, request, response);
 		init();

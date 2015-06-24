@@ -39,7 +39,7 @@ import com.google.common.base.Strings;
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public class SubjectPseudonymProcessor extends SubjectPseudonymResource {
+public class SubjectPseudonymProcessor extends SecureQueryOrganizerResource {
 	String projectId, rid, ppid;
 	
 	/**

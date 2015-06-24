@@ -41,7 +41,7 @@ import com.google.common.base.Strings;
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public class UidScanMatcher extends SubjectPseudonymResource {
+public class UidScanMatcher extends SecureQueryOrganizerResource {
 	String projectId;
 	String rid;
 	String exptId;

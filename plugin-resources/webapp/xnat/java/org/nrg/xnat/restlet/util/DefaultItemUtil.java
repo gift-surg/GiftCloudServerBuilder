@@ -272,8 +272,7 @@ public final class DefaultItemUtil implements IItemUtil {
 			return Optional.empty();
 		
 		CriteriaCollection cc1 = new CriteriaCollection("AND");
-		cc1.addClause("xnat:imageScanData/project", projectId);
-		cc1.addClause("xnat:imageScanData/image_session_id", experiment.get().getId());
+		cc1.addClause("xnat:imageScanData/image_session_ID", experiment.get().getId());
 		cc1.addClause("xnat:imageScanData/uid", uid);
 		ArrayList<XnatImagescandata> scans = XnatImagescandata.getXnatImagescandatasByField(cc1, user, false);
 		

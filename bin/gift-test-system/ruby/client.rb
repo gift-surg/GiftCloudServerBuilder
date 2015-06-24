@@ -336,7 +336,7 @@ module GiftCloud
           unless @@xnat_scan_types.has_value? header['xsi:type']
             raise ArgumentError, "Scan type #{header['xsi:type']} not recognised"
           end
-          Scan.new( @@xnat_scan_types.key( header['xsi:type'] ), entity['label'] )
+          Scan.new( @@xnat_scan_types.key( header['xsi:type'] ), entity['ID'] )
         end
       when 404 # Not Found
         return nil

@@ -70,7 +70,7 @@ RSpec.describe GiftCloud::Client do
       client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
       3.times do
         client.add_scan( scan = GiftCloud::Scan.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj, expt )
-        expect( client.match_scan proj, subj, expt, uid ).to eq( expt )
+        expect( client.match_scan proj, subj, expt, uid ).to eq( scan )
       end
       client.sign_out
     end

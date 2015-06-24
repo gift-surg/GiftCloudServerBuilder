@@ -693,7 +693,7 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 									return;
 								}
 							}
-						((XnatImagesessiondata) expt).setUid(getQueryVariable("UID"));
+						((XnatImagesessiondata) expt).setUid(uid);
 					}
 
 					boolean allowDataDeletion = false;

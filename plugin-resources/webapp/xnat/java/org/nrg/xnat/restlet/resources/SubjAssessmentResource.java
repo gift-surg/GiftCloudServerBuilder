@@ -689,8 +689,10 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 						if (!sessions.isEmpty())
 							for (XnatImagesessiondata session : sessions) {
 								if (XnatExperimentdata.getXnatExperimentdatasById(session.getId(), user, false).getProject().equals(proj.getId())) {
-									getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided UID " + uid + " already used in project");
-									return;
+									if (XnatSubjectassessordata.getXnatSubjectassessordatasById(session.getId(), user, false).getSubjectId().equals(subject.getId())) {
+										getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided UID " + uid + " already used in project for subject");
+										return;
+									}
 								}
 							}
 						((XnatImagesessiondata) expt).setUid(uid);

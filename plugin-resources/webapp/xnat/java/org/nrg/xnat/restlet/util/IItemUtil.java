@@ -22,6 +22,8 @@ package org.nrg.xnat.restlet.util;
 import java.util.Optional;
 
 import org.nrg.xdat.om.ExtSubjectpseudonym;
+import org.nrg.xdat.om.XnatImagescandata;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xdat.om.XnatProjectdata;
 import org.nrg.xdat.om.XnatSubjectdata;
 import org.nrg.xdat.om.base.BaseXdatUser;
@@ -130,4 +132,27 @@ public interface IItemUtil {
 	 * @see ISecureItemUtil#addPseudoId(XnatProjectdata, XnatSubjectdata, String)
 	 */
 	public Optional<ExtSubjectpseudonym> addPseudoIdImpl(XnatProjectdata project, XnatSubjectdata subject, String pseudoId) throws IllegalStateException;
+	
+	/**
+	 * 
+	 * @param projectId
+	 * @param subjectId
+	 * @param uid
+	 * @return
+	 * 
+	 * @see ISecureItemUtil#getMatchingExperiment(String, String, String)
+	 */
+	public Optional<XnatImagesessiondata> getMatchingExperimentImpl(String projectId, String subjectId, String uid);
+	
+	/**
+	 * 
+	 * @param projectId
+	 * @param subjectId
+	 * @param exptId
+	 * @param uid
+	 * @return
+	 * 
+	 * @see ISecureItemUtil#getMatchingScan(String, String, String, String)
+	 */
+	public Optional<XnatImagescandata> getMatchingScanImpl(String projectId, String subjectId, String exptId, String uid);
 }

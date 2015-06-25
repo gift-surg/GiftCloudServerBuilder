@@ -22,6 +22,83 @@ RSpec.describe GiftCloud::Client do
   end
   # ==================================================
   
+  describe '(UID-based experiment identification)' do
+    let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
+    let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }
+    
+    it "can retrieve existing experiment" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      3.times do
+        client.add_session( expt = GiftCloud::Session.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj )
+        expect( client.match_session proj, subj, uid ).to eq( expt )
+      end
+      client.sign_out
+    end
+    
+    it "can't use same UID for two experiments" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      uid = GiftCloud::Pseudonym.new
+      expect{ client.add_session( GiftCloud::Session.new( :mri ), uid, proj, subj ) }.not_to raise_error
+      expect{ client.add_session( GiftCloud::Session.new( :mri ), uid, proj, subj ) }.to raise_error( GiftCloud::EntityExistsError )
+      client.sign_out
+    end
+    
+    it "can't retrieve other user's experiment" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj )
+      client.sign_out
+      client.sign_in user2.name, user2.pass
+      expect{ client.match_session proj, subj, uid }.to raise_error( GiftCloud::AuthenticationError )
+      client.sign_out
+    end
+  end
+  
+  describe '(UID-based scan identification)' do
+    let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
+    let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }
+    
+    it "can retrieve existing scan" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
+      3.times do
+        client.add_scan( scan = GiftCloud::Scan.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj, expt )
+        expect( client.match_scan proj, subj, expt, uid ).to eq( scan )
+      end
+      client.sign_out
+    end
+    
+    it "can't use same UID for two scans" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
+      uid = GiftCloud::Pseudonym.new
+      expect{ client.add_scan( GiftCloud::Scan.new( :mri ), uid, proj, subj, expt ) }.not_to raise_error
+      expect{ client.add_scan( GiftCloud::Scan.new( :mri ), uid, proj, subj, expt ) }.to raise_error( GiftCloud::EntityExistsError )
+      client.sign_out
+    end
+    
+    it "can't retrieve other user's scan" do
+      client.sign_in user1.name, user1.pass
+      client.add_project( proj = GiftCloud::Project.new )
+      client.add_subject( subj = GiftCloud::Subject.new, proj )
+      client.add_session( expt = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, proj, subj )
+      client.add_scan( scan = GiftCloud::Scan.new( :mri ), uid = GiftCloud::Pseudonym.new, proj, subj, expt )
+      client.sign_out
+      client.sign_in user2.name, user2.pass
+      expect{ client.match_scan proj, subj, expt, uid }.to raise_error( GiftCloud::AuthenticationError )
+      client.sign_out
+    end
+  end
+  
   describe '(pseudonym-based subject identification)' do
     let( :user1 ) { GiftCloud::User.new 'authuser', '123456' }
     let( :user2 ) { GiftCloud::User.new 'otheruser', '789012' }
@@ -82,8 +159,8 @@ RSpec.describe GiftCloud::Client do
       client.sign_in owner.name, owner.pass
       client.add_project( @owner_project = GiftCloud::Project.new )
       client.add_subject( @owner_subject = GiftCloud::Subject.new, @owner_project )
-      client.add_session( @owner_session = GiftCloud::Session.new( :mri ), @owner_project, @owner_subject )
-      client.add_scan( @owner_scan = GiftCloud::Scan.new( :mri ), @owner_project, @owner_subject, @owner_session )
+      client.add_session( @owner_session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @owner_project, @owner_subject )
+      client.add_scan( @owner_scan = GiftCloud::Scan.new( :mri ), GiftCloud::Pseudonym.new, @owner_project, @owner_subject, @owner_session )
       # randomly-selected files, but belonging to same scan
       filepath = '../resources/Goldmarker_17Sep09/'
       @owner_filename = filepath + '2.25.201894920086755898241014608991310884067-9-1-sks45b.dcm.zip'
@@ -134,12 +211,14 @@ RSpec.describe GiftCloud::Client do
     
     it "may not create a new session for inaccessible subject" do
       expect{ client.add_session GiftCloud::Session.new( :mri ), 
+                                 GiftCloud::Pseudonym.new, 
                                  @owner_project, 
                                  @owner_subject }.to raise_error( GiftCloud::AuthenticationError )
     end
     
     it "may not create a new scan for inaccessible session" do
       expect{ client.add_scan GiftCloud::Scan.new( :mri ), 
+                              GiftCloud::Pseudonym.new, 
                               @owner_project, 
                               @owner_subject, 
                               @owner_session }.to raise_error( GiftCloud::AuthenticationError )
@@ -230,7 +309,7 @@ RSpec.describe GiftCloud::Client do
         client.add_subject @subject = GiftCloud::Subject.new, @project
         @sessions = Array.new
         3.times do
-          client.add_session new_session = GiftCloud::Session.new( :mri ), @project, @subject
+          client.add_session new_session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject
           @sessions << new_session
         end
       end
@@ -240,7 +319,7 @@ RSpec.describe GiftCloud::Client do
       end
       
       it 'adds a new session to subject' do
-        client.add_session new_session = GiftCloud::Session.new( :mri ), @project, @subject
+        client.add_session new_session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject
         expect( client.list_sessions @project, @subject ).to include( new_session )
       end
     end
@@ -251,10 +330,10 @@ RSpec.describe GiftCloud::Client do
       before( :each ) do
         client.add_project @project = GiftCloud::Project.new
         client.add_subject @subject = GiftCloud::Subject.new, @project
-        client.add_session @session = GiftCloud::Session.new( :mri ), @project, @subject
+        client.add_session @session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject
         @scans = Array.new
         3.times do
-          client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+          client.add_scan new_scan = GiftCloud::Scan.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject, @session
           @scans << new_scan
         end
       end
@@ -264,7 +343,7 @@ RSpec.describe GiftCloud::Client do
       end
       
       it 'adds a new scan to session' do
-        client.add_scan new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+        client.add_scan new_scan = GiftCloud::Scan.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject, @session
         expect( client.list_scans @project, @subject, @session ).to include( new_scan )
       end
     end
@@ -275,8 +354,8 @@ RSpec.describe GiftCloud::Client do
       before( :each ) do
         client.add_project @project = GiftCloud::Project.new
         client.add_subject @subject = GiftCloud::Subject.new, @project
-        client.add_session @session = GiftCloud::Session.new( :mri ), @project, @subject
-        client.add_scan @scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session
+        client.add_session @session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject
+        client.add_scan @scan = GiftCloud::Scan.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject, @session
         @resources = Array.new
         3.times do
           client.add_resource new_resource = GiftCloud::Resource.new, @project, @subject, @session, @scan
@@ -300,8 +379,8 @@ RSpec.describe GiftCloud::Client do
       before( :each ) do
         client.add_project( @project = GiftCloud::Project.new )
         client.add_subject( @subject = GiftCloud::Subject.new, @project )
-        client.add_session( @session = GiftCloud::Session.new( :mri ), @project, @subject )
-        client.add_scan( @scan = GiftCloud::Scan.new( :mri ), @project, @subject, @session )
+        client.add_session( @session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject )
+        client.add_scan( @scan = GiftCloud::Scan.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject, @session )
         path = '../resources/Goldmarker_17Sep09/'
         files = Dir.entries( path ).select { |x| x[/[\w|\.]*\.zip$/] }
         files.map! { |x| x = path + x }
@@ -316,8 +395,8 @@ RSpec.describe GiftCloud::Client do
       end
       
       it 'uploads zipped DICOM studies of a subject to new scan' do
-        client.add_session( new_session = GiftCloud::Session.new( :mri ), @project, @subject )
-        client.add_scan( new_scan = GiftCloud::Scan.new( :mri ), @project, @subject, new_session )
+        client.add_session( new_session = GiftCloud::Session.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject )
+        client.add_scan( new_scan = GiftCloud::Scan.new( :mri ), GiftCloud::Pseudonym.new, @project, @subject, new_session )
         ( @uploaded_files + @files_to_upload ).each do |filename|
           client.upload_file filename, @project, @subject, new_session, new_scan
         end

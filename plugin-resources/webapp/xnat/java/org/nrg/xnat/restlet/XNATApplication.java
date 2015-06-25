@@ -218,6 +218,11 @@ public class XNATApplication extends Application {
 				SubjAssessmentResource.class);
 		attachArchiveURI(
 				router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/uids/{UID}",
+				UidExperimentMatcher.class
+				);
+		attachArchiveURI(
+				router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/assessors",
 				ProjSubExptAsstList.class);
 		attachArchiveURI(
@@ -232,6 +237,10 @@ public class XNATApplication extends Application {
 				router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}",
 				ScanResource.class);
+		attachArchiveURI(
+				router,
+				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/uids/{UID}",
+				UidScanMatcher.class);
 		attachArchiveURI(
 				router,
 				"/projects/{PROJECT_ID}/subjects/{SUBJECT_ID}/experiments/{ASSESSED_ID}/scans/{SCAN_ID}/DICOMDIR",

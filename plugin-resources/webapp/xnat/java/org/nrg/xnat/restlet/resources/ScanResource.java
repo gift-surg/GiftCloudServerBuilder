@@ -182,6 +182,19 @@ public class ScanResource extends ItemResource {
 			if (getQueryVariable("type") != null) {
 				scan.setType(getQueryVariable("type"));
 			}
+			
+			if (getQueryVariable("UID") != null) {
+				String uid = getQueryVariable("UID");
+				CriteriaCollection criteria = new CriteriaCollection("AND");
+				criteria.addClause("xnat:imageScanData/UID", uid);
+				criteria.addClause("xnat:imageScanData/image_session_ID", session.getId());
+				ArrayList<XnatImagescandata> scans = XnatImagescandata.getXnatImagescandatasByField(criteria, user, false);
+				if (!scans.isEmpty()) {
+					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided UID " + uid + " already used in session");
+					return;
+				}
+				scan.setUid(uid);
+			}
 
 			// FIND PRE-EXISTING
 			XnatImagescandata existing = null;

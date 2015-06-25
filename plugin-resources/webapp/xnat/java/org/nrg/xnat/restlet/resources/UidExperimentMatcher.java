@@ -22,8 +22,7 @@ package org.nrg.xnat.restlet.resources;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.nrg.xdat.om.XnatProjectdata;
-import org.nrg.xdat.om.XnatSubjectdata;
+import org.nrg.xdat.om.XnatImagesessiondata;
 import org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -36,31 +35,57 @@ import org.restlet.resource.Variant;
 
 import com.google.common.base.Strings;
 
-
 /**
- * Does the pseudonym-to-subject matching.
+ * 
  * 
  * @author Dzhoshkun Shakir (d.shakir@ucl.ac.uk)
  *
  */
-public class PseudonymSubjectMatcher extends SecureQueryOrganizerResource {
-	String ppid;
+public class UidExperimentMatcher extends SecureQueryOrganizerResource {
 	String projectId;
-	
+	String rid;
+	String uid;
+
 	/**
 	 * 
 	 * @param context
 	 * @param request
 	 * @param response
 	 */
-	public PseudonymSubjectMatcher(Context context, Request request,
+	public UidExperimentMatcher(Context context, Request request,
 			Response response) {
 		super(context, request, response);
 		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 		getVariants().add(new Variant(MediaType.TEXT_XML));
 		projectId = (String) getParameter(request, "PROJECT_ID");
-		ppid = (String) getParameter(request, "PPID");
+		rid = (String) getParameter(request, "SUBJECT_ID");
+		uid = (String) getParameter(request, "UID");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.resources.QueryOrganizerResource#getDefaultFields(org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement)
+	 */
+	@Override
+	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
+		ArrayList<String> al = new ArrayList<String>();
+
+		al.add("id");
+		al.add("project");
+		al.add("uid");
+		al.add("label");
+		al.add("insert_date");
+		al.add("insert_user");
+
+		return al;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.nrg.xnat.restlet.resources.QueryOrganizerResource#getDefaultElementName()
+	 */
+	@Override
+	public String getDefaultElementName() {
+		return "xnat:imageSessionData";
 	}
 	
 	/*
@@ -74,32 +99,36 @@ public class PseudonymSubjectMatcher extends SecureQueryOrganizerResource {
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PROJECT_ID provided");
 			return null;
 		}
-		if (Strings.isNullOrEmpty(ppid)) {
-			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty PPID provided");
+		if (Strings.isNullOrEmpty(rid)) {
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty SUBJECT_ID provided");
+			return null;
+		}
+		if (Strings.isNullOrEmpty(uid)) {
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Empty UID provided");
 			return null;
 		}
 		
 		// get subject
-		Optional<XnatSubjectdata> subject;
+		Optional<XnatImagesessiondata> experiment;
 		try {
-			subject = secureItemUtil.getMatchingSubject(projectId, ppid);
+			experiment = secureItemUtil.getMatchingExperiment(projectId, rid, uid);
 		} catch (Throwable t) {
 			handle(t);
-			subject = Optional.empty();
+			experiment = Optional.empty();
 		}
 		
 		// represent subject after sanity check
-		XnatSubjectdata result = null;
-		if (!subject.isPresent()) {
+		XnatImagesessiondata result = null;
+		if (!experiment.isPresent()) {
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			return null;
 		}
 		else {
-			result = subject.get();
+			result = experiment.get();
 		}
 		return representItem(result.getItem(), variant.getMediaType());
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.restlet.resource.Resource#represent(org.restlet.resource.Variant)
@@ -108,27 +137,7 @@ public class PseudonymSubjectMatcher extends SecureQueryOrganizerResource {
 	public Representation represent(Variant variant) throws ResourceException {
 		return getRepresentation(variant);
 	}
+	
+	
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.nrg.xnat.restlet.resources.QueryOrganizerResource#getDefaultFields(org.nrg.xft.schema.Wrappers.GenericWrapper.GenericWrapperElement)
-	 */
-	@Override
-	public ArrayList<String> getDefaultFields(GenericWrapperElement e) {
-		// TODO - this is merely copied from SubjectResource
-		ArrayList<String> al = new ArrayList<String>();
-
-		al.add("ID");
-		al.add("project");
-		al.add("label");
-		al.add("insert_date");
-		al.add("insert_user");
-
-		return al;
-	}
-
-	@Override
-	public String getDefaultElementName() {
-		return "xnat:subjectData";
-	}
 }

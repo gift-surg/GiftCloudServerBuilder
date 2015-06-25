@@ -682,6 +682,21 @@ public class SubjAssessmentResource extends SubjAssessmentAbst {
 										"Submitted experiment record must include the subject.");
 						return;
 					}
+					
+					if (item.instanceOf("xnat:imageSessionData") && getQueryVariable("UID")!=null) {
+						String uid = getQueryVariable("UID");
+						ArrayList<XnatImagesessiondata> sessions = XnatImagesessiondata.getXnatImagesessiondatasByField("xnat:imageSessionData/UID", uid, user, false);
+						if (!sessions.isEmpty())
+							for (XnatImagesessiondata session : sessions) {
+								if (XnatExperimentdata.getXnatExperimentdatasById(session.getId(), user, false).getProject().equals(proj.getId())) {
+									if (XnatSubjectassessordata.getXnatSubjectassessordatasById(session.getId(), user, false).getSubjectId().equals(subject.getId())) {
+										getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Provided UID " + uid + " already used in project for subject");
+										return;
+									}
+								}
+							}
+						((XnatImagesessiondata) expt).setUid(uid);
+					}
 
 					boolean allowDataDeletion = false;
 					if (this.getQueryVariable("allowDataDeletion") != null

@@ -131,8 +131,8 @@ public final class SecureItemUtil implements ISecureItemUtil {
 	@Override
 	public Optional<ExtSubjectpseudonym> addPseudoId(XnatProjectdata project, XnatSubjectdata subject,
 			String pseudoId) throws IllegalAccessException, IllegalStateException {
-		checkCanEditAndThrow(project.getItem());
-		checkCanEditAndThrow(subject.getItem());
+		checkCanReadAndThrow(project.getItem());
+		checkCanReadAndThrow(subject.getItem());
 		return itemUtil.addPseudoIdImpl(project, subject, pseudoId);
 	}
 	

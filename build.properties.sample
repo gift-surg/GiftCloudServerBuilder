@@ -6,6 +6,7 @@
 # the full path to those folders instead of ../pipeline or ../modules.
 
 maven.appserver.home = TOMCAT_HOME
+maven.repo.remote=https://nrgxnat.artifactoryonline.com/nrgxnat/xnat-maven1
 
 xdat.project.name=xnat
 xdat.project.db.name=xnat

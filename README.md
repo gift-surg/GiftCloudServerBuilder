@@ -5,7 +5,7 @@ GIFT-Cloud is a secure data storage and collaboration platform for medical imagi
 
 GiftCloudServerBuilder is one of the codebases required to install a GIFT-Cloud Server. It is a customised fork of [xnat_builder][xnatbuilder].
 
-Authors: Tom Doel and Dzhoshkun Shakir, [Translational Imaging Group][tig] [Centre for Medical Image Computing][cmic], [University College London (UCL)][ucl].
+Authors: Tom Doel and Dzhoshkun Shakir, [Translational Imaging Group][tig], [Centre for Medical Image Computing][cmic], [University College London (UCL)][ucl].
 GIFT-Cloud was developed as part of the [GIFT-Surg][giftsurg] project. 
 If you use this software, please cite [this paper][citation]. 
 

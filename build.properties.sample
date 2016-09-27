@@ -8,30 +8,30 @@
 maven.appserver.home = TOMCAT_HOME
 maven.repo.remote=https://nrgxnat.artifactoryonline.com/nrgxnat/xnat-maven1
 
-xdat.project.name=xnat
-xdat.project.db.name=xnat
+xdat.project.name=giftcloud
+xdat.project.db.name=giftclouddatabase
 xdat.project.db.driver=org.postgresql.Driver
-xdat.project.db.connection.string=jdbc:postgresql://localhost/xnat
-xdat.project.db.user=USERNAME
+xdat.project.db.connection.string=jdbc:postgresql://localhost/giftclouddatabase
+xdat.project.db.user=giftcloudadmin
 xdat.project.db.password=PASSWORD
 
 # IMAGE FILE LOCATION (FOR USE WITH THE xnat TEMPLATE)
 # Location where image data will be stored, e.g. /tmp/archive.
 # As with all folder locations, these paths should be absolute, not relative to your xnat_builder location.
 # UNIX Users: For easier setup, we recommend that the data directories specified below (archive, prearchive, cache, etc.) be owned by the same user account which will execute Tomcat. 
-xdat.archive.location=/Library/XNAT/archive
+xdat.archive.location=/Library/GiftCloud/archive
 
 # Location where image data is stored temporarily before it is moved into the archive, e.g. /tmp/prearchive.
-xdat.prearchive.location=/Library/XNAT/prearchive
+xdat.prearchive.location=/Library/GiftCloud/prearchive
 
 # Location where cached image data is stored, e.g. /tmp/cache.
-xdat.cache.location=/Library/XNAT/cache
+xdat.cache.location=/Library/GiftCloud/cache
 
 # Location for ftp data
-xdat.ftp.location=/Library/XNAT/ftp
+xdat.ftp.location=/Library/GiftCloud/ftp
 
 # Location for build data.
-xdat.build.location=/Library/XNAT/build
+xdat.build.location=/Library/GiftCloud/build
 
 # Location of your pipeline installation.
 # If you have pipeline installed outside of your xnat_builder folder, un-comment this property to set it
@@ -51,7 +51,7 @@ xdat.mail.username=
 xdat.mail.password=
 
 # The email address for the XNAT system administrator.
-xdat.mail.admin=administrator@xnat.org
+xdat.mail.admin=ADMIN EMAIL
 
 # Prefix to the subject line for system emails.
 xdat.mail.prefix=XNAT

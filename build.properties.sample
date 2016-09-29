@@ -55,7 +55,7 @@ xdat.mail.password=
 xdat.mail.admin=ADMIN EMAIL
 
 # Prefix to the subject line for system emails.
-xdat.mail.prefix=XNAT
+xdat.mail.prefix=GIFT-Cloud
 
 # The URL for your XNAT server installation, e.g. http://localhost:8080/xnat
 xdat.url=URL

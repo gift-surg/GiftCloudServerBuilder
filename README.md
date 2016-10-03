@@ -37,6 +37,8 @@ License
 Copyright (c) 2014-2016, [University College London][ucl].
 
 GIFT-Cloud is available as free open-source software under a BSD 3-Clause License.
+
+
 Parts of GIFT-Cloud derive from XNAT
  - [XNAT][xnat] (Harvard University / Howard Hughes Medical Institute (HHMI) / Washington University) uses the BSD 2-Clause License
 
